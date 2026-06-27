@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расписание 5-11</title>
+    <title>Расписание 1-11</title>
     <style>
         * {
             margin: 0;
@@ -71,8 +71,21 @@
             color: #4a5568;
             font-size: clamp(12px, 1.5vh, 18px);
         }
+        .header-center {
+            text-align: center;
+            flex: 1;
+        }
+        .header-center .date {
+            color: #4a5568;
+            font-size: clamp(13px, 1.7vh, 22px);
+            font-weight: 600;
+        }
         .header-right {
             text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
         }
         .header-right .time {
             color: #2b6cb0;
@@ -83,6 +96,14 @@
             color: #e65100;
             font-size: clamp(13px, 1.7vh, 22px);
             font-weight: 600;
+        }
+        .header-right .version {
+            color: #718096;
+            font-size: clamp(10px, 1.2vh, 15px);
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 0 10px;
+            border-radius: 12px;
         }
 
         .table-wrapper {
@@ -276,11 +297,15 @@
             <div class="header-left">
                 <h1>📚 Расписание</h1>
                 <span class="day-indicator" id="dayIndicator">ПН</span>
-                <span class="subtitle" id="dateSubtitle">5-11 классы</span>
+                <span class="subtitle" id="dateSubtitle">1-11 классы</span>
+            </div>
+            <div class="header-center">
+                <div class="date" id="currentDate">--.--.----</div>
             </div>
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="period" id="currentPeriod">Загрузка...</div>
+                <div class="version" id="versionBadge">🏷️ v2.5.3</div>
             </div>
         </div>
 
@@ -307,53 +332,127 @@
 
     <script>
         // ================================================================
-        // РАСПИСАНИЕ (ПН, ВТ, СР, ЧТ, ПТ, СБ)
+        // КОНФИГУРАЦИЯ
         // ================================================================
-
-        var LESSON_TIMES = ["08:30", "09:20", "10:10", "11:00", "11:50", "12:40", "13:30"];
+        var LESSON_TIMES = ["08:30", "09:20", "10:10", "11:00", "11:50", "12:40", "13:30", "14:20", "15:10"];
+        var MAX_LESSONS = 9;
 
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
+        var APP_VERSION = 'v2.5.3';
 
         // ================================================================
-        // ДНИ НЕДЕЛИ (С СУББОТОЙ)
+        // ДНИ НЕДЕЛИ
         // ================================================================
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
         var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 
         // ================================================================
-        // ЗАГРУЗКА (СНАЧАЛА data.json, ПОТОМ ОТДЕЛЬНЫЕ ФАЙЛЫ)
+        // ВЕРСИЯ
+        // ================================================================
+        document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
+
+        // ================================================================
+        // ЗАГРУЗКА DATA.JSON
         // ================================================================
         function loadData() {
             var statusEl = document.getElementById('loadStatus');
-            if (statusEl) statusEl.textContent = 'Загрузка...';
+            if (statusEl) statusEl.textContent = 'Загрузка data.json...';
 
-            // Пытаемся загрузить data.json
             fetch('data.json?t=' + Date.now())
                 .then(function(res) {
-                    if (!res.ok) throw new Error('data.json не найден');
+                    if (!res.ok) throw new Error('data.json не найден (код ' + res.status + ')');
                     return res.json();
                 })
                 .then(function(data) {
-                    weekDays = data;
+                    // Проверяем структуру data.json
+                    // Вариант 1: { "ПН": { "5А": [...] }, "ВТ": {...} }
+                    // Вариант 2: { "adminVersion": "...", "schedule": { "primary": {...}, "elementary": {...} } }
+                    // Вариант 3: { "primary": { "ПН": {...} }, "elementary": {...} }
+
+                    var scheduleData = null;
+
+                    // Проверяем, есть ли вложенная структура schedule
+                    if (data.schedule) {
+                        // Структура с версией и schedule
+                        if (data.adminVersion) {
+                            APP_VERSION = data.adminVersion;
+                            document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
+                        }
+                        // Объединяем primary и elementary
+                        scheduleData = {};
+                        if (data.schedule.primary) {
+                            Object.assign(scheduleData, data.schedule.primary);
+                        }
+                        if (data.schedule.elementary) {
+                            Object.assign(scheduleData, data.schedule.elementary);
+                        }
+                        // Если нет primary/elementary, используем сам schedule
+                        if (Object.keys(scheduleData).length === 0) {
+                            scheduleData = data.schedule;
+                        }
+                    } else if (data.primary || data.elementary) {
+                        // Структура с primary/elementary без обёртки
+                        scheduleData = {};
+                        if (data.primary) Object.assign(scheduleData, data.primary);
+                        if (data.elementary) Object.assign(scheduleData, data.elementary);
+                    } else {
+                        // Прямая структура дней
+                        scheduleData = data;
+                    }
+
+                    // Проверяем, что получилось
+                    var hasDays = false;
+                    DAYS_LIST.forEach(function(day) {
+                        if (scheduleData[day]) {
+                            hasDays = true;
+                            weekDays[day] = scheduleData[day];
+                        }
+                    });
+
+                    if (!hasDays) {
+                        // Возможно данные в другом формате - пробуем найти любые ключи
+                        Object.keys(scheduleData).forEach(function(key) {
+                            if (DAYS_LIST.indexOf(key) !== -1) {
+                                weekDays[key] = scheduleData[key];
+                                hasDays = true;
+                            }
+                        });
+                    }
+
+                    if (!hasDays) {
+                        throw new Error('Не найдены дни недели в data.json');
+                    }
+
+                    // Добавляем недостающие дни
+                    DAYS_LIST.forEach(function(day) {
+                        if (!weekDays[day]) {
+                            weekDays[day] = {};
+                        }
+                    });
+
+                    if (statusEl) statusEl.textContent = '✅ data.json загружен (v' + APP_VERSION + ')';
                     processLoadedData();
-                    if (statusEl) statusEl.textContent = '✅ data.json загружен';
                 })
                 .catch(function(err) {
-                    console.warn('data.json не загружен, пробуем отдельные файлы:', err.message);
-                    if (statusEl) statusEl.textContent = 'Загрузка отдельных дней...';
+                    console.warn('Ошибка загрузки data.json:', err.message);
+                    if (statusEl) statusEl.textContent = '❌ ' + err.message;
+                    // Пробуем загрузить отдельные файлы
                     loadSeparateDays();
                 });
         }
 
         // ================================================================
-        // ЗАГРУЗКА ОТДЕЛЬНЫХ ФАЙЛОВ ДНЕЙ
+        // ЗАГРУЗКА ОТДЕЛЬНЫХ ФАЙЛОВ ДНЕЙ (ЗАПАСНОЙ ВАРИАНТ)
         // ================================================================
         function loadSeparateDays() {
             var loadedCount = 0;
             var totalDays = DAYS_LIST.length;
+            var statusEl = document.getElementById('loadStatus');
+
+            if (statusEl) statusEl.textContent = 'Загрузка отдельных дней...';
 
             DAYS_LIST.forEach(function(day) {
                 var fileName = day + '.json';
@@ -363,22 +462,34 @@
                         return res.json();
                     })
                     .then(function(data) {
-                        // Проверяем структуру: если data = { "ПТ": { ... } } или просто { "5А": [...] }
+                        // Если данные пришли как { "ПТ": { ... } } или просто { "5А": [...] }
                         if (data[day]) {
                             weekDays[day] = data[day];
                         } else if (data && typeof data === 'object' && !Array.isArray(data)) {
-                            // Если данные без обёртки дня — пробуем использовать как есть
-                            var firstKey = Object.keys(data)[0];
-                            if (firstKey && CONFIG && CONFIG.CLASSES && CONFIG.CLASSES.indexOf(firstKey) !== -1) {
+                            // Проверяем, похоже на классы
+                            var keys = Object.keys(data);
+                            if (keys.length > 0 && keys[0].match(/[1-9][0-9]?[А-Я]/)) {
                                 weekDays[day] = data;
                             } else {
-                                weekDays[day] = data;
+                                // Пробуем найти внутри структуру с классом
+                                var found = false;
+                                keys.forEach(function(k) {
+                                    if (data[k] && typeof data[k] === 'object' && !Array.isArray(data[k])) {
+                                        var subKeys = Object.keys(data[k]);
+                                        if (subKeys.length > 0 && subKeys[0].match(/[1-9][0-9]?[А-Я]/)) {
+                                            weekDays[day] = data[k];
+                                            found = true;
+                                        }
+                                    }
+                                });
+                                if (!found) {
+                                    weekDays[day] = data;
+                                }
                             }
                         }
                         loadedCount++;
                         if (loadedCount === totalDays) {
                             processLoadedData();
-                            var statusEl = document.getElementById('loadStatus');
                             if (statusEl) statusEl.textContent = '✅ Загружено ' + totalDays + ' дней';
                         }
                     })
@@ -386,9 +497,7 @@
                         console.warn('Не удалось загрузить ' + fileName, err.message);
                         loadedCount++;
                         if (loadedCount === totalDays) {
-                            // Если ни один файл не загрузился — показываем ошибку
                             if (Object.keys(weekDays).length === 0) {
-                                var statusEl = document.getElementById('loadStatus');
                                 if (statusEl) statusEl.textContent = '❌ Нет данных';
                                 document.getElementById('scheduleBody').innerHTML =
                                     '<tr><td colspan="20" class="loading-overlay">⚠️ Нет данных<span class="sub">Загрузите data.json или файлы дней</span></td></tr>';
@@ -404,25 +513,47 @@
         // ОБРАБОТКА ЗАГРУЖЕННЫХ ДАННЫХ
         // ================================================================
         function processLoadedData() {
-            // Проверяем, есть ли суббота
-            if (!weekDays['СБ']) {
-                weekDays['СБ'] = {};
-                // Создаём пустые уроки для субботы
-                CONFIG.CLASSES.forEach(function(className) {
-                    weekDays['СБ'][className] = [];
-                    for (var i = 1; i <= 7; i++) {
-                        weekDays['СБ'][className].push(['', '']);
+            var allClasses = new Set();
+
+            // Проверяем все дни и собираем классы
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                Object.keys(dayData).forEach(function(cls) {
+                    // Проверяем, что это похоже на класс (цифра + буква)
+                    if (cls.match(/[1-9][0-9]?[А-Я]/)) {
+                        allClasses.add(cls);
                     }
+                });
+            });
+
+            // Если классов нет — пробуем взять из CONFIG
+            if (allClasses.size === 0) {
+                CONFIG.CLASSES.forEach(function(cls) {
+                    allClasses.add(cls);
                 });
             }
 
-            var allClasses = new Set();
-            Object.keys(weekDays).forEach(function(day) {
-                Object.keys(weekDays[day] || {}).forEach(function(cls) {
-                    allClasses.add(cls);
-                });
-            });
             classNames = sortClasses(Array.from(allClasses));
+
+            // Заполняем пустые уроки для отсутствующих классов
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                classNames.forEach(function(cls) {
+                    if (!dayData[cls]) {
+                        dayData[cls] = [];
+                        for (var i = 0; i < MAX_LESSONS; i++) {
+                            dayData[cls].push(['', '']);
+                        }
+                    } else {
+                        // Проверяем длину массива
+                        var lessons = dayData[cls];
+                        while (lessons.length < MAX_LESSONS) {
+                            lessons.push(['', '']);
+                        }
+                    }
+                });
+                weekDays[day] = dayData;
+            });
 
             dataLoaded = true;
             renderTable();
@@ -432,13 +563,14 @@
         // КОНФИГ (для создания пустых уроков)
         // ================================================================
         var CONFIG = {
-            CLASSES: ['5А', '5Б', '5В', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б',
-                '11А', '11Б'
+            CLASSES: ['1А', '1Б', '1В', '2А', '2Б', '2В', '3А', '3Б', '3В', '4А', '4Б', '4В',
+                '5А', '5Б', '5В', '6А', '6Б', '6В', '7А', '7Б', '7В',
+                '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'
             ]
         };
 
         // ================================================================
-        // СОРТИРОВКА
+        // СОРТИРОВКА КЛАССОВ
         // ================================================================
         function sortClasses(classes) {
             var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
@@ -460,8 +592,17 @@
             var dayNum = now.getDay();
             var dayKey = DAYS_SHORT[dayNum] || "ПН";
             var dayFull = DAYS_FULL[dayNum] || "Понедельник";
-            if (!weekDays[dayKey]) {
-                return { key: "ПН", full: DAYS_FULL[1] };
+
+            // Проверяем, есть ли данные для этого дня
+            if (!weekDays[dayKey] || Object.keys(weekDays[dayKey]).length === 0) {
+                // Ищем первый доступный день
+                for (var i = 0; i < DAYS_LIST.length; i++) {
+                    var d = DAYS_LIST[i];
+                    if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                        return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                    }
+                }
+                return { key: "ПН", full: "Понедельник" };
             }
             return { key: dayKey, full: dayFull };
         }
@@ -480,7 +621,7 @@
 
         function getPeriodName(lessonNum) {
             if (lessonNum === 0) return "⏰ До начала занятий";
-            if (lessonNum > 7) return "🎉 Занятия окончены";
+            if (lessonNum > MAX_LESSONS) return "🎉 Занятия окончены";
             return '📖 ' + lessonNum + '-й урок (' + LESSON_TIMES[lessonNum - 1] + ')';
         }
 
@@ -496,24 +637,33 @@
             var currentLesson = getCurrentLesson();
 
             var now = new Date();
-            var dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            var dateStr = now.toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                weekday: 'long'
+            });
 
             document.getElementById('dayIndicator').textContent = dayFull;
-            document.getElementById('dateSubtitle').textContent = '5-11 классы';
+            document.getElementById('dateSubtitle').textContent = '1-11 классы';
+            document.getElementById('currentDate').textContent = dateStr;
             document.getElementById('currentPeriod').textContent = getPeriodName(currentLesson);
 
             var dayData = weekDays[dayKey];
-            if (!dayData) {
+            if (!dayData || Object.keys(dayData).length === 0) {
                 document.getElementById('scheduleBody').innerHTML =
-                    '<tr><td colspan="20" class="loading-overlay">📌 Нет расписания на ' + dayFull + '</td></tr>';
+                    '<tr><td colspan="20" class="loading-overlay">📌 Нет расписания на ' + dayFull +
+                    '<span class="sub">Загрузите данные для этого дня</span></td></tr>';
                 return;
             }
 
-            var classes = Object.keys(dayData);
+            // Берём классы из данных или из сохранённого списка
+            var classes = Object.keys(dayData).filter(function(cls) {
+                return cls.match(/[1-9][0-9]?[А-Я]/);
+            });
+
             if (classes.length === 0) {
-                document.getElementById('scheduleBody').innerHTML =
-                    '<tr><td colspan="20" class="loading-overlay">📌 Нет классов</td></tr>';
-                return;
+                classes = classNames.length > 0 ? classNames : CONFIG.CLASSES;
             }
             classes = sortClasses(classes);
 
@@ -523,9 +673,9 @@
             document.getElementById('tableHead').innerHTML = headerHTML;
 
             var bodyHTML = '';
-            for (var lessonNum = 1; lessonNum <= 7; lessonNum++) {
+            for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
                 var idx = lessonNum - 1;
-                var isCurrent = (lessonNum === currentLesson && currentLesson >= 1 && currentLesson <= 7);
+                var isCurrent = (lessonNum === currentLesson && currentLesson >= 1 && currentLesson <= MAX_LESSONS);
                 bodyHTML += '<tr class="' + (isCurrent ? 'current-lesson' : '') + '">';
                 bodyHTML += '<td><span class="lesson-num">' + lessonNum + '</span></td>';
 
@@ -570,9 +720,16 @@
         // ================================================================
         // ЗАПУСК
         // ================================================================
+        // Загружаем data.json
         loadData();
+
+        // Обновление каждую секунду (часы)
         setInterval(refreshAll, 1000);
-        setInterval(function() { loadData(); }, 60000);
+
+        // Повторная загрузка данных каждые 60 секунд
+        setInterval(function() {
+            loadData();
+        }, 60000);
     </script>
 
 </body>
