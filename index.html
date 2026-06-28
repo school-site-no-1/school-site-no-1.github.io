@@ -372,7 +372,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v2.9.1</div>
+                <div class="version" id="versionBadge">🏷️ v2.9.2</div>
             </div>
         </div>
 
@@ -407,13 +407,26 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var LESSON_TIMES = ["08:30", "09:20", "10:10", "11:00", "11:50", "12:40", "13:30", "14:20", "15:10"];
+        // ===== РАСПИСАНИЕ ЗВОНКОВ (С ПЕРЕМЕНАМИ) =====
+        var LESSON_TIMES = [
+            { num: 1, start: "08:30", end: "09:10", break: "10" },
+            { num: 2, start: "09:20", end: "10:00", break: "10" },
+            { num: 3, start: "10:10", end: "10:50", break: "15" },
+            { num: 4, start: "11:05", end: "11:45", break: "15" },
+            { num: 5, start: "12:00", end: "12:40", break: "15" },
+            { num: 6, start: "12:55", end: "13:35", break: "10" },
+            { num: 7, start: "13:45", end: "14:25", break: "10" },
+            { num: 8, start: "14:35", end: "15:15", break: "10" },
+            { num: 9, start: "15:25", end: "16:05", break: "10" }
+        ];
+
         var MAX_LESSONS = 9;
+        var LESSON_STARTS = LESSON_TIMES.map(function(l) { return l.start; });
 
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v2.9.1';
+        var APP_VERSION = 'v2.9.2';
 
         // ================================================================
         // КЛАССЫ ОСНОВНОЙ ШКОЛЫ (5-11)
@@ -423,11 +436,11 @@
         ];
 
         // ================================================================
-        // ДНИ НЕДЕЛИ (С СУББОТОЙ!)
+        // ДНИ НЕДЕЛИ (С СУББОТОЙ)
         // ================================================================
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
-        var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ']; // ВСЕ ДНИ С СУББОТОЙ
+        var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 
         // ================================================================
         // ВЕРСИЯ
@@ -567,7 +580,7 @@
         }
 
         // ================================================================
-        // ДЕНЬ НЕДЕЛИ (ТЕПЕРЬ С СУББОТОЙ)
+        // ДЕНЬ НЕДЕЛИ
         // ================================================================
         function getCurrentDay() {
             var now = new Date();
@@ -576,8 +589,15 @@
             var dayKey = DAYS_SHORT[dayNum] || "ПН";
             var dayFull = DAYS_FULL[dayNum] || "Понедельник";
             
-            // Если сегодня воскресенье — показываем понедельник (нет уроков)
+            // Воскресенье — показываем понедельник (нет уроков)
             if (dayNum === 0) {
+                // Ищем первый доступный день с данными
+                for (var i = 0; i < DAYS_LIST.length; i++) {
+                    var d = DAYS_LIST[i];
+                    if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                        return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                    }
+                }
                 return { key: "ПН", full: "Понедельник" };
             }
             
@@ -600,8 +620,10 @@
         function getCurrentLesson() {
             var now = new Date();
             var minutes = now.getHours() * 60 + now.getMinutes();
-            for (var i = LESSON_TIMES.length - 1; i >= 0; i--) {
-                var parts = LESSON_TIMES[i].split(':');
+            
+            // Ищем текущий урок по времени начала
+            for (var i = LESSON_STARTS.length - 1; i >= 0; i--) {
+                var parts = LESSON_STARTS[i].split(':');
                 var h = parseInt(parts[0]);
                 var m = parseInt(parts[1]);
                 if (minutes >= h * 60 + m) return i + 1;
@@ -612,7 +634,12 @@
         function getPeriodName(lessonNum) {
             if (lessonNum === 0) return "До начала занятий";
             if (lessonNum > MAX_LESSONS) return "Занятия окончены";
-            return lessonNum + '-й урок (' + LESSON_TIMES[lessonNum - 1] + ')';
+            
+            var lesson = LESSON_TIMES[lessonNum - 1];
+            if (lesson) {
+                return lessonNum + '-й урок (' + lesson.start + '–' + lesson.end + ')';
+            }
+            return lessonNum + '-й урок';
         }
 
         // ================================================================
