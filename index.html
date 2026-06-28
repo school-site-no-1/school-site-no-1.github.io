@@ -262,39 +262,71 @@
             color: #cbd5e0;
         }
 
-        /* ===== МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ) ===== */
+        /* ===== МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ ДЛЯ ВСЕХ КЛАССОВ) ===== */
         .mobile-view {
             display: none;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             padding: 4px 0;
             overflow-y: auto;
             height: 100%;
         }
 
-        .mobile-lesson-card {
+        /* ===== КАРТОЧКА КЛАССА ===== */
+        .mobile-class-card {
             background: #ffffff;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            padding: 8px 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .mobile-class-header {
+            background: #edf2f7;
+            padding: 4px 10px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-class-header .class-name {
+            font-size: 14px;
+        }
+
+        .mobile-class-header .class-count {
+            font-size: 11px;
+            color: #718096;
+            font-weight: 400;
+        }
+
+        .mobile-lesson-card {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            padding: 5px 10px;
+            border-bottom: 1px solid #f0f4f8;
             transition: all 0.2s;
-            flex-shrink: 0;
+        }
+
+        .mobile-lesson-card:last-child {
+            border-bottom: none;
         }
 
         .mobile-lesson-card.current {
             background: #bee3f8;
-            border-color: #2b6cb0;
         }
 
         .mobile-lesson-card .lesson-num-mobile {
             font-weight: 700;
-            font-size: 16px;
+            font-size: 13px;
             color: #4a5568;
-            min-width: 30px;
+            min-width: 24px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .mobile-lesson-card.current .lesson-num-mobile {
@@ -305,13 +337,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
             min-width: 0;
         }
 
         .mobile-lesson-card .lesson-info .subject-name {
             font-weight: 500;
-            font-size: 15px;
+            font-size: 13px;
             color: #2d3748;
             word-wrap: break-word;
             word-break: break-word;
@@ -325,12 +357,12 @@
 
         .mobile-lesson-card .lesson-info .room-name {
             font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
             color: #e65100;
         }
 
         .mobile-lesson-card .lesson-time {
-            font-size: 13px;
+            font-size: 11px;
             color: #718096;
             white-space: nowrap;
             text-align: right;
@@ -340,12 +372,6 @@
         .mobile-lesson-card.current .lesson-time {
             color: #2b6cb0;
             font-weight: 600;
-        }
-
-        .mobile-lesson-card .lesson-empty {
-            color: #a0aec0;
-            font-style: italic;
-            font-size: 14px;
         }
 
         /* ===== ФУТЕР ===== */
@@ -377,7 +403,6 @@
 
         /* ===== АДАПТИВ ===== */
 
-        /* Планшеты и маленькие ноутбуки */
         @media (max-width: 1024px) {
             .header-banner {
                 height: 50px;
@@ -386,10 +411,9 @@
             }
         }
 
-        /* Мобильные устройства (<= 768px) — показываем карточки */
         @media (max-width: 768px) {
             .container {
-                padding: 8px 10px;
+                padding: 6px 8px;
                 border-radius: 12px;
                 height: 99vh;
             }
@@ -408,39 +432,38 @@
             }
 
             .header-center .day-indicator {
-                font-size: 14px;
+                font-size: 13px;
                 padding: 1px 10px;
             }
             .header-center .date {
-                font-size: 12px;
+                font-size: 11px;
             }
             .header-center .divider {
                 display: none;
             }
 
             .header-right .time {
-                font-size: 16px;
+                font-size: 15px;
             }
             .header-right .period {
-                font-size: 11px;
+                font-size: 10px;
+                min-height: 1.4em;
             }
             .header-right .version {
-                font-size: 9px;
+                font-size: 8px;
                 padding: 0 6px;
             }
 
-            /* Скрываем десктопную таблицу */
             .desktop-table {
                 display: none !important;
             }
 
-            /* Показываем мобильные карточки */
             .mobile-view {
                 display: flex !important;
             }
 
             .footer {
-                font-size: 9px;
+                font-size: 8px;
                 padding-top: 2px;
                 margin-top: 2px;
             }
@@ -450,34 +473,43 @@
                 margin-top: 2px;
             }
 
+            .mobile-class-header {
+                padding: 3px 8px;
+                font-size: 12px;
+            }
+            .mobile-class-header .class-name {
+                font-size: 12px;
+            }
+            .mobile-class-header .class-count {
+                font-size: 10px;
+            }
+
             .mobile-lesson-card {
-                padding: 6px 10px;
-                border-radius: 6px;
-                gap: 8px;
+                padding: 4px 8px;
+                gap: 6px;
             }
 
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 13px;
-                min-width: 24px;
+                font-size: 11px;
+                min-width: 20px;
             }
 
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 13px;
+                font-size: 11px;
             }
 
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 12px;
+                font-size: 10px;
             }
 
             .mobile-lesson-card .lesson-time {
-                font-size: 11px;
+                font-size: 9px;
             }
         }
 
-        /* Очень маленькие экраны (<= 400px) */
         @media (max-width: 400px) {
             .container {
-                padding: 4px 6px;
+                padding: 4px 4px;
             }
 
             .header-banner {
@@ -488,43 +520,54 @@
             }
 
             .header-center .day-indicator {
-                font-size: 11px;
+                font-size: 10px;
                 padding: 1px 6px;
             }
             .header-center .date {
-                font-size: 10px;
+                font-size: 9px;
             }
 
             .header-right .time {
-                font-size: 13px;
+                font-size: 12px;
             }
             .header-right .period {
-                font-size: 9px;
+                font-size: 8px;
             }
             .header-right .version {
+                font-size: 7px;
+            }
+
+            .mobile-class-header {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+            .mobile-class-header .class-name {
+                font-size: 10px;
+            }
+            .mobile-class-header .class-count {
                 font-size: 8px;
             }
 
             .mobile-lesson-card {
-                padding: 4px 8px;
-                gap: 6px;
+                padding: 3px 6px;
+                gap: 4px;
             }
 
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 11px;
-                min-width: 18px;
+                font-size: 9px;
+                min-width: 16px;
             }
 
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 11px;
+                font-size: 9px;
             }
 
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 10px;
+                font-size: 8px;
             }
 
             .mobile-lesson-card .lesson-time {
-                font-size: 9px;
+                font-size: 8px;
             }
         }
 
@@ -577,7 +620,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v3.0.0</div>
+                <div class="version" id="versionBadge">🏷️ v3.0.1</div>
             </div>
         </div>
 
@@ -647,7 +690,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.0.0';
+        var APP_VERSION = 'v3.0.1';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -1010,7 +1053,7 @@
         }
 
         // ================================================================
-        // МОБИЛЬНЫЕ КАРТОЧКИ
+        // МОБИЛЬНЫЕ КАРТОЧКИ (ВСЕ КЛАССЫ 5-11)
         // ================================================================
         function renderMobile() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
@@ -1043,39 +1086,55 @@
             }
             classes = sortClasses(classes);
 
-            // Показываем только ПЕРВЫЙ класс в мобильной версии
-            var mainClass = classes[0] || '5А';
-            var lessons = dayData[mainClass] || [];
-
             var html = '';
-            for (var i = 0; i < MAX_LESSONS; i++) {
-                var lesson = lessons[i] || ['', ''];
-                var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
-                var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
-                var isCurrent = (i + 1 === currentLesson);
 
-                var hasContent = subject && subject.trim() !== '';
+            classes.forEach(function(className) {
+                var lessons = dayData[className] || [];
+                var filledCount = 0;
+                lessons.forEach(function(l) {
+                    var subj = Array.isArray(l) ? l[0] : (l.subject || l[0] || '');
+                    if (subj && subj.trim() !== '') filledCount++;
+                });
 
-                html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
-                html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
+                html += '<div class="mobile-class-card">';
+                html += '<div class="mobile-class-header">';
+                html += '<span class="class-name">' + className + '</span>';
+                html += '<span class="class-count">' + filledCount + '/' + MAX_LESSONS + ' уроков</span>';
+                html += '</div>';
 
-                if (hasContent) {
-                    html += '<div class="lesson-info">';
-                    html += '<span class="subject-name">' + subject + '</span>';
-                    if (cabinet && cabinet.trim() !== '') {
-                        html += '<span class="room-name">' + cabinet + '</span>';
+                for (var i = 0; i < MAX_LESSONS; i++) {
+                    var lesson = lessons[i] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    var isCurrent = (i + 1 === currentLesson);
+
+                    var hasContent = subject && subject.trim() !== '';
+
+                    html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
+                    html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
+
+                    if (hasContent) {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name">' + subject + '</span>';
+                        if (cabinet && cabinet.trim() !== '') {
+                            html += '<span class="room-name">' + cabinet + '</span>';
+                        }
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end +
+                        '</span>';
+                    } else {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name empty">— нет урока —</span>';
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end +
+                        '</span>';
                     }
+
                     html += '</div>';
-                    html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
-                } else {
-                    html += '<div class="lesson-info">';
-                    html += '<span class="subject-name empty">— нет урока —</span>';
-                    html += '</div>';
-                    html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
                 }
 
                 html += '</div>';
-            }
+            });
 
             document.getElementById('mobileView').innerHTML = html;
         }
