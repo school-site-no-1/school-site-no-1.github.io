@@ -57,13 +57,13 @@
             min-width: 0;
         }
 
-        /* ===== БАННЕР В ШАПКЕ (БЕЗ СКРУГЛЕНИЙ) ===== */
+        /* ===== БАННЕР В ШАПКЕ (ВЫСОТА 65px) ===== */
         .header-banner {
-            height: 75px;
-            max-height: 155px;
-            min-height: 30px;
+            height: 65px;
+            max-height: 65px;
+            min-height: 65px;
             max-width: 1200px;
-            min-width: 180px;
+            min-width: 80px;
             flex: 1;
             display: flex;
             align-items: center;
@@ -294,9 +294,9 @@
                 height: 99vh;
             }
             .header-banner {
-                height: 30px;
-                max-height: 35px;
-                min-height: 20px;
+                height: 50px;
+                max-height: 50px;
+                min-height: 50px;
                 flex: 1;
                 min-width: 60px;
                 max-width: 100%;
@@ -337,6 +337,9 @@
                 border: none !important;
                 background: none !important;
                 max-width: 1200px !important;
+                height: 65px !important;
+                max-height: 65px !important;
+                min-height: 65px !important;
             }
             body,
             html {
@@ -356,7 +359,7 @@
         <div class="header">
             <div class="header-left">
 
-                <!-- ===== БАННЕР В ШАПКЕ (БЕЗ СКРУГЛЕНИЙ) ===== -->
+                <!-- ===== БАННЕР В ШАПКЕ (ВЫСОТА 65px) ===== -->
                 <div class="header-banner" id="headerBanner">
                     <img id="bannerImage" src="banner.png" alt="Баннер">
                 </div>
@@ -373,7 +376,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v2.9.5</div>
+                <div class="version" id="versionBadge">🏷️ v2.9.7</div>
             </div>
         </div>
 
@@ -440,7 +443,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v2.9.5';
+        var APP_VERSION = 'v2.9.7';
 
         // ================================================================
         // ВЕРСИЯ
@@ -472,7 +475,6 @@
             var now = new Date();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
 
-            // Проверяем, идёт ли сейчас какой-то урок
             for (var i = 0; i < LESSON_TIMES.length; i++) {
                 var lesson = LESSON_TIMES[i];
                 var startMin = parseTime(lesson.start);
@@ -488,7 +490,6 @@
                 }
             }
 
-            // Проверяем, идёт ли перемена перед следующим уроком
             for (var i = 0; i < LESSON_TIMES.length; i++) {
                 var lesson = LESSON_TIMES[i];
                 var startMin = parseTime(lesson.start);
