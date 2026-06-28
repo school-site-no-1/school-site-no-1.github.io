@@ -125,6 +125,7 @@
             color: #e65100;
             font-size: clamp(13px, 1.7vh, 22px);
             font-weight: 600;
+            min-height: 1.8em;
         }
         .header-right .version {
             color: #718096;
@@ -372,7 +373,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v2.9.2</div>
+                <div class="version" id="versionBadge">🏷️ v2.9.3</div>
             </div>
         </div>
 
@@ -421,12 +422,6 @@
         ];
 
         var MAX_LESSONS = 9;
-        var LESSON_STARTS = LESSON_TIMES.map(function(l) { return l.start; });
-
-        var weekDays = {};
-        var classNames = [];
-        var dataLoaded = false;
-        var APP_VERSION = 'v2.9.2';
 
         // ================================================================
         // КЛАССЫ ОСНОВНОЙ ШКОЛЫ (5-11)
@@ -442,10 +437,128 @@
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
         var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 
+        var weekDays = {};
+        var classNames = [];
+        var dataLoaded = false;
+        var APP_VERSION = 'v2.9.3';
+
         // ================================================================
         // ВЕРСИЯ
         // ================================================================
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
+
+        // ================================================================
+        // РАСЧЁТ ТЕКУЩЕГО ПЕРИОДА (УРОК/ПЕРЕМЕНА)
+        // ================================================================
+        function getCurrentPeriodInfo() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            // Проверяем, идёт ли сейчас какой-то урок
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                var endMin = parseTime(lesson.end);
+
+                if (totalMinutes >= startMin && totalMinutes < endMin) {
+                    return {
+                        type: 'lesson',
+                        num: lesson.num,
+                        start: lesson.start,
+                        end: lesson.end,
+                        remaining: Math.round((endMin - totalMinutes) / 60 * 10) / 10,
+                        remainingMinutes: Math.ceil((endMin - totalMinutes) / 60 * 10) / 10
+                    };
+                }
+            }
+
+            // Проверяем, идёт ли перемена перед следующим уроком
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+
+                // Если мы между концом предыдущего и началом следующего — перемена
+                if (i > 0) {
+                    var prevEndMin = parseTime(LESSON_TIMES[i - 1].end);
+                    if (totalMinutes >= prevEndMin && totalMinutes < startMin) {
+                        var remaining = Math.ceil((startMin - totalMinutes) / 60 * 10) / 10;
+                        return {
+                            type: 'break',
+                            nextLesson: lesson.num,
+                            nextStart: lesson.start,
+                            remaining: remaining,
+                            remainingMinutes: Math.ceil((startMin - totalMinutes) / 60 * 10) / 10
+                        };
+                    }
+                }
+
+                // До начала первого урока
+                if (i === 0 && totalMinutes < startMin) {
+                    var remaining = Math.ceil((startMin - totalMinutes) / 60 * 10) / 10;
+                    return {
+                        type: 'before',
+                        nextLesson: lesson.num,
+                        nextStart: lesson.start,
+                        remaining: remaining,
+                        remainingMinutes: Math.ceil((startMin - totalMinutes) / 60 * 10) / 10
+                    };
+                }
+            }
+
+            // После последнего урока
+            var lastEndMin = parseTime(LESSON_TIMES[LESSON_TIMES.length - 1].end);
+            if (totalMinutes >= lastEndMin) {
+                return { type: 'after' };
+            }
+
+            return { type: 'unknown' };
+        }
+
+        function parseTime(timeStr) {
+            var parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function getPeriodName() {
+            var info = getCurrentPeriodInfo();
+
+            if (info.type === 'lesson') {
+                return '📖 ' + info.num + '-й урок (до конца ' + formatMinutes(info.remaining) + ')';
+            }
+
+            if (info.type === 'break') {
+                if (info.remaining <= 0) {
+                    return '⏰ ' + info.nextLesson + '-й урок начинается';
+                }
+                return '⏳ До ' + info.nextLesson + '-го урока ' + formatMinutes(info.remaining);
+            }
+
+            if (info.type === 'before') {
+                if (info.remaining <= 0) {
+                    return '⏰ ' + info.nextLesson + '-й урок начинается';
+                }
+                return '⏳ До начала занятий ' + formatMinutes(info.remaining);
+            }
+
+            if (info.type === 'after') {
+                return '🎉 Занятия окончены';
+            }
+
+            return '⏰ Загрузка...';
+        }
+
+        function formatMinutes(minutes) {
+            if (minutes === undefined || minutes === null) return '0 мин';
+            var rounded = Math.ceil(minutes);
+            if (rounded <= 0) return '0 мин';
+            if (rounded >= 60) {
+                var hours = Math.floor(rounded / 60);
+                var mins = rounded % 60;
+                if (mins === 0) return hours + ' ч';
+                return hours + ' ч ' + mins + ' мин';
+            }
+            return rounded + ' мин';
+        }
 
         // ================================================================
         // ЗАГРУЗКА DATA.JSON
@@ -584,14 +697,12 @@
         // ================================================================
         function getCurrentDay() {
             var now = new Date();
-            var dayNum = now.getDay(); // 0=ВС, 1=ПН, 6=СБ
-            
+            var dayNum = now.getDay();
+
             var dayKey = DAYS_SHORT[dayNum] || "ПН";
             var dayFull = DAYS_FULL[dayNum] || "Понедельник";
-            
-            // Воскресенье — показываем понедельник (нет уроков)
+
             if (dayNum === 0) {
-                // Ищем первый доступный день с данными
                 for (var i = 0; i < DAYS_LIST.length; i++) {
                     var d = DAYS_LIST[i];
                     if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
@@ -600,46 +711,19 @@
                 }
                 return { key: "ПН", full: "Понедельник" };
             }
-            
-            // Проверяем, есть ли данные для этого дня
+
             if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
                 return { key: dayKey, full: dayFull };
             }
-            
-            // Если данных нет — ищем первый доступный день
+
             for (var i = 0; i < DAYS_LIST.length; i++) {
                 var d = DAYS_LIST[i];
                 if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
                     return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
                 }
             }
-            
+
             return { key: "ПН", full: "Понедельник" };
-        }
-
-        function getCurrentLesson() {
-            var now = new Date();
-            var minutes = now.getHours() * 60 + now.getMinutes();
-            
-            // Ищем текущий урок по времени начала
-            for (var i = LESSON_STARTS.length - 1; i >= 0; i--) {
-                var parts = LESSON_STARTS[i].split(':');
-                var h = parseInt(parts[0]);
-                var m = parseInt(parts[1]);
-                if (minutes >= h * 60 + m) return i + 1;
-            }
-            return 0;
-        }
-
-        function getPeriodName(lessonNum) {
-            if (lessonNum === 0) return "До начала занятий";
-            if (lessonNum > MAX_LESSONS) return "Занятия окончены";
-            
-            var lesson = LESSON_TIMES[lessonNum - 1];
-            if (lesson) {
-                return lessonNum + '-й урок (' + lesson.start + '–' + lesson.end + ')';
-            }
-            return lessonNum + '-й урок';
         }
 
         // ================================================================
@@ -651,7 +735,16 @@
             var dayInfo = getCurrentDay();
             var dayKey = dayInfo.key;
             var dayFull = dayInfo.full;
-            var currentLesson = getCurrentLesson();
+
+            // Определяем текущий урок для подсветки
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
 
             var now = new Date();
             var dateStr = now.toLocaleDateString('ru-RU', {
@@ -662,7 +755,7 @@
 
             document.getElementById('dayIndicator').textContent = dayFull;
             document.getElementById('currentDate').textContent = dateStr;
-            document.getElementById('currentPeriod').textContent = getPeriodName(currentLesson);
+            document.getElementById('currentPeriod').textContent = getPeriodName();
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
@@ -728,6 +821,8 @@
 
         function refreshAll() {
             updateTime();
+            // Обновляем статус текущего периода
+            document.getElementById('currentPeriod').textContent = getPeriodName();
             if (dataLoaded || Object.keys(weekDays).length > 0) renderTable();
         }
 
