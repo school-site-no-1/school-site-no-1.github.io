@@ -373,7 +373,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v2.9.3</div>
+                <div class="version" id="versionBadge">🏷️ v2.9.5</div>
             </div>
         </div>
 
@@ -440,7 +440,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v2.9.3';
+        var APP_VERSION = 'v2.9.5';
 
         // ================================================================
         // ВЕРСИЯ
@@ -450,6 +450,24 @@
         // ================================================================
         // РАСЧЁТ ТЕКУЩЕГО ПЕРИОДА (УРОК/ПЕРЕМЕНА)
         // ================================================================
+        function parseTime(timeStr) {
+            var parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function formatMinutes(minutes) {
+            if (minutes === undefined || minutes === null) return '0 мин';
+            var rounded = Math.ceil(minutes);
+            if (rounded <= 0) return '0 мин';
+            if (rounded >= 60) {
+                var hours = Math.floor(rounded / 60);
+                var mins = rounded % 60;
+                if (mins === 0) return hours + ' ч';
+                return hours + ' ч ' + mins + ' мин';
+            }
+            return rounded + ' мин';
+        }
+
         function getCurrentPeriodInfo() {
             var now = new Date();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
@@ -465,9 +483,7 @@
                         type: 'lesson',
                         num: lesson.num,
                         start: lesson.start,
-                        end: lesson.end,
-                        remaining: Math.round((endMin - totalMinutes) / 60 * 10) / 10,
-                        remainingMinutes: Math.ceil((endMin - totalMinutes) / 60 * 10) / 10
+                        end: lesson.end
                     };
                 }
             }
@@ -477,35 +493,30 @@
                 var lesson = LESSON_TIMES[i];
                 var startMin = parseTime(lesson.start);
 
-                // Если мы между концом предыдущего и началом следующего — перемена
                 if (i > 0) {
                     var prevEndMin = parseTime(LESSON_TIMES[i - 1].end);
                     if (totalMinutes >= prevEndMin && totalMinutes < startMin) {
-                        var remaining = Math.ceil((startMin - totalMinutes) / 60 * 10) / 10;
+                        var diff = startMin - totalMinutes;
                         return {
                             type: 'break',
                             nextLesson: lesson.num,
                             nextStart: lesson.start,
-                            remaining: remaining,
-                            remainingMinutes: Math.ceil((startMin - totalMinutes) / 60 * 10) / 10
+                            remaining: diff
                         };
                     }
                 }
 
-                // До начала первого урока
                 if (i === 0 && totalMinutes < startMin) {
-                    var remaining = Math.ceil((startMin - totalMinutes) / 60 * 10) / 10;
+                    var diff = startMin - totalMinutes;
                     return {
                         type: 'before',
                         nextLesson: lesson.num,
                         nextStart: lesson.start,
-                        remaining: remaining,
-                        remainingMinutes: Math.ceil((startMin - totalMinutes) / 60 * 10) / 10
+                        remaining: diff
                     };
                 }
             }
 
-            // После последнего урока
             var lastEndMin = parseTime(LESSON_TIMES[LESSON_TIMES.length - 1].end);
             if (totalMinutes >= lastEndMin) {
                 return { type: 'after' };
@@ -514,16 +525,11 @@
             return { type: 'unknown' };
         }
 
-        function parseTime(timeStr) {
-            var parts = timeStr.split(':');
-            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        }
-
         function getPeriodName() {
             var info = getCurrentPeriodInfo();
 
             if (info.type === 'lesson') {
-                return '📖 ' + info.num + '-й урок (до конца ' + formatMinutes(info.remaining) + ')';
+                return '📖 ' + info.num + '-й урок (' + info.start + '–' + info.end + ')';
             }
 
             if (info.type === 'break') {
@@ -545,19 +551,6 @@
             }
 
             return '⏰ Загрузка...';
-        }
-
-        function formatMinutes(minutes) {
-            if (minutes === undefined || minutes === null) return '0 мин';
-            var rounded = Math.ceil(minutes);
-            if (rounded <= 0) return '0 мин';
-            if (rounded >= 60) {
-                var hours = Math.floor(rounded / 60);
-                var mins = rounded % 60;
-                if (mins === 0) return hours + ' ч';
-                return hours + ' ч ' + mins + ' мин';
-            }
-            return rounded + ' мин';
         }
 
         // ================================================================
@@ -736,7 +729,6 @@
             var dayKey = dayInfo.key;
             var dayFull = dayInfo.full;
 
-            // Определяем текущий урок для подсветки
             var currentLesson = 0;
             var info = getCurrentPeriodInfo();
             if (info.type === 'lesson') {
@@ -821,7 +813,6 @@
 
         function refreshAll() {
             updateTime();
-            // Обновляем статус текущего периода
             document.getElementById('currentPeriod').textContent = getPeriodName();
             if (dataLoaded || Object.keys(weekDays).length > 0) renderTable();
         }
