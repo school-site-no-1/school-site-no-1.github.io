@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.2.7">
+<html lang="ru" data-version="v3.2.8">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,7 +125,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            line-height: 1.2;
+            line-height: 1.3;
         }
         .header-right .period .line1 {
             display: block;
@@ -441,7 +441,7 @@
             }
             .header-right .period {
                 font-size: 10px;
-                min-height: 2.4em;
+                min-height: 2.2em;
             }
             .header-right .period .line1 {
                 font-size: 10px;
@@ -624,7 +624,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.2.7</div>
+                <div class="version" id="versionBadge">🏷️ v3.2.8</div>
             </div>
         </div>
 
@@ -692,7 +692,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.2.7';
+        var APP_VERSION = 'v3.2.8';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -1023,6 +1023,7 @@
 
             document.getElementById('dayIndicator').textContent = displayFull;
             document.getElementById('currentDate').textContent = dateStr;
+            // Обновляем period с HTML-разметкой для двух строк
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
 
             var dayData = weekDays[dayKey];
