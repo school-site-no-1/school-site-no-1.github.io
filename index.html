@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.2.3">
+<html lang="ru" data-version="v3.2.5">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,7 +57,7 @@
             min-width: 0;
         }
 
-        /* ===== БАННЕР В ШАПКЕ ===== */
+        /* ===== БАННЕР ===== */
         .header-banner {
             height: 65px;
             max-height: 65px;
@@ -91,7 +91,7 @@
         }
         .header-center .day-indicator {
             color: #fff;
-            font-size: clamp(16px, 2.2vh, 28px);
+            font-size: clamp(18px, 2.5vh, 32px);
             font-weight: 600;
             background: #2b6cb0;
             padding: 2px 16px;
@@ -121,7 +121,20 @@
             color: #e65100;
             font-size: clamp(13px, 1.7vh, 22px);
             font-weight: 600;
-            min-height: 1.8em;
+            min-height: 2.8em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+        .header-right .period .line1 {
+            display: block;
+        }
+        .header-right .period .line2 {
+            display: block;
+            font-weight: 500;
+            font-size: 0.85em;
+            color: #d45c00;
         }
         .header-right .version {
             color: #718096;
@@ -133,8 +146,8 @@
         }
         .header-right .date {
             color: #4a5568;
-            font-size: clamp(11px, 1.4vh, 18px);
-            font-weight: 500;
+            font-size: clamp(14px, 1.8vh, 22px);
+            font-weight: 600;
             margin-top: 2px;
         }
 
@@ -147,7 +160,6 @@
             margin-top: 4px;
         }
 
-        /* ===== ТАБЛИЦА РАСПИСАНИЯ ===== */
         .table-wrapper {
             flex: 1;
             display: flex;
@@ -388,8 +400,6 @@
             color: #a0aec0;
         }
 
-        /* ===== АДАПТИВ ===== */
-
         @media (max-width: 1024px) {
             .header-banner {
                 height: 50px;
@@ -431,13 +441,17 @@
             }
             .header-right .period {
                 font-size: 11px;
+                min-height: 2.4em;
+            }
+            .header-right .period .line2 {
+                font-size: 0.8em;
             }
             .header-right .version {
                 font-size: 9px;
                 padding: 0 6px;
             }
             .header-right .date {
-                font-size: 9px;
+                font-size: 12px;
             }
 
             .desktop-table {
@@ -512,12 +526,16 @@
             }
             .header-right .period {
                 font-size: 8px;
+                min-height: 2em;
+            }
+            .header-right .period .line2 {
+                font-size: 0.75em;
             }
             .header-right .version {
                 font-size: 7px;
             }
             .header-right .date {
-                font-size: 7px;
+                font-size: 10px;
             }
 
             .mobile-class-header {
@@ -600,7 +618,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.2.3</div>
+                <div class="version" id="versionBadge">🏷️ v3.2.5</div>
             </div>
         </div>
 
@@ -609,10 +627,9 @@
 
             <div class="table-wrapper" id="tableWrapper">
 
-                <!-- ===== ДЕСКТОПНАЯ ТАБЛИЦА ===== -->
                 <table class="desktop-table" id="scheduleTable">
                     <thead id="tableHead">
-                        <tr><th>№</th></tr>
+                        <tr><th></th></tr>
                     </thead>
                     <tbody id="scheduleBody">
                         <tr>
@@ -624,7 +641,6 @@
                     </tbody>
                 </table>
 
-                <!-- ===== МОБИЛЬНЫЕ КАРТОЧКИ ===== -->
                 <div class="mobile-view" id="mobileView">
                     <div class="loading-overlay" style="height: auto; padding: 20px 0;">
                         ⏳ Загрузка...
@@ -670,7 +686,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.2.3';
+        var APP_VERSION = 'v3.2.5';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -774,12 +790,10 @@
             if (info.type === 'after') {
                 var today = new Date();
                 var dayNum = today.getDay();
-                // Определяем следующий день недели
                 var nextDayNum = dayNum + 1;
-                if (nextDayNum === 7) nextDayNum = 1; // ВС -> ПН
+                if (nextDayNum === 7) nextDayNum = 1;
                 if (nextDayNum === 0) nextDayNum = 1;
                 var nextDayFull = DAYS_FULL[nextDayNum] || 'Понедельник';
-                // Склоняем для сообщения
                 var dayGenitive = {
                     'Понедельник': 'понедельник',
                     'Вторник': 'вторник',
@@ -790,31 +804,28 @@
                     'Воскресенье': 'воскресенье'
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                return '📌 Изменения на ' + nextDayGen;
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
             }
 
             return '⏰ Загрузка...';
         }
 
         // ================================================================
-        // ОПРЕДЕЛЕНИЕ ДНЯ ДЛЯ ОТОБРАЖЕНИЯ
+        // ОПРЕДЕЛЕНИЕ ДНЯ
         // ================================================================
         function getDisplayDay() {
             var now = new Date();
             var dayNum = now.getDay();
-            if (dayNum === 0) dayNum = 1; // Воскресенье -> Понедельник
+            if (dayNum === 0) dayNum = 1;
             return {
                 key: DAYS_SHORT[dayNum] || "ПН",
                 full: DAYS_FULL[dayNum] || "Понедельник"
             };
         }
 
-        // ================================================================
-        // ОПРЕДЕЛЕНИЕ ДНЯ ДЛЯ РАСПИСАНИЯ (С УЧЁТОМ 17:00)
-        // ================================================================
         function getTargetDay() {
             var now = new Date();
-            var dayNum = now.getDay(); // 0=ВС, 1=ПН, 6=СБ
+            var dayNum = now.getDay();
             var hours = now.getHours();
             var minutes = now.getMinutes();
             var totalMinutes = hours * 60 + minutes;
@@ -936,7 +947,7 @@
         }
 
         // ================================================================
-        // ОБРАБОТКА ЗАГРУЖЕННЫХ ДАННЫХ
+        // ОБРАБОТКА
         // ================================================================
         function processLoadedData() {
             classNames = PRIMARY_CLASSES;
@@ -964,9 +975,6 @@
             renderMobile();
         }
 
-        // ================================================================
-        // СОРТИРОВКА КЛАССОВ
-        // ================================================================
         function sortClasses(classes) {
             var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
             return classes.sort(function(a, b) {
@@ -980,14 +988,13 @@
         }
 
         // ================================================================
-        // ДЕСКТОПНАЯ ТАБЛИЦА
+        // ОТРИСОВКА
         // ================================================================
         function renderTable() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
 
             var targetDay = getTargetDay();
             var dayKey = targetDay.key;
-            var dayFull = targetDay.full;
 
             var displayDay = getDisplayDay();
             var displayFull = displayDay.full;
@@ -1010,13 +1017,12 @@
 
             document.getElementById('dayIndicator').textContent = displayFull;
             document.getElementById('currentDate').textContent = dateStr;
-            document.getElementById('currentPeriod').textContent = getPeriodName();
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
                 document.getElementById('scheduleBody').innerHTML =
-                    '<tr><td colspan="20" class="loading-overlay">📌 Нет расписания на ' + dayFull +
-                    '<span class="sub">Загрузите данные для этого дня</span></td></tr>';
+                    '<tr><td colspan="20" class="loading-overlay">📌 Нет расписания</td></tr>';
                 return;
             }
 
@@ -1029,7 +1035,7 @@
             }
             classes = sortClasses(classes);
 
-            var headerHTML = '<tr><th>№</th>';
+            var headerHTML = '<tr><th></th>';
             classes.forEach(function(cls) { headerHTML += '<th>' + cls + '</th>'; });
             headerHTML += '</tr>';
             document.getElementById('tableHead').innerHTML = headerHTML;
@@ -1065,9 +1071,6 @@
             document.getElementById('scheduleBody').innerHTML = bodyHTML;
         }
 
-        // ================================================================
-        // МОБИЛЬНЫЕ КАРТОЧКИ
-        // ================================================================
         function renderMobile() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
 
@@ -1156,7 +1159,7 @@
 
         function refreshAll() {
             updateTime();
-            document.getElementById('currentPeriod').textContent = getPeriodName();
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
             if (dataLoaded || Object.keys(weekDays).length > 0) {
                 renderTable();
                 renderMobile();
