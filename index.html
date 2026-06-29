@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.3.0">
+<html lang="ru" data-version="v3.3.1">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -120,16 +120,17 @@
         }
         .header-right .period {
             color: #e65100;
-            font-size: clamp(13px, 1.7vh, 22px);
+            font-size: clamp(11px, 1.4vh, 18px);
             font-weight: 600;
-            min-height: 2.8em;
+            min-height: 2.4em;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            line-height: 1.3;
+            line-height: 1.2;
         }
         .header-right .period .line1 {
             display: block;
+            font-size: 1em;
         }
         .header-right .period .line2 {
             display: block;
@@ -470,7 +471,7 @@
             }
 
             .header-right .period {
-                font-size: 10px;
+                font-size: 9px;
                 min-height: 1.8em;
                 order: 2;
                 flex-direction: column;
@@ -479,11 +480,11 @@
             }
 
             .header-right .period .line1 {
-                font-size: 10px;
+                font-size: 9px;
             }
 
             .header-right .period .line2 {
-                font-size: 9px;
+                font-size: 8px;
             }
 
             .header-right .version {
@@ -569,14 +570,14 @@
                 font-size: 13px;
             }
             .header-right .period {
-                font-size: 8px;
+                font-size: 7px;
                 min-height: 1.6em;
             }
             .header-right .period .line1 {
-                font-size: 8px;
+                font-size: 7px;
             }
             .header-right .period .line2 {
-                font-size: 7px;
+                font-size: 6px;
             }
             .header-right .version {
                 font-size: 7px;
@@ -665,7 +666,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.3.0</div>
+                <div class="version" id="versionBadge">🏷️ v3.3.1</div>
             </div>
         </div>
 
@@ -700,7 +701,7 @@
         </div>
 
         <div class="footer no-print">
-            🔄 Текущий урок подсвечен
+            🔄 Обновляется каждую минуту · Текущий урок подсвечен
         </div>
     </div>
 
@@ -733,7 +734,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.3.0';
+        var APP_VERSION = 'v3.3.1';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -831,7 +832,7 @@
                 if (info.remaining <= 0) {
                     return '⏰ ' + info.nextLesson + '-й урок начинается';
                 }
-                return '⏳ До начала занятий '  + formatMinutes(info.remaining);
+                return '⏳ До начала занятий ' + formatMinutes(info.remaining);
             }
 
             if (info.type === 'after') {
@@ -851,7 +852,7 @@
                     'Воскресенье': 'воскресенье'
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                return '<span class="line1">📌 Изменения</span><span class="line2"> <br> на ' + nextDayGen + '</span>';
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
             }
 
             return '⏰ Загрузка...';
