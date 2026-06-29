@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.1.3">
+<html lang="ru" data-version="v3.2.0">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,6 +97,19 @@
             padding: 2px 16px;
             border-radius: 20px;
             flex-shrink: 0;
+        }
+        .header-center .day-label {
+            color: #e65100;
+            font-size: clamp(12px, 1.5vh, 20px);
+            font-weight: 600;
+            background: #fff5f5;
+            padding: 1px 12px;
+            border-radius: 12px;
+            border: 1px solid #fed7d7;
+            display: none;
+        }
+        .header-center .day-label.show {
+            display: inline-block;
         }
         .header-center .date {
             color: #4a5568;
@@ -265,29 +278,61 @@
             height: 100%;
         }
 
-        .mobile-lesson-card {
+        .mobile-class-card {
             background: #ffffff;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            padding: 8px 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .mobile-class-header {
+            background: #edf2f7;
+            padding: 4px 10px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-class-header .class-name {
+            font-size: 14px;
+        }
+
+        .mobile-class-header .class-count {
+            font-size: 11px;
+            color: #718096;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .mobile-lesson-card {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            padding: 5px 10px;
+            border-bottom: 1px solid #f0f4f8;
             transition: all 0.2s;
-            flex-shrink: 0;
+        }
+
+        .mobile-lesson-card:last-child {
+            border-bottom: none;
         }
 
         .mobile-lesson-card.current {
             background: #bee3f8;
-            border-color: #2b6cb0;
         }
 
         .mobile-lesson-card .lesson-num-mobile {
             font-weight: 700;
-            font-size: 16px;
+            font-size: 13px;
             color: #4a5568;
-            min-width: 30px;
+            min-width: 24px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .mobile-lesson-card.current .lesson-num-mobile {
@@ -298,13 +343,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
             min-width: 0;
         }
 
         .mobile-lesson-card .lesson-info .subject-name {
             font-weight: 500;
-            font-size: 15px;
+            font-size: 13px;
             color: #2d3748;
             word-wrap: break-word;
             word-break: break-word;
@@ -318,12 +363,12 @@
 
         .mobile-lesson-card .lesson-info .room-name {
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
             color: #e65100;
         }
 
         .mobile-lesson-card .lesson-time {
-            font-size: 13px;
+            font-size: 11px;
             color: #718096;
             white-space: nowrap;
             text-align: right;
@@ -333,12 +378,6 @@
         .mobile-lesson-card.current .lesson-time {
             color: #2b6cb0;
             font-weight: 600;
-        }
-
-        .mobile-lesson-card .lesson-empty {
-            color: #a0aec0;
-            font-style: italic;
-            font-size: 14px;
         }
 
         /* ===== ФУТЕР ===== */
@@ -370,7 +409,6 @@
 
         /* ===== АДАПТИВ ===== */
 
-        /* Планшеты и маленькие ноутбуки */
         @media (max-width: 1024px) {
             .header-banner {
                 height: 50px;
@@ -379,7 +417,6 @@
             }
         }
 
-        /* Мобильные устройства (<= 768px) — показываем карточки */
         @media (max-width: 768px) {
             .container {
                 padding: 8px 10px;
@@ -410,6 +447,10 @@
             .header-center .divider {
                 display: none;
             }
+            .header-center .day-label {
+                font-size: 10px;
+                padding: 0 8px;
+            }
 
             .header-right .time {
                 font-size: 16px;
@@ -422,12 +463,10 @@
                 padding: 0 6px;
             }
 
-            /* Скрываем десктопную таблицу */
             .desktop-table {
                 display: none !important;
             }
 
-            /* Показываем мобильные карточки */
             .mobile-view {
                 display: flex !important;
             }
@@ -443,34 +482,43 @@
                 margin-top: 2px;
             }
 
+            .mobile-class-header {
+                padding: 3px 8px;
+                font-size: 12px;
+            }
+            .mobile-class-header .class-name {
+                font-size: 12px;
+            }
+            .mobile-class-header .class-count {
+                font-size: 10px;
+            }
+
             .mobile-lesson-card {
-                padding: 6px 10px;
-                border-radius: 6px;
-                gap: 8px;
+                padding: 4px 8px;
+                gap: 6px;
             }
 
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 13px;
-                min-width: 24px;
+                font-size: 11px;
+                min-width: 20px;
             }
 
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 13px;
+                font-size: 11px;
             }
 
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 11px;
+                font-size: 10px;
             }
 
             .mobile-lesson-card .lesson-time {
-                font-size: 11px;
+                font-size: 9px;
             }
         }
 
-        /* Очень маленькие экраны (<= 400px) */
         @media (max-width: 400px) {
             .container {
-                padding: 4px 6px;
+                padding: 4px 4px;
             }
 
             .header-banner {
@@ -481,43 +529,58 @@
             }
 
             .header-center .day-indicator {
-                font-size: 11px;
+                font-size: 10px;
                 padding: 1px 6px;
             }
             .header-center .date {
-                font-size: 10px;
+                font-size: 9px;
+            }
+            .header-center .day-label {
+                font-size: 8px;
+                padding: 0 4px;
             }
 
             .header-right .time {
-                font-size: 13px;
+                font-size: 12px;
             }
             .header-right .period {
-                font-size: 9px;
+                font-size: 8px;
             }
             .header-right .version {
+                font-size: 7px;
+            }
+
+            .mobile-class-header {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+            .mobile-class-header .class-name {
+                font-size: 10px;
+            }
+            .mobile-class-header .class-count {
                 font-size: 8px;
             }
 
             .mobile-lesson-card {
-                padding: 4px 8px;
-                gap: 6px;
+                padding: 3px 6px;
+                gap: 4px;
             }
 
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 11px;
-                min-width: 18px;
+                font-size: 9px;
+                min-width: 16px;
             }
 
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 11px;
+                font-size: 9px;
             }
 
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 10px;
+                font-size: 8px;
             }
 
             .mobile-lesson-card .lesson-time {
-                font-size: 9px;
+                font-size: 8px;
             }
         }
 
@@ -548,6 +611,9 @@
             .desktop-table {
                 display: table !important;
             }
+            .header-center .day-label {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -563,6 +629,7 @@
 
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
+                <span class="day-label" id="dayLabel">Завтра</span>
                 <span class="date" id="currentDate">--.--.----</span>
                 <span class="divider">|</span>
                 <span class="period" id="currentPeriod">Загрузка...</span>
@@ -570,7 +637,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v3.1.3</div>
+                <div class="version" id="versionBadge">🏷️ v3.2.0</div>
             </div>
         </div>
 
@@ -629,7 +696,6 @@
 
         var MAX_LESSONS = 9;
 
-        // ===== КЛАССЫ ОСНОВНОЙ ШКОЛЫ (5-11, БЕЗ 5В) =====
         var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б',
             '11А', '11Б'
         ];
@@ -641,7 +707,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.1.3';
+        var APP_VERSION = 'v3.2.0';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -747,6 +813,47 @@
             }
 
             return '⏰ Загрузка...';
+        }
+
+        // ================================================================
+        // ОПРЕДЕЛЕНИЕ ДНЯ (С УЧЁТОМ ВРЕМЕНИ)
+        // ================================================================
+        function getTargetDay() {
+            var now = new Date();
+            var dayNum = now.getDay(); // 0=ВС, 1=ПН, 6=СБ
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var totalMinutes = hours * 60 + minutes;
+
+            // После 17:00 показываем следующий день
+            var shift = (totalMinutes >= 17 * 60) ? 1 : 0;
+
+            // Если сегодня воскресенье (0) и после 17:00 — переключаем на понедельник
+            // Если сегодня пятница (5) и после 17:00 — переключаем на понедельник (выходные)
+            var targetDayNum = dayNum + shift;
+
+            // Если воскресенье или после 17:00 в пятницу -> понедельник
+            if (targetDayNum > 5 || targetDayNum === 0) {
+                targetDayNum = 1;
+            }
+
+            var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+            var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+            // Проверяем, есть ли данные для этого дня
+            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                return { key: dayKey, full: dayFull, isTomorrow: (shift === 1) };
+            }
+
+            // Если данных нет — ищем первый доступный день
+            for (var i = 0; i < DAYS_LIST.length; i++) {
+                var d = DAYS_LIST[i];
+                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d, isTomorrow: false };
+                }
+            }
+
+            return { key: "ПН", full: "Понедельник", isTomorrow: false };
         }
 
         // ================================================================
@@ -887,48 +994,15 @@
         }
 
         // ================================================================
-        // ДЕНЬ НЕДЕЛИ
-        // ================================================================
-        function getCurrentDay() {
-            var now = new Date();
-            var dayNum = now.getDay();
-
-            var dayKey = DAYS_SHORT[dayNum] || "ПН";
-            var dayFull = DAYS_FULL[dayNum] || "Понедельник";
-
-            if (dayNum === 0) {
-                for (var i = 0; i < DAYS_LIST.length; i++) {
-                    var d = DAYS_LIST[i];
-                    if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
-                        return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
-                    }
-                }
-                return { key: "ПН", full: "Понедельник" };
-            }
-
-            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
-                return { key: dayKey, full: dayFull };
-            }
-
-            for (var i = 0; i < DAYS_LIST.length; i++) {
-                var d = DAYS_LIST[i];
-                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
-                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
-                }
-            }
-
-            return { key: "ПН", full: "Понедельник" };
-        }
-
-        // ================================================================
         // ДЕСКТОПНАЯ ТАБЛИЦА
         // ================================================================
         function renderTable() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
 
-            var dayInfo = getCurrentDay();
+            var dayInfo = getTargetDay();
             var dayKey = dayInfo.key;
             var dayFull = dayInfo.full;
+            var isTomorrow = dayInfo.isTomorrow;
 
             var currentLesson = 0;
             var info = getCurrentPeriodInfo();
@@ -945,6 +1019,15 @@
                 month: '2-digit',
                 year: 'numeric'
             });
+
+            // Обновляем заголовок
+            var dayLabel = document.getElementById('dayLabel');
+            if (isTomorrow) {
+                dayLabel.textContent = 'Завтра';
+                dayLabel.classList.add('show');
+            } else {
+                dayLabel.classList.remove('show');
+            }
 
             document.getElementById('dayIndicator').textContent = dayFull;
             document.getElementById('currentDate').textContent = dateStr;
@@ -1009,7 +1092,7 @@
         function renderMobile() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
 
-            var dayInfo = getCurrentDay();
+            var dayInfo = getTargetDay();
             var dayKey = dayInfo.key;
 
             var currentLesson = 0;
@@ -1049,7 +1132,8 @@
                 html += '<div class="mobile-class-card">';
                 html += '<div class="mobile-class-header">';
                 html += '<span class="class-name">' + className + '</span>';
-                html += '<span class="class-count">' + filledCount + '/' + MAX_LESSONS + ' уроков</span>';
+                html += '<span class="class-count" style="text-align:center;">' + filledCount + '/' + MAX_LESSONS +
+                    '</span>';
                 html += '</div>';
 
                 for (var i = 0; i < MAX_LESSONS; i++) {
