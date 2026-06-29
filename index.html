@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.2.8">
+<html lang="ru" data-version="v3.2.9">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,6 +47,7 @@
             padding-bottom: 6px;
             flex-wrap: wrap;
             gap: 8px;
+            min-height: 60px;
         }
         .header-left {
             display: flex;
@@ -410,7 +411,7 @@
 
         @media (max-width: 768px) {
             .container {
-                padding: 8px 10px;
+                padding: 6px 8px;
                 border-radius: 12px;
                 height: 99vh;
             }
@@ -418,6 +419,14 @@
             .header {
                 gap: 4px;
                 padding-bottom: 4px;
+                min-height: auto;
+                flex-wrap: wrap;
+            }
+
+            .header-left {
+                flex: 0 0 100%;
+                justify-content: center;
+                order: 1;
             }
 
             .header-banner {
@@ -426,35 +435,67 @@
                 min-height: 30px;
                 min-width: 40px;
                 border: 1px solid #e2e8f0;
+                flex: 0 0 100%;
+            }
+
+            .header-center {
+                order: 2;
+                flex: 1;
+                justify-content: center;
             }
 
             .header-center .day-indicator {
                 font-size: 14px;
-                padding: 1px 10px;
+                padding: 2px 12px;
             }
             .header-center .divider {
                 display: none;
             }
 
+            .header-right {
+                order: 3;
+                text-align: center;
+                align-items: center;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px 8px;
+                margin-top: 2px;
+            }
+
             .header-right .time {
                 font-size: 16px;
+                order: 1;
             }
+
             .header-right .period {
                 font-size: 10px;
-                min-height: 2.2em;
+                min-height: 1.8em;
+                order: 2;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
             }
+
             .header-right .period .line1 {
                 font-size: 10px;
             }
+
             .header-right .period .line2 {
                 font-size: 9px;
             }
+
             .header-right .version {
                 font-size: 9px;
                 padding: 0 6px;
+                order: 3;
             }
+
             .header-right .date {
-                font-size: 12px;
+                font-size: 11px;
+                order: 4;
+                margin-top: 0;
             }
 
             .desktop-table {
@@ -520,16 +561,16 @@
             }
 
             .header-center .day-indicator {
-                font-size: 10px;
-                padding: 1px 6px;
+                font-size: 11px;
+                padding: 1px 8px;
             }
 
             .header-right .time {
-                font-size: 12px;
+                font-size: 13px;
             }
             .header-right .period {
                 font-size: 8px;
-                min-height: 2em;
+                min-height: 1.6em;
             }
             .header-right .period .line1 {
                 font-size: 8px;
@@ -541,7 +582,7 @@
                 font-size: 7px;
             }
             .header-right .date {
-                font-size: 10px;
+                font-size: 9px;
             }
 
             .mobile-class-header {
@@ -624,7 +665,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.2.8</div>
+                <div class="version" id="versionBadge">🏷️ v3.2.9</div>
             </div>
         </div>
 
@@ -692,7 +733,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.2.8';
+        var APP_VERSION = 'v3.2.9';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -810,7 +851,7 @@
                     'Воскресенье': 'воскресенье'
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                return '<span class="line1">📌 Изменения</span> <span class="line2"><br> на ' + nextDayGen + '</span>';
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
             }
 
             return '⏰ Загрузка...';
@@ -1023,7 +1064,6 @@
 
             document.getElementById('dayIndicator').textContent = displayFull;
             document.getElementById('currentDate').textContent = dateStr;
-            // Обновляем period с HTML-разметкой для двух строк
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
 
             var dayData = weekDays[dayKey];
