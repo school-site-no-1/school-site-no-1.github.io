@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.2.5">
+<html lang="ru" data-version="v3.2.7">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -440,11 +440,14 @@
                 font-size: 16px;
             }
             .header-right .period {
-                font-size: 11px;
+                font-size: 10px;
                 min-height: 2.4em;
             }
+            .header-right .period .line1 {
+                font-size: 10px;
+            }
             .header-right .period .line2 {
-                font-size: 0.8em;
+                font-size: 9px;
             }
             .header-right .version {
                 font-size: 9px;
@@ -528,8 +531,11 @@
                 font-size: 8px;
                 min-height: 2em;
             }
+            .header-right .period .line1 {
+                font-size: 8px;
+            }
             .header-right .period .line2 {
-                font-size: 0.75em;
+                font-size: 7px;
             }
             .header-right .version {
                 font-size: 7px;
@@ -618,7 +624,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.2.5</div>
+                <div class="version" id="versionBadge">🏷️ v3.2.7</div>
             </div>
         </div>
 
@@ -686,7 +692,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.2.5';
+        var APP_VERSION = 'v3.2.7';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -804,7 +810,7 @@
                     'Воскресенье': 'воскресенье'
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                return '<span class="line1">📌 Изменения </span> <span class="line2"> на ' + nextDayGen + '</span>';
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
             }
 
             return '⏰ Загрузка...';
