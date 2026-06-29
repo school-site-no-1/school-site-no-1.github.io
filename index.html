@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-version="v3.0.2">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание 5-11</title>
     <style>
         * {
@@ -10,21 +10,19 @@
             padding: 0;
             box-sizing: border-box;
         }
-
-        /* ===== ОБЩИЕ СТИЛИ ===== */
         html,
         body {
             width: 100%;
             height: 100%;
+            overflow: hidden;
             background: #f0f4f8;
             font-family: 'Segoe UI', Arial, sans-serif;
-            overflow: hidden;
         }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 4px;
+            padding: 6px;
         }
 
         .container {
@@ -40,7 +38,6 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
         }
 
-        /* ===== ШАПКА ===== */
         .header {
             flex-shrink: 0;
             display: flex;
@@ -51,7 +48,6 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-
         .header-left {
             display: flex;
             align-items: center;
@@ -61,7 +57,7 @@
             min-width: 0;
         }
 
-        /* ===== БАННЕР ===== */
+        /* ===== БАННЕР В ШАПКЕ (БЕЗ СКРУГЛЕНИЙ) ===== */
         .header-banner {
             height: 65px;
             max-height: 65px;
@@ -112,7 +108,6 @@
             font-size: clamp(18px, 2.5vh, 32px);
             font-weight: 300;
         }
-
         .header-right {
             text-align: right;
             display: flex;
@@ -141,27 +136,25 @@
             border-radius: 12px;
         }
 
-        /* ===== ОСНОВНОЙ МАКЕТ ===== */
+        /* ===== ОСНОВНОЙ МАКЕТ: ТОЛЬКО РАСПИСАНИЕ ===== */
         .main-layout {
             flex: 1;
             display: flex;
             gap: 12px;
             min-height: 0;
             margin-top: 4px;
-            overflow: hidden;
         }
 
+        /* ===== ТАБЛИЦА РАСПИСАНИЯ (ВО ВСЮ ШИРИНУ) ===== */
         .table-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
-            overflow: auto;
+            overflow: hidden;
         }
 
-        /* ===== ТАБЛИЦА (ДЕСКТОП) ===== */
-        .desktop-table {
-            display: table;
+        table {
             width: 100%;
             height: 100%;
             border-collapse: collapse;
@@ -169,16 +162,16 @@
             table-layout: fixed;
         }
 
-        .desktop-table thead th,
-        .desktop-table tbody td {
+        thead th,
+        tbody td {
             border-right: 2px solid #d0d7e0;
         }
-        .desktop-table thead th:last-child,
-        .desktop-table tbody td:last-child {
+        thead th:last-child,
+        tbody td:last-child {
             border-right: none;
         }
 
-        .desktop-table thead th {
+        thead th {
             background: #edf2f7;
             color: #1a365d;
             font-weight: 700;
@@ -191,15 +184,15 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .desktop-table thead th:first-child {
-            width: 4%;
-            min-width: 28px;
+        thead th:first-child {
+            width: 2%;
+            min-width: 20px;
         }
-        .desktop-table thead th:not(:first-child) {
+        thead th:not(:first-child) {
             width: 5.3%;
         }
 
-        .desktop-table tbody td {
+        tbody td {
             padding: 0.3vh 6px;
             color: #2d3748;
             border-bottom: 1px solid #e2e8f0;
@@ -213,21 +206,21 @@
             line-height: 1.3;
             font-size: clamp(10px, 1.5vh, 19px) !important;
         }
-        .desktop-table tbody tr:nth-child(even) {
+        tbody tr:nth-child(even) {
             background: #f7fafc;
         }
-        .desktop-table tbody tr:nth-child(odd) {
+        tbody tr:nth-child(odd) {
             background: #ffffff;
         }
 
-        .desktop-table tbody tr.current-lesson {
+        tbody tr.current-lesson {
             background: #bee3f8 !important;
         }
-        .desktop-table tbody tr.current-lesson td {
+        tbody tr.current-lesson td {
             color: #1a365d;
             font-weight: 600;
         }
-        .desktop-table tbody tr.current-lesson .lesson-num {
+        tbody tr.current-lesson .lesson-num {
             color: #2b6cb0;
         }
 
@@ -262,71 +255,39 @@
             color: #cbd5e0;
         }
 
-        /* ===== МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ ДЛЯ ВСЕХ КЛАССОВ) ===== */
+        /* ===== МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ) ===== */
         .mobile-view {
             display: none;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             padding: 4px 0;
             overflow-y: auto;
             height: 100%;
         }
 
-        /* ===== КАРТОЧКА КЛАССА ===== */
-        .mobile-class-card {
+        .mobile-lesson-card {
             background: #ffffff;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .mobile-class-header {
-            background: #edf2f7;
-            padding: 4px 10px;
-            font-weight: 700;
-            font-size: 14px;
-            color: #1a365d;
-            border-bottom: 2px solid #2b6cb0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .mobile-class-header .class-name {
-            font-size: 14px;
-        }
-
-        .mobile-class-header .class-count {
-            font-size: 11px;
-            color: #718096;
-            font-weight: 400;
-        }
-
-        .mobile-lesson-card {
+            padding: 8px 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 5px 10px;
-            border-bottom: 1px solid #f0f4f8;
+            gap: 10px;
             transition: all 0.2s;
-        }
-
-        .mobile-lesson-card:last-child {
-            border-bottom: none;
+            flex-shrink: 0;
         }
 
         .mobile-lesson-card.current {
             background: #bee3f8;
+            border-color: #2b6cb0;
         }
 
         .mobile-lesson-card .lesson-num-mobile {
             font-weight: 700;
-            font-size: 13px;
+            font-size: 16px;
             color: #4a5568;
-            min-width: 24px;
+            min-width: 30px;
             text-align: center;
-            flex-shrink: 0;
         }
 
         .mobile-lesson-card.current .lesson-num-mobile {
@@ -337,13 +298,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 1px;
+            gap: 2px;
             min-width: 0;
         }
 
         .mobile-lesson-card .lesson-info .subject-name {
             font-weight: 500;
-            font-size: 13px;
+            font-size: 15px;
             color: #2d3748;
             word-wrap: break-word;
             word-break: break-word;
@@ -357,12 +318,12 @@
 
         .mobile-lesson-card .lesson-info .room-name {
             font-weight: 700;
-            font-size: 12px;
+            font-size: 14px;
             color: #e65100;
         }
 
         .mobile-lesson-card .lesson-time {
-            font-size: 11px;
+            font-size: 13px;
             color: #718096;
             white-space: nowrap;
             text-align: right;
@@ -372,6 +333,12 @@
         .mobile-lesson-card.current .lesson-time {
             color: #2b6cb0;
             font-weight: 600;
+        }
+
+        .mobile-lesson-card .lesson-empty {
+            color: #a0aec0;
+            font-style: italic;
+            font-size: 14px;
         }
 
         /* ===== ФУТЕР ===== */
@@ -403,6 +370,7 @@
 
         /* ===== АДАПТИВ ===== */
 
+        /* Планшеты и маленькие ноутбуки */
         @media (max-width: 1024px) {
             .header-banner {
                 height: 50px;
@@ -411,9 +379,10 @@
             }
         }
 
+        /* Мобильные устройства (<= 768px) — показываем карточки */
         @media (max-width: 768px) {
             .container {
-                padding: 6px 8px;
+                padding: 8px 10px;
                 border-radius: 12px;
                 height: 99vh;
             }
@@ -432,38 +401,39 @@
             }
 
             .header-center .day-indicator {
-                font-size: 13px;
+                font-size: 14px;
                 padding: 1px 10px;
             }
             .header-center .date {
-                font-size: 11px;
+                font-size: 12px;
             }
             .header-center .divider {
                 display: none;
             }
 
             .header-right .time {
-                font-size: 15px;
+                font-size: 16px;
             }
             .header-right .period {
-                font-size: 10px;
-                min-height: 1.4em;
+                font-size: 11px;
             }
             .header-right .version {
-                font-size: 8px;
+                font-size: 9px;
                 padding: 0 6px;
             }
 
+            /* Скрываем десктопную таблицу */
             .desktop-table {
                 display: none !important;
             }
 
+            /* Показываем мобильные карточки */
             .mobile-view {
                 display: flex !important;
             }
 
             .footer {
-                font-size: 8px;
+                font-size: 9px;
                 padding-top: 2px;
                 margin-top: 2px;
             }
@@ -473,43 +443,34 @@
                 margin-top: 2px;
             }
 
-            .mobile-class-header {
-                padding: 3px 8px;
-                font-size: 12px;
-            }
-            .mobile-class-header .class-name {
-                font-size: 12px;
-            }
-            .mobile-class-header .class-count {
-                font-size: 10px;
-            }
-
             .mobile-lesson-card {
-                padding: 4px 8px;
-                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 6px;
+                gap: 8px;
             }
 
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 11px;
-                min-width: 20px;
+                font-size: 13px;
+                min-width: 24px;
             }
 
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 11px;
+                font-size: 13px;
             }
 
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 10px;
+                font-size: 12px;
             }
 
             .mobile-lesson-card .lesson-time {
-                font-size: 9px;
+                font-size: 11px;
             }
         }
 
+        /* Очень маленькие экраны (<= 400px) */
         @media (max-width: 400px) {
             .container {
-                padding: 4px 4px;
+                padding: 4px 6px;
             }
 
             .header-banner {
@@ -520,54 +481,43 @@
             }
 
             .header-center .day-indicator {
-                font-size: 10px;
+                font-size: 11px;
                 padding: 1px 6px;
             }
             .header-center .date {
-                font-size: 9px;
+                font-size: 10px;
             }
 
             .header-right .time {
-                font-size: 12px;
+                font-size: 13px;
             }
             .header-right .period {
-                font-size: 8px;
+                font-size: 9px;
             }
             .header-right .version {
-                font-size: 7px;
-            }
-
-            .mobile-class-header {
-                padding: 2px 6px;
-                font-size: 10px;
-            }
-            .mobile-class-header .class-name {
-                font-size: 10px;
-            }
-            .mobile-class-header .class-count {
                 font-size: 8px;
             }
 
             .mobile-lesson-card {
-                padding: 3px 6px;
-                gap: 4px;
+                padding: 4px 8px;
+                gap: 6px;
             }
 
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 9px;
-                min-width: 16px;
+                font-size: 11px;
+                min-width: 18px;
             }
 
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 9px;
+                font-size: 11px;
             }
 
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 8px;
+                font-size: 10px;
             }
 
             .mobile-lesson-card .lesson-time {
-                font-size: 8px;
+                font-size: 9px;
             }
         }
 
@@ -620,7 +570,7 @@
 
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
-                <div class="version" id="versionBadge">🏷️ v3.0.1</div>
+                <div class="version" id="versionBadge">🏷️ v3.0.2</div>
             </div>
         </div>
 
@@ -679,7 +629,8 @@
 
         var MAX_LESSONS = 9;
 
-        var PRIMARY_CLASSES = ['5А', '5Б', '5В', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б',
+        // ===== КЛАССЫ ОСНОВНОЙ ШКОЛЫ (5-11, БЕЗ 5В) =====
+        var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б',
             '11А', '11Б'
         ];
 
@@ -690,7 +641,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.0.1';
+        var APP_VERSION = 'v3.0.2';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -1053,7 +1004,7 @@
         }
 
         // ================================================================
-        // МОБИЛЬНЫЕ КАРТОЧКИ (ВСЕ КЛАССЫ 5-11)
+        // МОБИЛЬНЫЕ КАРТОЧКИ
         // ================================================================
         function renderMobile() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
@@ -1087,7 +1038,6 @@
             classes = sortClasses(classes);
 
             var html = '';
-
             classes.forEach(function(className) {
                 var lessons = dayData[className] || [];
                 var filledCount = 0;
