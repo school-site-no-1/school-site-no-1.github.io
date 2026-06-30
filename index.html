@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.6.1">
+<html lang="ru" data-version="v3.6.3">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -376,8 +376,160 @@
            ===== АДАПТАЦИЯ ПОД УСТРОЙСТВА =====
            ================================================================ */
 
-        /* ---------- 1. НОУТБУК (СТАНДАРТНОЕ РАЗРЕШЕНИЕ 1366x768 - 1600x900) ---------- */
-        @media (min-width: 1200px) and (max-width: 1600px) {
+        /* ---------- 1. ПЛАНШЕТЫ (768px - 1024px) ---------- */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding: 6px 10px;
+                border-radius: 14px;
+            }
+
+            .header {
+                min-height: 40px;
+                gap: 4px;
+                padding-bottom: 4px;
+            }
+
+            .header-banner {
+                height: 36px;
+                max-height: 36px;
+                min-height: 36px;
+            }
+
+            .header-center .day-indicator {
+                font-size: clamp(14px, 1.6vh, 19px);
+                padding: 2px 12px;
+                border-radius: 18px;
+            }
+            .header-center .divider {
+                font-size: clamp(14px, 1.6vh, 19px);
+            }
+
+            .header-right .time {
+                font-size: clamp(15px, 1.7vh, 20px);
+            }
+            .header-right .period {
+                font-size: clamp(9px, 1.0vh, 12px);
+            }
+            .header-right .period .line1 {
+                font-size: 0.95em;
+            }
+            .header-right .period .line2 {
+                font-size: 0.8em;
+            }
+            .header-right .version {
+                font-size: clamp(8px, 0.8vh, 11px);
+            }
+            .header-right .date {
+                font-size: clamp(12px, 1.3vh, 16px);
+            }
+
+            table {
+                font-size: clamp(10px, 1.0vh, 14px);
+            }
+
+            thead th {
+                font-size: clamp(8px, 0.8vh, 11px);
+                padding: 0.25vh 4px;
+            }
+
+            tbody td {
+                font-size: clamp(8px, 0.9vh, 12px) !important;
+                padding: 0.25vh 4px;
+            }
+
+            .lesson-num {
+                font-size: clamp(9px, 1.0vh, 13px) !important;
+            }
+
+            .subject {
+                font-size: clamp(8px, 0.9vh, 12px) !important;
+            }
+
+            .cabinet {
+                font-size: 9px !important;
+            }
+
+            .footer {
+                font-size: clamp(7px, 0.7vh, 10px);
+            }
+
+            .main-layout {
+                gap: 6px;
+            }
+        }
+
+        /* ---------- 2. ПЛАНШЕТЫ (ГОРИЗОНТАЛЬНАЯ ОРИЕНТАЦИЯ) ---------- */
+        @media (min-width: 1025px) and (max-width: 1200px) {
+            .container {
+                padding: 8px 12px;
+                border-radius: 16px;
+            }
+
+            .header {
+                min-height: 42px;
+                gap: 4px;
+            }
+
+            .header-banner {
+                height: 38px;
+                max-height: 38px;
+                min-height: 38px;
+            }
+
+            .header-center .day-indicator {
+                font-size: clamp(15px, 1.6vh, 20px);
+                padding: 2px 14px;
+            }
+            .header-center .divider {
+                font-size: clamp(15px, 1.6vh, 20px);
+            }
+
+            .header-right .time {
+                font-size: clamp(16px, 1.8vh, 22px);
+            }
+            .header-right .period {
+                font-size: clamp(10px, 1.0vh, 13px);
+            }
+            .header-right .version {
+                font-size: clamp(9px, 0.9vh, 12px);
+            }
+            .header-right .date {
+                font-size: clamp(13px, 1.4vh, 17px);
+            }
+
+            table {
+                font-size: clamp(11px, 1.1vh, 15px);
+            }
+
+            thead th {
+                font-size: clamp(9px, 0.9vh, 12px);
+                padding: 0.3vh 5px;
+            }
+
+            tbody td {
+                font-size: clamp(9px, 1.0vh, 13px) !important;
+                padding: 0.3vh 5px;
+            }
+
+            .lesson-num {
+                font-size: clamp(10px, 1.1vh, 14px) !important;
+            }
+
+            .subject {
+                font-size: clamp(9px, 1.0vh, 13px) !important;
+            }
+
+            .cabinet {
+                font-size: 10px !important;
+            }
+
+            .footer {
+                font-size: clamp(8px, 0.8vh, 11px);
+            }
+        }
+
+        /* ---------- 3. НОУТБУК (СТАНДАРТНОЕ РАЗРЕШЕНИЕ 1200px - 1600px) ---------- */
+        @media (min-width: 1201px) and (max-width: 1600px) {
             .container {
                 padding: 6px 10px;
                 border-radius: 14px;
@@ -452,8 +604,8 @@
             }
         }
 
-        /* ---------- 2. НОУТБУК (ВЫСОКОЕ РАЗРЕШЕНИЕ 1920x1080) ---------- */
-        @media (min-width: 1601px) and (max-width: 2560px) {
+        /* ---------- 4. НОУТБУК (ВЫСОКОЕ РАЗРЕШЕНИЕ 1601px - 1920px) ---------- */
+        @media (min-width: 1601px) and (max-width: 1920px) {
             .container {
                 padding: 8px 14px;
                 border-radius: 18px;
@@ -522,8 +674,8 @@
             }
         }
 
-        /* ---------- 3. SMART TV (1920x1080 и выше) ---------- */
-        @media (min-width: 1920px) {
+        /* ---------- 5. SMART TV (1920x1080) ---------- */
+        @media (min-width: 1921px) and (max-width: 2560px) {
             .container {
                 padding: 14px 22px;
                 border-radius: 24px;
@@ -617,8 +769,8 @@
             }
         }
 
-        /* ---------- 4. SMART TV 4K (3840x2160) ---------- */
-        @media (min-width: 2560px) {
+        /* ---------- 6. SMART TV 4K (2560px+) ---------- */
+        @media (min-width: 2561px) {
             .container {
                 padding: 20px 32px;
                 border-radius: 32px;
@@ -708,7 +860,7 @@
             }
         }
 
-        /* ---------- 5. МОБИЛЬНЫЕ УСТРОЙСТВА (до 768px) ---------- */
+        /* ---------- 7. МОБИЛЬНЫЕ УСТРОЙСТВА (до 768px) ---------- */
         @media (max-width: 768px) {
             .container {
                 padding: 4px 6px;
@@ -848,7 +1000,7 @@
             }
         }
 
-        /* ---------- 6. МОБИЛЬНЫЕ (очень маленькие, до 400px) ---------- */
+        /* ---------- 8. МОБИЛЬНЫЕ (очень маленькие, до 400px) ---------- */
         @media (max-width: 400px) {
             .container {
                 padding: 2px 2px;
@@ -966,7 +1118,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.6.1</div>
+                <div class="version" id="versionBadge">🏷️ v3.6.3</div>
             </div>
         </div>
 
@@ -1034,7 +1186,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.6.1';
+        var APP_VERSION = 'v3.6.3';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
