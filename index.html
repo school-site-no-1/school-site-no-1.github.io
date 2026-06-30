@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.3.5">
+<html lang="ru" data-version="v3.6.1">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,7 +58,7 @@
             min-width: 0;
         }
 
-        /* ===== БАННЕР (уменьшен) ===== */
+        /* ===== БАННЕР ===== */
         .header-banner {
             height: 40px;
             max-height: 40px;
@@ -92,7 +92,6 @@
         }
         .header-center .day-indicator {
             color: #fff;
-            font-size: clamp(13px, 1.6vh, 20px);
             font-weight: 600;
             background: #2b6cb0;
             padding: 1px 12px;
@@ -101,7 +100,6 @@
         }
         .header-center .divider {
             color: #e2e8f0;
-            font-size: clamp(13px, 1.6vh, 20px);
             font-weight: 300;
         }
 
@@ -115,12 +113,10 @@
         }
         .header-right .time {
             color: #2b6cb0;
-            font-size: clamp(14px, 1.8vh, 22px);
             font-weight: 700;
         }
         .header-right .period {
             color: #e65100;
-            font-size: clamp(9px, 1.0vh, 13px);
             font-weight: 600;
             min-height: 1.8em;
             display: flex;
@@ -130,17 +126,14 @@
         }
         .header-right .period .line1 {
             display: block;
-            font-size: 0.95em;
         }
         .header-right .period .line2 {
             display: block;
             font-weight: 500;
-            font-size: 0.8em;
             color: #d45c00;
         }
         .header-right .version {
             color: #718096;
-            font-size: clamp(8px, 0.9vh, 11px);
             font-weight: 500;
             background: #edf2f7;
             padding: 0 8px;
@@ -148,7 +141,6 @@
         }
         .header-right .date {
             color: #4a5568;
-            font-size: clamp(11px, 1.3vh, 16px);
             font-weight: 600;
             margin-top: 1px;
         }
@@ -174,7 +166,6 @@
             width: 100%;
             height: 100%;
             border-collapse: collapse;
-            font-size: clamp(10px, 1.1vh, 15px);
             table-layout: fixed;
         }
 
@@ -191,10 +182,8 @@
             background: #edf2f7;
             color: #1a365d;
             font-weight: 700;
-            padding: 0.2vh 4px;
             text-align: center;
             border-bottom: 2px solid #2b6cb0;
-            font-size: clamp(8px, 0.9vh, 12px);
             text-transform: uppercase;
             white-space: nowrap;
             overflow: hidden;
@@ -209,7 +198,6 @@
         }
 
         tbody td {
-            padding: 0.15vh 3px;
             color: #2d3748;
             border-bottom: 1px solid #e2e8f0;
             vertical-align: middle;
@@ -220,7 +208,6 @@
             overflow-wrap: break-word !important;
             hyphens: auto !important;
             line-height: 1.2;
-            font-size: clamp(8px, 1.0vh, 13px) !important;
         }
         tbody tr:nth-child(even) {
             background: #f7fafc;
@@ -243,7 +230,6 @@
         .lesson-num {
             font-weight: 700;
             color: #4a5568;
-            font-size: clamp(9px, 1.1vh, 14px) !important;
         }
 
         .subject {
@@ -251,7 +237,6 @@
             font-weight: 500;
             line-height: 1.2;
             color: #2d3748;
-            font-size: clamp(8px, 1.0vh, 13px) !important;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
@@ -261,7 +246,6 @@
 
         .cabinet {
             color: #e65100;
-            font-size: 10px !important;
             display: block;
             font-weight: 700;
             margin-top: 1px;
@@ -271,7 +255,7 @@
             color: #cbd5e0;
         }
 
-        /* ===== МОБИЛЬНАЯ ВЕРСИЯ (для малых экранов) ===== */
+        /* ===== МОБИЛЬНАЯ ВЕРСИЯ ===== */
         .mobile-view {
             display: none;
             flex-direction: column;
@@ -291,9 +275,7 @@
 
         .mobile-class-header {
             background: #edf2f7;
-            padding: 2px 8px;
             font-weight: 700;
-            font-size: 11px;
             color: #1a365d;
             border-bottom: 2px solid #2b6cb0;
             display: flex;
@@ -301,15 +283,10 @@
             align-items: center;
         }
 
-        .mobile-class-header .class-name {
-            font-size: 11px;
-        }
-
         .mobile-lesson-card {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 3px 8px;
             border-bottom: 1px solid #f0f4f8;
             transition: all 0.2s;
         }
@@ -324,9 +301,7 @@
 
         .mobile-lesson-card .lesson-num-mobile {
             font-weight: 700;
-            font-size: 10px;
             color: #4a5568;
-            min-width: 18px;
             text-align: center;
             flex-shrink: 0;
         }
@@ -345,7 +320,6 @@
 
         .mobile-lesson-card .lesson-info .subject-name {
             font-weight: 500;
-            font-size: 10px;
             color: #2d3748;
             word-wrap: break-word;
             word-break: break-word;
@@ -359,12 +333,10 @@
 
         .mobile-lesson-card .lesson-info .room-name {
             font-weight: 700;
-            font-size: 9px;
             color: #e65100;
         }
 
         .mobile-lesson-card .lesson-time {
-            font-size: 9px;
             color: #718096;
             white-space: nowrap;
             text-align: right;
@@ -380,7 +352,6 @@
             flex-shrink: 0;
             margin-top: 2px;
             color: #a0aec0;
-            font-size: clamp(7px, 0.8vh, 10px);
             text-align: center;
             border-top: 1px solid #e2e8f0;
             padding-top: 2px;
@@ -392,7 +363,6 @@
             align-items: center;
             height: 100%;
             color: #4a5568;
-            font-size: clamp(11px, 1.4vh, 18px);
             font-weight: 300;
             flex-direction: column;
             gap: 6px;
@@ -402,14 +372,343 @@
             color: #a0aec0;
         }
 
-        @media (max-width: 1024px) {
+        /* ================================================================
+           ===== АДАПТАЦИЯ ПОД УСТРОЙСТВА =====
+           ================================================================ */
+
+        /* ---------- 1. НОУТБУК (СТАНДАРТНОЕ РАЗРЕШЕНИЕ 1366x768 - 1600x900) ---------- */
+        @media (min-width: 1200px) and (max-width: 1600px) {
+            .container {
+                padding: 6px 10px;
+                border-radius: 14px;
+            }
+
+            .header {
+                min-height: 36px;
+                gap: 3px;
+            }
+
             .header-banner {
-                height: 35px;
-                max-height: 35px;
-                min-height: 35px;
+                height: 32px;
+                max-height: 32px;
+                min-height: 32px;
+            }
+
+            .header-center .day-indicator {
+                font-size: clamp(13px, 1.4vh, 17px);
+                padding: 1px 10px;
+            }
+            .header-center .divider {
+                font-size: clamp(13px, 1.4vh, 17px);
+            }
+
+            .header-right .time {
+                font-size: clamp(14px, 1.6vh, 19px);
+            }
+            .header-right .period {
+                font-size: clamp(9px, 0.9vh, 12px);
+            }
+            .header-right .period .line1 {
+                font-size: 0.95em;
+            }
+            .header-right .period .line2 {
+                font-size: 0.8em;
+            }
+            .header-right .version {
+                font-size: clamp(8px, 0.8vh, 10px);
+            }
+            .header-right .date {
+                font-size: clamp(11px, 1.2vh, 15px);
+            }
+
+            table {
+                font-size: clamp(10px, 1.0vh, 13px);
+            }
+
+            thead th {
+                font-size: clamp(8px, 0.8vh, 11px);
+                padding: 0.2vh 4px;
+            }
+
+            tbody td {
+                font-size: clamp(8px, 0.9vh, 12px) !important;
+                padding: 0.2vh 3px;
+            }
+
+            .lesson-num {
+                font-size: clamp(9px, 1.0vh, 12px) !important;
+            }
+
+            .subject {
+                font-size: clamp(8px, 0.9vh, 12px) !important;
+            }
+
+            .cabinet {
+                font-size: 9px !important;
+            }
+
+            .footer {
+                font-size: clamp(7px, 0.7vh, 10px);
             }
         }
 
+        /* ---------- 2. НОУТБУК (ВЫСОКОЕ РАЗРЕШЕНИЕ 1920x1080) ---------- */
+        @media (min-width: 1601px) and (max-width: 2560px) {
+            .container {
+                padding: 8px 14px;
+                border-radius: 18px;
+            }
+
+            .header {
+                min-height: 44px;
+                gap: 4px;
+            }
+
+            .header-banner {
+                height: 40px;
+                max-height: 40px;
+                min-height: 40px;
+            }
+
+            .header-center .day-indicator {
+                font-size: clamp(15px, 1.6vh, 22px);
+                padding: 2px 14px;
+            }
+            .header-center .divider {
+                font-size: clamp(15px, 1.6vh, 22px);
+            }
+
+            .header-right .time {
+                font-size: clamp(16px, 1.8vh, 24px);
+            }
+            .header-right .period {
+                font-size: clamp(10px, 1.0vh, 14px);
+            }
+            .header-right .version {
+                font-size: clamp(9px, 0.9vh, 12px);
+            }
+            .header-right .date {
+                font-size: clamp(13px, 1.4vh, 18px);
+            }
+
+            table {
+                font-size: clamp(11px, 1.1vh, 16px);
+            }
+
+            thead th {
+                font-size: clamp(9px, 0.9vh, 13px);
+                padding: 0.3vh 5px;
+            }
+
+            tbody td {
+                font-size: clamp(9px, 1.0vh, 14px) !important;
+                padding: 0.3vh 4px;
+            }
+
+            .lesson-num {
+                font-size: clamp(10px, 1.1vh, 15px) !important;
+            }
+
+            .subject {
+                font-size: clamp(9px, 1.0vh, 14px) !important;
+            }
+
+            .cabinet {
+                font-size: 10px !important;
+            }
+
+            .footer {
+                font-size: clamp(8px, 0.8vh, 12px);
+            }
+        }
+
+        /* ---------- 3. SMART TV (1920x1080 и выше) ---------- */
+        @media (min-width: 1920px) {
+            .container {
+                padding: 14px 22px;
+                border-radius: 24px;
+            }
+
+            .header {
+                min-height: 56px;
+                gap: 6px;
+                padding-bottom: 6px;
+            }
+
+            .header-banner {
+                height: 56px;
+                max-height: 56px;
+                min-height: 56px;
+                max-width: 1000px;
+            }
+
+            .header-center .day-indicator {
+                font-size: clamp(20px, 2.2vh, 32px);
+                padding: 3px 20px;
+                border-radius: 24px;
+            }
+            .header-center .divider {
+                font-size: clamp(20px, 2.2vh, 32px);
+            }
+
+            .header-right .time {
+                font-size: clamp(20px, 2.4vh, 34px);
+            }
+            .header-right .period {
+                font-size: clamp(12px, 1.3vh, 18px);
+                min-height: 2.2em;
+            }
+            .header-right .period .line1 {
+                font-size: 1em;
+            }
+            .header-right .period .line2 {
+                font-size: 0.85em;
+            }
+            .header-right .version {
+                font-size: clamp(10px, 1.0vh, 14px);
+                padding: 0 12px;
+                border-radius: 14px;
+            }
+            .header-right .date {
+                font-size: clamp(15px, 1.6vh, 22px);
+            }
+
+            table {
+                font-size: clamp(13px, 1.3vh, 20px);
+            }
+
+            thead th {
+                font-size: clamp(10px, 1.1vh, 16px);
+                padding: 0.4vh 8px;
+                border-bottom: 3px solid #2b6cb0;
+            }
+            thead th:first-child {
+                min-width: 20px;
+            }
+
+            tbody td {
+                font-size: clamp(11px, 1.2vh, 18px) !important;
+                padding: 0.4vh 8px;
+                border-bottom: 1.5px solid #e2e8f0;
+            }
+
+            .lesson-num {
+                font-size: clamp(12px, 1.3vh, 19px) !important;
+            }
+
+            .subject {
+                font-size: clamp(11px, 1.2vh, 18px) !important;
+            }
+
+            .cabinet {
+                font-size: 13px !important;
+                margin-top: 2px;
+            }
+
+            .footer {
+                font-size: clamp(9px, 0.9vh, 14px);
+                padding-top: 4px;
+                margin-top: 4px;
+            }
+
+            .main-layout {
+                gap: 12px;
+                margin-top: 4px;
+            }
+        }
+
+        /* ---------- 4. SMART TV 4K (3840x2160) ---------- */
+        @media (min-width: 2560px) {
+            .container {
+                padding: 20px 32px;
+                border-radius: 32px;
+            }
+
+            .header {
+                min-height: 72px;
+                gap: 8px;
+                padding-bottom: 8px;
+                border-bottom-width: 3px;
+            }
+
+            .header-banner {
+                height: 72px;
+                max-height: 72px;
+                min-height: 72px;
+                max-width: 1200px;
+            }
+
+            .header-center .day-indicator {
+                font-size: clamp(26px, 2.6vh, 40px);
+                padding: 4px 28px;
+                border-radius: 32px;
+            }
+            .header-center .divider {
+                font-size: clamp(26px, 2.6vh, 40px);
+            }
+
+            .header-right .time {
+                font-size: clamp(26px, 2.8vh, 42px);
+            }
+            .header-right .period {
+                font-size: clamp(15px, 1.6vh, 24px);
+                min-height: 2.8em;
+            }
+            .header-right .version {
+                font-size: clamp(13px, 1.2vh, 18px);
+                padding: 0 16px;
+                border-radius: 18px;
+            }
+            .header-right .date {
+                font-size: clamp(19px, 2.0vh, 28px);
+            }
+
+            table {
+                font-size: clamp(16px, 1.6vh, 26px);
+            }
+
+            thead th {
+                font-size: clamp(13px, 1.3vh, 20px);
+                padding: 0.6vh 12px;
+                border-bottom: 4px solid #2b6cb0;
+            }
+            thead th:first-child {
+                min-width: 28px;
+            }
+
+            tbody td {
+                font-size: clamp(14px, 1.5vh, 24px) !important;
+                padding: 0.6vh 12px;
+                border-bottom: 2px solid #e2e8f0;
+            }
+
+            .lesson-num {
+                font-size: clamp(15px, 1.6vh, 25px) !important;
+            }
+
+            .subject {
+                font-size: clamp(14px, 1.5vh, 24px) !important;
+            }
+
+            .cabinet {
+                font-size: 16px !important;
+                margin-top: 3px;
+            }
+
+            .footer {
+                font-size: clamp(11px, 1.1vh, 18px);
+                padding-top: 6px;
+                margin-top: 6px;
+                border-top-width: 2px;
+            }
+
+            .main-layout {
+                gap: 16px;
+                margin-top: 6px;
+            }
+        }
+
+        /* ---------- 5. МОБИЛЬНЫЕ УСТРОЙСТВА (до 768px) ---------- */
         @media (max-width: 768px) {
             .container {
                 padding: 4px 6px;
@@ -549,6 +848,7 @@
             }
         }
 
+        /* ---------- 6. МОБИЛЬНЫЕ (очень маленькие, до 400px) ---------- */
         @media (max-width: 400px) {
             .container {
                 padding: 2px 2px;
@@ -666,7 +966,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.3.5</div>
+                <div class="version" id="versionBadge">🏷️ v3.6.1</div>
             </div>
         </div>
 
@@ -734,7 +1034,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.3.5';
+        var APP_VERSION = 'v3.6.1';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -852,7 +1152,6 @@
                     'Воскресенье': 'воскресенье'
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                // Разделяем на две строки с помощью <br> вместо span
                 return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
             }
 
