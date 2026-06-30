@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.3.1">
+<html lang="ru" data-version="v3.4.0">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -339,7 +339,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 1px;
+            gap: 2px;
             min-width: 0;
         }
 
@@ -363,17 +363,16 @@
             color: #e65100;
         }
 
-        .mobile-lesson-card .lesson-time {
-            font-size: 11px;
+        .mobile-lesson-card .lesson-info .lesson-time {
+            font-size: 10px;
             color: #718096;
-            white-space: nowrap;
-            text-align: right;
-            flex-shrink: 0;
+            font-weight: 400;
+            margin-top: 1px;
         }
 
-        .mobile-lesson-card.current .lesson-time {
+        .mobile-lesson-card.current .lesson-info .lesson-time {
             color: #2b6cb0;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .footer {
@@ -544,7 +543,7 @@
                 font-size: 10px;
             }
 
-            .mobile-lesson-card .lesson-time {
+            .mobile-lesson-card .lesson-info .lesson-time {
                 font-size: 9px;
             }
         }
@@ -612,7 +611,7 @@
                 font-size: 8px;
             }
 
-            .mobile-lesson-card .lesson-time {
+            .mobile-lesson-card .lesson-info .lesson-time {
                 font-size: 8px;
             }
         }
@@ -666,7 +665,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.3.1</div>
+                <div class="version" id="versionBadge">🏷️ v3.4.0</div>
             </div>
         </div>
 
@@ -734,7 +733,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.3.1';
+        var APP_VERSION = 'v3.4.0';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -1170,22 +1169,20 @@
                     html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
                     html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
 
+                    html += '<div class="lesson-info">';
                     if (hasContent) {
-                        html += '<div class="lesson-info">';
                         html += '<span class="subject-name">' + subject + '</span>';
                         if (cabinet && cabinet.trim() !== '') {
                             html += '<span class="room-name">' + cabinet + '</span>';
                         }
-                        html += '</div>';
                         html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end +
                         '</span>';
                     } else {
-                        html += '<div class="lesson-info">';
                         html += '<span class="subject-name empty">— нет урока —</span>';
-                        html += '</div>';
                         html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end +
                         '</span>';
                     }
+                    html += '</div>';
 
                     html += '</div>';
                 }
