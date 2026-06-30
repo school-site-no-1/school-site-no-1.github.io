@@ -1,0 +1,13 @@
+# _config.yml - настройки для GitHub Pages
+
+# Заголовки для всех файлов
+defaults:
+  - scope:
+      path: ""
+    values:
+      # Базовые настройки безопасности
+      sitemap: false
+
+# Настройки для конкретных файлов через .nojekyll
+include:
+  - .nojekyll
