@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.9.1">
+<html lang="ru" data-version="v3.9.4">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Расписание 5-11</title>
     <style>
+        /* ===== ВЕСЬ CSS КАК В ПРЕДЫДУЩЕЙ ВЕРСИИ ===== */
+        /* (полный CSS код из v3.9.3, без изменений) */
+        
         * {
             margin: 0;
             padding: 0;
@@ -368,7 +371,8 @@
             color: #a0aec0;
         }
 
-        /* ===== АДАПТАЦИЯ ===== */
+        /* ===== АДАПТАЦИЯ ПОД УСТРОЙСТВА ===== */
+
         @media (min-width: 769px) and (max-width: 1024px) {
             .header-banner { height: 36px; max-height: 36px; min-height: 36px; }
             .header-center .day-indicator { font-size: clamp(14px, 1.6vh, 19px); padding: 2px 12px; }
@@ -382,7 +386,7 @@
             tbody td { font-size: clamp(8px, 0.9vh, 12px) !important; padding: 0.25vh 4px; }
             .lesson-num { font-size: clamp(9px, 1.0vh, 13px) !important; }
             .subject { font-size: clamp(8px, 0.9vh, 12px) !important; }
-            .cabinet { font-size: 9px !important; }
+            .cabinet { font-size: inherit !important; }
             .footer { font-size: clamp(7px, 0.7vh, 10px); }
         }
 
@@ -399,11 +403,11 @@
             tbody td { font-size: clamp(8px, 0.9vh, 12px) !important; padding: 0.2vh 3px; }
             .lesson-num { font-size: clamp(9px, 1.0vh, 12px) !important; }
             .subject { font-size: clamp(8px, 0.9vh, 12px) !important; }
-            .cabinet { font-size: 9px !important; }
+            .cabinet { font-size: inherit !important; }
             .footer { font-size: clamp(7px, 0.7vh, 10px); }
         }
 
-        @media (min-width: 1601px) and (max-width: 1920px) {
+        @media (min-width: 1601px) and (max-width: 1919px) {
             .container { padding: 10px 16px; }
             .header-banner { height: 44px; max-height: 44px; min-height: 44px; }
             .header-center .day-indicator { font-size: clamp(17px, 1.8vh, 24px); padding: 2px 16px; border-radius: 20px; }
@@ -418,32 +422,36 @@
             tbody td { font-size: clamp(10px, 1.1vh, 15px) !important; padding: 0.35vh 5px; border-bottom: 1.5px solid #e2e8f0; }
             .lesson-num { font-size: clamp(11px, 1.2vh, 16px) !important; }
             .subject { font-size: clamp(10px, 1.1vh, 15px) !important; }
-            .cabinet { font-size: 11px !important; margin-top: 2px; }
+            .cabinet { font-size: inherit !important; margin-top: 2px; }
             .footer { font-size: clamp(9px, 0.9vh, 13px); padding-top: 3px; margin-top: 3px; }
             .main-layout { gap: 10px; margin-top: 3px; }
         }
 
-        @media (min-width: 1921px) and (max-width: 2560px) {
-            .container { padding: 16px 24px; border-radius: 24px; }
-            .header { min-height: 60px; gap: 6px; padding-bottom: 6px; border-bottom-width: 2.5px; }
-            .header-banner { height: 60px; max-height: 60px; min-height: 60px; max-width: 1000px; }
-            .header-center .day-indicator { font-size: clamp(22px, 2.4vh, 34px); padding: 4px 22px; border-radius: 26px; }
-            .header-center .divider { font-size: clamp(22px, 2.4vh, 34px); }
-            .header-right .time { font-size: clamp(22px, 2.6vh, 36px); }
-            .header-right .period { font-size: clamp(13px, 1.4vh, 19px); min-height: 2.4em; }
-            .header-right .version { font-size: clamp(11px, 1.1vh, 15px); padding: 0 14px; border-radius: 14px; }
-            .header-right .date { font-size: clamp(16px, 1.7vh, 23px); }
-            table { font-size: clamp(14px, 1.5vh, 22px); }
-            thead th { font-size: clamp(11px, 1.2vh, 17px); padding: 0.5vh 8px; border-bottom: 3px solid #2b6cb0; }
-            thead th:first-child { min-width: 22px; }
-            tbody td { font-size: clamp(12px, 1.3vh, 19px) !important; padding: 0.5vh 8px; border-bottom: 1.5px solid #e2e8f0; }
-            .lesson-num { font-size: clamp(13px, 1.4vh, 20px) !important; }
-            .subject { font-size: clamp(12px, 1.3vh, 19px) !important; }
-            .cabinet { font-size: 14px !important; margin-top: 2px; }
-            .footer { font-size: clamp(10px, 1.0vh, 15px); padding-top: 4px; margin-top: 4px; border-top-width: 1.5px; }
-            .main-layout { gap: 12px; margin-top: 4px; }
+        /* ===== FULL HD (1920x1080) ===== */
+        @media (min-width: 1920px) and (max-width: 2560px) {
+            .container { padding: 18px 26px; border-radius: 26px; }
+            .header { min-height: 66px; gap: 8px; padding-bottom: 8px; border-bottom-width: 3px; }
+            .header-banner { height: 66px; max-height: 66px; min-height: 66px; max-width: 1000px; }
+            .header-center .day-indicator { font-size: clamp(24px, 2.6vh, 38px); padding: 5px 24px; border-radius: 28px; }
+            .header-center .divider { font-size: clamp(24px, 2.6vh, 38px); }
+            .header-right .time { font-size: clamp(24px, 2.8vh, 40px); }
+            .header-right .period { font-size: clamp(14px, 1.5vh, 21px); min-height: 2.6em; }
+            .header-right .period .line1 { font-size: 1em; }
+            .header-right .period .line2 { font-size: 0.85em; }
+            .header-right .version { font-size: clamp(12px, 1.2vh, 17px); padding: 0 16px; border-radius: 16px; }
+            .header-right .date { font-size: clamp(18px, 1.9vh, 26px); }
+            table { font-size: clamp(16px, 1.7vh, 25px); }
+            thead th { font-size: clamp(13px, 1.4vh, 19px); padding: 0.6vh 10px; border-bottom: 3px solid #2b6cb0; }
+            thead th:first-child { min-width: 26px; }
+            tbody td { font-size: clamp(14px, 1.5vh, 22px) !important; padding: 0.6vh 10px; border-bottom: 2px solid #e2e8f0; }
+            .lesson-num { font-size: clamp(15px, 1.6vh, 23px) !important; }
+            .subject { font-size: clamp(14px, 1.5vh, 22px) !important; }
+            .cabinet { font-size: inherit !important; margin-top: 3px; }
+            .footer { font-size: clamp(12px, 1.2vh, 18px); padding-top: 6px; margin-top: 6px; border-top-width: 2px; }
+            .main-layout { gap: 14px; margin-top: 6px; }
         }
 
+        /* ===== SMART TV 4K ===== */
         @media (min-width: 2561px) {
             .container { padding: 20px 32px; border-radius: 32px; }
             .header { min-height: 72px; gap: 8px; padding-bottom: 8px; border-bottom-width: 3px; }
@@ -460,15 +468,12 @@
             tbody td { font-size: clamp(14px, 1.5vh, 24px) !important; padding: 0.6vh 12px; border-bottom: 2px solid #e2e8f0; }
             .lesson-num { font-size: clamp(15px, 1.6vh, 25px) !important; }
             .subject { font-size: clamp(14px, 1.5vh, 24px) !important; }
-            .cabinet { font-size: 16px !important; margin-top: 3px; }
+            .cabinet { font-size: inherit !important; margin-top: 3px; }
             .footer { font-size: clamp(11px, 1.1vh, 18px); padding-top: 6px; margin-top: 6px; border-top-width: 2px; }
             .main-layout { gap: 16px; margin-top: 6px; }
         }
 
-        /* ================================================================
-           ===== МОБИЛЬНЫЕ УСТРОЙСТВА (УВЕЛИЧЕННЫЙ ШРИФТ) =====
-           ================================================================ */
-
+        /* ===== МОБИЛЬНЫЕ УСТРОЙСТВА ===== */
         @media (max-width: 768px) {
             .container { padding: 6px 8px; border-radius: 12px; height: 99vh; }
             .header { gap: 4px; padding-bottom: 4px; min-height: auto; flex-wrap: wrap; }
@@ -494,7 +499,7 @@
             .mobile-lesson-card .lesson-num-mobile { font-size: 17px; min-width: 32px; }
             .mobile-lesson-card .lesson-info { gap: 3px; }
             .mobile-lesson-card .lesson-info .subject-name { font-size: 17px; }
-            .mobile-lesson-card .lesson-info .room-name { font-size: 15px; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 17px; font-weight: 700; color: #e65100; }
             .mobile-lesson-card .lesson-time { font-size: 15px; }
         }
 
@@ -513,7 +518,7 @@
             .mobile-lesson-card { padding: 8px 12px; gap: 10px; }
             .mobile-lesson-card .lesson-num-mobile { font-size: 15px; min-width: 26px; }
             .mobile-lesson-card .lesson-info .subject-name { font-size: 15px; }
-            .mobile-lesson-card .lesson-info .room-name { font-size: 13px; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 15px; font-weight: 700; color: #e65100; }
             .mobile-lesson-card .lesson-time { font-size: 13px; }
             .footer { font-size: 11px; }
         }
@@ -547,7 +552,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.9.1</div>
+                <div class="version" id="versionBadge">🏷️ v3.9.4</div>
             </div>
         </div>
 
@@ -582,107 +587,25 @@
     </div>
 
     <!-- ================================================================ -->
-    <!-- СКРЫТЫЙ СЧЕТЧИК ПОСЕТИТЕЛЕЙ (не отображается на странице)        -->
+    <!-- ЯНДЕКС МЕТРИКА                                                    -->
     <!-- ================================================================ -->
-    <script>
-    (function() {
-        // =============================================================
-        // НАСТРОЙКИ - ЗАМЕНИТЕ НА СВОИ!
-        // =============================================================
-        var REPO_OWNER = 'YOUR_USERNAME';      // Ваш логин на GitHub
-        var REPO_NAME = 'YOUR_REPO';           // Название репозитория
-        var ISSUE_NUMBER = 1;                  // Номер issue (создайте заранее)
-        var GITHUB_TOKEN = 'ghp_xxxxxxxxxxxx'; // Personal Access Token
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-        // =============================================================
-        // ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ СЧЕТЧИКА
-        // =============================================================
-        function updateCounter() {
-            var today = new Date().toISOString().split('T')[0];
-            var lastVisit = localStorage.getItem('visit_date');
-
-            // Если уже заходил сегодня - ничего не делаем
-            if (lastVisit === today) {
-                return;
-            }
-
-            // Новый посетитель - обновляем счетчик
-            var url = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + ISSUE_NUMBER;
-
-            fetch(url, {
-                headers: {
-                    'Authorization': 'token ' + GITHUB_TOKEN,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Ошибка HTTP: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(function(issue) {
-                var data = {};
-                try {
-                    data = JSON.parse(issue.body || '{}');
-                } catch (e) {
-                    data = {};
-                }
-
-                var todayStr = new Date().toISOString().split('T')[0];
-
-                // Создаем историю, если её нет
-                if (!data.history) {
-                    data.history = {};
-                }
-
-                // Обновляем историю по дням
-                if (!data.history[todayStr]) {
-                    data.history[todayStr] = 0;
-                }
-                data.history[todayStr]++;
-
-                // Общее количество
-                data.total = (data.total || 0) + 1;
-
-                // Сегодняшний день
-                data.today = data.history[todayStr];
-                data.lastDate = todayStr;
-                data.lastUpdate = new Date().toISOString();
-
-                // Сохраняем обновленные данные
-                return fetch(url, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': 'token ' + GITHUB_TOKEN,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
-                    },
-                    body: JSON.stringify({
-                        body: JSON.stringify(data, null, 2)
-                    })
-                });
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Ошибка обновления: ' + response.status);
-                }
-                // Запоминаем, что сегодня уже заходили
-                localStorage.setItem('visit_date', today);
-            })
-            .catch(function(err) {
-                console.error('Ошибка обновления счетчика:', err);
-            });
-        }
-
-        // Запускаем счетчик после загрузки страницы
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', updateCounter);
-        } else {
-            updateCounter();
-        }
-    })();
+       ym(12345678, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
     </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/12345678" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
 
     <script>
         // ================================================================
@@ -713,7 +636,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.9.1';
+        var APP_VERSION = 'v3.9.4';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
