@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информатика - Среда (СР)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7fafc;
+            padding: 30px;
+            color: #2d3748;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #d0d7e0;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #805ad5;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 2em;
+            color: #805ad5;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+            margin-top: 4px;
+        }
+        .header .date {
+            color: #4a5568;
+            font-size: 0.95em;
+            margin-top: 2px;
+        }
+        .info-count {
+            text-align: center;
+            margin: 10px 0 20px 0;
+            padding: 10px;
+            background: #f3e8ff;
+            border-radius: 8px;
+            border: 1px solid #805ad5;
+            color: #805ad5;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead th {
+            background: #805ad5;
+            color: #ffffff;
+            padding: 10px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        thead th:first-child {
+            border-radius: 6px 0 0 0;
+        }
+        thead th:last-child {
+            border-radius: 0 6px 0 0;
+        }
+        tbody tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        tbody tr:hover {
+            background: #edf2f7;
+        }
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.85em;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+        .footer .version {
+            color: #718096;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 1.5em; }
+            table { font-size: 0.85em; }
+            thead th, tbody td { padding: 6px 8px; }
+        }
+        @media print {
+            body { background: white; padding: 10px; }
+            .container { box-shadow: none; border: 1px solid #ddd; }
+            tbody tr:hover { background: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💻 Информатика</h1>
+            <div class="subtitle">Расписание уроков информатики</div>
+            <div class="date">Среда (СР) · 01.07.2026</div>
+        </div>
+
+        <div class="info-count">📚 Всего уроков: 5</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Урок</th>
+                    <th>Класс</th>
+                    <th>Предмет</th>
+                    <th>Кабинет</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #4a5568;">2</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #2d3748;">5Б</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #805ad5; font-weight: 600;">Информатика</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #e65100; font-weight: 700;">102</td>
+                    </tr>
+                
+                    <tr>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #4a5568;">4</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #2d3748;">5Б</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #805ad5; font-weight: 600;">Англ/информатика</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #e65100; font-weight: 700;">202</td>
+                    </tr>
+                
+                    <tr>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #4a5568;">3</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #2d3748;">7А</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #805ad5; font-weight: 600;">Англ/информатика</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #e65100; font-weight: 700;">210/113</td>
+                    </tr>
+                
+                    <tr>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #4a5568;">5</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #2d3748;">8А</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #805ad5; font-weight: 600;">Англ/информатика</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #e65100; font-weight: 700;">309/113</td>
+                    </tr>
+                
+                    <tr>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 700; color: #4a5568;">6</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; font-weight: 600; color: #2d3748;">8В</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #805ad5; font-weight: 600;">Информатика</td>
+                        <td style="padding: 8px 12px; border: 1px solid #e2e8f0; text-align: center; color: #e65100; font-weight: 700;">113</td>
+                    </tr>
+                
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <span class="version">📅 Сгенерировано: 01.07.2026, 01:11:54</span>
+            <br>
+            <span class="version">🏷️ Версия: v4.4.0</span>
+        </div>
+    </div>
+</body>
+</html>
