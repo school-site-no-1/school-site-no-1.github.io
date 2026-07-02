@@ -196,6 +196,21 @@
             font-size: 0.9em;
             margin-top: 4px;
         }
+        .error .btn-retry {
+            margin-top: 16px;
+            padding: 8px 24px;
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .error .btn-retry:hover {
+            background: #1b5e20;
+        }
 
         /* ===== АДАПТИВНОСТЬ ===== */
         @media print {
@@ -213,6 +228,9 @@
             .header-right .day-label {
                 background: #2e7d32;
                 color: #fff;
+            }
+            .error .btn-retry {
+                display: none;
             }
         }
 
@@ -294,7 +312,7 @@
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
-                <span class="version" id="versionBadge">v1.2.5</span>
+                <span class="version" id="versionBadge">v1.3.0</span>
             </div>
         </div>
 
@@ -308,6 +326,7 @@
                 <span class="icon">🍃</span>
                 <div class="title">Ошибка загрузки данных</div>
                 <div class="sub" id="errorMessage">Не удалось загрузить расписание</div>
+                <button class="btn-retry" onclick="loadData()">🔄 Попробовать снова</button>
             </div>
         </div>
     </div>
@@ -316,7 +335,7 @@
         // ================================================================
         // ВЕРСИЯ
         // ================================================================
-        var APP_VERSION = '1.2.5';
+        var APP_VERSION = '1.3.0';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
@@ -325,8 +344,7 @@
             DAYS: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'],
             DAYS_RU: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
             CLASSES: ['1А', '1Б', '1В', '2А', '2Б', '2В', '3А', '3Б', '3В', '4А', '4Б', '4В'],
-            MAX_LESSONS: 6,
-            SHARED_ROOMS: ['Док', 'с/з']
+            MAX_LESSONS: 6
         };
 
         // ================================================================
@@ -337,6 +355,27 @@
             currentDay: null,
             loaded: false
         };
+
+        // ================================================================
+        // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ
+        // ================================================================
+        function getCurrentDay() {
+            var now = new Date();
+            var dayNum = now.getDay();
+            if (dayNum === 0) dayNum = 7;
+            var dayKey = CONFIG.DAYS[dayNum - 1] || 'ПН';
+
+            if (state.data && state.data[dayKey]) {
+                return dayKey;
+            }
+
+            for (var i = 0; i < CONFIG.DAYS.length; i++) {
+                if (state.data && state.data[CONFIG.DAYS[i]]) {
+                    return CONFIG.DAYS[i];
+                }
+            }
+            return 'ПН';
+        }
 
         // ================================================================
         // ПРЕОБРАЗОВАНИЕ ДАННЫХ (массив [предмет, кабинет] -> объект)
@@ -390,46 +429,22 @@
         }
 
         // ================================================================
-        // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ
-        // ================================================================
-        function getCurrentDay() {
-            var now = new Date();
-            var dayNum = now.getDay();
-            if (dayNum === 0) dayNum = 7;
-            var dayKey = CONFIG.DAYS[dayNum - 1] || 'ПН';
-
-            if (state.data && state.data[dayKey]) {
-                return dayKey;
-            }
-
-            for (var i = 0; i < CONFIG.DAYS.length; i++) {
-                if (state.data && state.data[CONFIG.DAYS[i]]) {
-                    return CONFIG.DAYS[i];
-                }
-            }
-            return 'ПН';
-        }
-
-        // ================================================================
         // ИЗВЛЕЧЕНИЕ ДАННЫХ НАЧАЛЬНОЙ ШКОЛЫ ИЗ JSON
         // ================================================================
         function extractElementaryData(data) {
+            // Проверяем структуру schedule.elementary
             if (data.schedule && data.schedule.elementary) {
                 return data.schedule.elementary;
             }
+            // Проверяем прямой ключ elementary
             if (data.elementary) {
                 return data.elementary;
             }
-            if (data.schedule) {
-                for (var key in data.schedule) {
-                    if (data.schedule[key] && typeof data.schedule[key] === 'object') {
-                        var classes = CONFIG.CLASSES;
-                        for (var i = 0; i < classes.length; i++) {
-                            if (data.schedule[key] && data.schedule[key][classes[i]]) {
-                                return data.schedule[key];
-                            }
-                        }
-                    }
+            // Если данные уже в формате {ПН: {...}, ВТ: {...}}
+            var days = CONFIG.DAYS;
+            for (var i = 0; i < days.length; i++) {
+                if (data[days[i]]) {
+                    return data;
                 }
             }
             return null;
@@ -461,38 +476,18 @@
             gridEl.style.display = 'none';
             errorEl.style.display = 'none';
 
-            // Пытаемся загрузить из localStorage
-            try {
-                var saved = localStorage.getItem('elementaryScheduleData');
-                if (saved) {
-                    var parsed = JSON.parse(saved);
-                    if (parsed.schedule) {
-                        var rawData = extractElementaryData(parsed);
-                        if (rawData && hasElementaryData(rawData)) {
-                            state.data = convertFullData(rawData);
-                            state.loaded = true;
-                            state.currentDay = getCurrentDay();
-                            loadingEl.style.display = 'none';
-                            gridEl.style.display = 'block';
-                            renderAll();
-                            return;
-                        }
-                    }
-                }
-            } catch (e) {}
-
-            // Пытаемся загрузить data.json
-            fetch('data.json')
+            // Пытаемся загрузить data_elementary.json
+            fetch('data_elementary.json')
                 .then(function(response) {
                     if (!response.ok) {
-                        throw new Error('Файл data.json не найден (HTTP ' + response.status + ')');
+                        throw new Error('Файл data_elementary.json не найден (HTTP ' + response.status + ')');
                     }
                     return response.json();
                 })
                 .then(function(data) {
                     var rawData = extractElementaryData(data);
                     if (!rawData || !hasElementaryData(rawData)) {
-                        throw new Error('В файле нет расписания для начальной школы (ключ elementary не найден)');
+                        throw new Error('В файле нет расписания для начальной школы');
                     }
 
                     state.data = convertFullData(rawData);
@@ -500,10 +495,6 @@
                     state.currentDay = getCurrentDay();
                     loadingEl.style.display = 'none';
                     gridEl.style.display = 'block';
-
-                    try {
-                        localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: state.data }));
-                    } catch (err) {}
 
                     renderAll();
                 })
