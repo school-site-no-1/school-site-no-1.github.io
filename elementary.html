@@ -140,36 +140,6 @@
             font-weight: 400;
         }
 
-        .stats-bar {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            padding: 12px 16px;
-            background: #f7fafc;
-            border-radius: 8px;
-            margin-top: 16px;
-            border: 1px solid #e2e8f0;
-        }
-        .stats-bar .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85em;
-        }
-        .stats-bar .stat-item .label {
-            color: #4a5568;
-        }
-        .stats-bar .stat-item .value {
-            font-weight: 700;
-            color: #2d3748;
-        }
-        .stats-bar .stat-item .value.green {
-            color: #38a169;
-        }
-        .stats-bar .stat-item .value.red {
-            color: #e53e3e;
-        }
-
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -218,9 +188,6 @@
                 box-shadow: none;
                 border: 1px solid #ddd;
             }
-            .stats-bar {
-                break-inside: avoid;
-            }
             .schedule-block {
                 break-inside: avoid;
             }
@@ -253,10 +220,6 @@
             .header-right {
                 justify-content: center;
             }
-            .stats-bar {
-                flex-direction: column;
-                gap: 6px;
-            }
         }
     </style>
 </head>
@@ -270,7 +233,7 @@
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
-                <span class="version" id="versionBadge">v1.2.3</span>
+                <span class="version" id="versionBadge">v1.2.4</span>
             </div>
         </div>
 
@@ -286,21 +249,13 @@
                 <div class="sub" id="errorMessage">Не удалось загрузить расписание</div>
             </div>
         </div>
-
-        <div class="stats-bar" id="statsBar" style="display:none;">
-            <div class="stat-item"><span class="label">📚 Всего уроков:</span><span class="value" id="statTotal">0</span></div>
-            <div class="stat-item"><span class="label">✅ Заполнено:</span><span class="value green" id="statFilled">0</span></div>
-            <div class="stat-item"><span class="label">📊 Заполненность:</span><span class="value" id="statPercent">0%</span></div>
-            <div class="stat-item"><span class="label">⚠️ Конфликты:</span><span class="value red" id="statConflicts">0</span></div>
-            <div class="stat-item"><span class="label">🟢 Свободно (текущий урок):</span><span class="value green" id="statFree">0</span></div>
-        </div>
     </div>
 
     <script>
         // ================================================================
-        // ВЕРСИЯ (автоматическое повышение)
+        // ВЕРСИЯ (меняется при каждом изменении)
         // ================================================================
-        var APP_VERSION = '1.2.3';
+        var APP_VERSION = '1.2.4';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
@@ -440,12 +395,10 @@
             var loadingEl = document.getElementById('loadingState');
             var gridEl = document.getElementById('scheduleGrid');
             var errorEl = document.getElementById('errorState');
-            var statsEl = document.getElementById('statsBar');
 
             loadingEl.style.display = 'block';
             gridEl.style.display = 'none';
             errorEl.style.display = 'none';
-            statsEl.style.display = 'none';
 
             // Пытаемся загрузить из localStorage
             try {
@@ -460,7 +413,6 @@
                             state.currentDay = getCurrentDay();
                             loadingEl.style.display = 'none';
                             gridEl.style.display = 'block';
-                            statsEl.style.display = 'flex';
                             renderAll();
                             return;
                         }
@@ -482,15 +434,12 @@
                         throw new Error('В файле нет расписания для начальной школы (ключ elementary не найден)');
                     }
 
-                    // Преобразуем данные из формата [предмет, кабинет] в объекты
                     state.data = convertFullData(rawData);
                     state.loaded = true;
                     state.currentDay = getCurrentDay();
                     loadingEl.style.display = 'none';
                     gridEl.style.display = 'block';
-                    statsEl.style.display = 'flex';
 
-                    // Сохраняем в localStorage
                     try {
                         localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: state.data }));
                     } catch (err) {}
@@ -511,7 +460,6 @@
             if (!state.data || !state.loaded) return;
             renderHeader();
             renderSchedule();
-            updateStats();
         }
 
         function renderHeader() {
@@ -565,113 +513,6 @@
             container.innerHTML = html;
         }
 
-        // ================================================================
-        // СТАТИСТИКА
-        // ================================================================
-        function updateStats() {
-            var dayKey = state.currentDay;
-            var dayData = state.data[dayKey];
-
-            if (!dayData) {
-                document.getElementById('statTotal').textContent = '0';
-                document.getElementById('statFilled').textContent = '0';
-                document.getElementById('statPercent').textContent = '0%';
-                document.getElementById('statConflicts').textContent = '0';
-                document.getElementById('statFree').textContent = '0';
-                return;
-            }
-
-            var totalLessons = 0;
-            var totalFilled = 0;
-            var conflicts = getConflicts(dayData);
-
-            CONFIG.CLASSES.forEach(function(cls) {
-                var lessons = dayData[cls] || [];
-                lessons.forEach(function(lesson) {
-                    if (lesson && lesson.subject && lesson.subject !== 'нет урока' && lesson.subject !== '') {
-                        totalFilled++;
-                    }
-                });
-                totalLessons += CONFIG.MAX_LESSONS;
-            });
-
-            var currentLesson = getCurrentLessonNumber();
-            var freeCount = 0;
-            if (currentLesson > 0 && currentLesson <= CONFIG.MAX_LESSONS) {
-                var usedRooms = new Set();
-                CONFIG.CLASSES.forEach(function(cls) {
-                    var lessons = dayData[cls] || [];
-                    lessons.forEach(function(lesson) {
-                        if (lesson && lesson.lesson === currentLesson && lesson.room && lesson.room.trim() !== '' &&
-                            lesson.subject && lesson.subject !== 'нет урока' && lesson.subject !== '') {
-                            usedRooms.add(lesson.room);
-                        }
-                    });
-                });
-                var allRooms = getAllRooms();
-                freeCount = allRooms.filter(function(room) { return !usedRooms.has(room); }).length;
-            }
-
-            document.getElementById('statTotal').textContent = totalLessons;
-            document.getElementById('statFilled').textContent = totalFilled;
-            document.getElementById('statPercent').textContent = totalLessons > 0 ? Math.round(totalFilled / totalLessons *
-                100) + '%' : '0%';
-            document.getElementById('statConflicts').textContent = conflicts.length;
-            document.getElementById('statFree').textContent = freeCount + ' (' + currentLesson + '-й урок)';
-        }
-
-        function getConflicts(dayData) {
-            var roomUsage = {};
-            var conflicts = [];
-            CONFIG.CLASSES.forEach(function(cls) {
-                var lessons = dayData[cls] || [];
-                lessons.forEach(function(lesson) {
-                    if (!lesson) return;
-                    var room = lesson.room || '';
-                    var subject = lesson.subject || '';
-                    if (room && room.trim() !== '' && subject && subject !== 'нет урока' && subject !== '' &&
-                        !CONFIG.SHARED_ROOMS.includes(room)) {
-                        var key = room + '_' + lesson.lesson;
-                        if (!roomUsage[key]) roomUsage[key] = [];
-                        roomUsage[key].push({ class: cls, subject: subject });
-                    }
-                });
-            });
-            Object.keys(roomUsage).forEach(function(key) {
-                if (roomUsage[key].length > 1) {
-                    var parts = key.split('_');
-                    conflicts.push({
-                        room: parts[0],
-                        lesson: parseInt(parts[1]),
-                        classes: roomUsage[key].map(function(i) { return i.class; }),
-                        subjects: roomUsage[key].map(function(i) { return i.subject; })
-                    });
-                }
-            });
-            return conflicts;
-        }
-
-        function getAllRooms() {
-            return [
-                '101', '102', '103', '104', '105', '106', '107', '108',
-                '109', '110', '111', '112', '113', '201', '202', '203',
-                '204', '205', '206', '207', '208', '209', '210', '211', '212',
-                '301', '302', '303', '304', '305', '306', '307', '308', '309',
-                '310', '311', '312', '313', '314', 'с/з', 'Док'
-            ];
-        }
-
-        function getCurrentLessonNumber() {
-            var now = new Date();
-            var minutes = now.getHours() * 60 + now.getMinutes();
-            var lessonTimes = ["08:30", "09:20", "10:10", "11:00", "11:50", "12:40"];
-            for (var i = lessonTimes.length - 1; i >= 0; i--) {
-                var parts = lessonTimes[i].split(':');
-                if (minutes >= parseInt(parts[0]) * 60 + parseInt(parts[1])) return i + 1;
-            }
-            return 0;
-        }
-
         function updateDate() {
             var now = new Date();
             var options = { day: '2-digit', month: 'long', year: 'numeric' };
@@ -685,12 +526,6 @@
             updateDate();
             document.getElementById('versionBadge').textContent = 'v' + APP_VERSION;
             loadData();
-
-            setInterval(function() {
-                if (state.loaded) {
-                    updateStats();
-                }
-            }, 60000);
         });
     </script>
 
