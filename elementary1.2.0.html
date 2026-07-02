@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📋 Расписание начальной школы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            padding: 16px;
+            color: #2d3748;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #d0d7e0;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== ШАПКА ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 14px;
+            border-bottom: 3px solid #38a169;
+            margin-bottom: 16px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .header-left h1 {
+            font-size: 1.8em;
+            color: #1a365d;
+        }
+        .header-left .badge {
+            background: #f0fff4;
+            color: #38a169;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            border: 1px solid #38a169;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .header-right .version {
+            color: #718096;
+            font-size: 0.8em;
+        }
+        .header-right .current-date {
+            color: #4a5568;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        .header-right .day-label {
+            background: #f0fff4;
+            color: #38a169;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.95em;
+            font-weight: 600;
+            border: 1px solid #38a169;
+        }
+
+        /* ===== ОСНОВНАЯ СЕТКА ===== */
+        .schedule-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .schedule-row {
+            display: flex;
+            gap: 16px;
+        }
+        .schedule-block {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            min-width: 0;
+            background: #ffffff;
+        }
+        .class-header {
+            background: #f0fff4;
+            padding: 6px 10px;
+            font-weight: 700;
+            font-size: 1em;
+            border-bottom: 2px solid #38a169;
+            text-align: center;
+            color: #1a365d;
+        }
+        .lessons-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .lessons-table td {
+            padding: 4px 6px;
+            border: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+        .lesson-number {
+            width: 30px;
+            text-align: center;
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 0.85em;
+        }
+        .lesson-subject {
+            padding-left: 8px;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        .lesson-room {
+            text-align: center;
+            font-weight: 600;
+            color: #e65100;
+            font-size: 0.85em;
+            width: 60px;
+        }
+        .lesson-empty {
+            color: #a0aec0;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .stats-bar .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85em;
+        }
+        .stats-bar .stat-item .label {
+            color: #4a5568;
+        }
+        .stats-bar .stat-item .value {
+            font-weight: 700;
+            color: #2d3748;
+        }
+        .stats-bar .stat-item .value.green {
+            color: #38a169;
+        }
+        .stats-bar .stat-item .value.red {
+            color: #e53e3e;
+        }
+
+        /* ===== СОСТОЯНИЕ ЗАГРУЗКИ ===== */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a0aec0;
+        }
+        .loading .spinner {
+            font-size: 2.5em;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .loading .title {
+            font-size: 1.1em;
+            color: #4a5568;
+        }
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: #e53e3e;
+        }
+        .error .icon {
+            font-size: 2.5em;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .error .title {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .error .sub {
+            color: #718096;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+        .error .btn-retry {
+            margin-top: 16px;
+            padding: 8px 24px;
+            background: #38a169;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .error .btn-retry:hover {
+            background: #2f855a;
+        }
+
+        /* ===== ПЕЧАТЬ ===== */
+        @media print {
+            body {
+                padding: 8px;
+                background: #fff;
+            }
+            .container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .btn {
+                display: none !important;
+            }
+            .stats-bar {
+                break-inside: avoid;
+            }
+            .schedule-block {
+                break-inside: avoid;
+            }
+            .header-right .day-label {
+                border-color: #2d3748;
+                color: #2d3748;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .schedule-row {
+                flex-wrap: wrap;
+            }
+            .schedule-block {
+                flex: 0 0 calc(50% - 8px);
+            }
+        }
+        @media (max-width: 768px) {
+            .schedule-block {
+                flex: 0 0 100%;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .header-left {
+                justify-content: center;
+            }
+            .header-right {
+                justify-content: center;
+            }
+            .stats-bar {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- ШАПКА -->
+        <div class="header">
+            <div class="header-left">
+                <h1>📋 Расписание начальной школы</h1>
+                <span class="badge">1-4 классы</span>
+            </div>
+            <div class="header-right">
+                <span class="day-label" id="dayLabel">Загрузка...</span>
+                <span class="current-date" id="currentDate"></span>
+                <span class="version">v5.4.3</span>
+            </div>
+        </div>
+
+        <!-- РАСПИСАНИЕ -->
+        <div id="scheduleContainer">
+            <div class="loading" id="loadingState">
+                <span class="spinner">⏳</span>
+                <div class="title">Загрузка расписания...</div>
+            </div>
+            <div class="schedule-grid" id="scheduleGrid" style="display:none;"></div>
+            <div class="error" id="errorState" style="display:none;">
+                <span class="icon">❌</span>
+                <div class="title">Ошибка загрузки данных</div>
+                <div class="sub" id="errorMessage">Не удалось загрузить расписание</div>
+                <button class="btn-retry" onclick="loadData()">🔄 Попробовать снова</button>
+            </div>
+        </div>
+
+        <!-- СТАТИСТИКА -->
+        <div class="stats-bar" id="statsBar" style="display:none;">
+            <div class="stat-item"><span class="label">📚 Всего уроков:</span><span class="value" id="statTotal">0</span></div>
+            <div class="stat-item"><span class="label">✅ Заполнено:</span><span class="value green" id="statFilled">0</span></div>
+            <div class="stat-item"><span class="label">📊 Заполненность:</span><span class="value" id="statPercent">0%</span></div>
+            <div class="stat-item"><span class="label">⚠️ Конфликты:</span><span class="value red" id="statConflicts">0</span></div>
+            <div class="stat-item"><span class="label">🟢 Свободно (текущий урок):</span><span class="value green" id="statFree">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // КОНФИГУРАЦИЯ
+        // ================================================================
+        var CONFIG = {
+            DAYS: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'],
+            DAYS_RU: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+            CLASSES: ['1А', '1Б', '1В', '2А', '2Б', '2В', '3А', '3Б', '3В', '4А', '4Б', '4В'],
+            MAX_LESSONS: 6,
+            SHARED_ROOMS: ['Док', 'с/з']
+        };
+
+        // ================================================================
+        // СОСТОЯНИЕ
+        // ================================================================
+        var state = {
+            data: null,
+            currentDay: null,
+            loaded: false
+        };
+
+        var lessonPeriods = ['08:30-09:10', '09:20-10:00', '10:10-10:50', '11:05-11:45', '12:00-12:40', '12:55-13:35'];
+
+        // ================================================================
+        // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ
+        // ================================================================
+        function getCurrentDay() {
+            var now = new Date();
+            var dayNum = now.getDay(); // 0 = воскресенье, 6 = суббота
+            if (dayNum === 0) dayNum = 7; // воскресенье -> 7
+            var dayKey = CONFIG.DAYS[dayNum - 1] || 'ПН';
+            // Проверяем, есть ли данные для этого дня
+            if (state.data && state.data[dayKey]) {
+                return dayKey;
+            }
+            // Если нет, ищем первый день с данными
+            for (var i = 0; i < CONFIG.DAYS.length; i++) {
+                if (state.data && state.data[CONFIG.DAYS[i]]) {
+                    return CONFIG.DAYS[i];
+                }
+            }
+            return 'ПН';
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА ДАННЫХ
+        // ================================================================
+        function loadData() {
+            var loadingEl = document.getElementById('loadingState');
+            var gridEl = document.getElementById('scheduleGrid');
+            var errorEl = document.getElementById('errorState');
+            var statsEl = document.getElementById('statsBar');
+
+            loadingEl.style.display = 'block';
+            gridEl.style.display = 'none';
+            errorEl.style.display = 'none';
+            statsEl.style.display = 'none';
+
+            // Пытаемся загрузить из localStorage (данные от админки)
+            try {
+                var saved = localStorage.getItem('elementaryScheduleData');
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    if (parsed.schedule) {
+                        state.data = parsed.schedule;
+                        state.loaded = true;
+                        state.currentDay = getCurrentDay();
+                        loadingEl.style.display = 'none';
+                        gridEl.style.display = 'block';
+                        statsEl.style.display = 'flex';
+                        renderAll();
+                        showNotification('✅ Расписание загружено', 'success');
+                        return;
+                    }
+                }
+            } catch (e) {}
+
+            // Пытаемся загрузить data.json из той же папки
+            fetch('data.json')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Файл data.json не найден (HTTP ' + response.status + ')');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    // Извлекаем расписание начальной школы
+                    if (data.schedule && data.schedule.elementary) {
+                        state.data = data.schedule.elementary;
+                    } else if (data.elementary) {
+                        state.data = data.elementary;
+                    } else if (data.schedule) {
+                        // Пробуем найти elementary в schedule
+                        var found = false;
+                        for (var key in data.schedule) {
+                            if (data.schedule[key] && typeof data.schedule[key] === 'object') {
+                                var classes = CONFIG.CLASSES;
+                                var hasElementary = false;
+                                for (var i = 0; i < classes.length; i++) {
+                                    if (data.schedule[key] && data.schedule[key][classes[i]]) {
+                                        hasElementary = true;
+                                        break;
+                                    }
+                                }
+                                if (hasElementary) {
+                                    state.data = data.schedule[key];
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found) {
+                            state.data = data.schedule;
+                        }
+                    } else {
+                        state.data = data;
+                    }
+
+                    // Проверяем, что данные содержат начальные классы
+                    var hasElementaryData = false;
+                    var classes = CONFIG.CLASSES;
+                    for (var day in state.data) {
+                        if (state.data[day]) {
+                            for (var i = 0; i < classes.length; i++) {
+                                if (state.data[day][classes[i]]) {
+                                    hasElementaryData = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (hasElementaryData) break;
+                    }
+
+                    if (!hasElementaryData) {
+                        throw new Error('В файле не найдено расписание для начальной школы');
+                    }
+
+                    state.loaded = true;
+                    state.currentDay = getCurrentDay();
+                    loadingEl.style.display = 'none';
+                    gridEl.style.display = 'block';
+                    statsEl.style.display = 'flex';
+                    renderAll();
+                    showNotification('✅ Расписание загружено из data.json', 'success');
+                })
+                .catch(function(err) {
+                    // Если data.json не найден, пробуем загрузить пример
+                    loadingEl.style.display = 'none';
+                    errorEl.style.display = 'block';
+                    document.getElementById('errorMessage').textContent = err.message + '. Нажмите "Попробовать снова" для загрузки примера.';
+                    showNotification('⚠️ ' + err.message, 'warning');
+                });
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА ПРИМЕРА (ДЕМО-ДАННЫЕ)
+        // ================================================================
+        function loadDefaultData() {
+            var demoData = {};
+            var dayNames = CONFIG.DAYS;
+            var classes = CONFIG.CLASSES;
+            var subjects = [
+                'Русский язык', 'Литературное чтение', 'Математика',
+                'Окружающий мир', 'Англ. язык', 'Физ-ра', 'Музыка', 'ИЗО', 'Труд'
+            ];
+
+            dayNames.forEach(function(day) {
+                demoData[day] = {};
+                classes.forEach(function(cls) {
+                    var lessons = [];
+                    for (var i = 1; i <= CONFIG.MAX_LESSONS; i++) {
+                        var subj = '';
+                        var room = '';
+                        if (i <= 4) {
+                            var idx = Math.floor(Math.random() * subjects.length);
+                            subj = subjects[idx];
+                            room = Math.floor(Math.random() * 20 + 101) + '';
+                        }
+                        lessons.push({ lesson: i, subject: subj, room: room });
+                    }
+                    demoData[day][cls] = lessons;
+                });
+            });
+
+            state.data = demoData;
+            state.loaded = true;
+            state.currentDay = getCurrentDay();
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('scheduleGrid').style.display = 'block';
+            document.getElementById('statsBar').style.display = 'flex';
+            document.getElementById('errorState').style.display = 'none';
+            renderAll();
+            showNotification('📂 Загружен пример расписания', 'info');
+        }
+
+        // ================================================================
+        // ОТОБРАЖЕНИЕ
+        // ================================================================
+        function renderAll() {
+            if (!state.data || !state.loaded) return;
+            renderHeader();
+            renderSchedule();
+            updateStats();
+        }
+
+        function renderHeader() {
+            var dayKey = state.currentDay;
+            var dayFull = CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] || dayKey;
+            document.getElementById('dayLabel').textContent = '📅 ' + dayFull + ' (' + dayKey + ')';
+        }
+
+        function renderSchedule() {
+            var container = document.getElementById('scheduleGrid');
+            var dayKey = state.currentDay;
+            var dayData = state.data[dayKey];
+
+            if (!dayData) {
+                container.innerHTML =
+                    '<div style="text-align:center;padding:40px 0;color:#a0aec0;font-size:1.1em;">📭 Нет данных для ' +
+                    CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] + '</div>';
+                return;
+            }
+
+            var classes = CONFIG.CLASSES;
+            var html = '';
+            for (var i = 0; i < classes.length; i += 4) {
+                var group = classes.slice(i, i + 4);
+                var rowHtml = '<div class="schedule-row">';
+                group.forEach(function(cls) {
+                    var lessons = dayData[cls] || [];
+                    var blockHtml = '<div class="schedule-block">';
+                    blockHtml += '<div class="class-header">' + cls + '</div>';
+                    blockHtml += '<table class="lessons-table">';
+                    for (var l = 1; l <= CONFIG.MAX_LESSONS; l++) {
+                        var lesson = lessons.find(function(les) { return les && les.lesson === l; });
+                        var subject = lesson ? lesson.subject : '';
+                        var room = lesson ? lesson.room : '';
+                        var isEmpty = !subject || subject === 'нет урока' || subject === '';
+
+                        blockHtml += '<tr>';
+                        blockHtml += '<td class="lesson-number">' + l + '</td>';
+                        blockHtml += '<td class="lesson-subject' + (isEmpty ? ' lesson-empty' : '') + '">' +
+                            (isEmpty ? '—' : subject) +
+                            '</td>';
+                        blockHtml += '<td class="lesson-room">' + (isEmpty ? '' : room) + '</td>';
+                        blockHtml += '</tr>';
+                    }
+                    blockHtml += '</table></div>';
+                    rowHtml += blockHtml;
+                });
+                rowHtml += '</div>';
+                html += rowHtml;
+            }
+            container.innerHTML = html;
+        }
+
+        // ================================================================
+        // СТАТИСТИКА
+        // ================================================================
+        function updateStats() {
+            var dayKey = state.currentDay;
+            var dayData = state.data[dayKey];
+
+            if (!dayData) {
+                document.getElementById('statTotal').textContent = '0';
+                document.getElementById('statFilled').textContent = '0';
+                document.getElementById('statPercent').textContent = '0%';
+                document.getElementById('statConflicts').textContent = '0';
+                document.getElementById('statFree').textContent = '0';
+                return;
+            }
+
+            var totalLessons = 0;
+            var totalFilled = 0;
+            var conflicts = getConflicts(dayData);
+
+            CONFIG.CLASSES.forEach(function(cls) {
+                var lessons = dayData[cls] || [];
+                lessons.forEach(function(lesson) {
+                    if (lesson && lesson.subject && lesson.subject !== 'нет урока' && lesson.subject !== '') {
+                        totalFilled++;
+                    }
+                });
+                totalLessons += CONFIG.MAX_LESSONS;
+            });
+
+            var currentLesson = getCurrentLessonNumber();
+            var freeCount = 0;
+            if (currentLesson > 0 && currentLesson <= CONFIG.MAX_LESSONS) {
+                var usedRooms = new Set();
+                CONFIG.CLASSES.forEach(function(cls) {
+                    var lessons = dayData[cls] || [];
+                    lessons.forEach(function(lesson) {
+                        if (lesson && lesson.lesson === currentLesson && lesson.room && lesson.room.trim() !== '' &&
+                            lesson.subject && lesson.subject !== 'нет урока' && lesson.subject !== '') {
+                            usedRooms.add(lesson.room);
+                        }
+                    });
+                });
+                var allRooms = getAllRooms();
+                freeCount = allRooms.filter(function(room) { return !usedRooms.has(room); }).length;
+            }
+
+            document.getElementById('statTotal').textContent = totalLessons;
+            document.getElementById('statFilled').textContent = totalFilled;
+            document.getElementById('statPercent').textContent = totalLessons > 0 ? Math.round(totalFilled / totalLessons *
+                100) + '%' : '0%';
+            document.getElementById('statConflicts').textContent = conflicts.length;
+            document.getElementById('statFree').textContent = freeCount + ' (' + currentLesson + '-й урок)';
+        }
+
+        function getConflicts(dayData) {
+            var roomUsage = {};
+            var conflicts = [];
+            CONFIG.CLASSES.forEach(function(cls) {
+                var lessons = dayData[cls] || [];
+                lessons.forEach(function(lesson) {
+                    if (!lesson) return;
+                    var room = lesson.room || '';
+                    var subject = lesson.subject || '';
+                    if (room && room.trim() !== '' && subject && subject !== 'нет урока' && subject !== '' &&
+                        !CONFIG.SHARED_ROOMS.includes(room)) {
+                        var key = room + '_' + lesson.lesson;
+                        if (!roomUsage[key]) roomUsage[key] = [];
+                        roomUsage[key].push({ class: cls, subject: subject });
+                    }
+                });
+            });
+            Object.keys(roomUsage).forEach(function(key) {
+                if (roomUsage[key].length > 1) {
+                    var parts = key.split('_');
+                    conflicts.push({
+                        room: parts[0],
+                        lesson: parseInt(parts[1]),
+                        classes: roomUsage[key].map(function(i) { return i.class; }),
+                        subjects: roomUsage[key].map(function(i) { return i.subject; })
+                    });
+                }
+            });
+            return conflicts;
+        }
+
+        function getAllRooms() {
+            return [
+                '101', '102', '103', '104', '105', '106', '107', '108',
+                '109', '110', '111', '112', '113', '201', '202', '203',
+                '204', '205', '206', '207', '208', '209', '210', '211', '212',
+                '301', '302', '303', '304', '305', '306', '307', '308', '309',
+                '310', '311', '312', '313', '314', 'с/з', 'Док'
+            ];
+        }
+
+        // ================================================================
+        // ТЕКУЩИЙ УРОК
+        // ================================================================
+        function getCurrentLessonNumber() {
+            var now = new Date();
+            var minutes = now.getHours() * 60 + now.getMinutes();
+            var lessonTimes = ["08:30", "09:20", "10:10", "11:00", "11:50", "12:40"];
+            for (var i = lessonTimes.length - 1; i >= 0; i--) {
+                var parts = lessonTimes[i].split(':');
+                if (minutes >= parseInt(parts[0]) * 60 + parseInt(parts[1])) return i + 1;
+            }
+            return 0;
+        }
+
+        // ================================================================
+        // УВЕДОМЛЕНИЯ
+        // ================================================================
+        function showNotification(message, type) {
+            var el = document.createElement('div');
+            el.style.cssText =
+                'position:fixed;top:20px;right:20px;padding:12px 20px;background:#fff;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);z-index:9999;border-left:4px solid #38a169;transform:translateX(450px);transition:transform 0.3s;color:#2d3748;max-width:400px;';
+            if (type === 'error') {
+                el.style.borderLeftColor = '#e53e3e';
+            } else if (type === 'warning') {
+                el.style.borderLeftColor = '#d69e2e';
+            }
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(function() {
+                el.style.transform = 'translateX(0)';
+            }, 50);
+            setTimeout(function() {
+                el.style.transform = 'translateX(450px)';
+                setTimeout(function() { el.remove(); }, 400);
+            }, 3000);
+        }
+
+        // ================================================================
+        // ТЕКУЩАЯ ДАТА
+        // ================================================================
+        function updateDate() {
+            var now = new Date();
+            var options = { day: '2-digit', month: 'long', year: 'numeric' };
+            document.getElementById('currentDate').textContent = '📅 ' + now.toLocaleDateString('ru-RU', options);
+        }
+
+        // ================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDate();
+            loadData();
+
+            // Обновляем статистику каждую минуту
+            setInterval(function() {
+                if (state.loaded) {
+                    updateStats();
+                }
+            }, 60000);
+        });
+
+        // Кнопка повтора доступна глобально
+        window.loadData = loadData;
+        window.loadDefaultData = loadDefaultData;
+    </script>
+
+</body>
+</html>
