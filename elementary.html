@@ -81,6 +81,51 @@
             border: 1px solid #38a169;
         }
 
+        /* ===== КНОПКА ЗАГРУЗКИ ===== */
+        .load-area {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 10px 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px dashed #cbd5e0;
+        }
+        .load-area .label {
+            color: #4a5568;
+            font-size: 0.85em;
+        }
+        .load-area .btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 500;
+            transition: all 0.2s;
+            background: #38a169;
+            color: #fff;
+        }
+        .load-area .btn:hover {
+            background: #2f855a;
+        }
+        .load-area .btn-secondary {
+            background: #718096;
+        }
+        .load-area .btn-secondary:hover {
+            background: #5a6a7a;
+        }
+        .load-area .file-info {
+            color: #38a169;
+            font-size: 0.8em;
+            margin-left: 4px;
+        }
+        .file-input-hidden {
+            display: none;
+        }
+
         /* ===== ОСНОВНАЯ СЕТКА ===== */
         .schedule-grid {
             display: flex;
@@ -183,6 +228,11 @@
             font-size: 2.5em;
             display: block;
             margin-bottom: 12px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         .loading .title {
             font-size: 1.1em;
@@ -207,19 +257,6 @@
             font-size: 0.9em;
             margin-top: 4px;
         }
-        .error .btn-retry {
-            margin-top: 16px;
-            padding: 8px 24px;
-            background: #38a169;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-        .error .btn-retry:hover {
-            background: #2f855a;
-        }
 
         /* ===== ПЕЧАТЬ ===== */
         @media print {
@@ -231,7 +268,7 @@
                 box-shadow: none;
                 border: 1px solid #ddd;
             }
-            .btn {
+            .load-area {
                 display: none !important;
             }
             .stats-bar {
@@ -269,6 +306,11 @@
             .header-right {
                 justify-content: center;
             }
+            .load-area {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
             .stats-bar {
                 flex-direction: column;
                 gap: 6px;
@@ -287,8 +329,17 @@
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
-                <span class="version">v5.4.3</span>
+                <span class="version">v1.2.0</span>
             </div>
+        </div>
+
+        <!-- ЗАГРУЗКА -->
+        <div class="load-area" id="loadArea">
+            <span class="label">📂 Загрузить файл:</span>
+            <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Выбрать файл</button>
+            <input type="file" class="file-input-hidden" id="fileInput" accept=".json" onchange="loadFile(event)">
+            <button class="btn btn-secondary" onclick="loadDefaultData()">📂 Пример</button>
+            <span class="file-info" id="fileInfo"></span>
         </div>
 
         <!-- РАСПИСАНИЕ -->
@@ -301,8 +352,7 @@
             <div class="error" id="errorState" style="display:none;">
                 <span class="icon">❌</span>
                 <div class="title">Ошибка загрузки данных</div>
-                <div class="sub" id="errorMessage">Не удалось загрузить расписание</div>
-                <button class="btn-retry" onclick="loadData()">🔄 Попробовать снова</button>
+                <div class="sub" id="errorMessage">Не удалось загрузить расписание. Попробуйте загрузить файл вручную или нажмите "Пример".</div>
             </div>
         </div>
 
@@ -334,7 +384,8 @@
         var state = {
             data: null,
             currentDay: null,
-            loaded: false
+            loaded: false,
+            fileName: ''
         };
 
         var lessonPeriods = ['08:30-09:10', '09:20-10:00', '10:10-10:50', '11:05-11:45', '12:00-12:40', '12:55-13:35'];
@@ -344,20 +395,60 @@
         // ================================================================
         function getCurrentDay() {
             var now = new Date();
-            var dayNum = now.getDay(); // 0 = воскресенье, 6 = суббота
-            if (dayNum === 0) dayNum = 7; // воскресенье -> 7
+            var dayNum = now.getDay();
+            if (dayNum === 0) dayNum = 7;
             var dayKey = CONFIG.DAYS[dayNum - 1] || 'ПН';
-            // Проверяем, есть ли данные для этого дня
+
             if (state.data && state.data[dayKey]) {
                 return dayKey;
             }
-            // Если нет, ищем первый день с данными
+
             for (var i = 0; i < CONFIG.DAYS.length; i++) {
                 if (state.data && state.data[CONFIG.DAYS[i]]) {
                     return CONFIG.DAYS[i];
                 }
             }
             return 'ПН';
+        }
+
+        // ================================================================
+        // ПАРСИНГ ДАННЫХ
+        // ================================================================
+        function parseData(rawData) {
+            if (rawData.schedule && rawData.schedule.elementary) {
+                return rawData.schedule.elementary;
+            }
+            if (rawData.elementary) {
+                return rawData.elementary;
+            }
+            if (rawData.schedule) {
+                for (var key in rawData.schedule) {
+                    if (rawData.schedule[key] && typeof rawData.schedule[key] === 'object') {
+                        var classes = CONFIG.CLASSES;
+                        for (var i = 0; i < classes.length; i++) {
+                            if (rawData.schedule[key] && rawData.schedule[key][classes[i]]) {
+                                return rawData.schedule[key];
+                            }
+                        }
+                    }
+                }
+                return rawData.schedule;
+            }
+            return rawData;
+        }
+
+        function hasElementaryData(data) {
+            var classes = CONFIG.CLASSES;
+            for (var day in data) {
+                if (data[day]) {
+                    for (var i = 0; i < classes.length; i++) {
+                        if (data[day][classes[i]]) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         // ================================================================
@@ -374,104 +465,110 @@
             errorEl.style.display = 'none';
             statsEl.style.display = 'none';
 
-            // Пытаемся загрузить из localStorage (данные от админки)
+            // Пытаемся загрузить из localStorage
             try {
                 var saved = localStorage.getItem('elementaryScheduleData');
                 if (saved) {
                     var parsed = JSON.parse(saved);
                     if (parsed.schedule) {
-                        state.data = parsed.schedule;
-                        state.loaded = true;
-                        state.currentDay = getCurrentDay();
-                        loadingEl.style.display = 'none';
-                        gridEl.style.display = 'block';
-                        statsEl.style.display = 'flex';
-                        renderAll();
-                        showNotification('✅ Расписание загружено', 'success');
-                        return;
+                        var data = parseData(parsed);
+                        if (hasElementaryData(data)) {
+                            state.data = data;
+                            state.loaded = true;
+                            state.currentDay = getCurrentDay();
+                            state.fileName = 'localStorage';
+                            loadingEl.style.display = 'none';
+                            gridEl.style.display = 'block';
+                            statsEl.style.display = 'flex';
+                            document.getElementById('fileInfo').textContent = '✅ Загружено из localStorage';
+                            renderAll();
+                            return;
+                        }
                     }
                 }
             } catch (e) {}
 
-            // Пытаемся загрузить data.json из той же папки
+            // Пытаемся загрузить data.json
             fetch('data.json')
                 .then(function(response) {
                     if (!response.ok) {
-                        throw new Error('Файл data.json не найден (HTTP ' + response.status + ')');
+                        throw new Error('Файл data.json не найден');
                     }
                     return response.json();
                 })
                 .then(function(data) {
-                    // Извлекаем расписание начальной школы
-                    if (data.schedule && data.schedule.elementary) {
-                        state.data = data.schedule.elementary;
-                    } else if (data.elementary) {
-                        state.data = data.elementary;
-                    } else if (data.schedule) {
-                        // Пробуем найти elementary в schedule
-                        var found = false;
-                        for (var key in data.schedule) {
-                            if (data.schedule[key] && typeof data.schedule[key] === 'object') {
-                                var classes = CONFIG.CLASSES;
-                                var hasElementary = false;
-                                for (var i = 0; i < classes.length; i++) {
-                                    if (data.schedule[key] && data.schedule[key][classes[i]]) {
-                                        hasElementary = true;
-                                        break;
-                                    }
-                                }
-                                if (hasElementary) {
-                                    state.data = data.schedule[key];
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!found) {
-                            state.data = data.schedule;
-                        }
-                    } else {
-                        state.data = data;
+                    var parsedData = parseData(data);
+                    if (!hasElementaryData(parsedData)) {
+                        throw new Error('В файле нет расписания для начальной школы');
                     }
-
-                    // Проверяем, что данные содержат начальные классы
-                    var hasElementaryData = false;
-                    var classes = CONFIG.CLASSES;
-                    for (var day in state.data) {
-                        if (state.data[day]) {
-                            for (var i = 0; i < classes.length; i++) {
-                                if (state.data[day][classes[i]]) {
-                                    hasElementaryData = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (hasElementaryData) break;
-                    }
-
-                    if (!hasElementaryData) {
-                        throw new Error('В файле не найдено расписание для начальной школы');
-                    }
-
+                    state.data = parsedData;
                     state.loaded = true;
                     state.currentDay = getCurrentDay();
+                    state.fileName = 'data.json';
                     loadingEl.style.display = 'none';
                     gridEl.style.display = 'block';
                     statsEl.style.display = 'flex';
+                    document.getElementById('fileInfo').textContent = '✅ Загружен data.json';
                     renderAll();
-                    showNotification('✅ Расписание загружено из data.json', 'success');
                 })
                 .catch(function(err) {
-                    // Если data.json не найден, пробуем загрузить пример
+                    // Если data.json не найден, показываем ошибку
                     loadingEl.style.display = 'none';
                     errorEl.style.display = 'block';
-                    document.getElementById('errorMessage').textContent = err.message + '. Нажмите "Попробовать снова" для загрузки примера.';
-                    showNotification('⚠️ ' + err.message, 'warning');
+                    document.getElementById('errorMessage').textContent =
+                        err.message + '. Загрузите файл вручную или нажмите "Пример".';
+                    document.getElementById('fileInfo').textContent = '❌ ' + err.message;
                 });
         }
 
         // ================================================================
-        // ЗАГРУЗКА ПРИМЕРА (ДЕМО-ДАННЫЕ)
+        // ЗАГРУЗКА ИЗ ФАЙЛА
+        // ================================================================
+        function loadFile(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = JSON.parse(e.target.result);
+                    var parsedData = parseData(data);
+
+                    if (!hasElementaryData(parsedData)) {
+                        showNotification('❌ В файле нет расписания для начальной школы', 'error');
+                        return;
+                    }
+
+                    state.data = parsedData;
+                    state.loaded = true;
+                    state.currentDay = getCurrentDay();
+                    state.fileName = file.name;
+
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('scheduleGrid').style.display = 'block';
+                    document.getElementById('statsBar').style.display = 'flex';
+                    document.getElementById('errorState').style.display = 'none';
+                    document.getElementById('fileInfo').textContent = '✅ Загружен ' + file.name;
+
+                    renderAll();
+                    showNotification('✅ Расписание загружено из ' + file.name, 'success');
+
+                    // Сохраняем в localStorage
+                    try {
+                        localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: parsedData }));
+                    } catch (err) {}
+
+                } catch (err) {
+                    showNotification('❌ Ошибка чтения файла: ' + err.message, 'error');
+                    document.getElementById('fileInfo').textContent = '❌ Ошибка: ' + err.message;
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА ПРИМЕРА
         // ================================================================
         function loadDefaultData() {
             var demoData = {};
@@ -479,7 +576,8 @@
             var classes = CONFIG.CLASSES;
             var subjects = [
                 'Русский язык', 'Литературное чтение', 'Математика',
-                'Окружающий мир', 'Англ. язык', 'Физ-ра', 'Музыка', 'ИЗО', 'Труд'
+                'Окружающий мир', 'Англ. язык', 'Физ-ра', 'Музыка', 'ИЗО', 'Труд',
+                'Разговор о важном'
             ];
 
             dayNames.forEach(function(day) {
@@ -503,12 +601,20 @@
             state.data = demoData;
             state.loaded = true;
             state.currentDay = getCurrentDay();
+            state.fileName = 'пример';
+
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('scheduleGrid').style.display = 'block';
             document.getElementById('statsBar').style.display = 'flex';
             document.getElementById('errorState').style.display = 'none';
+            document.getElementById('fileInfo').textContent = '📂 Загружен пример';
+
             renderAll();
             showNotification('📂 Загружен пример расписания', 'info');
+
+            try {
+                localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: demoData }));
+            } catch (err) {}
         }
 
         // ================================================================
@@ -715,11 +821,50 @@
         }
 
         // ================================================================
+        // ПРОВЕРКА ДАННЫХ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+        // ================================================================
+        function checkDataOnLoad() {
+            // Проверяем, есть ли уже данные
+            if (state.loaded && state.data) {
+                return true;
+            }
+
+            // Пытаемся загрузить из localStorage
+            try {
+                var saved = localStorage.getItem('elementaryScheduleData');
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    if (parsed.schedule) {
+                        var data = parseData(parsed);
+                        if (hasElementaryData(data)) {
+                            state.data = data;
+                            state.loaded = true;
+                            state.currentDay = getCurrentDay();
+                            document.getElementById('loadingState').style.display = 'none';
+                            document.getElementById('scheduleGrid').style.display = 'block';
+                            document.getElementById('statsBar').style.display = 'flex';
+                            document.getElementById('fileInfo').textContent = '✅ Загружено из localStorage';
+                            renderAll();
+                            return true;
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            return false;
+        }
+
+        // ================================================================
         // ИНИЦИАЛИЗАЦИЯ
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
-            loadData();
+
+            // Проверяем данные при загрузке
+            if (!checkDataOnLoad()) {
+                // Если данных нет, пытаемся загрузить data.json
+                loadData();
+            }
 
             // Обновляем статистику каждую минуту
             setInterval(function() {
@@ -729,9 +874,10 @@
             }, 60000);
         });
 
-        // Кнопка повтора доступна глобально
-        window.loadData = loadData;
+        // Делаем функции глобальными для кнопок
+        window.loadFile = loadFile;
         window.loadDefaultData = loadDefaultData;
+        window.loadData = loadData;
     </script>
 
 </body>
