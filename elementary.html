@@ -26,7 +26,6 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
-        /* ===== ШАПКА ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -81,52 +80,6 @@
             border: 1px solid #38a169;
         }
 
-        /* ===== КНОПКА ЗАГРУЗКИ ===== */
-        .load-area {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding: 10px 16px;
-            background: #f7fafc;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            border: 1px dashed #cbd5e0;
-        }
-        .load-area .label {
-            color: #4a5568;
-            font-size: 0.85em;
-        }
-        .load-area .btn {
-            padding: 6px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8em;
-            font-weight: 500;
-            transition: all 0.2s;
-            background: #38a169;
-            color: #fff;
-        }
-        .load-area .btn:hover {
-            background: #2f855a;
-        }
-        .load-area .btn-secondary {
-            background: #718096;
-        }
-        .load-area .btn-secondary:hover {
-            background: #5a6a7a;
-        }
-        .load-area .file-info {
-            color: #38a169;
-            font-size: 0.8em;
-            margin-left: 4px;
-        }
-        .file-input-hidden {
-            display: none;
-        }
-
-        /* ===== ОСНОВНАЯ СЕТКА ===== */
         .schedule-grid {
             display: flex;
             flex-direction: column;
@@ -187,7 +140,6 @@
             font-weight: 400;
         }
 
-        /* ===== СТАТИСТИКА ===== */
         .stats-bar {
             display: flex;
             gap: 20px;
@@ -218,7 +170,6 @@
             color: #e53e3e;
         }
 
-        /* ===== СОСТОЯНИЕ ЗАГРУЗКИ ===== */
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -258,7 +209,6 @@
             margin-top: 4px;
         }
 
-        /* ===== ПЕЧАТЬ ===== */
         @media print {
             body {
                 padding: 8px;
@@ -267,9 +217,6 @@
             .container {
                 box-shadow: none;
                 border: 1px solid #ddd;
-            }
-            .load-area {
-                display: none !important;
             }
             .stats-bar {
                 break-inside: avoid;
@@ -306,11 +253,6 @@
             .header-right {
                 justify-content: center;
             }
-            .load-area {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
             .stats-bar {
                 flex-direction: column;
                 gap: 6px;
@@ -320,7 +262,6 @@
 </head>
 <body>
     <div class="container" id="app">
-        <!-- ШАПКА -->
         <div class="header">
             <div class="header-left">
                 <h1>📋 Расписание начальной школы</h1>
@@ -329,20 +270,10 @@
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
-                <span class="version">v1.2.0</span>
+                <span class="version">v1.2.1</span>
             </div>
         </div>
 
-        <!-- ЗАГРУЗКА -->
-        <div class="load-area" id="loadArea">
-            <span class="label">📂 Загрузить файл:</span>
-            <button class="btn" onclick="document.getElementById('fileInput').click()">📁 Выбрать файл</button>
-            <input type="file" class="file-input-hidden" id="fileInput" accept=".json" onchange="loadFile(event)">
-            <button class="btn btn-secondary" onclick="loadDefaultData()">📂 Пример</button>
-            <span class="file-info" id="fileInfo"></span>
-        </div>
-
-        <!-- РАСПИСАНИЕ -->
         <div id="scheduleContainer">
             <div class="loading" id="loadingState">
                 <span class="spinner">⏳</span>
@@ -352,11 +283,10 @@
             <div class="error" id="errorState" style="display:none;">
                 <span class="icon">❌</span>
                 <div class="title">Ошибка загрузки данных</div>
-                <div class="sub" id="errorMessage">Не удалось загрузить расписание. Попробуйте загрузить файл вручную или нажмите "Пример".</div>
+                <div class="sub" id="errorMessage">Не удалось загрузить расписание</div>
             </div>
         </div>
 
-        <!-- СТАТИСТИКА -->
         <div class="stats-bar" id="statsBar" style="display:none;">
             <div class="stat-item"><span class="label">📚 Всего уроков:</span><span class="value" id="statTotal">0</span></div>
             <div class="stat-item"><span class="label">✅ Заполнено:</span><span class="value green" id="statFilled">0</span></div>
@@ -384,11 +314,8 @@
         var state = {
             data: null,
             currentDay: null,
-            loaded: false,
-            fileName: ''
+            loaded: false
         };
-
-        var lessonPeriods = ['08:30-09:10', '09:20-10:00', '10:10-10:50', '11:05-11:45', '12:00-12:40', '12:55-13:35'];
 
         // ================================================================
         // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ
@@ -412,29 +339,31 @@
         }
 
         // ================================================================
-        // ПАРСИНГ ДАННЫХ
+        // ИЗВЛЕЧЕНИЕ ДАННЫХ НАЧАЛЬНОЙ ШКОЛЫ ИЗ JSON
         // ================================================================
-        function parseData(rawData) {
-            if (rawData.schedule && rawData.schedule.elementary) {
-                return rawData.schedule.elementary;
+        function extractElementaryData(data) {
+            // Проверяем структуру schedule.elementary
+            if (data.schedule && data.schedule.elementary) {
+                return data.schedule.elementary;
             }
-            if (rawData.elementary) {
-                return rawData.elementary;
+            // Проверяем прямой ключ elementary
+            if (data.elementary) {
+                return data.elementary;
             }
-            if (rawData.schedule) {
-                for (var key in rawData.schedule) {
-                    if (rawData.schedule[key] && typeof rawData.schedule[key] === 'object') {
+            // Проверяем, есть ли в schedule ключи, содержащие классы начальной школы
+            if (data.schedule) {
+                for (var key in data.schedule) {
+                    if (data.schedule[key] && typeof data.schedule[key] === 'object') {
                         var classes = CONFIG.CLASSES;
                         for (var i = 0; i < classes.length; i++) {
-                            if (rawData.schedule[key] && rawData.schedule[key][classes[i]]) {
-                                return rawData.schedule[key];
+                            if (data.schedule[key] && data.schedule[key][classes[i]]) {
+                                return data.schedule[key];
                             }
                         }
                     }
                 }
-                return rawData.schedule;
             }
-            return rawData;
+            return null;
         }
 
         function hasElementaryData(data) {
@@ -471,16 +400,14 @@
                 if (saved) {
                     var parsed = JSON.parse(saved);
                     if (parsed.schedule) {
-                        var data = parseData(parsed);
-                        if (hasElementaryData(data)) {
+                        var data = extractElementaryData(parsed);
+                        if (data && hasElementaryData(data)) {
                             state.data = data;
                             state.loaded = true;
                             state.currentDay = getCurrentDay();
-                            state.fileName = 'localStorage';
                             loadingEl.style.display = 'none';
                             gridEl.style.display = 'block';
                             statsEl.style.display = 'flex';
-                            document.getElementById('fileInfo').textContent = '✅ Загружено из localStorage';
                             renderAll();
                             return;
                         }
@@ -492,129 +419,34 @@
             fetch('data.json')
                 .then(function(response) {
                     if (!response.ok) {
-                        throw new Error('Файл data.json не найден');
+                        throw new Error('Файл data.json не найден (HTTP ' + response.status + ')');
                     }
                     return response.json();
                 })
                 .then(function(data) {
-                    var parsedData = parseData(data);
-                    if (!hasElementaryData(parsedData)) {
-                        throw new Error('В файле нет расписания для начальной школы');
+                    var elementaryData = extractElementaryData(data);
+                    if (!elementaryData || !hasElementaryData(elementaryData)) {
+                        throw new Error('В файле нет расписания для начальной школы (ключ elementary не найден)');
                     }
-                    state.data = parsedData;
+                    state.data = elementaryData;
                     state.loaded = true;
                     state.currentDay = getCurrentDay();
-                    state.fileName = 'data.json';
                     loadingEl.style.display = 'none';
                     gridEl.style.display = 'block';
                     statsEl.style.display = 'flex';
-                    document.getElementById('fileInfo').textContent = '✅ Загружен data.json';
-                    renderAll();
-                })
-                .catch(function(err) {
-                    // Если data.json не найден, показываем ошибку
-                    loadingEl.style.display = 'none';
-                    errorEl.style.display = 'block';
-                    document.getElementById('errorMessage').textContent =
-                        err.message + '. Загрузите файл вручную или нажмите "Пример".';
-                    document.getElementById('fileInfo').textContent = '❌ ' + err.message;
-                });
-        }
-
-        // ================================================================
-        // ЗАГРУЗКА ИЗ ФАЙЛА
-        // ================================================================
-        function loadFile(event) {
-            var file = event.target.files[0];
-            if (!file) return;
-
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    var data = JSON.parse(e.target.result);
-                    var parsedData = parseData(data);
-
-                    if (!hasElementaryData(parsedData)) {
-                        showNotification('❌ В файле нет расписания для начальной школы', 'error');
-                        return;
-                    }
-
-                    state.data = parsedData;
-                    state.loaded = true;
-                    state.currentDay = getCurrentDay();
-                    state.fileName = file.name;
-
-                    document.getElementById('loadingState').style.display = 'none';
-                    document.getElementById('scheduleGrid').style.display = 'block';
-                    document.getElementById('statsBar').style.display = 'flex';
-                    document.getElementById('errorState').style.display = 'none';
-                    document.getElementById('fileInfo').textContent = '✅ Загружен ' + file.name;
-
-                    renderAll();
-                    showNotification('✅ Расписание загружено из ' + file.name, 'success');
 
                     // Сохраняем в localStorage
                     try {
-                        localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: parsedData }));
+                        localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: elementaryData }));
                     } catch (err) {}
 
-                } catch (err) {
-                    showNotification('❌ Ошибка чтения файла: ' + err.message, 'error');
-                    document.getElementById('fileInfo').textContent = '❌ Ошибка: ' + err.message;
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-
-        // ================================================================
-        // ЗАГРУЗКА ПРИМЕРА
-        // ================================================================
-        function loadDefaultData() {
-            var demoData = {};
-            var dayNames = CONFIG.DAYS;
-            var classes = CONFIG.CLASSES;
-            var subjects = [
-                'Русский язык', 'Литературное чтение', 'Математика',
-                'Окружающий мир', 'Англ. язык', 'Физ-ра', 'Музыка', 'ИЗО', 'Труд',
-                'Разговор о важном'
-            ];
-
-            dayNames.forEach(function(day) {
-                demoData[day] = {};
-                classes.forEach(function(cls) {
-                    var lessons = [];
-                    for (var i = 1; i <= CONFIG.MAX_LESSONS; i++) {
-                        var subj = '';
-                        var room = '';
-                        if (i <= 4) {
-                            var idx = Math.floor(Math.random() * subjects.length);
-                            subj = subjects[idx];
-                            room = Math.floor(Math.random() * 20 + 101) + '';
-                        }
-                        lessons.push({ lesson: i, subject: subj, room: room });
-                    }
-                    demoData[day][cls] = lessons;
+                    renderAll();
+                })
+                .catch(function(err) {
+                    loadingEl.style.display = 'none';
+                    errorEl.style.display = 'block';
+                    document.getElementById('errorMessage').textContent = err.message;
                 });
-            });
-
-            state.data = demoData;
-            state.loaded = true;
-            state.currentDay = getCurrentDay();
-            state.fileName = 'пример';
-
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('scheduleGrid').style.display = 'block';
-            document.getElementById('statsBar').style.display = 'flex';
-            document.getElementById('errorState').style.display = 'none';
-            document.getElementById('fileInfo').textContent = '📂 Загружен пример';
-
-            renderAll();
-            showNotification('📂 Загружен пример расписания', 'info');
-
-            try {
-                localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: demoData }));
-            } catch (err) {}
         }
 
         // ================================================================
@@ -774,9 +606,6 @@
             ];
         }
 
-        // ================================================================
-        // ТЕКУЩИЙ УРОК
-        // ================================================================
         function getCurrentLessonNumber() {
             var now = new Date();
             var minutes = now.getHours() * 60 + now.getMinutes();
@@ -788,32 +617,6 @@
             return 0;
         }
 
-        // ================================================================
-        // УВЕДОМЛЕНИЯ
-        // ================================================================
-        function showNotification(message, type) {
-            var el = document.createElement('div');
-            el.style.cssText =
-                'position:fixed;top:20px;right:20px;padding:12px 20px;background:#fff;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);z-index:9999;border-left:4px solid #38a169;transform:translateX(450px);transition:transform 0.3s;color:#2d3748;max-width:400px;';
-            if (type === 'error') {
-                el.style.borderLeftColor = '#e53e3e';
-            } else if (type === 'warning') {
-                el.style.borderLeftColor = '#d69e2e';
-            }
-            el.textContent = message;
-            document.body.appendChild(el);
-            setTimeout(function() {
-                el.style.transform = 'translateX(0)';
-            }, 50);
-            setTimeout(function() {
-                el.style.transform = 'translateX(450px)';
-                setTimeout(function() { el.remove(); }, 400);
-            }, 3000);
-        }
-
-        // ================================================================
-        // ТЕКУЩАЯ ДАТА
-        // ================================================================
         function updateDate() {
             var now = new Date();
             var options = { day: '2-digit', month: 'long', year: 'numeric' };
@@ -821,63 +624,18 @@
         }
 
         // ================================================================
-        // ПРОВЕРКА ДАННЫХ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
-        // ================================================================
-        function checkDataOnLoad() {
-            // Проверяем, есть ли уже данные
-            if (state.loaded && state.data) {
-                return true;
-            }
-
-            // Пытаемся загрузить из localStorage
-            try {
-                var saved = localStorage.getItem('elementaryScheduleData');
-                if (saved) {
-                    var parsed = JSON.parse(saved);
-                    if (parsed.schedule) {
-                        var data = parseData(parsed);
-                        if (hasElementaryData(data)) {
-                            state.data = data;
-                            state.loaded = true;
-                            state.currentDay = getCurrentDay();
-                            document.getElementById('loadingState').style.display = 'none';
-                            document.getElementById('scheduleGrid').style.display = 'block';
-                            document.getElementById('statsBar').style.display = 'flex';
-                            document.getElementById('fileInfo').textContent = '✅ Загружено из localStorage';
-                            renderAll();
-                            return true;
-                        }
-                    }
-                }
-            } catch (e) {}
-
-            return false;
-        }
-
-        // ================================================================
         // ИНИЦИАЛИЗАЦИЯ
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
+            loadData();
 
-            // Проверяем данные при загрузке
-            if (!checkDataOnLoad()) {
-                // Если данных нет, пытаемся загрузить data.json
-                loadData();
-            }
-
-            // Обновляем статистику каждую минуту
             setInterval(function() {
                 if (state.loaded) {
                     updateStats();
                 }
             }, 60000);
         });
-
-        // Делаем функции глобальными для кнопок
-        window.loadFile = loadFile;
-        window.loadDefaultData = loadDefaultData;
-        window.loadData = loadData;
     </script>
 
 </body>
