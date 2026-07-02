@@ -270,7 +270,7 @@
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
-                <span class="version">v1.2.1</span>
+                <span class="version" id="versionBadge">v1.2.3</span>
             </div>
         </div>
 
@@ -298,6 +298,11 @@
 
     <script>
         // ================================================================
+        // ВЕРСИЯ (автоматическое повышение)
+        // ================================================================
+        var APP_VERSION = '1.2.3';
+
+        // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
         var CONFIG = {
@@ -316,6 +321,57 @@
             currentDay: null,
             loaded: false
         };
+
+        // ================================================================
+        // ПРЕОБРАЗОВАНИЕ ДАННЫХ (массив [предмет, кабинет] -> объект)
+        // ================================================================
+        function convertLessons(lessonsArray) {
+            if (!lessonsArray || !Array.isArray(lessonsArray)) {
+                return [];
+            }
+            return lessonsArray.map(function(item, index) {
+                if (Array.isArray(item)) {
+                    return {
+                        lesson: index + 1,
+                        subject: item[0] || '',
+                        room: item[1] || ''
+                    };
+                } else if (item && typeof item === 'object' && item.subject !== undefined) {
+                    return item;
+                }
+                return {
+                    lesson: index + 1,
+                    subject: '',
+                    room: ''
+                };
+            });
+        }
+
+        function convertDayData(dayData) {
+            if (!dayData || typeof dayData !== 'object') {
+                return {};
+            }
+            var result = {};
+            for (var className in dayData) {
+                if (dayData.hasOwnProperty(className)) {
+                    result[className] = convertLessons(dayData[className]);
+                }
+            }
+            return result;
+        }
+
+        function convertFullData(data) {
+            if (!data || typeof data !== 'object') {
+                return {};
+            }
+            var result = {};
+            for (var day in data) {
+                if (data.hasOwnProperty(day)) {
+                    result[day] = convertDayData(data[day]);
+                }
+            }
+            return result;
+        }
 
         // ================================================================
         // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ
@@ -342,15 +398,12 @@
         // ИЗВЛЕЧЕНИЕ ДАННЫХ НАЧАЛЬНОЙ ШКОЛЫ ИЗ JSON
         // ================================================================
         function extractElementaryData(data) {
-            // Проверяем структуру schedule.elementary
             if (data.schedule && data.schedule.elementary) {
                 return data.schedule.elementary;
             }
-            // Проверяем прямой ключ elementary
             if (data.elementary) {
                 return data.elementary;
             }
-            // Проверяем, есть ли в schedule ключи, содержащие классы начальной школы
             if (data.schedule) {
                 for (var key in data.schedule) {
                     if (data.schedule[key] && typeof data.schedule[key] === 'object') {
@@ -400,9 +453,9 @@
                 if (saved) {
                     var parsed = JSON.parse(saved);
                     if (parsed.schedule) {
-                        var data = extractElementaryData(parsed);
-                        if (data && hasElementaryData(data)) {
-                            state.data = data;
+                        var rawData = extractElementaryData(parsed);
+                        if (rawData && hasElementaryData(rawData)) {
+                            state.data = convertFullData(rawData);
                             state.loaded = true;
                             state.currentDay = getCurrentDay();
                             loadingEl.style.display = 'none';
@@ -424,11 +477,13 @@
                     return response.json();
                 })
                 .then(function(data) {
-                    var elementaryData = extractElementaryData(data);
-                    if (!elementaryData || !hasElementaryData(elementaryData)) {
+                    var rawData = extractElementaryData(data);
+                    if (!rawData || !hasElementaryData(rawData)) {
                         throw new Error('В файле нет расписания для начальной школы (ключ elementary не найден)');
                     }
-                    state.data = elementaryData;
+
+                    // Преобразуем данные из формата [предмет, кабинет] в объекты
+                    state.data = convertFullData(rawData);
                     state.loaded = true;
                     state.currentDay = getCurrentDay();
                     loadingEl.style.display = 'none';
@@ -437,7 +492,7 @@
 
                     // Сохраняем в localStorage
                     try {
-                        localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: elementaryData }));
+                        localStorage.setItem('elementaryScheduleData', JSON.stringify({ schedule: state.data }));
                     } catch (err) {}
 
                     renderAll();
@@ -628,6 +683,7 @@
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
+            document.getElementById('versionBadge').textContent = 'v' + APP_VERSION;
             loadData();
 
             setInterval(function() {
