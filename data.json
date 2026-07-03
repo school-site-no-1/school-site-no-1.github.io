@@ -1,6 +1,6 @@
 {
   "adminVersion": "v5.6.4",
-  "exportedAt": "2026-07-03T19:26:12.248Z",
+  "exportedAt": "2026-07-03T20:06:11.450Z",
   "schedule": {
     "primary": {
       "ПН": {
@@ -6220,6 +6220,142 @@
           "11Б"
         ]
       }
+    },
+    {
+      "name": "Агго",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Бежевец",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Бражников",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Галахов",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Генералова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Данилина",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Жигулина",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Зуева",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Иванова О",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Иванова Елена",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Иса",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Каримова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Конкина",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Кротова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Кузнецова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Лукянцева",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Лукянцева София",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Ольховская",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Панин",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Пашкевич",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Пономарева",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Прохорова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Пыркова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Саксонова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Семенов",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Сиволапов",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Степанова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Хикматова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Шапорева",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Шаталина",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Шипунова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Шишминцева",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Штукатурова",
+      "subjectClasses": {}
+    },
+    {
+      "name": "Шувалова",
+      "subjectClasses": {}
     }
   ]
 }
