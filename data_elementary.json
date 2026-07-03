@@ -1,6 +1,6 @@
 {
-  "adminVersion": "v5.4.9",
-  "exportedAt": "2026-07-03T14:17:09.242Z",
+  "adminVersion": "v5.5.2",
+  "exportedAt": "2026-07-03T05:19:54.730Z",
   "schedule": {
     "elementary": {
       "ПН": {
@@ -1889,7 +1889,6 @@
       }
     }
   },
-  "banner": "",
   "subjects": [
     "нет урока",
     "Русский язык",
