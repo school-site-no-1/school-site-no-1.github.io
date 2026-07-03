@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Шаталина - Суббота</title>
+<title>Шапорева - Суббота</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
-.container{max-width:1200px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border-radius:16px}
+.container{max-width:1200px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-radius:16px}
 .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2b6cb0;padding-bottom:8px;margin-bottom:8px;flex-wrap:wrap}
-.header-center{text-align:center;flex:1;font-size:1.25em;font-weight:700;color:#c53030;letter-spacing:0.5px;text-transform:lowercase;padding:2px 0;line-height:1.3}
+.header-center{text-align:center;flex:1;font-size:1.25em;font-weight:700;color:#c53030;letter-spacing:.5px;text-transform:lowercase;padding:2px 0;line-height:1.3}
 .header-left{display:flex;flex-direction:column;min-width:100px}
 .header-left .name{font-size:1.15em;font-weight:700;color:#1a365d}
-.header-left .day{font-size:0.9em;color:#718096;font-weight:500;margin-top:2px;line-height:1.4}
+.header-left .day{font-size:.9em;color:#718096;font-weight:500;margin-top:2px;line-height:1.4}
 .header-left .day .date{font-size:1.05em;color:#2d3748;font-weight:600;display:block}
-.header-left .day .time{font-size:0.8em;color:#2b6cb0;font-weight:600;display:block;margin-top:1px}
+.header-left .day .time{font-size:.8em;color:#2b6cb0;font-weight:600;display:block;margin-top:1px}
 .header-right{text-align:right;font-size:1.6em;color:#4a5568;line-height:1.3;min-width:100px}
 .header-right .time{font-weight:700;color:#2b6cb0;font-size:2em;min-width:100px;display:inline-block}
 .header-right .date{display:none}
 .info{display:flex;justify-content:space-between;font-size:1.2em;color:#718096;padding:4px 10px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:6px;border-radius:8px}
 .info .count{color:#2b6cb0;font-weight:600}
-.info .update{color:#a0aec0;font-size:0.85em}
+.info .update{color:#a0aec0;font-size:.85em}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:1.6em;min-width:700px}
-thead th{background:#2b6cb0;color:#fff;padding:10px 12px;text-align:center;font-weight:700;font-size:0.85em;white-space:nowrap;letter-spacing:0.5px;text-transform:uppercase;border:1px solid #1a4f8b}
+thead th{background:#2b6cb0;color:#fff;padding:10px 12px;text-align:center;font-weight:700;font-size:.85em;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border:1px solid #1a4f8b}
 thead th:first-child{border-left:none;border-radius:8px 0 0 0}
 thead th:last-child{border-right:none;border-radius:0 8px 0 0}
 tbody tr{border-bottom:1px solid #edf2f7}
@@ -32,39 +32,39 @@ tbody tr.current{background:#bee3f8}
 tbody tr.current td{color:#1a365d}
 tbody tr.current td.num{color:#1a4f8b;font-weight:800}
 tbody tr.current td.class{color:#1a365d}
-tbody td{padding:8px 10px;text-align:center;border-right:1px solid #edf2f7;font-size:0.95em;vertical-align:middle}
+tbody td{padding:8px 10px;text-align:center;border-right:1px solid #edf2f7;font-size:.95em;vertical-align:middle}
 tbody td:last-child{border-right:none}
 tbody td.num{font-weight:800;color:#1a365d;font-size:1.3em;text-align:center;vertical-align:middle}
 tbody td.period{padding:6px 10px;vertical-align:middle;text-align:center}
 tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:1.1em;line-height:1.3}
-tbody td.period .time-end{color:#718096;font-size:0.95em;line-height:1.3;margin-top:2px}
+tbody td.period .time-end{color:#718096;font-size:.95em;line-height:1.3;margin-top:2px}
 tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
 tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
 tbody td.class{font-weight:700;color:#1a365d;font-size:1.1em;white-space:normal;line-height:1.3;min-width:120px}
 tbody td.subject{text-align:left;padding-left:14px;font-weight:600;font-size:1.05em}
 tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;line-height:1.3;min-width:100px}
-.footer{text-align:center;color:#a0aec0;font-size:0.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
 .footer .version{color:#718096}
 .footer .gen-time{color:#cbd5e0}
-@media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-left .day{font-size:0.7em}.header-left .day .date{font-size:0.85em}.header-left .day .time{font-size:0.65em}.header-right{font-size:1.2em}.header-right .time{font-size:1.5em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:0.9em;flex-wrap:wrap}.footer{font-size:0.65em}tbody td.period .time-start{font-size:0.95em}tbody td.period .time-end{font-size:0.85em}}
-@media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0px}.header-center{font-size:0.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:center}.header-left{min-width:auto;flex:1;order:1;text-align:center}.header-right{min-width:auto;flex:1;order:2;text-align:center}.header-left .name{font-size:0.9em}.header-left .day{font-size:0.65em}.header-left .day .date{font-size:0.8em}.header-left .day .time{font-size:0.6em}.header-right{font-size:0.8em}.header-right .time{font-size:1.1em}table{font-size:0.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:0.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:0.8em}td.room{font-size:0.8em}tbody td.period .time-start{font-size:0.85em}tbody td.period .time-end{font-size:0.75em}.info{font-size:0.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:0.5em;gap:8px}}
+@media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-left .day{font-size:.7em}.header-left .day .date{font-size:.85em}.header-left .day .time{font-size:.65em}.header-right{font-size:1.2em}.header-right .time{font-size:1.5em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em;flex-wrap:wrap}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
+@media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0}.header-center{font-size:.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:center}.header-left{min-width:auto;flex:1;order:1;text-align:center}.header-right{min-width:auto;flex:1;order:2;text-align:center}.header-left .name{font-size:.9em}.header-left .day{font-size:.65em}.header-left .day .date{font-size:.8em}.header-left .day .time{font-size:.6em}.header-right{font-size:.8em}.header-right .time{font-size:1.1em}table{font-size:.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:.8em}td.room{font-size:.8em}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:.5em;gap:8px}}
 </style>
 </head>
 <body>
 <div class="container">
 <div class="header">
 <div class="header-left">
-<span class="name">📋 Шаталина</span>
-<span class="day">📅 Сегодня: Пятница <span class="date">03 июля 2026 г.</span><span class="time">🕐 23:16:43</span></span>
+<span class="name">📋 Шапорева</span>
+<span class="day"> Сегодня: Пятница <span class="date">03 июля 2026 г.</span><span class="time">🕐 23:46:52</span></span>
 </div>
 <div class="header-center">📌 Изменения<br>на субботу</div>
 <div class="header-right">
-<div class="time" id="liveTime"> 23:16:43</div>
+<div class="time" id="liveTime">🕐 23:46:52</div>
 </div>
 </div>
 <div class="info">
 <span class="count">📚 0 записей</span>
-<span class="update">🔄 обновлено: 03.07.2026, 23:16:43</span>
+<span class="update"> обновлено: 03.07.2026, 23:46:52</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -75,8 +75,8 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.6.5</span>
-<span class="gen-time">📅 03.07.2026, 23:16:43</span>
+<span class="version">Админка v5.7.0</span>
+<span class="gen-time"> 03.07.2026, 23:46:52</span>
 </div>
 </div>
 <script>
