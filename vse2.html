@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все таблицы</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 1300px; 
+            margin: 0 auto; 
+            background: #f5f7fa;
+        }
+        h1 { color: #2c3e50; text-align: center; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 20px; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            background: #e0e0e0;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+        .tab-btn:hover { opacity: 0.8; }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tab-content.active { display: block; }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .table-header h3 { margin: 0; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            text-align: left;
+        }
+        th, td { padding: 10px 15px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f9f9f9; }
+        
+        .empty-message {
+            padding: 30px;
+            text-align: center;
+            background: #fff3cd;
+            border-radius: 10px;
+            color: #856404;
+        }
+        .error {
+            color: red;
+            padding: 15px;
+            background: #ffebee;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .loading { color: #666; text-align: center; padding: 30px; }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-teacher { background: #2196F3; }
+        .badge-subject { background: #4CAF50; }
+        .badge-room { background: #FF9800; }
+        .badge-day { background: #9C27B0; }
+        .badge-time { background: #607D8B; }
+        
+        .table-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        
+        .refresh-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .refresh-btn:hover { background: #1976D2; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .stat-card .number { font-size: 24px; font-weight: bold; color: #4CAF50; }
+        .stat-card .label { font-size: 12px; color: #666; }
+        
+        .load-time {
+            font-size: 12px;
+            color: #888;
+            margin-left: 10px;
+        }
+        .id-column { color: #999; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <h1>🗄️ Все таблицы</h1>
+    <p class="subtitle">📌 Просмотр всех данных</p>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('schedule')">📋 Расписание</button>
+        <button class="tab-btn" onclick="switchTab('teachers')">👨‍🏫 Учителя</button>
+        <button class="tab-btn" onclick="switchTab('subjects')">📚 Предметы</button>
+        <button class="tab-btn" onclick="switchTab('rooms')">🏫 Кабинеты</button>
+    </div>
+
+    <div class="stats" id="stats">
+        <div class="stat-card"><div class="number" id="statSchedule">-</div><div class="label">📋 Занятий</div></div>
+        <div class="stat-card"><div class="number" id="statTeachers">-</div><div class="label">👨‍🏫 Учителей</div></div>
+        <div class="stat-card"><div class="number" id="statSubjects">-</div><div class="label">📚 Предметов</div></div>
+        <div class="stat-card"><div class="number" id="statRooms">-</div><div class="label">🏫 Кабинетов</div></div>
+    </div>
+
+    <!-- Расписание -->
+    <div id="tab-schedule" class="tab-content active">
+        <div class="table-header">
+            <h3>📋 Расписание</h3>
+            <div>
+                <span class="count" id="scheduleCount">0</span>
+                <span class="load-time" id="scheduleTime"></span>
+                <button class="refresh-btn" onclick="loadSchedule()">🔄</button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <div id="schedule-container"><p class="loading">⏳ Загрузка...</p></div>
+        </div>
+    </div>
+
+    <!-- Учителя -->
+    <div id="tab-teachers" class="tab-content">
+        <div class="table-header">
+            <h3>👨‍🏫 Учителя</h3>
+            <div>
+                <span class="count" id="teachersCount">0</span>
+                <span class="load-time" id="teachersTime"></span>
+                <button class="refresh-btn" onclick="loadTeachersList()">🔄</button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <div id="teachers-container"><p class="loading">⏳ Загрузка...</p></div>
+        </div>
+    </div>
+
+    <!-- Предметы -->
+    <div id="tab-subjects" class="tab-content">
+        <div class="table-header">
+            <h3>📚 Предметы</h3>
+            <div>
+                <span class="count" id="subjectsCount">0</span>
+                <span class="load-time" id="subjectsTime"></span>
+                <button class="refresh-btn" onclick="loadSubjectsList()">🔄</button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <div id="subjects-container"><p class="loading">⏳ Загрузка...</p></div>
+        </div>
+    </div>
+
+    <!-- Кабинеты -->
+    <div id="tab-rooms" class="tab-content">
+        <div class="table-header">
+            <h3>🏫 Кабинеты</h3>
+            <div>
+                <span class="count" id="roomsCount">0</span>
+                <span class="load-time" id="roomsTime"></span>
+                <button class="refresh-btn" onclick="loadRoomsList()">🔄</button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <div id="rooms-container"><p class="loading">⏳ Загрузка...</p></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ============================================
+        // ВАШИ ДАННЫЕ
+        // ============================================
+        const supabaseUrl = 'https://tmckstwjtoryhrbcbpep.supabase.co';
+        const supabaseAnonKey = 'sb_publishable_XQNrPVRLQVhr9OPBDakNbA_8JfLO2ct';
+
+        const { createClient } = supabase;
+        const _supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+        // ============================================
+        // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // ============================================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            if (tab === 'schedule') loadSchedule();
+            if (tab === 'teachers') loadTeachersList();
+            if (tab === 'subjects') loadSubjectsList();
+            if (tab === 'rooms') loadRoomsList();
+        }
+
+        // ============================================
+        // СТАТИСТИКА
+        // ============================================
+        async function updateStats() {
+            try {
+                const [s, t, sub, r] = await Promise.all([
+                    _supabase.from('schedule_view').select('id', { count: 'exact', head: true }),
+                    _supabase.from('teachers').select('id', { count: 'exact', head: true }),
+                    _supabase.from('subjects').select('id', { count: 'exact', head: true }),
+                    _supabase.from('rooms').select('id', { count: 'exact', head: true })
+                ]);
+                
+                document.getElementById('statSchedule').textContent = s.count || 0;
+                document.getElementById('statTeachers').textContent = t.count || 0;
+                document.getElementById('statSubjects').textContent = sub.count || 0;
+                document.getElementById('statRooms').textContent = r.count || 0;
+            } catch (error) {
+                console.error('Статистика:', error);
+            }
+        }
+
+        // ============================================
+        // ЗАГРУЗКА РАСПИСАНИЯ (с замером времени)
+        // ============================================
+        async function loadSchedule() {
+            const container = document.getElementById('schedule-container');
+            const timeSpan = document.getElementById('scheduleTime');
+            container.innerHTML = '<p class="loading">⏳ Загрузка...</p>';
+            
+            const start = performance.now();
+            
+            try {
+                const { data, error } = await _supabase
+                    .from('schedule_view')
+                    .select('*')
+                    .order('day_of_week');
+
+                const end = performance.now();
+                const ms = (end - start).toFixed(0);
+                timeSpan.textContent = `⏱️ ${ms} мс`;
+
+                if (error) throw error;
+
+                document.getElementById('scheduleCount').textContent = data?.length || 0;
+
+                if (data && data.length > 0) {
+                    let html = `<table>
+                        <thead><tr>
+                            <th>#</th>
+                            <th>👨‍🏫 Учитель</th>
+                            <th>📚 Предмет</th>
+                            <th>🏫 Кабинет</th>
+                            <th>📅 День</th>
+                            <th>⏰ Начало</th>
+                            <th>⏰ Окончание</th>
+                        </tr></thead><tbody>`;
+
+                    data.forEach((row, i) => {
+                        html += `<tr>
+                            <td class="id-column">${i + 1}</td>
+                            <td><span class="badge badge-teacher">${row.teacher || '-'}</span></td>
+                            <td><span class="badge badge-subject">${row.subject || '-'}</span></td>
+                            <td><span class="badge badge-room">${row.room || '-'}</span></td>
+                            <td><span class="badge badge-day">${row.day_of_week || '-'}</span></td>
+                            <td><span class="badge badge-time">${row.time_start || '-'}</span></td>
+                            <td><span class="badge badge-time">${row.time_end || '-'}</span></td>
+                        </tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<div class="empty-message">📭 Расписание пустое</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // ЗАГРУЗКА УЧИТЕЛЕЙ
+        // ============================================
+        async function loadTeachersList() {
+            const container = document.getElementById('teachers-container');
+            const timeSpan = document.getElementById('teachersTime');
+            container.innerHTML = '<p class="loading">⏳ Загрузка...</p>';
+            
+            const start = performance.now();
+            
+            try {
+                const { data, error } = await _supabase
+                    .from('teachers')
+                    .select('*')
+                    .order('full_name');
+
+                const end = performance.now();
+                timeSpan.textContent = `⏱️ ${(end - start).toFixed(0)} мс`;
+
+                if (error) throw error;
+
+                document.getElementById('teachersCount').textContent = data?.length || 0;
+
+                if (data && data.length > 0) {
+                    let html = `<table>
+                        <thead><tr>
+                            <th>ID</th>
+                            <th>👨‍🏫 ФИО</th>
+                            <th>📚 Специализация</th>
+                        </tr></thead><tbody>`;
+
+                    data.forEach(row => {
+                        html += `<tr>
+                            <td class="id-column">${row.id}</td>
+                            <td><strong>${row.full_name}</strong></td>
+                            <td>${row.specialization || '-'}</td>
+                        </tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<div class="empty-message">📭 Нет учителей</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // ЗАГРУЗКА ПРЕДМЕТОВ
+        // ============================================
+        async function loadSubjectsList() {
+            const container = document.getElementById('subjects-container');
+            const timeSpan = document.getElementById('subjectsTime');
+            container.innerHTML = '<p class="loading">⏳ Загрузка...</p>';
+            
+            const start = performance.now();
+            
+            try {
+                const { data, error } = await _supabase
+                    .from('subjects')
+                    .select('*')
+                    .order('name');
+
+                const end = performance.now();
+                timeSpan.textContent = `⏱️ ${(end - start).toFixed(0)} мс`;
+
+                if (error) throw error;
+
+                document.getElementById('subjectsCount').textContent = data?.length || 0;
+
+                if (data && data.length > 0) {
+                    let html = `<table>
+                        <thead><tr>
+                            <th>ID</th>
+                            <th>📚 Название</th>
+                            <th>📝 Описание</th>
+                        </tr></thead><tbody>`;
+
+                    data.forEach(row => {
+                        html += `<tr>
+                            <td class="id-column">${row.id}</td>
+                            <td><strong>${row.name}</strong></td>
+                            <td>${row.description || '-'}</td>
+                        </tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<div class="empty-message">📭 Нет предметов</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // ЗАГРУЗКА КАБИНЕТОВ
+        // ============================================
+        async function loadRoomsList() {
+            const container = document.getElementById('rooms-container');
+            const timeSpan = document.getElementById('roomsTime');
+            container.innerHTML = '<p class="loading">⏳ Загрузка...</p>';
+            
+            const start = performance.now();
+            
+            try {
+                const { data, error } = await _supabase
+                    .from('rooms')
+                    .select('*')
+                    .order('room_number');
+
+                const end = performance.now();
+                timeSpan.textContent = `⏱️ ${(end - start).toFixed(0)} мс`;
+
+                if (error) throw error;
+
+                document.getElementById('roomsCount').textContent = data?.length || 0;
+
+                if (data && data.length > 0) {
+                    let html = `<table>
+                        <thead><tr>
+                            <th>ID</th>
+                            <th>🏫 Номер</th>
+                            <th>🏛️ Корпус</th>
+                            <th>👥 Вместимость</th>
+                        </tr></thead><tbody>`;
+
+                    data.forEach(row => {
+                        html += `<tr>
+                            <td class="id-column">${row.id}</td>
+                            <td><strong>${row.room_number}</strong></td>
+                            <td>${row.building || '-'}</td>
+                            <td>${row.capacity ? `${row.capacity} чел.` : '-'}</td>
+                        </tr>`;
+                    });
+
+                    html += '</tbody></table>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<div class="empty-message">🏫 Нет кабинетов</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // ЗАПУСК
+        // ============================================
+        updateStats();
+        loadSchedule();
+        loadTeachersList();
+        loadSubjectsList();
+        loadRoomsList();
+    </script>
+
+</body>
+</html>
