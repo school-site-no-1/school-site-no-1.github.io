@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Вавилова - Суббота</title>
+<title>Вавилова - Пятница</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -55,16 +55,16 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 <div class="header">
 <div class="header-left">
 <span class="name">📋 Вавилова</span>
-<span class="day">📅 Сегодня: Суббота <span class="date">04 июля 2026 г.</span><span class="time">🕐 11:35:08</span></span>
+<span class="day">📅 Сегодня: Четверг <span class="date">09 июля 2026 г.</span><span class="time">🕐 <span id="currentTimeDisplay"></span></span></span>
 </div>
-<div class="header-center">📌 Изменения<br>на субботу</div>
+<div class="header-center">📌 Изменения<br>на пятницу</div>
 <div class="header-right">
-<div class="time" id="liveTime">🕐 11:35:08</div>
+<div class="time" id="liveTime">🕐 <span id="liveTimeDisplay"></span></div>
 </div>
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 04.07.2026, 11:35:08</span>
+<span class="update">🔄 обновлено: 09.07.2026, 23:21:43</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -75,12 +75,12 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.7.3</span>
-<span class="gen-time">📅 04.07.2026, 11:35:08</span>
+<span class="version">Админка v5.7.8</span>
+<span class="gen-time">📅 09.07.2026, 23:21:43</span>
 </div>
 </div>
 <script>
-function updateClock(){var d=new Date();document.getElementById("liveTime").textContent="🕐 "+d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}setInterval(updateClock,1000);
+function updateClock(){var d=new Date();document.getElementById("liveTimeDisplay").textContent=d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});document.getElementById("currentTimeDisplay").textContent=d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}updateClock();setInterval(updateClock,1000);
 </script>
 </body>
 </html>
