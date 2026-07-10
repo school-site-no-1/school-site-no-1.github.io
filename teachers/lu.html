@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Лукянцева София - Пятница</title>
+<title>Лукянцева - Пятница</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -55,7 +55,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 <div class="container">
 <div class="header">
 <div class="header-left">
-<span class="name">📋 Лукянцева София</span>
+<span class="name">📋 Лукянцева</span>
 <span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time">🕐 <span id="currentTimeDisplay"></span></span></span>
 </div>
 <div class="header-center">📌 Изменения<br>на пятницу</div>
@@ -65,7 +65,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 10.07.2026, 14:20:26</span>
+<span class="update">🔄 обновлено: 10.07.2026, 15:50:27</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -76,8 +76,8 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.8.2</span>
-<span class="gen-time">📅 10.07.2026, 14:20:26</span>
+<span class="version">Админка v5.8.3</span>
+<span class="gen-time">📅 10.07.2026, 15:50:27</span>
 </div>
 </div>
 <script>
@@ -89,15 +89,11 @@ function updateClockAndDate(){
     var dateStr = d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
     document.getElementById("todayDisplay").textContent = dayName;
     document.getElementById("todayDateDisplay").textContent = dateStr;
-    // Часы справа - БЕЗ секунд
     document.getElementById("liveTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
-    // Время под датой - С секундами
     document.getElementById("currentTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 }
 updateClockAndDate();
 setInterval(updateClockAndDate, 1000);
-// Автообновление страницы каждые 4 минуты (240000 мс)
-setTimeout(function() { location.reload(); }, 240000);
 </script>
 </body>
 </html>
