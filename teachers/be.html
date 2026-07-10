@@ -55,7 +55,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 <div class="header">
 <div class="header-left">
 <span class="name">📋 Бежевец</span>
-<span class="day">📅 Сегодня: Четверг <span class="date">09 июля 2026 г.</span><span class="time">🕐 <span id="currentTimeDisplay"></span></span></span>
+<span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time">🕐 <span id="currentTimeDisplay"></span></span></span>
 </div>
 <div class="header-center">📌 Изменения<br>на пятницу</div>
 <div class="header-right">
@@ -64,23 +64,35 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 09.07.2026, 23:34:56</span>
+<span class="update">🔄 обновлено: 10.07.2026, 11:26:01</span>
 </div>
 <div class="table-wrap">
 <table>
 <thead><tr><th>№</th><th>⏰ Время</th><th>Класс</th><th>Предмет</th><th>🚪 Кабинет</th></tr></thead>
 <tbody>
-<tr class="empty-row"><td class="num">1</td><td class="period"><div class="time-start">08:30</div><div class="time-end">09:10</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">2</td><td class="period"><div class="time-start">09:20</div><div class="time-end">10:00</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">3</td><td class="period"><div class="time-start">10:10</div><div class="time-end">10:50</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">4</td><td class="period"><div class="time-start">11:05</div><div class="time-end">11:45</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">5</td><td class="period"><div class="time-start">12:00</div><div class="time-end">12:40</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">6</td><td class="period"><div class="time-start">12:55</div><div class="time-end">13:35</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">7</td><td class="period"><div class="time-start">13:45</div><div class="time-end">14:25</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">8</td><td class="period"><div class="time-start">14:35</div><div class="time-end">15:15</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">9</td><td class="period"><div class="time-start">15:25</div><div class="time-end">16:05</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr>
+<tr class="empty-row"><td class="num">1</td><td class="period"><div class="time-start">08:30</div><div class="time-end">09:10</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">2</td><td class="period"><div class="time-start">09:20</div><div class="time-end">10:00</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">3</td><td class="period"><div class="time-start">10:10</div><div class="time-end">10:50</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">4</td><td class="period"><div class="time-start">11:05</div><div class="time-end">11:45</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">5</td><td class="period"><div class="time-start">12:00</div><div class="time-end">12:40</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">6</td><td class="period"><div class="time-start">12:55</div><div class="time-end">13:35</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr>
 </tbody>
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.7.8</span>
-<span class="gen-time">📅 09.07.2026, 23:34:56</span>
+<span class="version">Админка v5.7.9</span>
+<span class="gen-time">📅 10.07.2026, 11:26:01</span>
 </div>
 </div>
 <script>
-function updateClock(){var d=new Date();document.getElementById("liveTimeDisplay").textContent=d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});document.getElementById("currentTimeDisplay").textContent=d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});}updateClock();setInterval(updateClock,1000);
+function updateClockAndDate(){
+    var d = new Date();
+    var days = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
+    var months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+    var dayName = days[d.getDay()];
+    var dateStr = d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+    document.getElementById("todayDisplay").textContent = dayName;
+    document.getElementById("todayDateDisplay").textContent = dateStr;
+    document.getElementById("liveTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    document.getElementById("currentTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+}
+updateClockAndDate();
+setInterval(updateClockAndDate, 1000);
 </script>
 </body>
 </html>
