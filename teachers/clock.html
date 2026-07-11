@@ -1,25 +1,34 @@
-<!-- clock.html -->
-<div style="display:flex;align-items:center;gap:12px;font-family:'Segoe UI',Arial,sans-serif;">
-    <svg width="65" height="65" viewBox="0 0 65 65" style="flex-shrink:0;">
-        <circle cx="32.5" cy="32.5" r="28" fill="none" stroke="#2b6cb0" stroke-width="2"/>
-        <circle cx="32.5" cy="32.5" r="2" fill="#2b6cb0"/>
-        <line id="hourHand" x1="32.5" y1="32.5" x2="32.5" y2="15" stroke="#1a365d" stroke-width="3" stroke-linecap="round"/>
-        <line id="minuteHand" x1="32.5" y1="32.5" x2="32.5" y2="12" stroke="#2b6cb0" stroke-width="2" stroke-linecap="round"/>
-        <line id="secondHand" x1="32.5" y1="32.5" x2="32.5" y2="10" stroke="#e53e3e" stroke-width="1" stroke-linecap="round"/>
-        <line x1="32.5" y1="4.5" x2="32.5" y2="7.5" stroke="#a0aec0" stroke-width="1"/>
-        <line x1="32.5" y1="57.5" x2="32.5" y2="60.5" stroke="#a0aec0" stroke-width="1"/>
-        <line x1="4.5" y1="32.5" x2="7.5" y2="32.5" stroke="#a0aec0" stroke-width="1"/>
-        <line x1="57.5" y1="32.5" x2="60.5" y2="32.5" stroke="#a0aec0" stroke-width="1"/>
-    </svg>
-    <div style="display:flex;flex-direction:column;align-items:flex-start;">
-        <div style="font-size:1.8em;font-weight:700;color:#2b6cb0;letter-spacing:1px;">
-            <span id="clockTime">00:00</span>
-        </div>
-        <div style="font-size:0.65em;color:#718096;">
-            
+<!-- clock.html - Без фона, без рамки, без секундной стрелки -->
+<div style="display:flex;flex-direction:column;align-items:flex-end;font-family:'Segoe UI',Arial,sans-serif;gap:2px;">
+    <!-- Верхняя строка с "Сегодня:" -->
+    <div style="font-size:0.7em;color:#4a5568;font-weight:500;">
+        📅 Сегодня: <span id="todayDayFull">Понедельник</span>
+    </div>
+    
+    <!-- Часы с аналоговым циферблатом и цифровым временем -->
+    <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="60" height="60" viewBox="0 0 60 60" style="flex-shrink:0;">
+            <circle cx="30" cy="30" r="26" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+            <circle cx="30" cy="30" r="2" fill="#2b6cb0"/>
+            <line id="hourHand" x1="30" y1="30" x2="30" y2="14" stroke="#1a365d" stroke-width="3" stroke-linecap="round"/>
+            <line id="minuteHand" x1="30" y1="30" x2="30" y2="11" stroke="#2b6cb0" stroke-width="2" stroke-linecap="round"/>
+            <!-- Секундная стрелка удалена -->
+            <line x1="30" y1="4" x2="30" y2="7" stroke="#a0aec0" stroke-width="1"/>
+            <line x1="30" y1="53" x2="30" y2="56" stroke="#a0aec0" stroke-width="1"/>
+            <line x1="4" y1="30" x2="7" y2="30" stroke="#a0aec0" stroke-width="1"/>
+            <line x1="53" y1="30" x2="56" y2="30" stroke="#a0aec0" stroke-width="1"/>
+        </svg>
+        <div style="display:flex;flex-direction:column;align-items:flex-start;">
+            <div style="font-size:1.6em;font-weight:700;color:#2b6cb0;letter-spacing:1px;">
+                <span id="clockTime">00:00</span>
+            </div>
+            <div style="font-size:0.6em;color:#718096;">
+                <span id="clockDateShort">00.00.0000</span>
+            </div>
         </div>
     </div>
 </div>
+
 <script>
 function updateClock() {
     var now = new Date();
@@ -27,19 +36,29 @@ function updateClock() {
     var minutes = now.getMinutes();
     var seconds = now.getSeconds();
     
+    // Обновление цифрового времени
     document.getElementById('clockTime').textContent = 
         String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
     
-   
+    // Обновление даты
+    var dateStr = String(now.getDate()).padStart(2, '0') + '.' + 
+                  String(now.getMonth() + 1).padStart(2, '0') + '.' + 
+                  now.getFullYear();
+    document.getElementById('clockDateShort').textContent = dateStr;
     
+    // Обновление "Сегодня:"
+    var daysFull = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+    document.getElementById('todayDayFull').textContent = daysFull[now.getDay()];
+    
+    // Обновление стрелок аналоговых часов (без секундной)
     var hourAngle = (hours % 12) * 30 + minutes * 0.5;
-    var minuteAngle = minutes * 6 + seconds * 0.1;
-    var secondAngle = seconds * 6;
+    var minuteAngle = minutes * 6; // без учёта секунд
     
-    document.getElementById('hourHand').setAttribute('transform', 'rotate(' + hourAngle + ', 32.5, 32.5)');
-    document.getElementById('minuteHand').setAttribute('transform', 'rotate(' + minuteAngle + ', 32.5, 32.5)');
-    document.getElementById('secondHand').setAttribute('transform', 'rotate(' + secondAngle + ', 32.5, 32.5)');
+    document.getElementById('hourHand').setAttribute('transform', 'rotate(' + hourAngle + ', 30, 30)');
+    document.getElementById('minuteHand').setAttribute('transform', 'rotate(' + minuteAngle + ', 30, 30)');
 }
+
+// Запуск обновления (обновляем каждую минуту, так как секундной стрелки нет)
 updateClock();
-setInterval(updateClock, 1000);
+setInterval(updateClock, 1000); // всё равно обновляем каждую секунду для точности
 </script>
