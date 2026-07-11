@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Иванова Елена - Понедельник</title>
+<title>Иванова - Понедельник</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -47,101 +47,92 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 .footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
 .footer .version{color:#718096}
 .footer .gen-time{color:#cbd5e0}
+#clockContainer iframe{width:100%;height:100%;border:none;min-width:80px;min-height:60px}
+#clockContainer{display:flex;justify-content:flex-end;align-items:center;min-height:50px}
 @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-left .day{font-size:.7em}.header-left .day .date{font-size:.85em}.header-left .day .time{font-size:.65em}.header-right{font-size:1.2em}.header-right .time{font-size:1.5em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em;flex-wrap:wrap}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
 @media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0}.header-center{font-size:.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:center}.header-left{min-width:auto;flex:1;order:1;text-align:center}.header-right{min-width:auto;flex:1;order:2;text-align:center}.header-left .name{font-size:.9em}.header-left .day{font-size:.65em}.header-left .day .date{font-size:.8em}.header-left .day .time{font-size:.6em}.header-right{font-size:.8em}.header-right .time{font-size:1.1em}table{font-size:.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:.8em}td.room{font-size:.8em}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:.5em;gap:8px}}
-.analog-clock-container{display:inline-block;width:28px;height:28px;vertical-align:middle;margin-right:4px}
-.analog-clock-container svg{width:100%;height:100%;overflow:visible}
-.analog-clock-container .clock-face{fill:#f8f9fa;stroke:#2d3748;stroke-width:1.5}
-.analog-clock-container .hour-mark{stroke:#2d3748;stroke-width:1.5;stroke-linecap:round}
-.analog-clock-container .minute-mark{stroke:#a0aec0;stroke-width:0.8;stroke-linecap:round}
-.analog-clock-container .clock-hour{stroke:#1a365d;stroke-width:2.5;stroke-linecap:round}
-.analog-clock-container .clock-minute{stroke:#2b6cb0;stroke-width:1.8;stroke-linecap:round}
-.analog-clock-container .clock-second{stroke:#e53e3e;stroke-width:1;stroke-linecap:round}
-.analog-clock-container .clock-center{fill:#2d3748}
-.analog-clock-container .clock-center-outer{fill:#e53e3e}
 </style>
 </head>
 <body>
 <div class="container">
 <div class="header">
 <div class="header-left">
-<span class="name">📋 Иванова Елена</span>
-<span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time"><span class="analog-clock-container" id="headerClock"></span> <span id="currentTimeDisplay"></span></span></span>
+<span class="name">📋 Иванова</span>
+<span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time">🕐 <span id="currentTimeDisplay"></span></span></span>
 </div>
 <div class="header-center">📌 Изменения<br>на понедельник</div>
 <div class="header-right">
-<div class="time"><span class="analog-clock-container" id="liveClock"></span> <span id="liveTimeDisplay"></span></div>
+<div id="clockContainer"></div>
 </div>
 </div>
 <div class="info">
-<span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 11.07.2026, 22:11:40</span>
+<span class="count">📚 1 урок</span>
+<span class="update">🔄 обновлено: 11.07.2026, 23:56:26</span>
 </div>
 <div class="table-wrap">
 <table>
 <thead><tr><th>№</th><th>⏰ Время</th><th>Класс</th><th>Предмет</th><th>🚪 Кабинет</th></tr></thead>
 <tbody>
-<tr class="empty-row"><td class="num">1</td><td class="period"><div class="time-start">08:30</div><div class="time-end">09:10</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">2</td><td class="period"><div class="time-start">09:20</div><div class="time-end">10:00</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">3</td><td class="period"><div class="time-start">10:10</div><div class="time-end">10:50</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">4</td><td class="period"><div class="time-start">11:05</div><div class="time-end">11:45</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">5</td><td class="period"><div class="time-start">12:00</div><div class="time-end">12:40</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">6</td><td class="period"><div class="time-start">12:55</div><div class="time-end">13:35</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">7</td><td class="period"><div class="time-start">13:45</div><div class="time-end">14:25</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">8</td><td class="period"><div class="time-start">14:35</div><div class="time-end">15:15</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">9</td><td class="period"><div class="time-start">15:25</div><div class="time-end">16:05</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr>
+<tr class="empty-row"><td class="num">1</td><td class="period"><div class="time-start">08:30</div><div class="time-end">09:10</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">2</td><td class="period"><div class="time-start">09:20</div><div class="time-end">10:00</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">3</td><td class="period"><div class="time-start">10:10</div><div class="time-end">10:50</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr><td class="num">4</td><td class="period"><div class="time-start">11:05</div><div class="time-end">11:45</div></td><td class="class">9А</td><td class="subject">Англ/информатика</td><td class="room">109/113</td></tr><tr class="empty-row"><td class="num">5</td><td class="period"><div class="time-start">12:00</div><div class="time-end">12:40</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">6</td><td class="period"><div class="time-start">12:55</div><div class="time-end">13:35</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">7</td><td class="period"><div class="time-start">13:45</div><div class="time-end">14:25</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">8</td><td class="period"><div class="time-start">14:35</div><div class="time-end">15:15</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr><tr class="empty-row"><td class="num">9</td><td class="period"><div class="time-start">15:25</div><div class="time-end">16:05</div></td><td class="class">—</td><td class="subject">—</td><td class="room">—</td></tr>
 </tbody>
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.9.3</span>
-<span class="gen-time">📅 11.07.2026, 22:11:40</span>
+<span class="version">Админка v5.9.0</span>
+<span class="gen-time">📅 11.07.2026, 23:56:26</span>
 </div>
 </div>
 <script>
-(function(){
-    function polarToCartesian(cx, cy, r, angle) {
-        var rad = (angle - 90) * Math.PI / 180;
-        return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-    }
-    function createClockSVG(hours, minutes, seconds) {
-        var cx=14, cy=14;
-        var ha = (hours%12)*30 + minutes*0.5;
-        var ma = minutes*6 + seconds*0.1;
-        var sa = seconds*6;
-        var he = polarToCartesian(cx,cy,7,ha);
-        var me = polarToCartesian(cx,cy,10,ma);
-        var se = polarToCartesian(cx,cy,11,sa);
-        var marks = "";
-        for(var i=0;i<12;i++){
-            var isH = i%3===0;
-            var r1 = isH?11.5:12;
-            var r2 = isH?13.5:13;
-            var p1=polarToCartesian(cx,cy,r1,i*30);
-            var p2=polarToCartesian(cx,cy,r2,i*30);
-            marks += "<line class=""+(isH?"hour-mark":"minute-mark")+"" x1=""+p1.x+"" y1=""+p1.y+"" x2=""+p2.x+"" y2=""+p2.y+""/>";
-        }
-        return "<svg viewBox="0 0 28 28"><circle class="clock-face" cx="14" cy="14" r="13"/>"+marks+
-            "<line class="clock-hour" x1="14" y1="14" x2=""+he.x+"" y2=""+he.y+""/>"+
-            "<line class="clock-minute" x1="14" y1="14" x2=""+me.x+"" y2=""+me.y+""/>"+
-            "<line class="clock-second" x1="14" y1="14" x2=""+se.x+"" y2=""+se.y+""/>"+
-            "<circle class="clock-center" cx="14" cy="14" r="2"/>"+
-            "<circle class="clock-center-outer" cx="14" cy="14" r="1"/></svg>";
-    }
-    function updateDateTime(){
-        var d = new Date();
-        var days = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
-        var months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-        var el1 = document.getElementById("todayDisplay");
-        var el2 = document.getElementById("todayDateDisplay");
-        var el3 = document.getElementById("liveTimeDisplay");
-        var el4 = document.getElementById("currentTimeDisplay");
-        if(el1) el1.textContent = days[d.getDay()];
-        if(el2) el2.textContent = d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
-        var t = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
-        var tFull = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
-        if(el3) el3.textContent = t;
-        if(el4) el4.textContent = tFull;
-        var svg = createClockSVG(d.getHours(), d.getMinutes(), d.getSeconds());
-        var hc = document.getElementById("headerClock");
-        var lc = document.getElementById("liveClock");
-        if(hc) hc.innerHTML = svg;
-        if(lc) lc.innerHTML = svg;
-    }
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
+function updateClockAndDate(){
+    var d = new Date();
+    var days = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
+    var months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+    var dayName = days[d.getDay()];
+    var dateStr = d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+    document.getElementById("todayDisplay").textContent = dayName;
+    document.getElementById("todayDateDisplay").textContent = dateStr;
+    document.getElementById("currentTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+}
+updateClockAndDate();
+setInterval(updateClockAndDate, 1000);
+
+// Загрузка clock.html вместо эмодзи часов
+(function() {
+    var container = document.getElementById("clockContainer");
+    if (!container) return;
+    
+    fetch("clock.html")
+        .then(function(response) {
+            if (!response.ok) throw new Error("Файл не найден");
+            return response.text();
+        })
+        .then(function(html) {
+            container.innerHTML = html;
+            // Если в clock.html есть скрипты, они выполнятся после вставки
+            var scripts = container.querySelectorAll("script");
+            scripts.forEach(function(script) {
+                var newScript = document.createElement("script");
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                script.parentNode.replaceChild(newScript, script);
+            });
+        })
+        .catch(function(err) {
+            // Запасной вариант - показываем простое время
+            var d = new Date();
+            container.innerHTML = '<div style="font-size:1.6em;color:#4a5568;">🕐 <span id="liveTimeDisplay">' + 
+                d.toLocaleTimeString("ru-RU", {hour:"2-digit",minute:"2-digit"}) + 
+                '</span></div>';
+            setInterval(function() {
+                var span = document.getElementById("liveTimeDisplay");
+                if (span) {
+                    span.textContent = new Date().toLocaleTimeString("ru-RU", {hour:"2-digit",minute:"2-digit"});
+                }
+            }, 1000);
+        });
 })();
 </script>
 </body>
