@@ -49,6 +49,16 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 .footer .gen-time{color:#cbd5e0}
 @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-left .day{font-size:.7em}.header-left .day .date{font-size:.85em}.header-left .day .time{font-size:.65em}.header-right{font-size:1.2em}.header-right .time{font-size:1.5em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em;flex-wrap:wrap}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
 @media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0}.header-center{font-size:.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:center}.header-left{min-width:auto;flex:1;order:1;text-align:center}.header-right{min-width:auto;flex:1;order:2;text-align:center}.header-left .name{font-size:.9em}.header-left .day{font-size:.65em}.header-left .day .date{font-size:.8em}.header-left .day .time{font-size:.6em}.header-right{font-size:.8em}.header-right .time{font-size:1.1em}table{font-size:.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:.8em}td.room{font-size:.8em}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:.5em;gap:8px}}
+.analog-clock-container{display:inline-block;width:28px;height:28px;vertical-align:middle;margin-right:4px}
+.analog-clock-container svg{width:100%;height:100%;overflow:visible}
+.analog-clock-container .clock-face{fill:#f8f9fa;stroke:#2d3748;stroke-width:1.5}
+.analog-clock-container .hour-mark{stroke:#2d3748;stroke-width:1.5;stroke-linecap:round}
+.analog-clock-container .minute-mark{stroke:#a0aec0;stroke-width:0.8;stroke-linecap:round}
+.analog-clock-container .clock-hour{stroke:#1a365d;stroke-width:2.5;stroke-linecap:round}
+.analog-clock-container .clock-minute{stroke:#2b6cb0;stroke-width:1.8;stroke-linecap:round}
+.analog-clock-container .clock-second{stroke:#e53e3e;stroke-width:1;stroke-linecap:round}
+.analog-clock-container .clock-center{fill:#2d3748}
+.analog-clock-container .clock-center-outer{fill:#e53e3e}
 </style>
 </head>
 <body>
@@ -56,16 +66,16 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 <div class="header">
 <div class="header-left">
 <span class="name">📋 Пономарева</span>
-<span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time">🕐 <span id="currentTimeDisplay"></span></span></span>
+<span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time"><span class="analog-clock-container" id="headerClock"></span> <span id="currentTimeDisplay"></span></span></span>
 </div>
 <div class="header-center">📌 Изменения<br>на понедельник</div>
 <div class="header-right">
-<div class="time" id="liveTime">🕐 <span id="liveTimeDisplay"></span></div>
+<div class="time"><span class="analog-clock-container" id="liveClock"></span> <span id="liveTimeDisplay"></span></div>
 </div>
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 11.07.2026, 19:55:02</span>
+<span class="update">🔄 обновлено: 11.07.2026, 21:29:33</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -76,24 +86,61 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.8.9</span>
-<span class="gen-time">📅 11.07.2026, 19:55:02</span>
+<span class="version">Админка v5.9.0</span>
+<span class="gen-time">📅 11.07.2026, 21:29:33</span>
 </div>
 </div>
 <script>
-function updateClockAndDate(){
+function createClockSVG(hours, minutes, seconds) {
+    function polarToCartesian(cx, cy, r, angle) {
+        var rad = (angle - 90) * Math.PI / 180;
+        return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+    }
+    var cx=14, cy=14;
+    var ha = (hours%12)*30 + minutes*0.5;
+    var ma = minutes*6 + seconds*0.1;
+    var sa = seconds*6;
+    var he = polarToCartesian(cx,cy,7,ha);
+    var me = polarToCartesian(cx,cy,10,ma);
+    var se = polarToCartesian(cx,cy,11,sa);
+    var marks = "";
+    for(var i=0;i<12;i++){
+        var isH = i%3===0;
+        var r1 = isH?11.5:12;
+        var r2 = isH?13.5:13;
+        var p1=polarToCartesian(cx,cy,r1,i*30);
+        var p2=polarToCartesian(cx,cy,r2,i*30);
+        marks += "<line class=""+(isH?"hour-mark":"minute-mark")+"" x1=""+p1.x+"" y1=""+p1.y+"" x2=""+p2.x+"" y2=""+p2.y+""/>"
+    }
+    return "<svg viewBox="0 0 28 28"><circle class="clock-face" cx="14" cy="14" r="13"/>"+marks+
+        "<line class="clock-hour" x1="14" y1="14" x2=""+he.x+"" y2=""+he.y+""/>"+
+        "<line class="clock-minute" x1="14" y1="14" x2=""+me.x+"" y2=""+me.y+""/>"+
+        "<line class="clock-second" x1="14" y1="14" x2=""+se.x+"" y2=""+se.y+""/>"+
+        "<circle class="clock-center" cx="14" cy="14" r="2"/>"+
+        "<circle class="clock-center-outer" cx="14" cy="14" r="1"/></svg>";
+}
+function updateClocks(){
+    var d = new Date();
+    var h=d.getHours(), m=d.getMinutes(), s=d.getSeconds();
+    var svg = createClockSVG(h,m,s);
+    var el1 = document.getElementById("headerClock");
+    var el2 = document.getElementById("liveClock");
+    if(el1) el1.innerHTML = svg;
+    if(el2) el2.innerHTML = svg;
+}
+function updateDateTime(){
     var d = new Date();
     var days = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
     var months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-    var dayName = days[d.getDay()];
-    var dateStr = d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
-    document.getElementById("todayDisplay").textContent = dayName;
-    document.getElementById("todayDateDisplay").textContent = dateStr;
-    document.getElementById("liveTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("todayDisplay").textContent = days[d.getDay()];
+    document.getElementById("todayDateDisplay").textContent = d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+    var t = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("liveTimeDisplay").textContent = t;
     document.getElementById("currentTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    updateClocks();
 }
-updateClockAndDate();
-setInterval(updateClockAndDate, 1000);
+updateDateTime();
+setInterval(updateDateTime, 1000);
 </script>
 </body>
 </html>
