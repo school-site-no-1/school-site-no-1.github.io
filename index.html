@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.9.6">
+<html lang="ru" data-version="v3.9.7">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -186,30 +186,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* === ПЕРВЫЙ СТОЛБЕЦ — УМЕНЬШЕН В 2 РАЗА (по сравнению с v3.9.5) === */
+        /* ===== ШИРИНА ПЕРВОГО СТОЛБЦА 2% ===== */
         thead th:first-child {
-            width: 11px;
-            min-width: 11px;
-            max-width: 15px;
+            width: 2%;
+            min-width: 30px;
         }
-        @media (min-width: 769px) and (max-width: 1024px) {
-            thead th:first-child { width: 9px; min-width: 9px; max-width: 12px; }
-        }
-        @media (min-width: 1025px) and (max-width: 1600px) {
-            thead th:first-child { width: 10px; min-width: 10px; max-width: 13px; }
-        }
-        @media (min-width: 1601px) and (max-width: 1919px) {
-            thead th:first-child { width: 12px; min-width: 12px; max-width: 16px; }
-        }
-        @media (min-width: 1920px) and (max-width: 2560px) {
-            thead th:first-child { width: 15px; min-width: 15px; max-width: 19px; }
-        }
-        @media (min-width: 2561px) {
-            thead th:first-child { width: 17px; min-width: 17px; max-width: 22px; }
-        }
-
         thead th:not(:first-child) {
-            width: 5.3%;
+            width: 5.4%;
         }
 
         tbody td {
@@ -245,7 +228,6 @@
         .lesson-num {
             font-weight: 700;
             color: #4a5568;
-            font-size: 0.7em;
         }
 
         .subject {
@@ -399,8 +381,9 @@
             .header-right .date { font-size: clamp(12px, 1.3vh, 16px); }
             table { font-size: clamp(10px, 1.0vh, 14px); }
             thead th { font-size: clamp(8px, 0.8vh, 11px); padding: 0.25vh 4px; }
+            thead th:first-child { min-width: 25px; }
             tbody td { font-size: clamp(8px, 0.9vh, 12px) !important; padding: 0.25vh 4px; }
-            .lesson-num { font-size: clamp(6px, 0.6vh, 8px) !important; }
+            .lesson-num { font-size: clamp(9px, 1.0vh, 13px) !important; }
             .subject { font-size: clamp(8px, 0.9vh, 12px) !important; }
             .cabinet { font-size: inherit !important; }
             .footer { font-size: clamp(7px, 0.7vh, 10px); }
@@ -416,8 +399,9 @@
             .header-right .date { font-size: clamp(11px, 1.2vh, 15px); }
             table { font-size: clamp(10px, 1.0vh, 13px); }
             thead th { font-size: clamp(8px, 0.8vh, 11px); padding: 0.2vh 4px; }
+            thead th:first-child { min-width: 28px; }
             tbody td { font-size: clamp(8px, 0.9vh, 12px) !important; padding: 0.2vh 3px; }
-            .lesson-num { font-size: clamp(6px, 0.6vh, 8px) !important; }
+            .lesson-num { font-size: clamp(9px, 1.0vh, 12px) !important; }
             .subject { font-size: clamp(8px, 0.9vh, 12px) !important; }
             .cabinet { font-size: inherit !important; }
             .footer { font-size: clamp(7px, 0.7vh, 10px); }
@@ -434,9 +418,9 @@
             .header-right .date { font-size: clamp(14px, 1.5vh, 19px); }
             table { font-size: clamp(12px, 1.2vh, 17px); }
             thead th { font-size: clamp(10px, 1.0vh, 14px); padding: 0.35vh 6px; border-bottom: 2.5px solid #2b6cb0; }
-            thead th:first-child { width: 12px; min-width: 12px; max-width: 16px; }
+            thead th:first-child { min-width: 32px; }
             tbody td { font-size: clamp(10px, 1.1vh, 15px) !important; padding: 0.35vh 5px; border-bottom: 1.5px solid #e2e8f0; }
-            .lesson-num { font-size: clamp(7px, 0.7vh, 9px) !important; }
+            .lesson-num { font-size: clamp(11px, 1.2vh, 16px) !important; }
             .subject { font-size: clamp(10px, 1.1vh, 15px) !important; }
             .cabinet { font-size: inherit !important; margin-top: 2px; }
             .footer { font-size: clamp(9px, 0.9vh, 13px); padding-top: 3px; margin-top: 3px; }
@@ -505,9 +489,7 @@
                 border-bottom: 2.8px solid #2b6cb0;
             }
             thead th:first-child {
-                width: 15px;
-                min-width: 15px;
-                max-width: 19px;
+                min-width: 40px;
             }
 
             tbody td {
@@ -517,7 +499,7 @@
             }
 
             .lesson-num {
-                font-size: clamp(8px, 0.8vh, 11px) !important;
+                font-size: clamp(14.5px, 1.55vh, 22.5px) !important;
             }
 
             .subject {
@@ -555,9 +537,9 @@
             .header-right .date { font-size: clamp(19px, 2.0vh, 28px); }
             table { font-size: clamp(16px, 1.6vh, 26px); }
             thead th { font-size: clamp(13px, 1.3vh, 20px); padding: 0.6vh 12px; border-bottom: 4px solid #2b6cb0; }
-            thead th:first-child { width: 17px; min-width: 17px; max-width: 22px; }
+            thead th:first-child { min-width: 45px; }
             tbody td { font-size: clamp(14px, 1.5vh, 24px) !important; padding: 0.6vh 12px; border-bottom: 2px solid #e2e8f0; }
-            .lesson-num { font-size: clamp(9px, 0.9vh, 13px) !important; }
+            .lesson-num { font-size: clamp(15px, 1.6vh, 25px) !important; }
             .subject { font-size: clamp(14px, 1.5vh, 24px) !important; }
             .cabinet { font-size: inherit !important; margin-top: 3px; }
             .footer { font-size: clamp(11px, 1.1vh, 18px); padding-top: 6px; margin-top: 6px; border-top-width: 2px; }
@@ -646,7 +628,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="version" id="versionBadge">🏷️ v3.9.6</div>
+                <div class="version" id="versionBadge">🏷️ v3.9.7</div>
             </div>
         </div>
 
@@ -730,7 +712,7 @@
         var weekDays = {};
         var classNames = [];
         var dataLoaded = false;
-        var APP_VERSION = 'v3.9.6';
+        var APP_VERSION = 'v3.9.7';
 
         document.getElementById('versionBadge').textContent = '🏷️ ' + APP_VERSION;
 
@@ -848,7 +830,7 @@
                     'Воскресенье': 'воскресенье'
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
+                return '<span class="line1">📌 Изменения</span><div class="line2">на ' + nextDayGen + '</div>';
             }
 
             return '⏰ Загрузка...';
