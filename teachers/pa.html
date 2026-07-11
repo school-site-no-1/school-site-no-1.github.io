@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Пашкевич - Понедельник</title>
+<title>Панин - Понедельник</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -65,7 +65,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 <div class="container">
 <div class="header">
 <div class="header-left">
-<span class="name">📋 Пашкевич</span>
+<span class="name">📋 Панин</span>
 <span class="day">📅 Сегодня: <span id="todayDisplay"></span> <span class="date" id="todayDateDisplay"></span><span class="time"><span class="analog-clock-container" id="headerClock"></span> <span id="currentTimeDisplay"></span></span></span>
 </div>
 <div class="header-center">📌 Изменения<br>на понедельник</div>
@@ -75,7 +75,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 11.07.2026, 21:54:20</span>
+<span class="update">🔄 обновлено: 11.07.2026, 22:11:40</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -87,60 +87,62 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </div>
 <div class="footer">
 <span class="version">Админка v5.9.3</span>
-<span class="gen-time">📅 11.07.2026, 21:54:20</span>
+<span class="gen-time">📅 11.07.2026, 22:11:40</span>
 </div>
 </div>
 <script>
-function createClockSVG(hours, minutes, seconds) {
+(function(){
     function polarToCartesian(cx, cy, r, angle) {
         var rad = (angle - 90) * Math.PI / 180;
         return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
     }
-    var cx=14, cy=14;
-    var ha = (hours%12)*30 + minutes*0.5;
-    var ma = minutes*6 + seconds*0.1;
-    var sa = seconds*6;
-    var he = polarToCartesian(cx,cy,7,ha);
-    var me = polarToCartesian(cx,cy,10,ma);
-    var se = polarToCartesian(cx,cy,11,sa);
-    var marks = "";
-    for(var i=0;i<12;i++){
-        var isH = i%3===0;
-        var r1 = isH?11.5:12;
-        var r2 = isH?13.5:13;
-        var p1=polarToCartesian(cx,cy,r1,i*30);
-        var p2=polarToCartesian(cx,cy,r2,i*30);
-        marks += "<line class=""+(isH?"hour-mark":"minute-mark")+"" x1=""+p1.x+"" y1=""+p1.y+"" x2=""+p2.x+"" y2=""+p2.y+""/>"
+    function createClockSVG(hours, minutes, seconds) {
+        var cx=14, cy=14;
+        var ha = (hours%12)*30 + minutes*0.5;
+        var ma = minutes*6 + seconds*0.1;
+        var sa = seconds*6;
+        var he = polarToCartesian(cx,cy,7,ha);
+        var me = polarToCartesian(cx,cy,10,ma);
+        var se = polarToCartesian(cx,cy,11,sa);
+        var marks = "";
+        for(var i=0;i<12;i++){
+            var isH = i%3===0;
+            var r1 = isH?11.5:12;
+            var r2 = isH?13.5:13;
+            var p1=polarToCartesian(cx,cy,r1,i*30);
+            var p2=polarToCartesian(cx,cy,r2,i*30);
+            marks += "<line class=""+(isH?"hour-mark":"minute-mark")+"" x1=""+p1.x+"" y1=""+p1.y+"" x2=""+p2.x+"" y2=""+p2.y+""/>";
+        }
+        return "<svg viewBox="0 0 28 28"><circle class="clock-face" cx="14" cy="14" r="13"/>"+marks+
+            "<line class="clock-hour" x1="14" y1="14" x2=""+he.x+"" y2=""+he.y+""/>"+
+            "<line class="clock-minute" x1="14" y1="14" x2=""+me.x+"" y2=""+me.y+""/>"+
+            "<line class="clock-second" x1="14" y1="14" x2=""+se.x+"" y2=""+se.y+""/>"+
+            "<circle class="clock-center" cx="14" cy="14" r="2"/>"+
+            "<circle class="clock-center-outer" cx="14" cy="14" r="1"/></svg>";
     }
-    return "<svg viewBox="0 0 28 28"><circle class="clock-face" cx="14" cy="14" r="13"/>"+marks+
-        "<line class="clock-hour" x1="14" y1="14" x2=""+he.x+"" y2=""+he.y+""/>"+
-        "<line class="clock-minute" x1="14" y1="14" x2=""+me.x+"" y2=""+me.y+""/>"+
-        "<line class="clock-second" x1="14" y1="14" x2=""+se.x+"" y2=""+se.y+""/>"+
-        "<circle class="clock-center" cx="14" cy="14" r="2"/>"+
-        "<circle class="clock-center-outer" cx="14" cy="14" r="1"/></svg>";
-}
-function updateClocks(){
-    var d = new Date();
-    var h=d.getHours(), m=d.getMinutes(), s=d.getSeconds();
-    var svg = createClockSVG(h,m,s);
-    var el1 = document.getElementById("headerClock");
-    var el2 = document.getElementById("liveClock");
-    if(el1) el1.innerHTML = svg;
-    if(el2) el2.innerHTML = svg;
-}
-function updateDateTime(){
-    var d = new Date();
-    var days = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
-    var months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-    document.getElementById("todayDisplay").textContent = days[d.getDay()];
-    document.getElementById("todayDateDisplay").textContent = d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
-    var t = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
-    document.getElementById("liveTimeDisplay").textContent = t;
-    document.getElementById("currentTimeDisplay").textContent = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
-    updateClocks();
-}
-updateDateTime();
-setInterval(updateDateTime, 1000);
+    function updateDateTime(){
+        var d = new Date();
+        var days = ["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"];
+        var months = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+        var el1 = document.getElementById("todayDisplay");
+        var el2 = document.getElementById("todayDateDisplay");
+        var el3 = document.getElementById("liveTimeDisplay");
+        var el4 = document.getElementById("currentTimeDisplay");
+        if(el1) el1.textContent = days[d.getDay()];
+        if(el2) el2.textContent = d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+        var t = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+        var tFull = d.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+        if(el3) el3.textContent = t;
+        if(el4) el4.textContent = tFull;
+        var svg = createClockSVG(d.getHours(), d.getMinutes(), d.getSeconds());
+        var hc = document.getElementById("headerClock");
+        var lc = document.getElementById("liveClock");
+        if(hc) hc.innerHTML = svg;
+        if(lc) lc.innerHTML = svg;
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+})();
 </script>
 </body>
 </html>
