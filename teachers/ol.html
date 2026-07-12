@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ольховская - Понедельник</title>
+<script src="clock.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -13,6 +14,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;col
 .header-left{display:flex;flex-direction:column;min-width:100px}
 .header-left .name{font-size:1.15em;font-weight:700;color:#1a365d}
 .header-right{text-align:right;font-size:1.6em;color:#4a5568;line-height:1.3;min-width:100px}
+.header-right #clockContainer{display:flex;justify-content:flex-end;align-items:center;min-height:50px}
 .info{display:flex;justify-content:space-between;font-size:1.2em;color:#718096;padding:4px 10px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:6px;border-radius:8px}
 .info .count{color:#2b6cb0;font-weight:600}
 .info .update{color:#a0aec0;font-size:.85em}
@@ -42,7 +44,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 .footer .version{color:#718096}
 .footer .gen-time{color:#cbd5e0}
 @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-right{font-size:1.2em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em;flex-wrap:wrap}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
-@media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0}.header-center{font-size:.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:left;justify-content:flex-start}.header-left{min-width:auto;flex:1;order:1;text-align:left}.header-right{min-width:auto;flex:1;order:2;text-align:right}.header-left .name{font-size:.9em}.header-right{font-size:.8em}table{font-size:.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:.8em}td.room{font-size:.8em}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:.5em;gap:8px}}
+@media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0}.header-center{font-size:.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:left;justify-content:flex-start}.header-left{min-width:auto;flex:1;order:1;text-align:left}.header-right{min-width:auto;flex:1;order:2;text-align:right}.header-left .name{font-size:.9em}.header-right{font-size:.8em}.header-right #clockContainer{min-height:30px}table{font-size:.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:.8em}td.room{font-size:.8em}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:.5em;gap:8px}}
 </style>
 </head>
 <body>
@@ -52,11 +54,13 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 <span class="name">📋 Ольховская</span>
 </div>
 <div class="header-center">📌 Изменения<br>на понедельник</div>
-<div class="header-right"></div>
+<div class="header-right">
+<div id="clockContainer"></div>
+</div>
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 12.07.2026, 06:18:07</span>
+<span class="update">🔄 обновлено: 12.07.2026, 15:29:49</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -67,9 +71,14 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:normal;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.9.2</span>
-<span class="gen-time">📅 12.07.2026, 06:18:07</span>
+<span class="version">Админка v5.9.8</span>
+<span class="gen-time">📅 12.07.2026, 15:29:49</span>
 </div>
 </div>
+<script>
+if (typeof initClock === "function") {
+    initClock("clockContainer");
+}
+</script>
 </body>
 </html>
