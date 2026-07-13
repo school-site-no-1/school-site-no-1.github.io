@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Трофимова - Вторник</title>
+<script src="clock.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -42,6 +43,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 .footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
 .footer .version{color:#718096}
 .footer .gen-time{color:#cbd5e0}
+.no-lessons-msg{text-align:center;padding:30px 0;color:#a0aec0;font-size:1.2em}
 @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-right{font-size:1.2em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em;flex-wrap:wrap}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
 @media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:wrap;justify-content:center;gap:0}.header-center{font-size:.95em;flex:0 0 100%;order:3;padding:4px 0;text-align:left;justify-content:flex-start}.header-left{min-width:auto;flex:1;order:1;text-align:left}.header-right{min-width:auto;flex:1;order:2;text-align:right}.header-left .name{font-size:.9em}.header-right{font-size:.8em}.header-right #clockContainer{min-height:30px}table{font-size:.85em;min-width:320px}thead th,td{padding:6px 8px;font-size:.85em}td.subject{padding-left:8px}td.num{font-size:1em}td.class{font-size:.8em;white-space:normal}td.room{font-size:.8em;white-space:normal}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:6px 10px;border-radius:8px}.footer{font-size:.5em;gap:8px}}
 </style>
@@ -59,7 +61,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 </div>
 <div class="info">
 <span class="count">📚 4 урока</span>
-<span class="update">🔄 обновлено: 13.07.2026, 22:49:35</span>
+<span class="update">🔄 обновлено: 14.07.2026, 00:52:48</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -70,9 +72,14 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.9.10</span>
-<span class="gen-time">📅 13.07.2026, 22:49:35</span>
+<span class="version">Админка v5.9.15</span>
+<span class="gen-time">📅 14.07.2026, 00:52:48</span>
 </div>
 </div>
+<script>
+if (typeof initClock === "function") {
+    initClock("clockContainer");
+}
+</script>
 </body>
 </html>
