@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Пономарева - Вторник</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
+.container{max-width:1200px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-radius:16px}
+.header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2b6cb0;padding-bottom:8px;margin-bottom:8px;flex-wrap:wrap}
+.header-center{text-align:center;flex:1;font-size:1.25em;font-weight:700;color:#c53030;letter-spacing:.5px;text-transform:lowercase;padding:2px 0;line-height:1.3}
+.header-left{display:flex;flex-direction:column;min-width:100px}
+.header-left .name{font-size:1.15em;font-weight:700;color:#1a365d}
+.header-right{text-align:right;font-size:1.6em;color:#4a5568;line-height:1.3;min-width:100px}
+.header-right #clockContainer{display:flex;justify-content:flex-end;align-items:center;min-height:50px}
+.info{display:flex;justify-content:space-between;font-size:1.2em;color:#718096;padding:4px 10px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:6px;border-radius:8px}
+.info .count{color:#2b6cb0;font-weight:600}
+.info .update{color:#a0aec0;font-size:.85em}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:1.6em;min-width:700px}
+thead th{background:#2b6cb0;color:#fff;padding:10px 12px;text-align:center;font-weight:700;font-size:.85em;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid #1a4f8b}
+thead th:first-child{border-left:none}
+thead th:last-child{border-right:none}
+tbody tr{border-bottom:3px solid #cbd5e0}
+tbody tr:last-child{border-bottom:none}
+tbody tr.current{background:#bee3f8;font-weight:700}
+tbody tr.current td{color:#1a365d}
+tbody tr.current td.num{color:#1a4f8b;font-weight:800}
+tbody tr.current td.class{color:#1a365d}
+tbody td{padding:8px 10px;text-align:center;font-size:.95em;vertical-align:middle}
+tbody td.num{font-weight:800;color:#1a365d;font-size:1.3em;text-align:center;vertical-align:middle}
+tbody td.period{padding:6px 10px;vertical-align:middle;text-align:center;white-space:nowrap}
+tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:1.1em;line-height:1.3}
+tbody td.period .time-end{color:#718096;font-size:.95em;line-height:1.3;margin-top:2px}
+tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
+tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
+tbody td.class{font-weight:700;color:#1a365d;font-size:1.1em;white-space:nowrap;line-height:1.3;min-width:80px}
+tbody td.subject{text-align:center;padding-left:14px;font-weight:600;font-size:1.05em}
+tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;line-height:1.3;min-width:70px}
+.footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.footer .version{color:#718096}
+.footer .gen-time{color:#cbd5e0}
+.no-lessons-msg{text-align:center;padding:30px 0;color:#a0aec0;font-size:1.2em}
+@media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-right{font-size:1.2em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em;flex-wrap:wrap}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
+@media(max-width:600px){body{padding:16px}.container{padding:16px;border-radius:20px}.header{flex-wrap:nowrap;justify-content:space-between;gap:0;align-items:center}.header-center{font-size:.9em;flex:0 1 auto;order:2;padding:2px 0;text-align:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}.header-left{min-width:auto;flex:0 1 auto;order:1;text-align:left;white-space:nowrap}.header-right{min-width:auto;flex:0 1 auto;order:3;text-align:right;white-space:nowrap}.header-left .name{font-size:.85em}.header-right{font-size:.8em}.header-right #clockContainer{min-height:30px}table{font-size:.9em;min-width:320px}thead th,td{padding:4px 4px;font-size:.85em}td.subject{padding-left:4px;text-align:center!important}td.num{font-size:1em}td.class{font-size:.8em;white-space:normal;min-width:30px}td.room{font-size:.8em;white-space:normal;min-width:30px}tbody td.period .time-start{font-size:.85em}tbody td.period .time-end{font-size:.75em}.info{font-size:.7em;flex-wrap:wrap;padding:4px 8px;border-radius:8px}.footer{font-size:.5em;gap:6px}}
+</style>
+</head>
+<body>
+<div class="container teacher-schedule-table">
+<div class="header teacher-schedule-header">
+<div class="header-left">
+<span class="name">📋 Пономарева</span>
+</div>
+<div class="header-center">📌 Уроков нет<br>на вторник</div>
+<div class="header-right">
+<div id="clockContainer"></div>
+</div>
+</div>
+<div class="info">
+<span class="count">📚 0 уроков</span>
+<span class="update">🔄 обновлено: 14.07.2026, 08:44:49</span>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>№</th><th>Время</th><th>Класс</th><th>Предмет</th><th>Кабинет</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="period"><div class="time-start">08:30</div><div class="time-end">09:10</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">2</td><td class="period"><div class="time-start">09:20</div><div class="time-end">10:00</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">3</td><td class="period"><div class="time-start">10:10</div><div class="time-end">10:50</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">4</td><td class="period"><div class="time-start">11:05</div><div class="time-end">11:45</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">5</td><td class="period"><div class="time-start">12:00</div><div class="time-end">12:40</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">6</td><td class="period"><div class="time-start">12:55</div><div class="time-end">13:35</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">7</td><td class="period"><div class="time-start">13:45</div><div class="time-end">14:25</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">8</td><td class="period"><div class="time-start">14:35</div><div class="time-end">15:15</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr><tr><td class="num">9</td><td class="period"><div class="time-start">15:25</div><div class="time-end">16:05</div></td><td class="class">—</td><td class="subject" style="text-align:center;">—</td><td class="room">—</td></tr>
+</tbody>
+</table>
+</div>
+<div class="footer">
+<span class="version">Админка v5.9.20</span>
+<span class="gen-time">📅 14.07.2026, 08:44:49</span>
+</div>
+</div>
+<script>
+function initClock(containerId) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = "";
+  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("width", "50");
+  svg.setAttribute("height", "50");
+  var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", "50"); circle.setAttribute("cy", "50");
+  circle.setAttribute("r", "45"); circle.setAttribute("fill", "#f7fafc");
+  circle.setAttribute("stroke", "#2b6cb0"); circle.setAttribute("stroke-width", "3");
+  svg.appendChild(circle);
+  for (var i = 1; i <= 12; i++) {
+    var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
+    var x1 = 50 + 38 * Math.cos(angle), y1 = 50 + 38 * Math.sin(angle);
+    var x2 = 50 + 32 * Math.cos(angle), y2 = 50 + 32 * Math.sin(angle);
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "#2d3748");
+    line.setAttribute("stroke-width", i % 3 === 0 ? "3" : "1.5");
+    line.setAttribute("stroke-linecap", "round");
+    svg.appendChild(line);
+  }
+  var hourHand = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  hourHand.setAttribute("x1", "50"); hourHand.setAttribute("y1", "50");
+  hourHand.setAttribute("x2", "50"); hourHand.setAttribute("y2", "28");
+  hourHand.setAttribute("stroke", "#2b6cb0"); hourHand.setAttribute("stroke-width", "4");
+  hourHand.setAttribute("stroke-linecap", "round"); hourHand.setAttribute("id", "hour-hand");
+  svg.appendChild(hourHand);
+  var minHand = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  minHand.setAttribute("x1", "50"); minHand.setAttribute("y1", "50");
+  minHand.setAttribute("x2", "50"); minHand.setAttribute("y2", "18");
+  minHand.setAttribute("stroke", "#2b6cb0"); minHand.setAttribute("stroke-width", "3");
+  minHand.setAttribute("stroke-linecap", "round"); minHand.setAttribute("id", "min-hand");
+  svg.appendChild(minHand);
+  var center = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  center.setAttribute("cx", "50"); center.setAttribute("cy", "50");
+  center.setAttribute("r", "4"); center.setAttribute("fill", "#2b6cb0");
+  svg.appendChild(center);
+  container.appendChild(svg);
+  function updateClock() {
+    var now = new Date();
+    var hours = now.getHours() % 12;
+    var minutes = now.getMinutes();
+    var seconds = now.getSeconds();
+    var hourAngle = (hours + minutes / 60) * 30 - 90;
+    var minAngle = (minutes + seconds / 60) * 6 - 90;
+    var hh = document.getElementById("hour-hand");
+    var mh = document.getElementById("min-hand");
+    if (hh) hh.setAttribute("transform", "rotate(" + hourAngle + ", 50, 50)");
+    if (mh) mh.setAttribute("transform", "rotate(" + minAngle + ", 50, 50)");
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+}
+initClock("clockContainer");
+// Автообновление каждые 4 минуты
+setTimeout(function() { location.reload(); }, 240000);
+</script>
+</body>
+</html>
