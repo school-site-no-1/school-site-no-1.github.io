@@ -135,7 +135,6 @@
             font-weight: 600;
             margin-top: 1px;
         }
-        /* Новая метка — дата изменения расписания */
         .header-right .schedule-updated {
             color: #718096;
             font-weight: 500;
@@ -144,6 +143,10 @@
             border-radius: 10px;
             font-size: 0.75rem;
             margin-top: 1px;
+        }
+        .header-right .schedule-updated.error {
+            color: #e53e3e;
+            background: #fff5f5;
         }
 
         .main-layout {
@@ -189,7 +192,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* ===== ШИРИНА ПЕРВОГО СТОЛБЦА 2% ===== */
         thead th:first-child {
             width: 2%;
             min-width: 30px;
@@ -377,8 +379,6 @@
             color: #a0aec0;
         }
 
-        /* ===== АДАПТАЦИЯ ПОД УСТРОЙСТВА ===== */
-
         @media (min-width: 769px) and (max-width: 1024px) {
             .header-banner { height: 36px; max-height: 36px; min-height: 36px; }
             .header-center .day-indicator { font-size: clamp(14px, 1.6vh, 19px); padding: 2px 12px; }
@@ -435,7 +435,6 @@
             .main-layout { gap: 10px; margin-top: 3px; }
         }
 
-        /* ===== FULL HD (1920x1080) ===== */
         @media (min-width: 1920px) and (max-width: 2560px) {
             .container {
                 padding: 17px 25px;
@@ -532,7 +531,6 @@
             }
         }
 
-        /* ===== SMART TV 4K (2561px+) ===== */
         @media (min-width: 2561px) {
             .container { padding: 20px 32px; border-radius: 32px; }
             .header { min-height: 72px; gap: 8px; padding-bottom: 8px; border-bottom-width: 3px; }
@@ -553,10 +551,6 @@
             .footer { font-size: clamp(11px, 1.1vh, 18px); padding-top: 6px; margin-top: 6px; border-top-width: 2px; }
             .main-layout { gap: 16px; margin-top: 6px; }
         }
-
-        /* ================================================================
-           ===== МОБИЛЬНЫЕ УСТРОЙСТВА =====
-           ================================================================ */
 
         @media (max-width: 768px) {
             .container { padding: 5.5px 7.5px; border-radius: 11.5px; height: 99vh; }
@@ -636,7 +630,7 @@
             <div class="header-right">
                 <div class="time" id="currentTime">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
-                <div class="schedule-updated" id="scheduleUpdated">📅 обновлено: --</div>
+                <div class="schedule-updated" id="scheduleUpdated">📅 загрузка...</div>
             </div>
         </div>
 
@@ -670,9 +664,6 @@
         </div>
     </div>
 
-    <!-- ================================================================ -->
-    <!-- ЯНДЕКС МЕТРИКА                                                    -->
-    <!-- ================================================================ -->
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -721,10 +712,8 @@
         var classNames = [];
         var dataLoaded = false;
         var APP_VERSION = 'v3.9.8';
+        var scheduleUpdatedDate = null;
 
-        // ================================================================
-        // УТИЛИТЫ
-        // ================================================================
         function parseTime(timeStr) {
             var parts = timeStr.split(':');
             return parseInt(parts[0]) * 60 + parseInt(parts[1]);
@@ -882,6 +871,28 @@
             return { key: "ПН", full: "Понедельник" };
         }
 
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return null;
+            var d;
+            if (typeof dateValue === 'string') {
+                d = new Date(dateValue);
+            } else if (typeof dateValue === 'number') {
+                d = new Date(dateValue);
+            } else if (dateValue instanceof Date) {
+                d = dateValue;
+            } else {
+                return null;
+            }
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
         function loadData() {
             var statusEl = document.getElementById('loadStatus');
             var statusMobile = document.getElementById('loadStatusMobile');
@@ -897,7 +908,7 @@
                     var scheduleData = null;
                     var updatedDate = null;
 
-                    // Пытаемся извлечь дату обновления из разных полей
+                    // Извлекаем дату обновления только из данных файла
                     if (data.updated) {
                         updatedDate = data.updated;
                     } else if (data.last_update) {
@@ -907,24 +918,20 @@
                     }
 
                     if (updatedDate) {
-                        var d = new Date(updatedDate);
-                        if (!isNaN(d.getTime())) {
-                            document.getElementById('scheduleUpdated').textContent =
-                                '📅 обновлено: ' + d.toLocaleDateString('ru-RU', {
-                                    day: '2-digit', month: '2-digit', year: 'numeric',
-                                    hour: '2-digit', minute: '2-digit'
-                                });
+                        var formatted = formatDateForDisplay(updatedDate);
+                        if (formatted) {
+                            scheduleUpdatedDate = formatted;
+                            document.getElementById('scheduleUpdated').textContent = '📅 ' + formatted;
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated';
                         } else {
-                            document.getElementById('scheduleUpdated').textContent = '📅 обновлено: ' + updatedDate;
+                            scheduleUpdatedDate = null;
+                            document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                         }
                     } else {
-                        // Если дата не найдена, используем текущую
-                        var now = new Date();
-                        document.getElementById('scheduleUpdated').textContent =
-                            '📅 обновлено: ' + now.toLocaleDateString('ru-RU', {
-                                day: '2-digit', month: '2-digit', year: 'numeric',
-                                hour: '2-digit', minute: '2-digit'
-                            });
+                        scheduleUpdatedDate = null;
+                        document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                        document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                     }
 
                     if (data.schedule) {
@@ -999,6 +1006,8 @@
                     DAYS_LIST.forEach(function(day) {
                         weekDays[day] = {};
                     });
+                    document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
+                    document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                     processLoadedData();
                 });
         }
