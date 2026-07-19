@@ -1,6 +1,6 @@
 {
-  "adminVersion": "v5.9.25",
-  "exportedAt": "2026-07-19T22:21:50.374Z",
+  "adminVersion": "v5.9.28",
+  "exportedAt": "2026-07-19T22:22:20.445Z",
   "schedule": {
     "primary": {
       "ПН": {
@@ -6605,5 +6605,6 @@
         ]
       }
     }
-  ]
+  ],
+  "last_update": "2026-07-20 01:22"
 }
