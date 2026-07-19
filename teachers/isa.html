@@ -59,7 +59,7 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 19.07.2026, 21:14:31</span>
+<span class="update">🔄 обновлено: 20.07.2026, 01:21:53</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -70,8 +70,8 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.9.28</span>
-<span class="gen-time">📅 19.07.2026, 21:14:31</span>
+<span class="version">Админка v5.9.25</span>
+<span class="gen-time">📅 20.07.2026, 01:21:53</span>
 </div>
 </div>
 <script>
@@ -124,6 +124,7 @@ function initClock(containerId) {
     var seconds = now.getSeconds();
     var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
     var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
+    var secAngle = seconds * 6 - 90;
     var hh = document.getElementById("hour-hand");
     var mh = document.getElementById("min-hand");
     if (hh) hh.setAttribute("transform", "rotate(" + hourAngle + ", 50, 50)");
