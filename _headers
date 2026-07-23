@@ -8,6 +8,7 @@
 /*.css
   Cache-Control: public, max-age=3600, must-revalidate
 
+# data.json — кэш на 5 минут с проверкой версии
 /data.json
   Cache-Control: public, max-age=300, must-revalidate
 
@@ -29,7 +30,6 @@
 /*.svg
   Cache-Control: public, max-age=604800, immutable
 
-# Service Worker должен обновляться сразу
 /sw.js
   Cache-Control: public, max-age=0, must-revalidate
 
