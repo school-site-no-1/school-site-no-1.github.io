@@ -1,7 +1,6 @@
 /* ================================================================
-   style.css v1.0.2
+   style.css v1.0.5
    Расписание 5-11 — Основные стили
-   Обновление: цифровые часы с секундами
    ================================================================ */
 
 * {
@@ -45,7 +44,7 @@ body {
     flex-shrink: 0;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 4px;
     flex-wrap: wrap;
@@ -56,8 +55,6 @@ body {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
     flex: 1;
     min-width: 0;
 }
@@ -86,41 +83,122 @@ body {
     object-fit: cover;
 }
 
+/* ===== ЦЕНТР: ДЕНЬ НЕДЕЛИ + ПЕРИОД ===== */
 .header-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
     flex-shrink: 0;
+    padding: 0 12px;
+    min-width: 120px;
+}
+
+.header-center .day-info {
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
 
-.header-center .day-indicator {
-    color: #fff;
+.header-center .day-name {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #1a365d;
+    letter-spacing: 0.5px;
+}
+
+.header-center .period-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 0px;
+}
+
+.header-center .period-line1 {
+    font-size: 0.95em;
     font-weight: 600;
-    background: #2b6cb0;
-    padding: 1px 12px;
-    border-radius: 16px;
-    flex-shrink: 0;
+    color: #e65100;
 }
 
-.header-center .divider {
-    color: #e2e8f0;
-    font-weight: 300;
+.header-center .period-line2 {
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #d45c00;
 }
 
+/* ===== ПРАВАЯ ЧАСТЬ: ВРЕМЯ, ДАТА, ОБНОВЛЕНО ===== */
 .header-right {
     text-align: right;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 1px;
+    justify-content: center;
+    gap: 0px;
     flex-shrink: 0;
+    min-width: 100px;
 }
+
+/* ================================================================
+   ⭐ СТИЛИ ДЛЯ ЦИФРОВЫХ ЧАСОВ С СЕКУНДАМИ
+   ================================================================ */
+
+.header-right .digital-clock {
+    font-size: 1.6em;
+    font-weight: 900;
+    color: #2b6cb0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    line-height: 1.2;
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    text-shadow: 0 1px 2px rgba(43, 108, 176, 0.15);
+}
+
+/* ================================================================
+   СТИЛИ ДЛЯ АНАЛОГОВЫХ ЧАСОВ (из v3.9.9)
+   ================================================================ */
+
+.clock-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.clock-wrapper .clock-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    white-space: nowrap;
+}
+
+.clock-wrapper .clock-text .day {
+    font-size: 0.7em;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.clock-wrapper .clock-text .date {
+    font-size: 0.85em;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.clock-wrapper .clock-text .digital-time {
+    font-size: 1.1em;
+    color: #2b6cb0;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ================================================================
+   ОСТАЛЬНЫЕ СТИЛИ
+   ================================================================ */
 
 .header-right .date {
     color: #4a5568;
     font-weight: 600;
-    margin-top: 1px;
+    font-size: 0.95em;
 }
 
 .header-right .schedule-updated {
@@ -130,23 +208,11 @@ body {
     padding: 0 8px;
     border-radius: 10px;
     font-size: 0.75rem;
-    margin-top: 1px;
 }
 
 .header-right .schedule-updated.error {
     color: #e53e3e;
     background: #fff5f5;
-}
-
-/* ===== ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ ===== */
-.header-right .digital-clock {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: #2b6cb0;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 1px;
-    line-height: 1.2;
-    font-family: 'Courier New', monospace;
 }
 
 /* ===== ОСНОВНОЙ ЛЕЙАУТ ===== */
@@ -459,7 +525,11 @@ tbody tr.current-lesson .lesson-num {
     font-size: 0.75rem;
 }
 
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (ДО 768px) ===== */
+/* ================================================================
+   АДАПТИВ
+   ================================================================ */
+
+/* Мобильная версия (до 768px) */
 @media (max-width: 768px) {
     .container {
         padding: 5.5px 7.5px;
@@ -471,6 +541,8 @@ tbody tr.current-lesson .lesson-num {
         padding-bottom: 3.5px;
         min-height: auto;
         flex-wrap: wrap;
+        flex-direction: column;
+        align-items: stretch;
     }
     .header-left {
         flex: 0 0 100%;
@@ -487,17 +559,15 @@ tbody tr.current-lesson .lesson-num {
     }
     .header-center {
         order: 2;
-        flex: 1;
-        justify-content: center;
-        gap: 7.5px;
+        padding: 2px 0;
+        min-width: unset;
     }
-    .header-center .day-indicator {
-        font-size: 17.5px;
-        padding: 4.5px 17px;
-        border-radius: 21px;
+    .header-center .day-name {
+        font-size: 1.2em;
     }
-    .header-center .divider {
-        display: none;
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: 0.85em;
     }
     .header-right {
         order: 3;
@@ -509,20 +579,36 @@ tbody tr.current-lesson .lesson-num {
         justify-content: center;
         gap: 3.5px 9px;
         margin-top: 3.5px;
+        min-width: unset;
     }
     .header-right .digital-clock {
-        font-size: 1.2em;
+        font-size: 1.4em;
+        font-weight: 900;
         order: 1;
+        letter-spacing: 1px;
     }
     .header-right .date {
-        font-size: 15.5px;
+        font-size: 0.95em;
         order: 2;
         margin-top: 0;
     }
     .header-right .schedule-updated {
-        font-size: 11.5px;
+        font-size: 0.7em;
         order: 3;
         margin-top: 2px;
+    }
+    /* Аналоговые часы на мобильных */
+    .clock-wrapper {
+        gap: 8px;
+    }
+    .clock-wrapper .clock-text .day {
+        font-size: 0.6em;
+    }
+    .clock-wrapper .clock-text .date {
+        font-size: 0.7em;
+    }
+    .clock-wrapper .clock-text .digital-time {
+        font-size: 0.9em;
     }
     .desktop-table {
         display: none !important;
@@ -541,7 +627,7 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (ДО 400px) ===== */
+/* Мобильная версия (до 400px) */
 @media (max-width: 400px) {
     .container {
         padding: 3.5px 3.5px;
@@ -552,18 +638,36 @@ tbody tr.current-lesson .lesson-num {
         min-height: 25px;
         min-width: 29px;
     }
-    .header-center .day-indicator {
-        font-size: 15.5px;
-        padding: 3.5px 13px;
-    }
-    .header-right .digital-clock {
+    .header-center .day-name {
         font-size: 1.0em;
     }
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: 0.75em;
+    }
+    .header-right .digital-clock {
+        font-size: 1.2em;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+    }
     .header-right .date {
-        font-size: 13.5px;
+        font-size: 0.85em;
     }
     .header-right .schedule-updated {
-        font-size: 9.5px;
+        font-size: 0.6em;
+    }
+    /* Аналоговые часы на маленьких экранах */
+    .clock-wrapper {
+        gap: 5px;
+    }
+    .clock-wrapper .clock-text .day {
+        font-size: 0.5em;
+    }
+    .clock-wrapper .clock-text .date {
+        font-size: 0.6em;
+    }
+    .clock-wrapper .clock-text .digital-time {
+        font-size: 0.8em;
     }
     .mobile-class-header {
         padding: 7px 11px;
@@ -591,22 +695,24 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ===== АДАПТИВ ДЛЯ ПЛАНШЕТОВ (769-1024px) ===== */
+/* Планшеты (769-1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .header-banner {
         height: 36px;
         max-height: 36px;
         min-height: 36px;
     }
-    .header-center .day-indicator {
+    .header-center .day-name {
         font-size: clamp(14px, 1.6vh, 19px);
-        padding: 2px 12px;
     }
-    .header-center .divider {
-        font-size: clamp(14px, 1.6vh, 19px);
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: clamp(10px, 1.0vh, 13px);
     }
     .header-right .digital-clock {
-        font-size: clamp(15px, 1.7vh, 20px);
+        font-size: clamp(16px, 1.8vh, 22px);
+        font-weight: 900;
+        letter-spacing: 1.5px;
     }
     .header-right .date {
         font-size: clamp(12px, 1.3vh, 16px);
@@ -642,22 +748,24 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ===== АДАПТИВ ДЛЯ НОУТБУКОВ (1025-1600px) ===== */
+/* Ноутбуки (1025-1600px) */
 @media (min-width: 1025px) and (max-width: 1600px) {
     .header-banner {
         height: 32px;
         max-height: 32px;
         min-height: 32px;
     }
-    .header-center .day-indicator {
+    .header-center .day-name {
         font-size: clamp(13px, 1.4vh, 17px);
-        padding: 1px 10px;
     }
-    .header-center .divider {
-        font-size: clamp(13px, 1.4vh, 17px);
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: clamp(9px, 0.9vh, 12px);
     }
     .header-right .digital-clock {
-        font-size: clamp(14px, 1.6vh, 19px);
+        font-size: clamp(15px, 1.7vh, 20px);
+        font-weight: 900;
+        letter-spacing: 1.5px;
     }
     .header-right .date {
         font-size: clamp(11px, 1.2vh, 15px);
@@ -693,7 +801,7 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ===== АДАПТИВ ДЛЯ БОЛЬШИХ ЭКРАНОВ (1601-1919px) ===== */
+/* Большие экраны (1601-1919px) */
 @media (min-width: 1601px) and (max-width: 1919px) {
     .container {
         padding: 10px 16px;
@@ -703,16 +811,17 @@ tbody tr.current-lesson .lesson-num {
         max-height: 44px;
         min-height: 44px;
     }
-    .header-center .day-indicator {
+    .header-center .day-name {
         font-size: clamp(17px, 1.8vh, 24px);
-        padding: 2px 16px;
-        border-radius: 20px;
     }
-    .header-center .divider {
-        font-size: clamp(17px, 1.8vh, 24px);
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: clamp(11px, 1.1vh, 15px);
     }
     .header-right .digital-clock {
-        font-size: clamp(18px, 2.0vh, 26px);
+        font-size: clamp(19px, 2.1vh, 28px);
+        font-weight: 900;
+        letter-spacing: 2px;
     }
     .header-right .date {
         font-size: clamp(14px, 1.5vh, 19px);
@@ -757,7 +866,7 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ===== АДАПТИВ ДЛЯ 2K (1920-2560px) ===== */
+/* 2K (1920-2560px) */
 @media (min-width: 1920px) and (max-width: 2560px) {
     .container {
         padding: 17px 25px;
@@ -775,16 +884,17 @@ tbody tr.current-lesson .lesson-num {
         min-height: 64px;
         max-width: 990px;
     }
-    .header-center .day-indicator {
+    .header-center .day-name {
         font-size: clamp(23.5px, 2.55vh, 37.5px);
-        padding: 4.5px 23px;
-        border-radius: 27px;
     }
-    .header-center .divider {
-        font-size: clamp(23.5px, 2.55vh, 37.5px);
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: clamp(13.5px, 1.45vh, 20.5px);
     }
     .header-right .digital-clock {
-        font-size: clamp(23.5px, 2.75vh, 39.5px);
+        font-size: clamp(25px, 2.85vh, 42px);
+        font-weight: 900;
+        letter-spacing: 2.5px;
     }
     .header-right .date {
         font-size: clamp(17.5px, 1.85vh, 25.5px);
@@ -832,7 +942,7 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ===== АДАПТИВ ДЛЯ 4K (2561+px) ===== */
+/* 4K (2561+px) */
 @media (min-width: 2561px) {
     .container {
         padding: 20px 32px;
@@ -850,16 +960,17 @@ tbody tr.current-lesson .lesson-num {
         min-height: 72px;
         max-width: 1200px;
     }
-    .header-center .day-indicator {
+    .header-center .day-name {
         font-size: clamp(26px, 2.6vh, 40px);
-        padding: 4px 28px;
-        border-radius: 32px;
     }
-    .header-center .divider {
-        font-size: clamp(26px, 2.6vh, 40px);
+    .header-center .period-line1,
+    .header-center .period-line2 {
+        font-size: clamp(15px, 1.6vh, 24px);
     }
     .header-right .digital-clock {
-        font-size: clamp(26px, 2.8vh, 42px);
+        font-size: clamp(28px, 3.0vh, 45px);
+        font-weight: 900;
+        letter-spacing: 3px;
     }
     .header-right .date {
         font-size: clamp(19px, 2.0vh, 28px);
