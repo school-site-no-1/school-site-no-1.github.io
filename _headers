@@ -1,0 +1,37 @@
+# Кэширование для всех файлов
+/*.html
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/*.js
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/*.css
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/data.json
+  Cache-Control: public, max-age=300, must-revalidate
+
+/*.png
+  Cache-Control: public, max-age=604800, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=604800, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=604800, immutable
+
+/*.gif
+  Cache-Control: public, max-age=604800, immutable
+
+/*.ico
+  Cache-Control: public, max-age=604800, immutable
+
+/*.svg
+  Cache-Control: public, max-age=604800, immutable
+
+# Service Worker должен обновляться сразу
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.json
+  Cache-Control: public, max-age=3600, must-revalidate
