@@ -6,7 +6,13 @@
 # HTML — 1 час
 /*.html
   Cache-Control: public, max-age=3600, must-revalidate
+# Отключаем кеш для HTML (временно)
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
 
+# Для CSS — тоже отключаем (временно)
+/*.css
+  Cache-Control: no-cache, no-store, must-revalidate
 # CSS — 1 неделя (меняется редко)
 /*.css
   Cache-Control: public, max-age=604800, immutable
