@@ -1,6 +1,7 @@
 /* ================================================================
-   style.css v1.0.0
+   style.css v1.0.2
    Расписание 5-11 — Основные стили
+   Обновление: цифровые часы с секундами
    ================================================================ */
 
 * {
@@ -116,31 +117,6 @@ body {
     flex-shrink: 0;
 }
 
-.header-right .time {
-    color: #2b6cb0;
-    font-weight: 700;
-}
-
-.header-right .period {
-    color: #e65100;
-    font-weight: 600;
-    min-height: 1.8em;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    line-height: 1.1;
-}
-
-.header-right .period .line1 {
-    display: block;
-}
-
-.header-right .period .line2 {
-    display: block;
-    font-weight: 500;
-    color: #d45c00;
-}
-
 .header-right .date {
     color: #4a5568;
     font-weight: 600;
@@ -160,6 +136,17 @@ body {
 .header-right .schedule-updated.error {
     color: #e53e3e;
     background: #fff5f5;
+}
+
+/* ===== ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ ===== */
+.header-right .digital-clock {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #2b6cb0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    font-family: 'Courier New', monospace;
 }
 
 /* ===== ОСНОВНОЙ ЛЕЙАУТ ===== */
@@ -472,6 +459,138 @@ tbody tr.current-lesson .lesson-num {
     font-size: 0.75rem;
 }
 
+/* ===== МОБИЛЬНАЯ ВЕРСИЯ (ДО 768px) ===== */
+@media (max-width: 768px) {
+    .container {
+        padding: 5.5px 7.5px;
+        border-radius: 11.5px;
+        height: 99vh;
+    }
+    .header {
+        gap: 3.5px;
+        padding-bottom: 3.5px;
+        min-height: auto;
+        flex-wrap: wrap;
+    }
+    .header-left {
+        flex: 0 0 100%;
+        justify-content: center;
+        order: 1;
+    }
+    .header-banner {
+        height: 31px;
+        max-height: 31px;
+        min-height: 31px;
+        min-width: 39px;
+        border: 1px solid #e2e8f0;
+        flex: 0 0 100%;
+    }
+    .header-center {
+        order: 2;
+        flex: 1;
+        justify-content: center;
+        gap: 7.5px;
+    }
+    .header-center .day-indicator {
+        font-size: 17.5px;
+        padding: 4.5px 17px;
+        border-radius: 21px;
+    }
+    .header-center .divider {
+        display: none;
+    }
+    .header-right {
+        order: 3;
+        text-align: center;
+        align-items: center;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 3.5px 9px;
+        margin-top: 3.5px;
+    }
+    .header-right .digital-clock {
+        font-size: 1.2em;
+        order: 1;
+    }
+    .header-right .date {
+        font-size: 15.5px;
+        order: 2;
+        margin-top: 0;
+    }
+    .header-right .schedule-updated {
+        font-size: 11.5px;
+        order: 3;
+        margin-top: 2px;
+    }
+    .desktop-table {
+        display: none !important;
+    }
+    .mobile-view {
+        display: flex !important;
+    }
+    .footer {
+        font-size: 12.5px;
+        padding-top: 3.5px;
+        margin-top: 3.5px;
+    }
+    .main-layout {
+        gap: 0;
+        margin-top: 3.5px;
+    }
+}
+
+/* ===== МОБИЛЬНАЯ ВЕРСИЯ (ДО 400px) ===== */
+@media (max-width: 400px) {
+    .container {
+        padding: 3.5px 3.5px;
+    }
+    .header-banner {
+        height: 25px;
+        max-height: 25px;
+        min-height: 25px;
+        min-width: 29px;
+    }
+    .header-center .day-indicator {
+        font-size: 15.5px;
+        padding: 3.5px 13px;
+    }
+    .header-right .digital-clock {
+        font-size: 1.0em;
+    }
+    .header-right .date {
+        font-size: 13.5px;
+    }
+    .header-right .schedule-updated {
+        font-size: 9.5px;
+    }
+    .mobile-class-header {
+        padding: 7px 11px;
+        font-size: 15.5px;
+    }
+    .mobile-lesson-card {
+        padding: 7px 11px;
+        gap: 9px;
+    }
+    .mobile-lesson-card .lesson-num-mobile {
+        font-size: 14.5px;
+        min-width: 25px;
+    }
+    .mobile-lesson-card .lesson-info .subject-name {
+        font-size: 14.5px;
+    }
+    .mobile-lesson-card .lesson-info .room-name {
+        font-size: 14.5px;
+    }
+    .mobile-lesson-card .lesson-time {
+        font-size: 12.5px;
+    }
+    .footer {
+        font-size: 10.5px;
+    }
+}
+
 /* ===== АДАПТИВ ДЛЯ ПЛАНШЕТОВ (769-1024px) ===== */
 @media (min-width: 769px) and (max-width: 1024px) {
     .header-banner {
@@ -486,11 +605,8 @@ tbody tr.current-lesson .lesson-num {
     .header-center .divider {
         font-size: clamp(14px, 1.6vh, 19px);
     }
-    .header-right .time {
+    .header-right .digital-clock {
         font-size: clamp(15px, 1.7vh, 20px);
-    }
-    .header-right .period {
-        font-size: clamp(9px, 1.0vh, 12px);
     }
     .header-right .date {
         font-size: clamp(12px, 1.3vh, 16px);
@@ -540,11 +656,8 @@ tbody tr.current-lesson .lesson-num {
     .header-center .divider {
         font-size: clamp(13px, 1.4vh, 17px);
     }
-    .header-right .time {
+    .header-right .digital-clock {
         font-size: clamp(14px, 1.6vh, 19px);
-    }
-    .header-right .period {
-        font-size: clamp(9px, 0.9vh, 12px);
     }
     .header-right .date {
         font-size: clamp(11px, 1.2vh, 15px);
@@ -598,12 +711,8 @@ tbody tr.current-lesson .lesson-num {
     .header-center .divider {
         font-size: clamp(17px, 1.8vh, 24px);
     }
-    .header-right .time {
+    .header-right .digital-clock {
         font-size: clamp(18px, 2.0vh, 26px);
-    }
-    .header-right .period {
-        font-size: clamp(11px, 1.1vh, 15px);
-        min-height: 2.0em;
     }
     .header-right .date {
         font-size: clamp(14px, 1.5vh, 19px);
@@ -674,18 +783,8 @@ tbody tr.current-lesson .lesson-num {
     .header-center .divider {
         font-size: clamp(23.5px, 2.55vh, 37.5px);
     }
-    .header-right .time {
+    .header-right .digital-clock {
         font-size: clamp(23.5px, 2.75vh, 39.5px);
-    }
-    .header-right .period {
-        font-size: clamp(13.5px, 1.45vh, 20.5px);
-        min-height: 2.5em;
-    }
-    .header-right .period .line1 {
-        font-size: 1em;
-    }
-    .header-right .period .line2 {
-        font-size: 0.85em;
     }
     .header-right .date {
         font-size: clamp(17.5px, 1.85vh, 25.5px);
@@ -759,12 +858,8 @@ tbody tr.current-lesson .lesson-num {
     .header-center .divider {
         font-size: clamp(26px, 2.6vh, 40px);
     }
-    .header-right .time {
+    .header-right .digital-clock {
         font-size: clamp(26px, 2.8vh, 42px);
-    }
-    .header-right .period {
-        font-size: clamp(15px, 1.6vh, 24px);
-        min-height: 2.8em;
     }
     .header-right .date {
         font-size: clamp(19px, 2.0vh, 28px);
@@ -809,162 +904,6 @@ tbody tr.current-lesson .lesson-num {
     .main-layout {
         gap: 16px;
         margin-top: 6px;
-    }
-}
-
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (ДО 768px) ===== */
-@media (max-width: 768px) {
-    .container {
-        padding: 5.5px 7.5px;
-        border-radius: 11.5px;
-        height: 99vh;
-    }
-    .header {
-        gap: 3.5px;
-        padding-bottom: 3.5px;
-        min-height: auto;
-        flex-wrap: wrap;
-    }
-    .header-left {
-        flex: 0 0 100%;
-        justify-content: center;
-        order: 1;
-    }
-    .header-banner {
-        height: 31px;
-        max-height: 31px;
-        min-height: 31px;
-        min-width: 39px;
-        border: 1px solid #e2e8f0;
-        flex: 0 0 100%;
-    }
-    .header-center {
-        order: 2;
-        flex: 1;
-        justify-content: center;
-        gap: 7.5px;
-    }
-    .header-center .day-indicator {
-        font-size: 17.5px;
-        padding: 4.5px 17px;
-        border-radius: 21px;
-    }
-    .header-center .divider {
-        display: none;
-    }
-    .header-right {
-        order: 3;
-        text-align: center;
-        align-items: center;
-        width: 100%;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 3.5px 9px;
-        margin-top: 3.5px;
-    }
-    .header-right .time {
-        font-size: 19.5px;
-        order: 1;
-    }
-    .header-right .period {
-        font-size: 13.5px;
-        min-height: 1.5em;
-        order: 2;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    .header-right .period .line1 {
-        font-size: 13.5px;
-    }
-    .header-right .period .line2 {
-        font-size: 12.5px;
-    }
-    .header-right .date {
-        font-size: 15.5px;
-        order: 3;
-        margin-top: 0;
-    }
-    .header-right .schedule-updated {
-        font-size: 11.5px;
-        order: 4;
-        margin-top: 2px;
-    }
-    .desktop-table {
-        display: none !important;
-    }
-    .mobile-view {
-        display: flex !important;
-    }
-    .footer {
-        font-size: 12.5px;
-        padding-top: 3.5px;
-        margin-top: 3.5px;
-    }
-    .main-layout {
-        gap: 0;
-        margin-top: 3.5px;
-    }
-}
-
-/* ===== МОБИЛЬНАЯ ВЕРСИЯ (ДО 400px) ===== */
-@media (max-width: 400px) {
-    .container {
-        padding: 3.5px 3.5px;
-    }
-    .header-banner {
-        height: 25px;
-        max-height: 25px;
-        min-height: 25px;
-        min-width: 29px;
-    }
-    .header-center .day-indicator {
-        font-size: 15.5px;
-        padding: 3.5px 13px;
-    }
-    .header-right .time {
-        font-size: 16.5px;
-    }
-    .header-right .period {
-        font-size: 11.5px;
-        min-height: 1.3em;
-    }
-    .header-right .period .line1 {
-        font-size: 11.5px;
-    }
-    .header-right .period .line2 {
-        font-size: 10.5px;
-    }
-    .header-right .date {
-        font-size: 13.5px;
-    }
-    .header-right .schedule-updated {
-        font-size: 9.5px;
-    }
-    .mobile-class-header {
-        padding: 7px 11px;
-        font-size: 15.5px;
-    }
-    .mobile-lesson-card {
-        padding: 7px 11px;
-        gap: 9px;
-    }
-    .mobile-lesson-card .lesson-num-mobile {
-        font-size: 14.5px;
-        min-width: 25px;
-    }
-    .mobile-lesson-card .lesson-info .subject-name {
-        font-size: 14.5px;
-    }
-    .mobile-lesson-card .lesson-info .room-name {
-        font-size: 14.5px;
-    }
-    .mobile-lesson-card .lesson-time {
-        font-size: 12.5px;
-    }
-    .footer {
-        font-size: 10.5px;
     }
 }
 

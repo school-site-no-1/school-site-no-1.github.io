@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v3.10.0">
+<html lang="ru" data-version="v3.10.1">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,13 +13,8 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
 
-    <!-- ⭐ ВНЕШНИЙ CSS с версией -->
-    <link rel="stylesheet" href="style.css?v=1.0.0">
-
-    <style>
-        /* Только критический CSS для быстрого старта (опционально) */
-        /* Весь основной CSS вынесен в style.css */
-    </style>
+    <!-- ⭐ ВНЕШНИЙ CSS с обновлённой версией -->
+    <link rel="stylesheet" href="style.css?v=1.0.2">
 </head>
 <body>
 
@@ -38,7 +33,8 @@
             </div>
 
             <div class="header-right">
-                <div class="time" id="currentTime">--:--:--</div>
+                <!-- ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ -->
+                <div class="digital-clock" id="digitalClock">--:--:--</div>
                 <div class="date" id="currentDate">--.--.----</div>
                 <div class="schedule-updated" id="scheduleUpdated">📅 загрузка...</div>
             </div>
@@ -75,7 +71,7 @@
         </div>
 
         <div class="footer no-print">
-            <span class="version">🏷️ v<span id="appVersion">3.10.0</span></span>
+            <span class="version">🏷️ v<span id="appVersion">3.10.1</span></span>
         </div>
     </div>
 
@@ -111,7 +107,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '3.10.0';
+        var APP_VERSION = '3.10.1';  // ⭐ ПОВЫШЕНО
 
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
@@ -154,139 +150,20 @@
         }
 
         // ================================================================
-        // ЧАСЫ
+        // ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ
         // ================================================================
 
-        function initRotatedClock(containerId) {
-            var container = document.getElementById(containerId);
-            if (!container) return;
-            container.innerHTML = '';
-
-            var wrapper = document.createElement('div');
-            wrapper.style.cssText = 'display:flex;align-items:center;gap:12px;';
-
-            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', '0 0 100 100');
-            svg.setAttribute('width', '60');
-            svg.setAttribute('height', '60');
-
-            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('transform', 'rotate(-45, 50, 50)');
-
-            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('cx', '50');
-            circle.setAttribute('cy', '50');
-            circle.setAttribute('r', '45');
-            circle.setAttribute('fill', '#f7fafc');
-            circle.setAttribute('stroke', '#2b6cb0');
-            circle.setAttribute('stroke-width', '3');
-            g.appendChild(circle);
-
-            for (var i = 1; i <= 12; i++) {
-                var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
-                var x1 = 50 + 38 * Math.cos(angle);
-                var y1 = 50 + 38 * Math.sin(angle);
-                var x2 = 50 + 32 * Math.cos(angle);
-                var y2 = 50 + 32 * Math.sin(angle);
-                var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', x1);
-                line.setAttribute('y1', y1);
-                line.setAttribute('x2', x2);
-                line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#2d3748');
-                line.setAttribute('stroke-width', i % 3 === 0 ? '3' : '1.5');
-                line.setAttribute('stroke-linecap', 'round');
-                g.appendChild(line);
-            }
-            svg.appendChild(g);
-
-            var hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            hourHand.setAttribute('x1', '50');
-            hourHand.setAttribute('y1', '50');
-            hourHand.setAttribute('x2', '50');
-            hourHand.setAttribute('y2', '28');
-            hourHand.setAttribute('stroke', '#2b6cb0');
-            hourHand.setAttribute('stroke-width', '4');
-            hourHand.setAttribute('stroke-linecap', 'round');
-            hourHand.setAttribute('id', 'hour-hand');
-            svg.appendChild(hourHand);
-
-            var minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            minHand.setAttribute('x1', '50');
-            minHand.setAttribute('y1', '50');
-            minHand.setAttribute('x2', '50');
-            minHand.setAttribute('y2', '18');
-            minHand.setAttribute('stroke', '#2b6cb0');
-            minHand.setAttribute('stroke-width', '3');
-            minHand.setAttribute('stroke-linecap', 'round');
-            minHand.setAttribute('id', 'min-hand');
-            svg.appendChild(minHand);
-
-            var center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            center.setAttribute('cx', '50');
-            center.setAttribute('cy', '50');
-            center.setAttribute('r', '4');
-            center.setAttribute('fill', '#2b6cb0');
-            svg.appendChild(center);
-
-            wrapper.appendChild(svg);
-
-            var textBlock = document.createElement('div');
-            textBlock.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;white-space:nowrap;';
-
-            var daySpan = document.createElement('span');
-            daySpan.className = 'day';
-            daySpan.style.cssText = 'font-size:0.7em;color:#4a5568;font-weight:500;';
-            var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-            daySpan.textContent = days[new Date().getDay()];
-            textBlock.appendChild(daySpan);
-
-            var dateSpan = document.createElement('span');
-            dateSpan.className = 'date';
-            dateSpan.style.cssText = 'font-size:0.85em;color:#2d3748;font-weight:600;';
-            dateSpan.textContent = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: 'long',
-            year: 'numeric' });
-            textBlock.appendChild(dateSpan);
-
-            var digitalSpan = document.createElement('span');
-            digitalSpan.className = 'digital-time';
-            digitalSpan.id = 'digital-time';
-            digitalSpan.style.cssText =
-            'font-size:1.1em;color:#2b6cb0;font-weight:700;font-variant-numeric:tabular-nums;';
-            digitalSpan.textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit',
-                second: '2-digit' });
-            textBlock.appendChild(digitalSpan);
-
-            wrapper.appendChild(textBlock);
-            container.appendChild(wrapper);
+        function initDigitalClock() {
+            var clockEl = document.getElementById('digitalClock');
+            if (!clockEl) return;
 
             function updateClock() {
                 var now = new Date();
-                var hours = now.getHours() % 12;
-                var minutes = now.getMinutes();
-                var seconds = now.getSeconds();
-
-                var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
-                var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
-
-                var hourHandEl = document.getElementById('hour-hand');
-                var minHandEl = document.getElementById('min-hand');
-                if (hourHandEl) hourHandEl.setAttribute('transform', 'rotate(' + hourAngle + ', 50, 50)');
-                if (minHandEl) minHandEl.setAttribute('transform', 'rotate(' + minAngle + ', 50, 50)');
-
-                var digitalEl = document.getElementById('digital-time');
-                if (digitalEl) {
-                    digitalEl.textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit',
-                        second: '2-digit' });
-                }
-
-                var dayEl = textBlock.querySelector('.day');
-                if (dayEl) dayEl.textContent = days[now.getDay()];
-                var dateEl = textBlock.querySelector('.date');
-                if (dateEl) {
-                    dateEl.textContent = now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long',
-                    year: 'numeric' });
-                }
+                clockEl.textContent = now.toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
             }
 
             updateClock();
@@ -426,7 +303,6 @@
             if (statusEl) statusEl.textContent = 'Загрузка data.json...';
             if (statusMobile) statusMobile.textContent = 'Загрузка data.json...';
 
-            // Используем версию из localStorage или default
             var version = localStorage.getItem('schedule_version') || '1.0.0';
             var url = 'data.json?v=' + version;
 
@@ -436,17 +312,13 @@
                     return res.json();
                 })
                 .then(function(data) {
-                    // Проверяем версию в data.json
                     var dataVersion = data.version || data._version || '1.0.0';
                     var currentVersion = localStorage.getItem('schedule_version') || '1.0.0';
 
-                    // Если версия изменилась — обновляем
                     if (dataVersion !== currentVersion) {
                         localStorage.setItem('schedule_version', dataVersion);
                         currentDataVersion = dataVersion;
-
                         showNotification('📢 Расписание обновлено до версии ' + dataVersion, 'success');
-
                         var versionEl = document.getElementById('appVersion');
                         if (versionEl) versionEl.textContent = dataVersion;
                     }
@@ -469,7 +341,6 @@
                         document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                     }
 
-                    // Парсим данные
                     if (data.schedule) {
                         scheduleData = data.schedule.primary || data.schedule;
                     } else if (data.primary) {
@@ -681,15 +552,15 @@
             document.getElementById('mobileView').innerHTML = html;
         }
 
-        function updateTime() {
-            var now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit',
-                minute: '2-digit', second: '2-digit' });
-        }
-
         function refreshAll() {
-            updateTime();
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('currentDate').textContent = dateStr;
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
+
+            var displayDay = getDisplayDay();
+            document.getElementById('dayIndicator').textContent = displayDay.full;
+
             if (dataLoaded || Object.keys(weekDays).length > 0) {
                 renderTable();
                 renderMobile();
@@ -701,29 +572,21 @@
         // ================================================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализируем часы
-            initRotatedClock('currentTime');
+            // ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ
+            initDigitalClock();
 
-            // PWA установка
             window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
                 var pwaNotification = document.getElementById('pwaNotification');
                 if (pwaNotification) pwaNotification.style.display = 'block';
             });
 
-            // Загружаем данные
             loadData();
-
-            // Обновление каждую секунду
             setInterval(refreshAll, 1000);
-
-            // Перезагрузка данных каждые 60 секунд
-            setInterval(function() {
-                loadData();
-            }, 60000);
+            setInterval(function() { loadData(); }, 60000);
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('📦 CSS v1.0.0');
+            console.log('📦 CSS v1.0.2');
         });
     </script>
 
