@@ -96,4 +96,636 @@
         (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
         ym(110291320, "init", {
-            click
+            clickmap: true,
+            trackLinks: true,
+            accurateTrackBounce: true,
+            webvisor: true
+        });
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/110291320" style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
+
+    <script>
+        // ================================================================
+        // КОНФИГУРАЦИЯ
+        // ================================================================
+        var APP_VERSION = '3.10.0';
+
+        var LESSON_TIMES = [
+            { num: 1, start: "08:30", end: "09:10", break: "10" },
+            { num: 2, start: "09:20", end: "10:00", break: "10" },
+            { num: 3, start: "10:10", end: "10:50", break: "15" },
+            { num: 4, start: "11:05", end: "11:45", break: "15" },
+            { num: 5, start: "12:00", end: "12:40", break: "15" },
+            { num: 6, start: "12:55", end: "13:35", break: "10" },
+            { num: 7, start: "13:45", end: "14:25", break: "10" },
+            { num: 8, start: "14:35", end: "15:15", break: "10" },
+            { num: 9, start: "15:25", end: "16:05", break: "10" }
+        ];
+
+        var MAX_LESSONS = 9;
+        var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б',
+            '11А', '11Б'
+        ];
+        var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
+        var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
+        var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+
+        var weekDays = {};
+        var classNames = [];
+        var dataLoaded = false;
+        var scheduleUpdatedDate = null;
+        var currentDataVersion = APP_VERSION;
+
+        // ================================================================
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ================================================================
+
+        function showNotification(message, type) {
+            var el = document.getElementById('notification');
+            var msg = document.getElementById('notificationMessage');
+            if (!el || !msg) return;
+            el.className = 'notification show ' + (type || 'info');
+            msg.textContent = message;
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        // ================================================================
+        // ЧАСЫ
+        // ================================================================
+
+        function initRotatedClock(containerId) {
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+
+            var wrapper = document.createElement('div');
+            wrapper.style.cssText = 'display:flex;align-items:center;gap:12px;';
+
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 100 100');
+            svg.setAttribute('width', '60');
+            svg.setAttribute('height', '60');
+
+            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.setAttribute('transform', 'rotate(-45, 50, 50)');
+
+            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '50');
+            circle.setAttribute('cy', '50');
+            circle.setAttribute('r', '45');
+            circle.setAttribute('fill', '#f7fafc');
+            circle.setAttribute('stroke', '#2b6cb0');
+            circle.setAttribute('stroke-width', '3');
+            g.appendChild(circle);
+
+            for (var i = 1; i <= 12; i++) {
+                var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
+                var x1 = 50 + 38 * Math.cos(angle);
+                var y1 = 50 + 38 * Math.sin(angle);
+                var x2 = 50 + 32 * Math.cos(angle);
+                var y2 = 50 + 32 * Math.sin(angle);
+                var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#2d3748');
+                line.setAttribute('stroke-width', i % 3 === 0 ? '3' : '1.5');
+                line.setAttribute('stroke-linecap', 'round');
+                g.appendChild(line);
+            }
+            svg.appendChild(g);
+
+            var hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            hourHand.setAttribute('x1', '50');
+            hourHand.setAttribute('y1', '50');
+            hourHand.setAttribute('x2', '50');
+            hourHand.setAttribute('y2', '28');
+            hourHand.setAttribute('stroke', '#2b6cb0');
+            hourHand.setAttribute('stroke-width', '4');
+            hourHand.setAttribute('stroke-linecap', 'round');
+            hourHand.setAttribute('id', 'hour-hand');
+            svg.appendChild(hourHand);
+
+            var minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            minHand.setAttribute('x1', '50');
+            minHand.setAttribute('y1', '50');
+            minHand.setAttribute('x2', '50');
+            minHand.setAttribute('y2', '18');
+            minHand.setAttribute('stroke', '#2b6cb0');
+            minHand.setAttribute('stroke-width', '3');
+            minHand.setAttribute('stroke-linecap', 'round');
+            minHand.setAttribute('id', 'min-hand');
+            svg.appendChild(minHand);
+
+            var center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            center.setAttribute('cx', '50');
+            center.setAttribute('cy', '50');
+            center.setAttribute('r', '4');
+            center.setAttribute('fill', '#2b6cb0');
+            svg.appendChild(center);
+
+            wrapper.appendChild(svg);
+
+            var textBlock = document.createElement('div');
+            textBlock.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;white-space:nowrap;';
+
+            var daySpan = document.createElement('span');
+            daySpan.className = 'day';
+            daySpan.style.cssText = 'font-size:0.7em;color:#4a5568;font-weight:500;';
+            var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+            daySpan.textContent = days[new Date().getDay()];
+            textBlock.appendChild(daySpan);
+
+            var dateSpan = document.createElement('span');
+            dateSpan.className = 'date';
+            dateSpan.style.cssText = 'font-size:0.85em;color:#2d3748;font-weight:600;';
+            dateSpan.textContent = new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: 'long',
+            year: 'numeric' });
+            textBlock.appendChild(dateSpan);
+
+            var digitalSpan = document.createElement('span');
+            digitalSpan.className = 'digital-time';
+            digitalSpan.id = 'digital-time';
+            digitalSpan.style.cssText =
+            'font-size:1.1em;color:#2b6cb0;font-weight:700;font-variant-numeric:tabular-nums;';
+            digitalSpan.textContent = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit',
+                second: '2-digit' });
+            textBlock.appendChild(digitalSpan);
+
+            wrapper.appendChild(textBlock);
+            container.appendChild(wrapper);
+
+            function updateClock() {
+                var now = new Date();
+                var hours = now.getHours() % 12;
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+
+                var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
+                var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
+
+                var hourHandEl = document.getElementById('hour-hand');
+                var minHandEl = document.getElementById('min-hand');
+                if (hourHandEl) hourHandEl.setAttribute('transform', 'rotate(' + hourAngle + ', 50, 50)');
+                if (minHandEl) minHandEl.setAttribute('transform', 'rotate(' + minAngle + ', 50, 50)');
+
+                var digitalEl = document.getElementById('digital-time');
+                if (digitalEl) {
+                    digitalEl.textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit',
+                        second: '2-digit' });
+                }
+
+                var dayEl = textBlock.querySelector('.day');
+                if (dayEl) dayEl.textContent = days[now.getDay()];
+                var dateEl = textBlock.querySelector('.date');
+                if (dateEl) {
+                    dateEl.textContent = now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long',
+                    year: 'numeric' });
+                }
+            }
+
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // ================================================================
+        // ОСНОВНАЯ ЛОГИКА РАСПИСАНИЯ
+        // ================================================================
+
+        function parseTime(timeStr) {
+            var parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function formatMinutes(minutes) {
+            if (!minutes || minutes <= 0) return '0 мин';
+            var rounded = Math.ceil(minutes);
+            if (rounded >= 60) {
+                var hours = Math.floor(rounded / 60);
+                var mins = rounded % 60;
+                return mins === 0 ? hours + ' ч' : hours + ' ч ' + mins + ' мин';
+            }
+            return rounded + ' мин';
+        }
+
+        function getCurrentPeriodInfo() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                var endMin = parseTime(lesson.end);
+                if (totalMinutes >= startMin && totalMinutes < endMin) {
+                    return { type: 'lesson', num: lesson.num, start: lesson.start, end: lesson.end };
+                }
+            }
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                if (i > 0) {
+                    var prevEndMin = parseTime(LESSON_TIMES[i - 1].end);
+                    if (totalMinutes >= prevEndMin && totalMinutes < startMin) {
+                        return { type: 'break', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin -
+                                totalMinutes };
+                    }
+                }
+                if (i === 0 && totalMinutes < startMin) {
+                    return { type: 'before', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin -
+                            totalMinutes };
+                }
+            }
+
+            var lastEndMin = parseTime(LESSON_TIMES[LESSON_TIMES.length - 1].end);
+            if (totalMinutes >= lastEndMin) {
+                return { type: 'after' };
+            }
+            return { type: 'unknown' };
+        }
+
+        function getPeriodName() {
+            var info = getCurrentPeriodInfo();
+
+            if (info.type === 'lesson') {
+                return '📖 ' + info.num + '-й урок (' + info.start + '–' + info.end + ')';
+            }
+            if (info.type === 'break') {
+                if (info.remaining <= 0) return '⏰ ' + info.nextLesson + '-й урок начинается';
+                return '⏳ До ' + info.nextLesson + '-го урока ' + formatMinutes(info.remaining);
+            }
+            if (info.type === 'before') {
+                if (info.remaining <= 0) return '⏰ ' + info.nextLesson + '-й урок начинается';
+                return '⏳ До начала занятий ' + formatMinutes(info.remaining);
+            }
+            if (info.type === 'after') {
+                var today = new Date();
+                var nextDayNum = today.getDay() + 1;
+                if (nextDayNum === 7) nextDayNum = 1;
+                if (nextDayNum === 0) nextDayNum = 1;
+                var nextDayFull = DAYS_FULL[nextDayNum] || 'Понедельник';
+                var dayGenitive = { 'Понедельник': 'понедельник', 'Вторник': 'вторник', 'Среда': 'среду',
+                    'Четверг': 'четверг', 'Пятница': 'пятницу', 'Суббота': 'субботу', 'Воскресенье': 'воскресенье' };
+                var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
+                return '<span class="line1">📌 Изменения</span><div class="line2">на ' + nextDayGen + '</div>';
+            }
+            return '⏰ Загрузка...';
+        }
+
+        function getDisplayDay() {
+            var now = new Date();
+            var dayNum = now.getDay() === 0 ? 1 : now.getDay();
+            return { key: DAYS_SHORT[dayNum] || "ПН", full: DAYS_FULL[dayNum] || "Понедельник" };
+        }
+
+        function getTargetDay() {
+            var now = new Date();
+            var dayNum = now.getDay();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var shift = (totalMinutes >= 17 * 60) ? 1 : 0;
+            var targetDayNum = dayNum + shift;
+            if (targetDayNum === 0) targetDayNum = 1;
+            if (targetDayNum > 6) targetDayNum = 1;
+
+            var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+            var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                return { key: dayKey, full: dayFull };
+            }
+
+            for (var i = 0; i < DAYS_LIST.length; i++) {
+                var d = DAYS_LIST[i];
+                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                }
+            }
+            return { key: "ПН", full: "Понедельник" };
+        }
+
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return null;
+            var d = new Date(dateValue);
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit',
+                minute: '2-digit' });
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА ДАННЫХ (с версионированием)
+        // ================================================================
+
+        function loadData() {
+            var statusEl = document.getElementById('loadStatus');
+            var statusMobile = document.getElementById('loadStatusMobile');
+            if (statusEl) statusEl.textContent = 'Загрузка data.json...';
+            if (statusMobile) statusMobile.textContent = 'Загрузка data.json...';
+
+            // Используем версию из localStorage или default
+            var version = localStorage.getItem('schedule_version') || '1.0.0';
+            var url = 'data.json?v=' + version;
+
+            fetch(url, { cache: 'default' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('data.json не найден (код ' + res.status + ')');
+                    return res.json();
+                })
+                .then(function(data) {
+                    // Проверяем версию в data.json
+                    var dataVersion = data.version || data._version || '1.0.0';
+                    var currentVersion = localStorage.getItem('schedule_version') || '1.0.0';
+
+                    // Если версия изменилась — обновляем
+                    if (dataVersion !== currentVersion) {
+                        localStorage.setItem('schedule_version', dataVersion);
+                        currentDataVersion = dataVersion;
+
+                        showNotification('📢 Расписание обновлено до версии ' + dataVersion, 'success');
+
+                        var versionEl = document.getElementById('appVersion');
+                        if (versionEl) versionEl.textContent = dataVersion;
+                    }
+
+                    var scheduleData = null;
+                    var updatedDate = data.updated || data.last_update || (data.meta && data.meta.updated) || null;
+
+                    if (updatedDate) {
+                        var formatted = formatDateForDisplay(updatedDate);
+                        if (formatted) {
+                            scheduleUpdatedDate = formatted;
+                            document.getElementById('scheduleUpdated').textContent = '📅 ' + formatted;
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated';
+                        } else {
+                            document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                        }
+                    } else {
+                        document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                        document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    }
+
+                    // Парсим данные
+                    if (data.schedule) {
+                        scheduleData = data.schedule.primary || data.schedule;
+                    } else if (data.primary) {
+                        scheduleData = data.primary;
+                    } else {
+                        scheduleData = data;
+                    }
+
+                    var hasDays = false;
+                    DAYS_LIST.forEach(function(day) {
+                        if (scheduleData && scheduleData[day]) {
+                            hasDays = true;
+                            var filtered = {};
+                            Object.keys(scheduleData[day]).forEach(function(cls) {
+                                if (PRIMARY_CLASSES.indexOf(cls) !== -1) {
+                                    filtered[cls] = scheduleData[day][cls];
+                                }
+                            });
+                            weekDays[day] = Object.keys(filtered).length > 0 ? filtered : {};
+                        }
+                    });
+
+                    if (!hasDays) {
+                        DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    }
+
+                    if (statusEl) statusEl.textContent = '✅ data.json загружен (v' + dataVersion + ')';
+                    if (statusMobile) statusMobile.textContent = '✅ data.json загружен (v' + dataVersion + ')';
+                    processLoadedData();
+                })
+                .catch(function(err) {
+                    console.warn('Ошибка загрузки data.json:', err.message);
+                    if (statusEl) statusEl.textContent = '❌ ' + err.message;
+                    if (statusMobile) statusMobile.textContent = '❌ ' + err.message;
+                    DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
+                    document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    processLoadedData();
+                });
+        }
+
+        function processLoadedData() {
+            classNames = PRIMARY_CLASSES;
+
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                classNames.forEach(function(cls) {
+                    if (!dayData[cls]) {
+                        dayData[cls] = [];
+                        for (var i = 0; i < MAX_LESSONS; i++) {
+                            dayData[cls].push(['', '']);
+                        }
+                    } else {
+                        var lessons = dayData[cls];
+                        while (lessons.length < MAX_LESSONS) {
+                            lessons.push(['', '']);
+                        }
+                    }
+                });
+                weekDays[day] = dayData;
+            });
+
+            dataLoaded = true;
+            renderTable();
+            renderMobile();
+        }
+
+        function sortClasses(classes) {
+            var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+            return classes.sort(function(a, b) {
+                var numA = parseInt(a.match(/\d+/)?.[0] || 0);
+                var numB = parseInt(b.match(/\d+/)?.[0] || 0);
+                if (numA !== numB) return numA - numB;
+                var lA = a.match(/[А-Я]/)?.[0] || '';
+                var lB = b.match(/[А-Я]/)?.[0] || '';
+                return letters.indexOf(lA) - letters.indexOf(lB);
+            });
+        }
+
+        function renderTable() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+
+            var displayDay = getDisplayDay();
+            var displayFull = displayDay.full;
+
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            document.getElementById('dayIndicator').textContent = displayFull;
+            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+
+            var dayData = weekDays[dayKey];
+            if (!dayData || Object.keys(dayData).length === 0) {
+                document.getElementById('scheduleBody').innerHTML =
+                    '<tr><td colspan="20" class="loading-overlay">📌 Нет расписания</td></tr>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+
+            var headerHTML = '<tr><th></th>';
+            classes.forEach(function(cls) { headerHTML += '<th>' + cls + '</th>'; });
+            headerHTML += '</tr>';
+            document.getElementById('tableHead').innerHTML = headerHTML;
+
+            var bodyHTML = '';
+            for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
+                var idx = lessonNum - 1;
+                var isCurrent = (lessonNum === currentLesson && currentLesson >= 1 && currentLesson <= MAX_LESSONS);
+                bodyHTML += '<tr class="' + (isCurrent ? 'current-lesson' : '') + '">';
+                bodyHTML += '<td><span class="lesson-num">' + lessonNum + '</span></td>';
+
+                classes.forEach(function(cls) {
+                    var lessons = dayData[cls] || [];
+                    var lesson = lessons[idx] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    if (subject && subject.trim() !== '') {
+                        bodyHTML += '<td><span class="subject">' + subject + '</span><span class="cabinet">' +
+                            cabinet + '</span></td>';
+                    } else {
+                        bodyHTML += '<td class="empty-cell">—</td>';
+                    }
+                });
+                bodyHTML += '</tr>';
+            }
+            document.getElementById('scheduleBody').innerHTML = bodyHTML;
+        }
+
+        function renderMobile() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            var dayData = weekDays[dayKey];
+            if (!dayData || Object.keys(dayData).length === 0) {
+                document.getElementById('mobileView').innerHTML =
+                    '<div style="text-align:center;padding:30px 0;color:#a0aec0;">📌 Нет расписания</div>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+
+            var html = '';
+            classes.forEach(function(className) {
+                var lessons = dayData[className] || [];
+
+                html += '<div class="mobile-class-card">';
+                html += '<div class="mobile-class-header"><span class="class-name">' + className + '</span></div>';
+
+                for (var i = 0; i < MAX_LESSONS; i++) {
+                    var lesson = lessons[i] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    var isCurrent = (i + 1 === currentLesson);
+                    var hasContent = subject && subject.trim() !== '';
+
+                    html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
+                    html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
+
+                    if (hasContent) {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name">' + subject + '</span>';
+                        if (cabinet && cabinet.trim() !== '') {
+                            html += '<span class="room-name">' + cabinet + '</span>';
+                        }
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end +
+                        '</span>';
+                    } else {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name empty">— нет урока —</span>';
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end +
+                        '</span>';
+                    }
+                    html += '</div>';
+                }
+                html += '</div>';
+            });
+
+            document.getElementById('mobileView').innerHTML = html;
+        }
+
+        function updateTime() {
+            var now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit',
+                minute: '2-digit', second: '2-digit' });
+        }
+
+        function refreshAll() {
+            updateTime();
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            if (dataLoaded || Object.keys(weekDays).length > 0) {
+                renderTable();
+                renderMobile();
+            }
+        }
+
+        // ================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем часы
+            initRotatedClock('currentTime');
+
+            // PWA установка
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                var pwaNotification = document.getElementById('pwaNotification');
+                if (pwaNotification) pwaNotification.style.display = 'block';
+            });
+
+            // Загружаем данные
+            loadData();
+
+            // Обновление каждую секунду
+            setInterval(refreshAll, 1000);
+
+            // Перезагрузка данных каждые 60 секунд
+            setInterval(function() {
+                loadData();
+            }, 60000);
+
+            console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
+            console.log('📦 CSS v1.0.0');
+        });
+    </script>
+
+</body>
+</html>
