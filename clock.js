@@ -1,5 +1,5 @@
 // clock.js - Файл с часами для расписания учителей и админки
-// Версия: 1.0.16
+// Версия: 1.0.17
 (function() {
     // Функция для создания и отображения часов
     window.initClock = function(containerId) {
@@ -51,12 +51,12 @@
         textBlock.style.alignItems = 'flex-start';
         
         var timeDiv = document.createElement('div');
-        timeDiv.style.fontSize = '1.6em';
-        timeDiv.style.fontWeight = '700';
-        timeDiv.style.color = '#2b6cb0';
-        timeDiv.style.letterSpacing = '1px';
-        timeDiv.style.lineHeight = '1.1';
-        timeDiv.innerHTML = '<span id="clockTimeDisplay_' + containerId + '">00:00</span><span style="font-size:0.7em;color:#718096;margin-left:4px;" id="clockSecondsDisplay_' + containerId + '">00</span>';
+        timeDiv.style.display = 'flex';
+        timeDiv.style.alignItems = 'center';
+        timeDiv.style.gap = '0px';
+        timeDiv.innerHTML = 
+            '<span id="clockTimeDisplay_' + containerId + '" style="font-size:1.6em;font-weight:700;color:#2b6cb0;letter-spacing:1px;line-height:1.1;">00:00</span>' +
+            '<span id="clockSecondsDisplay_' + containerId + '" style="font-size:1.6em;font-weight:700;color:#2b6cb0;letter-spacing:1px;line-height:1.1;">:00</span>';
         textBlock.appendChild(timeDiv);
         
         var dateDiv = document.createElement('div');
@@ -84,7 +84,7 @@
             
             var secondsEl = document.getElementById('clockSecondsDisplay_' + containerId);
             if (secondsEl) {
-                secondsEl.textContent = String(seconds).padStart(2, '0');
+                secondsEl.textContent = ':' + String(seconds).padStart(2, '0');
             }
             
             var dateEl = document.getElementById('clockDateDisplay_' + containerId);
