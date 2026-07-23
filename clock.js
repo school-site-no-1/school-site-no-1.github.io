@@ -19,13 +19,7 @@
         clockDiv.style.fontFamily = "'Segoe UI', Arial, sans-serif";
         clockDiv.style.gap = '2px';
         
-        // Верхняя строка с днём недели
-        var dayDiv = document.createElement('div');
-        dayDiv.style.fontSize = '0.65em';
-        dayDiv.style.color = '#4a5568';
-        dayDiv.style.fontWeight = '500';
-        dayDiv.innerHTML = '📅 <span id="clockTodayDay_' + containerId + '">Понедельник</span>';
-        clockDiv.appendChild(dayDiv);
+       
         
         // Блок с циферблатом и временем
         var clockBlock = document.createElement('div');
@@ -35,8 +29,8 @@
         
         // SVG циферблат
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('width', '55');
-        svg.setAttribute('height', '55');
+        svg.setAttribute('width', '50');
+        svg.setAttribute('height', '50');
         svg.setAttribute('viewBox', '0 0 55 55');
         svg.style.flexShrink = '0';
         svg.innerHTML = 
@@ -66,7 +60,7 @@
         textBlock.appendChild(timeDiv);
         
         var dateDiv = document.createElement('div');
-        dateDiv.style.fontSize = '0.6em';
+        dateDiv.style.fontSize = '0.9em';
         dateDiv.style.color = '#718096';
         dateDiv.style.lineHeight = '1';
         dateDiv.innerHTML = '<span id="clockDateDisplay_' + containerId + '">00.00.0000</span>';
