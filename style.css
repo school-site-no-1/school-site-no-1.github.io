@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.17
+ * Версия: 1.0.18
  * Дата: 2026
  */
 
@@ -135,18 +135,23 @@ body {
     font-weight: 600;
     font-size: 0.9rem;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    /* Изменено с column на row для переноса */
+    flex-wrap: wrap;
+    /* Разрешаем перенос */
+    align-items: center;
+    gap: 2px 6px;
+    /* Отступы между элементами */
     line-height: 1.2;
     text-align: left;
 }
 
 .header-center .period .line1 {
-    display: block;
+    display: inline-block;
 }
 
 .header-center .period .line2 {
-    display: block;
+    display: inline-block;
     font-weight: 500;
     color: #d45c00;
 }
@@ -560,12 +565,12 @@ tbody tr.current-lesson .lesson-num {
         flex-wrap: wrap;
     }
 
-    /* Баннер - переносим в конец */
+    /* Баннер - НАВЕРХУ */
     .header-left {
         flex: 0 0 100%;
         justify-content: center;
-        order: 3;
-        /* Было order: 1 - теперь 3 (в конец) */
+        order: 1;
+        /* Баннер наверху */
     }
 
     .header-banner {
@@ -577,10 +582,9 @@ tbody tr.current-lesson .lesson-num {
         flex: 0 0 100%;
     }
 
-    /* Центральная часть (день недели + период) - по центру */
+    /* Центральная часть (день недели + период) - второй */
     .header-center {
         order: 2;
-        /* Было order: 2 - оставляем */
         flex: 1;
         justify-content: center;
         gap: 4px;
@@ -598,8 +602,11 @@ tbody tr.current-lesson .lesson-num {
     .header-center-bottom .period {
         font-size: 13.5px;
         min-height: 1.5em;
-        align-items: flex-start;
+        align-items: center;
         text-align: left;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 2px 6px;
     }
 
     .header-center-bottom .period .line1 {
@@ -610,17 +617,18 @@ tbody tr.current-lesson .lesson-num {
         font-size: 12.5px;
     }
 
-    /* Правая часть (часы + дата обновления) - наверх */
+    /* Правая часть (часы + дата обновления) - на одном уровне с днем недели */
     .header-right {
-        order: 1;
-        /* Было order: 3 - теперь 1 (наверх) */
+        order: 2;
+        /* Такой же порядок как у header-center */
         text-align: right;
         align-items: flex-end;
-        width: 100%;
+        width: auto;
+        flex: 0 0 auto;
         flex-direction: column;
         flex-wrap: nowrap;
         gap: 3.5px;
-        margin-top: 3.5px;
+        margin-top: 0;
     }
 
     .header-right .schedule-updated {
@@ -630,12 +638,12 @@ tbody tr.current-lesson .lesson-num {
         align-self: flex-end;
     }
 
-    /* ЧАСЫ - на самом верху */
+    /* ЧАСЫ - на одном уровне с днем недели */
     #clockContainer {
         order: 1;
         width: 100%;
         justify-content: flex-end;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         min-height: 28px;
     }
 
@@ -684,6 +692,7 @@ tbody tr.current-lesson .lesson-num {
     .header-center-bottom .period {
         font-size: 11.5px;
         min-height: 1.3em;
+        gap: 1px 4px;
     }
 
     .header-center-bottom .period .line1 {
