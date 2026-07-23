@@ -1,7 +1,69 @@
 /* ================================================================
-   style.css v1.0.5
+   style.css v1.0.6
    Расписание 5-11 — Основные стили
    ================================================================ */
+
+/* ================================================================
+   ЦИФРОВЫЕ ЧАСЫ (стиль из index без пуш.html)
+   ================================================================ */
+
+/* Основной стиль */
+.header-right .time {
+    color: #2b6cb0;
+    font-weight: 700;
+}
+
+/* ===== АДАПТИВ ===== */
+
+/* Планшеты (769-1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .header-right .time {
+        font-size: clamp(15px, 1.7vh, 20px);
+    }
+}
+
+/* Ноутбуки (1025-1600px) */
+@media (min-width: 1025px) and (max-width: 1600px) {
+    .header-right .time {
+        font-size: clamp(14px, 1.6vh, 19px);
+    }
+}
+
+/* Большие экраны (1601-1919px) */
+@media (min-width: 1601px) and (max-width: 1919px) {
+    .header-right .time {
+        font-size: clamp(18px, 2.0vh, 26px);
+    }
+}
+
+/* 2K (1920-2560px) */
+@media (min-width: 1920px) and (max-width: 2560px) {
+    .header-right .time {
+        font-size: clamp(23.5px, 2.75vh, 39.5px);
+    }
+}
+
+/* 4K (2561+px) */
+@media (min-width: 2561px) {
+    .header-right .time {
+        font-size: clamp(26px, 2.8vh, 42px);
+    }
+}
+
+/* Мобильная версия (до 768px) */
+@media (max-width: 768px) {
+    .header-right .time {
+        font-size: 19.5px;
+    }
+}
+
+/* Мобильная версия (до 400px) */
+@media (max-width: 400px) {
+    .header-right .time {
+        font-size: 16.5px;
+    }
+}
+
 
 * {
     margin: 0;
