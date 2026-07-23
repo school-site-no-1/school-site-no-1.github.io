@@ -1,4 +1,5 @@
 // clock.js - Файл с часами для расписания учителей и админки
+// Версия: 1.0.16
 (function() {
     // Функция для создания и отображения часов
     window.initClock = function(containerId) {
@@ -19,8 +20,6 @@
         clockDiv.style.fontFamily = "'Segoe UI', Arial, sans-serif";
         clockDiv.style.gap = '2px';
         
-       
-        
         // Блок с циферблатом и временем
         var clockBlock = document.createElement('div');
         clockBlock.style.display = 'flex';
@@ -38,6 +37,7 @@
             '<circle cx="27.5" cy="27.5" r="2" fill="#2b6cb0"/>' +
             '<line id="clockHourHand_' + containerId + '" x1="27.5" y1="27.5" x2="27.5" y2="13" stroke="#1a365d" stroke-width="2.5" stroke-linecap="round"/>' +
             '<line id="clockMinuteHand_' + containerId + '" x1="27.5" y1="27.5" x2="27.5" y2="11" stroke="#2b6cb0" stroke-width="2" stroke-linecap="round"/>' +
+            '<line id="clockSecondHand_' + containerId + '" x1="27.5" y1="27.5" x2="27.5" y2="8" stroke="#e53e3e" stroke-width="1" stroke-linecap="round"/>' +
             '<line x1="27.5" y1="4.5" x2="27.5" y2="7.5" stroke="#a0aec0" stroke-width="1"/>' +
             '<line x1="27.5" y1="47.5" x2="27.5" y2="50.5" stroke="#a0aec0" stroke-width="1"/>' +
             '<line x1="4.5" y1="27.5" x2="7.5" y2="27.5" stroke="#a0aec0" stroke-width="1"/>' +
@@ -56,7 +56,7 @@
         timeDiv.style.color = '#2b6cb0';
         timeDiv.style.letterSpacing = '1px';
         timeDiv.style.lineHeight = '1.1';
-        timeDiv.innerHTML = '<span id="clockTimeDisplay_' + containerId + '">00:00</span>';
+        timeDiv.innerHTML = '<span id="clockTimeDisplay_' + containerId + '">00:00</span><span style="font-size:0.7em;color:#718096;margin-left:4px;" id="clockSecondsDisplay_' + containerId + '">00</span>';
         textBlock.appendChild(timeDiv);
         
         var dateDiv = document.createElement('div');
@@ -82,6 +82,11 @@
                 timeEl.textContent = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
             }
             
+            var secondsEl = document.getElementById('clockSecondsDisplay_' + containerId);
+            if (secondsEl) {
+                secondsEl.textContent = String(seconds).padStart(2, '0');
+            }
+            
             var dateEl = document.getElementById('clockDateDisplay_' + containerId);
             if (dateEl) {
                 dateEl.textContent = String(now.getDate()).padStart(2, '0') + '.' + 
@@ -95,16 +100,23 @@
                 dayEl.textContent = daysFull[now.getDay()];
             }
             
+            // Вычисляем углы для стрелок
             var hourAngle = (hours % 12) * 30 + minutes * 0.5;
-            var minuteAngle = minutes * 6;
+            var minuteAngle = minutes * 6 + seconds * 0.1;
+            var secondAngle = seconds * 6;
             
             var hourHand = document.getElementById('clockHourHand_' + containerId);
             var minuteHand = document.getElementById('clockMinuteHand_' + containerId);
+            var secondHand = document.getElementById('clockSecondHand_' + containerId);
+            
             if (hourHand) {
                 hourHand.setAttribute('transform', 'rotate(' + hourAngle + ', 27.5, 27.5)');
             }
             if (minuteHand) {
                 minuteHand.setAttribute('transform', 'rotate(' + minuteAngle + ', 27.5, 27.5)');
+            }
+            if (secondHand) {
+                secondHand.setAttribute('transform', 'rotate(' + secondAngle + ', 27.5, 27.5)');
             }
         }
         
