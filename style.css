@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.14
+ * Версия: 1.0.15
  * Дата: 2026
  */
 
@@ -99,23 +99,24 @@ body {
 .header-center {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 2px;
     flex-shrink: 0;
     justify-content: center;
     min-width: 120px;
+    padding-left: 10px;
 }
 
 .header-center-top {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .header-center-bottom {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .header-center .day-indicator {
@@ -135,9 +136,9 @@ body {
     font-size: 0.9rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     line-height: 1.2;
-    text-align: center;
+    text-align: left;
 }
 
 .header-center .period .line1 {
@@ -191,6 +192,8 @@ body {
     width: 100%;
     order: -1;
     /* Перемещаем выше всех элементов в .header-right */
+    margin-bottom: 4px;
+    /* Отступ от блока даты обновления */
 }
 
 #clockContainer .clock-placeholder {
@@ -578,6 +581,8 @@ tbody tr.current-lesson .lesson-num {
         justify-content: center;
         gap: 4px;
         min-width: auto;
+        padding-left: 10px;
+        align-items: flex-start;
     }
 
     .header-center-top .day-indicator {
@@ -589,8 +594,8 @@ tbody tr.current-lesson .lesson-num {
     .header-center-bottom .period {
         font-size: 13.5px;
         min-height: 1.5em;
-        align-items: center;
-        text-align: center;
+        align-items: flex-start;
+        text-align: left;
     }
 
     .header-center-bottom .period .line1 {
@@ -623,7 +628,8 @@ tbody tr.current-lesson .lesson-num {
         order: 1;
         width: 100%;
         justify-content: flex-end;
-        margin-bottom: 2px;
+        margin-bottom: 6px;
+        /* Увеличен отступ в мобильной версии */
         min-height: 28px;
     }
 
@@ -660,6 +666,10 @@ tbody tr.current-lesson .lesson-num {
         min-width: 29px;
     }
 
+    .header-center {
+        padding-left: 5px;
+    }
+
     .header-center-top .day-indicator {
         font-size: 15.5px;
         padding: 3.5px 13px;
@@ -685,6 +695,7 @@ tbody tr.current-lesson .lesson-num {
     #clockContainer {
         min-height: 24px;
         font-size: 13.5px;
+        margin-bottom: 4px;
     }
 
     .mobile-class-header {
