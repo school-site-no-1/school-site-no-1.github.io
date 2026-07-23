@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.16
+ * Версия: 1.0.17
  * Дата: 2026
  */
 
@@ -560,10 +560,12 @@ tbody tr.current-lesson .lesson-num {
         flex-wrap: wrap;
     }
 
+    /* Баннер - переносим в конец */
     .header-left {
         flex: 0 0 100%;
         justify-content: center;
-        order: 1;
+        order: 3;
+        /* Было order: 1 - теперь 3 (в конец) */
     }
 
     .header-banner {
@@ -575,8 +577,10 @@ tbody tr.current-lesson .lesson-num {
         flex: 0 0 100%;
     }
 
+    /* Центральная часть (день недели + период) - по центру */
     .header-center {
         order: 2;
+        /* Было order: 2 - оставляем */
         flex: 1;
         justify-content: center;
         gap: 4px;
@@ -606,8 +610,10 @@ tbody tr.current-lesson .lesson-num {
         font-size: 12.5px;
     }
 
+    /* Правая часть (часы + дата обновления) - наверх */
     .header-right {
-        order: 3;
+        order: 1;
+        /* Было order: 3 - теперь 1 (наверх) */
         text-align: right;
         align-items: flex-end;
         width: 100%;
@@ -624,10 +630,9 @@ tbody tr.current-lesson .lesson-num {
         align-self: flex-end;
     }
 
-    /* ЧАСЫ - поднимаем на уровень пятницы (order: 0) */
+    /* ЧАСЫ - на самом верху */
     #clockContainer {
-        order: 0;
-        /* Было order: 1 - теперь 0, чтобы быть выше */
+        order: 1;
         width: 100%;
         justify-content: flex-end;
         margin-bottom: 6px;
@@ -697,8 +702,6 @@ tbody tr.current-lesson .lesson-num {
         min-height: 24px;
         font-size: 13.5px;
         margin-bottom: 4px;
-        order: 0;
-        /* Было order: 1 - теперь 0 */
     }
 
     .mobile-class-header {
