@@ -1,4 +1,5 @@
-<html lang="ru" data-version="v3.10.3">
+<!DOCTYPE html>
+<html lang="ru" data-version="v3.10.5">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,10 +13,9 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
 
-    <!-- ⭐ Внешний CSS с обновлённой версией -->
-    <link rel="stylesheet" href="style.css?v=1.0.5">
+    <!-- Внешний CSS -->
+    <link rel="stylesheet" href="style.css?v=1.0.6">
 </head>
-<body>
 <body>
 
     <div class="container">
@@ -33,9 +33,8 @@
             </div>
 
             <div class="header-right">
-                <!-- ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ -->
-                <div class="digital-clock" id="digitalClock">--:--:--</div>
-                <div class="date" id="currentDate">--.--.----</div>
+                <!-- ⭐ КОНТЕЙНЕР ДЛЯ ЧАСОВ (подгружается clock.js) -->
+                <div id="clockContainer"></div>
                 <div class="schedule-updated" id="scheduleUpdated">📅 загрузка...</div>
             </div>
         </div>
@@ -71,7 +70,7 @@
         </div>
 
         <div class="footer no-print">
-            <span class="version">🏷️ v<span id="appVersion">3.10.1</span></span>
+            <span class="version">🏷️ v<span id="appVersion">3.10.5</span></span>
         </div>
     </div>
 
@@ -107,7 +106,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '3.10.1';  // ⭐ ПОВЫШЕНО
+        var APP_VERSION = '3.10.5';
 
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
@@ -150,24 +149,36 @@
         }
 
         // ================================================================
-        // ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ
+        // ⭐ ПОДГРУЗКА clock.js
         // ================================================================
 
-        function initDigitalClock() {
-            var clockEl = document.getElementById('digitalClock');
-            if (!clockEl) return;
-
-            function updateClock() {
-                var now = new Date();
-                clockEl.textContent = now.toLocaleTimeString('ru-RU', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-            }
-
-            updateClock();
-            setInterval(updateClock, 1000);
+        function loadClockScript() {
+            var script = document.createElement('script');
+            script.src = 'clock.js?v=1.0.0';
+            script.onload = function() {
+                console.log('✅ clock.js загружен');
+                if (typeof initClock === 'function') {
+                    initClock('clockContainer');
+                }
+            };
+            script.onerror = function() {
+                console.warn('⚠️ Не удалось загрузить clock.js');
+                var container = document.getElementById('clockContainer');
+                if (container) {
+                    container.innerHTML = '<div class="digital-clock" id="fallbackClock">--:--:--</div>';
+                    setInterval(function() {
+                        var el = document.getElementById('fallbackClock');
+                        if (el) {
+                            el.textContent = new Date().toLocaleTimeString('ru-RU', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
+                        }
+                    }, 1000);
+                }
+            };
+            document.head.appendChild(script);
         }
 
         // ================================================================
@@ -226,20 +237,32 @@
             return { type: 'unknown' };
         }
 
-        function getPeriodName() {
+        function getPeriodHTML() {
             var info = getCurrentPeriodInfo();
 
             if (info.type === 'lesson') {
-                return '📖 ' + info.num + '-й урок (' + info.start + '–' + info.end + ')';
+                return '<span class="period-line1">📖 ' + info.num + '-й урок</span>' +
+                       '<span class="period-line2">' + info.start + '–' + info.end + '</span>';
             }
+
             if (info.type === 'break') {
-                if (info.remaining <= 0) return '⏰ ' + info.nextLesson + '-й урок начинается';
-                return '⏳ До ' + info.nextLesson + '-го урока ' + formatMinutes(info.remaining);
+                if (info.remaining <= 0) {
+                    return '<span class="period-line1">⏰ ' + info.nextLesson + '-й урок</span>' +
+                           '<span class="period-line2">начинается</span>';
+                }
+                return '<span class="period-line1">⏳ До ' + info.nextLesson + '-го урока</span>' +
+                       '<span class="period-line2">' + formatMinutes(info.remaining) + '</span>';
             }
+
             if (info.type === 'before') {
-                if (info.remaining <= 0) return '⏰ ' + info.nextLesson + '-й урок начинается';
-                return '⏳ До начала занятий ' + formatMinutes(info.remaining);
+                if (info.remaining <= 0) {
+                    return '<span class="period-line1">⏰ ' + info.nextLesson + '-й урок</span>' +
+                           '<span class="period-line2">начинается</span>';
+                }
+                return '<span class="period-line1">⏳ До начала занятий</span>' +
+                       '<span class="period-line2">' + formatMinutes(info.remaining) + '</span>';
             }
+
             if (info.type === 'after') {
                 var today = new Date();
                 var nextDayNum = today.getDay() + 1;
@@ -249,15 +272,18 @@
                 var dayGenitive = { 'Понедельник': 'понедельник', 'Вторник': 'вторник', 'Среда': 'среду',
                     'Четверг': 'четверг', 'Пятница': 'пятницу', 'Суббота': 'субботу', 'Воскресенье': 'воскресенье' };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-                return '<span class="line1">📌 Изменения</span><div class="line2">на ' + nextDayGen + '</div>';
+                return '<span class="period-line1">📌 Изменения</span>' +
+                       '<span class="period-line2">на ' + nextDayGen + '</span>';
             }
-            return '⏰ Загрузка...';
+
+            return '<span class="period-line1">⏰ Загрузка...</span>' +
+                   '<span class="period-line2"></span>';
         }
 
         function getDisplayDay() {
             var now = new Date();
             var dayNum = now.getDay() === 0 ? 1 : now.getDay();
-            return { key: DAYS_SHORT[dayNum] || "ПН", full: DAYS_FULL[dayNum] || "Понедельник" };
+            return DAYS_FULL[dayNum] || "Понедельник";
         }
 
         function getTargetDay() {
@@ -426,9 +452,6 @@
             var targetDay = getTargetDay();
             var dayKey = targetDay.key;
 
-            var displayDay = getDisplayDay();
-            var displayFull = displayDay.full;
-
             var currentLesson = 0;
             var info = getCurrentPeriodInfo();
             if (info.type === 'lesson') {
@@ -438,12 +461,8 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
-            var now = new Date();
-            var dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-            document.getElementById('dayIndicator').textContent = displayFull;
-            document.getElementById('currentDate').textContent = dateStr;
-            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            document.getElementById('dayIndicator').textContent = getDisplayDay();
+            document.getElementById('currentPeriod').innerHTML = getPeriodHTML();
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
@@ -553,13 +572,8 @@
         }
 
         function refreshAll() {
-            var now = new Date();
-            var dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            document.getElementById('currentDate').textContent = dateStr;
-            document.getElementById('currentPeriod').innerHTML = getPeriodName();
-
-            var displayDay = getDisplayDay();
-            document.getElementById('dayIndicator').textContent = displayDay.full;
+            document.getElementById('dayIndicator').textContent = getDisplayDay();
+            document.getElementById('currentPeriod').innerHTML = getPeriodHTML();
 
             if (dataLoaded || Object.keys(weekDays).length > 0) {
                 renderTable();
@@ -572,21 +586,27 @@
         // ================================================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            // ⭐ ЦИФРОВЫЕ ЧАСЫ С СЕКУНДАМИ
-            initDigitalClock();
+            // ⭐ ПОДГРУЖАЕМ clock.js
+            loadClockScript();
 
+            // PWA установка
             window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
                 var pwaNotification = document.getElementById('pwaNotification');
                 if (pwaNotification) pwaNotification.style.display = 'block';
             });
 
+            // Загружаем данные
             loadData();
+
+            // Обновление каждую секунду
             setInterval(refreshAll, 1000);
+
+            // Перезагрузка данных каждые 60 секунд
             setInterval(function() { loadData(); }, 60000);
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('📦 CSS v1.0.2');
+            console.log('📦 CSS v1.0.6');
         });
     </script>
 
