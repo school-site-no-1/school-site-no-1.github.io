@@ -1,15 +1,27 @@
+/*
+ * style.css - Полная версия
+ * Версия: 1.0.13
+ * Дата: 2026
+ */
+
+/* ============================================================
+   БАЗОВЫЕ СБРОСЫ И ОБЩИЕ СТИЛИ
+   ============================================================ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-html, body {
+
+html,
+body {
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: #f0f4f8;
     font-family: 'Segoe UI', Arial, sans-serif;
 }
+
 body {
     display: flex;
     justify-content: center;
@@ -17,6 +29,9 @@ body {
     padding: 4px;
 }
 
+/* ============================================================
+   КОНТЕЙНЕР
+   ============================================================ */
 .container {
     width: 100%;
     height: 99vh;
@@ -30,6 +45,9 @@ body {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
 
+/* ============================================================
+   ШАПКА (HEADER)
+   ============================================================ */
 .header {
     flex-shrink: 0;
     display: flex;
@@ -41,6 +59,8 @@ body {
     gap: 4px;
     min-height: 44px;
 }
+
+/* ----- Левая часть шапки ----- */
 .header-left {
     display: flex;
     align-items: center;
@@ -50,6 +70,7 @@ body {
     min-width: 0;
 }
 
+/* Баннер */
 .header-banner {
     height: 40px;
     max-height: 40px;
@@ -67,12 +88,14 @@ body {
     border: 1px solid #e2e8f0;
     border-radius: 0;
 }
+
 .header-banner img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+/* ----- Центральная часть шапки ----- */
 .header-center {
     display: flex;
     align-items: center;
@@ -80,6 +103,7 @@ body {
     flex-shrink: 0;
     justify-content: center;
 }
+
 .header-center .day-indicator {
     color: #fff;
     font-weight: 600;
@@ -88,11 +112,13 @@ body {
     border-radius: 16px;
     flex-shrink: 0;
 }
+
 .header-center .divider {
     color: #e2e8f0;
     font-weight: 300;
 }
 
+/* ----- Правая часть шапки ----- */
 .header-right {
     text-align: right;
     display: flex;
@@ -101,6 +127,8 @@ body {
     gap: 1px;
     flex-shrink: 0;
 }
+
+/* Период (урок/перемена) */
 .header-right .period {
     color: #e65100;
     font-weight: 600;
@@ -110,14 +138,18 @@ body {
     align-items: flex-end;
     line-height: 1.1;
 }
+
 .header-right .period .line1 {
     display: block;
 }
+
 .header-right .period .line2 {
     display: block;
     font-weight: 500;
     color: #d45c00;
 }
+
+/* Дата обновления расписания */
 .header-right .schedule-updated {
     color: #718096;
     font-weight: 500;
@@ -127,26 +159,34 @@ body {
     font-size: 0.75rem;
     margin-top: 1px;
 }
+
 .header-right .schedule-updated.error {
     color: #e53e3e;
     background: #fff5f5;
 }
 
-/* Блок для clock.js - выше ошибки загрузки */
+/* ============================================================
+   БЛОК ЧАСОВ (clock.js)
+   ============================================================ */
 #clockContainer {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     min-height: 32px;
     width: 100%;
-    order: -1; /* Перемещаем выше всех элементов в .header-right */
+    order: -1;
+    /* Перемещаем выше всех элементов в .header-right */
 }
+
 #clockContainer .clock-placeholder {
     color: #a0aec0;
     font-size: 0.75rem;
     font-weight: 400;
 }
 
+/* ============================================================
+   ОСНОВНАЯ СЕТКА
+   ============================================================ */
 .main-layout {
     flex: 1;
     display: flex;
@@ -163,6 +203,9 @@ body {
     overflow: hidden;
 }
 
+/* ============================================================
+   ТАБЛИЦА (ДЕСКТОПНАЯ ВЕРСИЯ)
+   ============================================================ */
 table {
     width: 100%;
     height: 100%;
@@ -170,15 +213,18 @@ table {
     table-layout: fixed;
 }
 
+/* Границы ячеек */
 thead th,
 tbody td {
     border-right: 1.5px solid #d0d7e0;
 }
+
 thead th:last-child,
 tbody td:last-child {
     border-right: none;
 }
 
+/* Заголовки таблицы */
 thead th {
     background: #edf2f7;
     color: #1a365d;
@@ -190,14 +236,17 @@ thead th {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 thead th:first-child {
     width: 2%;
     min-width: 30px;
 }
+
 thead th:not(:first-child) {
     width: 5.4%;
 }
 
+/* Ячейки таблицы */
 tbody td {
     color: #2d3748;
     border-bottom: 1px solid #e2e8f0;
@@ -210,29 +259,37 @@ tbody td {
     hyphens: auto !important;
     line-height: 1.2;
 }
+
+/* Чередование строк */
 tbody tr:nth-child(even) {
     background: #f7fafc;
 }
+
 tbody tr:nth-child(odd) {
     background: #ffffff;
 }
 
+/* Текущий урок */
 tbody tr.current-lesson {
     background: #bee3f8 !important;
 }
+
 tbody tr.current-lesson td {
     color: #1a365d;
     font-weight: 600;
 }
+
 tbody tr.current-lesson .lesson-num {
     color: #2b6cb0;
 }
 
+/* Номер урока */
 .lesson-num {
     font-weight: 700;
     color: #4a5568;
 }
 
+/* Предмет */
 .subject {
     display: block;
     font-weight: 500;
@@ -245,6 +302,7 @@ tbody tr.current-lesson .lesson-num {
     hyphens: auto !important;
 }
 
+/* Кабинет */
 .cabinet {
     color: #e65100;
     display: block;
@@ -252,10 +310,14 @@ tbody tr.current-lesson .lesson-num {
     margin-top: 1px;
 }
 
+/* Пустая ячейка */
 .empty-cell {
     color: #cbd5e0;
 }
 
+/* ============================================================
+   МОБИЛЬНАЯ ВЕРСИЯ
+   ============================================================ */
 .mobile-view {
     display: none;
     flex-direction: column;
@@ -265,6 +327,7 @@ tbody tr.current-lesson .lesson-num {
     height: 100%;
 }
 
+/* Карточка класса */
 .mobile-class-card {
     background: #ffffff;
     border-radius: 6px;
@@ -273,6 +336,7 @@ tbody tr.current-lesson .lesson-num {
     flex-shrink: 0;
 }
 
+/* Заголовок карточки класса */
 .mobile-class-header {
     background: #edf2f7;
     font-weight: 700;
@@ -285,6 +349,7 @@ tbody tr.current-lesson .lesson-num {
     font-size: 17.5px;
 }
 
+/* Карточка урока */
 .mobile-lesson-card {
     display: flex;
     align-items: center;
@@ -302,6 +367,7 @@ tbody tr.current-lesson .lesson-num {
     background: #bee3f8;
 }
 
+/* Номер урока в мобильной версии */
 .mobile-lesson-card .lesson-num-mobile {
     font-weight: 700;
     color: #4a5568;
@@ -315,6 +381,7 @@ tbody tr.current-lesson .lesson-num {
     color: #2b6cb0;
 }
 
+/* Информация об уроке */
 .mobile-lesson-card .lesson-info {
     flex: 1;
     display: flex;
@@ -343,6 +410,7 @@ tbody tr.current-lesson .lesson-num {
     font-size: 16.5px;
 }
 
+/* Время урока в мобильной версии */
 .mobile-lesson-card .lesson-time {
     color: #718096;
     white-space: nowrap;
@@ -356,6 +424,9 @@ tbody tr.current-lesson .lesson-num {
     font-weight: 600;
 }
 
+/* ============================================================
+   ПОДВАЛ
+   ============================================================ */
 .footer {
     flex-shrink: 0;
     margin-top: 2px;
@@ -365,11 +436,15 @@ tbody tr.current-lesson .lesson-num {
     padding-top: 2px;
     font-size: 0.7rem;
 }
+
 .footer .version {
     font-weight: 600;
     color: #4a5568;
 }
 
+/* ============================================================
+   ЗАГРУЗКА
+   ============================================================ */
 .loading-overlay {
     display: flex;
     justify-content: center;
@@ -380,11 +455,15 @@ tbody tr.current-lesson .lesson-num {
     flex-direction: column;
     gap: 6px;
 }
+
 .loading-overlay .sub {
     font-size: 0.6em;
     color: #a0aec0;
 }
 
+/* ============================================================
+   УВЕДОМЛЕНИЯ
+   ============================================================ */
 .notification {
     position: fixed;
     top: 20px;
@@ -400,22 +479,30 @@ tbody tr.current-lesson .lesson-num {
     color: #2d3748;
     max-width: 400px;
 }
+
 .notification.show {
     transform: translateX(0);
 }
+
 .notification.success {
     border-left: 4px solid #38a169;
 }
+
 .notification.error {
     border-left: 4px solid #e53e3e;
 }
+
 .notification.info {
     border-left: 4px solid #2b6cb0;
 }
+
 .notification.warning {
     border-left: 4px solid #d69e2e;
 }
 
+/* ============================================================
+   PWA УВЕДОМЛЕНИЕ
+   ============================================================ */
 #pwaNotification {
     display: none;
     background: #ebf8ff;
@@ -425,58 +512,237 @@ tbody tr.current-lesson .lesson-num {
     margin: 4px 0;
     text-align: center;
 }
+
 #pwaNotification p {
     margin: 0;
     color: #2b6cb0;
     font-size: 0.85rem;
 }
+
 #pwaNotification .small {
     font-size: 0.75rem;
 }
 
+/* ============================================================
+   МЕДИА-ЗАПРОСЫ
+   ============================================================ */
+
+/* ----- Планшеты и маленькие экраны (до 768px) ----- */
 @media (max-width: 768px) {
-    .container { padding: 5.5px 7.5px; border-radius: 11.5px; height: 99vh; }
-    .header { gap: 3.5px; padding-bottom: 3.5px; min-height: auto; flex-wrap: wrap; }
-    .header-left { flex: 0 0 100%; justify-content: center; order: 1; }
-    .header-banner { height: 31px; max-height: 31px; min-height: 31px; min-width: 39px; border: 1px solid #e2e8f0; flex: 0 0 100%; }
-    .header-center { order: 2; flex: 1; justify-content: center; gap: 7.5px; }
-    .header-center .day-indicator { font-size: 17.5px; padding: 4.5px 17px; border-radius: 21px; }
-    .header-center .divider { display: none; }
-    .header-right { order: 3; text-align: center; align-items: center; width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 3.5px 9px; margin-top: 3.5px; }
-    .header-right .period { font-size: 13.5px; min-height: 1.5em; order: 2; flex-direction: column; align-items: center; text-align: center; }
-    .header-right .period .line1 { font-size: 13.5px; }
-    .header-right .period .line2 { font-size: 12.5px; }
-    .header-right .schedule-updated { font-size: 11.5px; order: 3; margin-top: 2px; }
-    #clockContainer { order: 1; width: 100%; justify-content: center; margin-bottom: 2px; min-height: 28px; }
-    .desktop-table { display: none !important; }
-    .mobile-view { display: flex !important; }
-    .footer { font-size: 12.5px; padding-top: 3.5px; margin-top: 3.5px; }
-    .main-layout { gap: 0; margin-top: 3.5px; }
+    .container {
+        padding: 5.5px 7.5px;
+        border-radius: 11.5px;
+        height: 99vh;
+    }
+
+    .header {
+        gap: 3.5px;
+        padding-bottom: 3.5px;
+        min-height: auto;
+        flex-wrap: wrap;
+    }
+
+    .header-left {
+        flex: 0 0 100%;
+        justify-content: center;
+        order: 1;
+    }
+
+    .header-banner {
+        height: 31px;
+        max-height: 31px;
+        min-height: 31px;
+        min-width: 39px;
+        border: 1px solid #e2e8f0;
+        flex: 0 0 100%;
+    }
+
+    .header-center {
+        order: 2;
+        flex: 1;
+        justify-content: center;
+        gap: 7.5px;
+    }
+
+    .header-center .day-indicator {
+        font-size: 17.5px;
+        padding: 4.5px 17px;
+        border-radius: 21px;
+    }
+
+    .header-center .divider {
+        display: none;
+    }
+
+    .header-right {
+        order: 3;
+        text-align: right;
+        align-items: flex-end;
+        width: 100%;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 3.5px;
+        margin-top: 3.5px;
+    }
+
+    .header-right .period {
+        font-size: 13.5px;
+        min-height: 1.5em;
+        order: 2;
+        flex-direction: column;
+        align-items: flex-end;
+        text-align: right;
+        width: 100%;
+    }
+
+    .header-right .period .line1 {
+        font-size: 13.5px;
+    }
+
+    .header-right .period .line2 {
+        font-size: 12.5px;
+    }
+
+    .header-right .schedule-updated {
+        font-size: 11.5px;
+        order: 3;
+        margin-top: 2px;
+        align-self: flex-end;
+    }
+
+    #clockContainer {
+        order: 1;
+        width: 100%;
+        justify-content: flex-end;
+        margin-bottom: 2px;
+        min-height: 28px;
+    }
+
+    .desktop-table {
+        display: none !important;
+    }
+
+    .mobile-view {
+        display: flex !important;
+    }
+
+    .footer {
+        font-size: 12.5px;
+        padding-top: 3.5px;
+        margin-top: 3.5px;
+    }
+
+    .main-layout {
+        gap: 0;
+        margin-top: 3.5px;
+    }
 }
 
+/* ----- Маленькие телефоны (до 400px) ----- */
 @media (max-width: 400px) {
-    .container { padding: 3.5px 3.5px; }
-    .header-banner { height: 25px; max-height: 25px; min-height: 25px; min-width: 29px; }
-    .header-center .day-indicator { font-size: 15.5px; padding: 3.5px 13px; }
-    .header-right .period { font-size: 11.5px; min-height: 1.3em; }
-    .header-right .period .line1 { font-size: 11.5px; }
-    .header-right .period .line2 { font-size: 10.5px; }
-    .header-right .schedule-updated { font-size: 9.5px; }
-    #clockContainer { min-height: 24px; font-size: 13.5px; }
-    .mobile-class-header { padding: 7px 11px; font-size: 15.5px; }
-    .mobile-lesson-card { padding: 7px 11px; gap: 9px; }
-    .mobile-lesson-card .lesson-num-mobile { font-size: 14.5px; min-width: 25px; }
-    .mobile-lesson-card .lesson-info .subject-name { font-size: 14.5px; }
-    .mobile-lesson-card .lesson-info .room-name { font-size: 14.5px; }
-    .mobile-lesson-card .lesson-time { font-size: 12.5px; }
-    .footer { font-size: 10.5px; }
+    .container {
+        padding: 3.5px 3.5px;
+    }
+
+    .header-banner {
+        height: 25px;
+        max-height: 25px;
+        min-height: 25px;
+        min-width: 29px;
+    }
+
+    .header-center .day-indicator {
+        font-size: 15.5px;
+        padding: 3.5px 13px;
+    }
+
+    .header-right .period {
+        font-size: 11.5px;
+        min-height: 1.3em;
+    }
+
+    .header-right .period .line1 {
+        font-size: 11.5px;
+    }
+
+    .header-right .period .line2 {
+        font-size: 10.5px;
+    }
+
+    .header-right .schedule-updated {
+        font-size: 9.5px;
+    }
+
+    #clockContainer {
+        min-height: 24px;
+        font-size: 13.5px;
+    }
+
+    .mobile-class-header {
+        padding: 7px 11px;
+        font-size: 15.5px;
+    }
+
+    .mobile-lesson-card {
+        padding: 7px 11px;
+        gap: 9px;
+    }
+
+    .mobile-lesson-card .lesson-num-mobile {
+        font-size: 14.5px;
+        min-width: 25px;
+    }
+
+    .mobile-lesson-card .lesson-info .subject-name {
+        font-size: 14.5px;
+    }
+
+    .mobile-lesson-card .lesson-info .room-name {
+        font-size: 14.5px;
+    }
+
+    .mobile-lesson-card .lesson-time {
+        font-size: 12.5px;
+    }
+
+    .footer {
+        font-size: 10.5px;
+    }
 }
 
+/* ============================================================
+   ПЕЧАТЬ
+   ============================================================ */
 @media print {
-    .no-print { display: none !important; }
-    .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
-    body, html { background: white !important; overflow: visible !important; }
-    .container { border: none !important; box-shadow: none !important; }
-    .mobile-view { display: none !important; }
-    .desktop-table { display: table !important; }
+    .no-print {
+        display: none !important;
+    }
+
+    .header-banner {
+        border: none !important;
+        background: none !important;
+        max-width: 1200px !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        min-height: 40px !important;
+    }
+
+    body,
+    html {
+        background: white !important;
+        overflow: visible !important;
+    }
+
+    .container {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .mobile-view {
+        display: none !important;
+    }
+
+    .desktop-table {
+        display: table !important;
+    }
 }
