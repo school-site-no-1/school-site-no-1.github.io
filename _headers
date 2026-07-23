@@ -1,3 +1,47 @@
-# CSS — кэш на неделю (меняется редко)
+# ================================================================
+# _headers — кэширование для GitHub Pages
+# Версия: 1.0.0
+# ================================================================
+
+# HTML — 1 час
+/*.html
+  Cache-Control: public, max-age=3600, must-revalidate
+
+# CSS — 1 неделя (меняется редко)
 /*.css
   Cache-Control: public, max-age=604800, immutable
+
+# JavaScript — 1 час
+/*.js
+  Cache-Control: public, max-age=3600, must-revalidate
+
+# data.json — 5 минут (с проверкой версии)
+/data.json
+  Cache-Control: public, max-age=300, must-revalidate
+
+# Картинки — 1 месяц
+/*.png
+  Cache-Control: public, max-age=2592000, immutable
+
+/*.jpg
+  Cache-Control: public, max-age=2592000, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=2592000, immutable
+
+/*.gif
+  Cache-Control: public, max-age=2592000, immutable
+
+/*.ico
+  Cache-Control: public, max-age=2592000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=2592000, immutable
+
+# Service Worker — НЕ КЭШИРУЕТСЯ (всегда свежий)
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Manifest — 1 час
+/manifest.json
+  Cache-Control: public, max-age=3600, must-revalidate
