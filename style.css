@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.13
+ * Версия: 1.0.14
  * Дата: 2026
  */
 
@@ -98,9 +98,23 @@ body {
 /* ----- Центральная часть шапки ----- */
 .header-center {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
     flex-shrink: 0;
+    justify-content: center;
+    min-width: 120px;
+}
+
+.header-center-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-center-bottom {
+    display: flex;
+    align-items: center;
     justify-content: center;
 }
 
@@ -111,11 +125,33 @@ body {
     padding: 1px 12px;
     border-radius: 16px;
     flex-shrink: 0;
+    font-size: 1rem;
+}
+
+/* Период (урок/перемена) - теперь под днем недели */
+.header-center .period {
+    color: #e65100;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.header-center .period .line1 {
+    display: block;
+}
+
+.header-center .period .line2 {
+    display: block;
+    font-weight: 500;
+    color: #d45c00;
 }
 
 .header-center .divider {
-    color: #e2e8f0;
-    font-weight: 300;
+    display: none;
 }
 
 /* ----- Правая часть шапки ----- */
@@ -126,27 +162,6 @@ body {
     align-items: flex-end;
     gap: 1px;
     flex-shrink: 0;
-}
-
-/* Период (урок/перемена) */
-.header-right .period {
-    color: #e65100;
-    font-weight: 600;
-    min-height: 1.8em;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    line-height: 1.1;
-}
-
-.header-right .period .line1 {
-    display: block;
-}
-
-.header-right .period .line2 {
-    display: block;
-    font-weight: 500;
-    color: #d45c00;
 }
 
 /* Дата обновления расписания */
@@ -561,17 +576,29 @@ tbody tr.current-lesson .lesson-num {
         order: 2;
         flex: 1;
         justify-content: center;
-        gap: 7.5px;
+        gap: 4px;
+        min-width: auto;
     }
 
-    .header-center .day-indicator {
+    .header-center-top .day-indicator {
         font-size: 17.5px;
         padding: 4.5px 17px;
         border-radius: 21px;
     }
 
-    .header-center .divider {
-        display: none;
+    .header-center-bottom .period {
+        font-size: 13.5px;
+        min-height: 1.5em;
+        align-items: center;
+        text-align: center;
+    }
+
+    .header-center-bottom .period .line1 {
+        font-size: 13.5px;
+    }
+
+    .header-center-bottom .period .line2 {
+        font-size: 12.5px;
     }
 
     .header-right {
@@ -585,27 +612,9 @@ tbody tr.current-lesson .lesson-num {
         margin-top: 3.5px;
     }
 
-    .header-right .period {
-        font-size: 13.5px;
-        min-height: 1.5em;
-        order: 2;
-        flex-direction: column;
-        align-items: flex-end;
-        text-align: right;
-        width: 100%;
-    }
-
-    .header-right .period .line1 {
-        font-size: 13.5px;
-    }
-
-    .header-right .period .line2 {
-        font-size: 12.5px;
-    }
-
     .header-right .schedule-updated {
         font-size: 11.5px;
-        order: 3;
+        order: 2;
         margin-top: 2px;
         align-self: flex-end;
     }
@@ -651,21 +660,21 @@ tbody tr.current-lesson .lesson-num {
         min-width: 29px;
     }
 
-    .header-center .day-indicator {
+    .header-center-top .day-indicator {
         font-size: 15.5px;
         padding: 3.5px 13px;
     }
 
-    .header-right .period {
+    .header-center-bottom .period {
         font-size: 11.5px;
         min-height: 1.3em;
     }
 
-    .header-right .period .line1 {
+    .header-center-bottom .period .line1 {
         font-size: 11.5px;
     }
 
-    .header-right .period .line2 {
+    .header-center-bottom .period .line2 {
         font-size: 10.5px;
     }
 
