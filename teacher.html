@@ -132,7 +132,7 @@
         
         .table-wrap{overflow-x:auto}
         
-        /* ТАБЛИЦА - УЗКАЯ, ШРИФТ УВЕЛИЧЕН, ВЫСОТА СТРОКИ +10px, ПОДСВЕТКА */
+        /* ТАБЛИЦА - ДЕСКТОПНАЯ ВЕРСИЯ */
         table{width:auto;border-collapse:collapse;font-size:1.4em;margin:0 auto}
         thead th{background:#2b6cb0;color:#fff;padding:4px 4px;text-align:center;font-weight:700;font-size:0.6em;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;border-bottom:2px solid #1a4f8b}
         tbody tr{border-bottom:1.5px solid #cbd5e0}
@@ -161,7 +161,7 @@
             font-weight: 700;
         }
         
-        /* ВЫСОТА СТРОКИ +10px (было 3px 4px -> стало 13px 14px) */
+        /* ВЫСОТА СТРОКИ +10px */
         tbody td {
             padding: 13px 14px;
             text-align: center;
@@ -183,7 +183,42 @@
         .no-lessons-msg{text-align:center;padding:15px 0;color:#a0aec0;font-size:0.9em}
         
         @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:1.2em}thead th,td{padding:3px 3px}}
-        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header-top{flex-wrap:wrap;gap:2px}.header-top-left{min-width:auto;flex:1 1 100%;order:1}.header-top-center{order:2;flex:0 1 auto;min-width:auto}.header-top-right{order:3;flex:0 1 auto}.header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}.header-selector label{font-size:0.55em}.header-selector .refresh-btn{font-size:0.5em;padding:1px 4px}.header-day{font-size:0.85em;padding-left:4px}.changes-text{font-size:0.6em}table{font-size:1em;min-width:250px}thead th,td{padding:2px 2px;font-size:0.6em}td.subject{padding-left:2px;text-align:center!important;min-width:120px;width:140px;max-width:160px;font-size:0.8em}td.num{font-size:0.7em;width:18px;min-width:14px;max-width:22px}td.class{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.room{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.period{width:50px;min-width:40px;max-width:60px}tbody td.period .time-start{font-size:0.6em}tbody td.period .time-end{font-size:0.5em}.info{font-size:0.45em;padding:2px 4px;border-radius:4px}.footer{font-size:0.35em;gap:3px}#clockContainer svg{width:20px;height:20px}#clockContainer .clock-text .date{font-size:0.35em}#clockContainer .clock-text .day{font-size:0.3em}#clockContainer .clock-text .digital-time{font-size:0.5em}}
+        
+        @media(max-width:600px){
+            body{padding:8px}
+            .container{padding:12px;border-radius:12px}
+            .header-top{flex-wrap:wrap;gap:2px}
+            .header-top-left{min-width:auto;flex:1 1 100%;order:1}
+            .header-top-center{order:2;flex:0 1 auto;min-width:auto}
+            .header-top-right{order:3;flex:0 1 auto}
+            .header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}
+            .header-selector label{font-size:0.55em}
+            .header-selector .refresh-btn{font-size:0.5em;padding:1px 4px}
+            .header-day{font-size:0.85em;padding-left:4px}
+            .changes-text{font-size:0.6em}
+            
+            /* МОБИЛЬНАЯ ТАБЛИЦА - УВЕЛИЧЕННЫЙ ШРИФТ */
+            table{font-size:1.2em;min-width:280px}
+            thead th{padding:4px 3px;font-size:0.65em}
+            tbody td{padding:10px 6px;font-size:0.75em}
+            
+            /* ВРЕМЯ - УВЕЛИЧЕННЫЙ ШРИФТ НА 1 ПОРЯДОК */
+            tbody td.period{padding:8px 6px;width:65px;min-width:50px;max-width:75px}
+            tbody td.period .time-start{font-size:1.0em;font-weight:700}
+            tbody td.period .time-end{font-size:0.85em}
+            
+            td.subject{padding-left:4px;text-align:center!important;min-width:100px;width:140px;max-width:160px;font-size:0.85em}
+            td.num{font-size:0.85em;width:20px;min-width:16px;max-width:24px}
+            td.class{font-size:0.7em;white-space:normal;min-width:25px;width:35px;max-width:50px}
+            td.room{font-size:0.7em;white-space:normal;min-width:25px;width:35px;max-width:50px}
+            
+            .info{font-size:0.5em;padding:2px 4px;border-radius:4px}
+            .footer{font-size:0.4em;gap:3px}
+            #clockContainer svg{width:22px;height:22px}
+            #clockContainer .clock-text .date{font-size:0.4em}
+            #clockContainer .clock-text .day{font-size:0.35em}
+            #clockContainer .clock-text .digital-time{font-size:0.55em}
+        }
     </style>
 </head>
 <body>
@@ -496,7 +531,6 @@
 
             if (!isEmpty) totalLessons++;
 
-            // Подсветка текущего урока
             const isCurrent = (i === currentLessonNum && !isEmpty);
             const rowClass = isCurrent ? ' class="current"' : '';
 
