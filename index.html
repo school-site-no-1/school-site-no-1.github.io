@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.0.4">
+<html lang="ru" data-version="v4.0.5">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Расписание 5-11</title>
     
     <!-- PWA Мета-теги -->
@@ -14,7 +14,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     
     <!-- Подключаем отдельный CSS файл с версией -->
-    <link rel="stylesheet" href="style.css?v=1.0.18">
+    <link rel="stylesheet" href="style.css?v=1.0.20">
 </head>
 <body>
 
@@ -76,7 +76,7 @@
         </div>
 
         <div class="footer no-print">
-            <span class="version">🏷️ v<span id="appVersion">4.0.4</span></span>
+            <span class="version">🏷️ v<span id="appVersion">4.0.5</span></span>
         </div>
     </div>
 
@@ -91,7 +91,7 @@
     // ================================================================
     // КОНФИГУРАЦИЯ
     // ================================================================
-    var APP_VERSION = '4.0.4';
+    var APP_VERSION = '4.0.5';
     
     var LESSON_TIMES = [
         { num: 1, start: "08:30", end: "09:10", break: "10" },
@@ -116,6 +116,32 @@
     var dataLoaded = false;
     var scheduleUpdatedDate = null;
     var currentDataVersion = APP_VERSION;
+
+    // ================================================================
+    // ДИНАМИЧЕСКОЕ ОПРЕДЕЛЕНИЕ НАСТРОЕК ДЛЯ РАЗНЫХ ЭКРАНОВ
+    // ================================================================
+
+    function setupViewport() {
+        var viewport = document.querySelector('meta[name="viewport"]');
+        if (!viewport) return;
+        
+        var width = window.innerWidth;
+        var isMobile = width <= 768;
+        var isLargeScreen = width >= 1920;
+        
+        if (isMobile) {
+            // Мобильные - отключаем масштабирование
+            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        } else if (isLargeScreen) {
+            // 32" и 72" экраны - разрешаем масштабирование
+            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes';
+        } else {
+            // Стандартные десктопы - разрешаем масштабирование до 2x
+            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes';
+        }
+        
+        console.log('Viewport установлен:', viewport.content, 'Ширина:', width);
+    }
 
     // ================================================================
     // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
@@ -513,6 +539,18 @@
     // ================================================================
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Настраиваем viewport в зависимости от размера экрана
+        setupViewport();
+        
+        // Следим за изменением размера окна
+        var resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                setupViewport();
+            }, 500);
+        });
+
         // Проверяем, загрузился ли clock.js
         if (typeof initClock === 'function') {
             initClock('clockContainer');
@@ -520,7 +558,6 @@
             if (placeholder) placeholder.remove();
         } else {
             console.warn('clock.js не загружен или функция initClock не определена');
-            // Показываем сообщение об ошибке в блоке часов
             var container = document.getElementById('clockContainer');
             if (container) {
                 container.innerHTML = '<span style="color:#e53e3e;font-size:0.75rem;">⚠️ clock.js не загружен</span>';
