@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Прохорова - Понедельник</title>
+<title>Прохорова - Пятница</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -52,14 +52,14 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 <div class="header-left">
 <span class="name">📋 Прохорова</span>
 </div>
-<div class="header-center">📌 Уроков нет<br>на понедельник</div>
+<div class="header-center">📌 Уроков нет<br>на пятницу</div>
 <div class="header-right">
 <div id="clockContainer"></div>
 </div>
 </div>
 <div class="info">
 <span class="count">📚 0 уроков</span>
-<span class="update">🔄 обновлено: 20.07.2026, 01:21:53</span>
+<span class="update">🔄 обновлено: 24.07.2026, 15:04:42</span>
 </div>
 <div class="table-wrap">
 <table>
@@ -70,8 +70,8 @@ tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;
 </table>
 </div>
 <div class="footer">
-<span class="version">Админка v5.9.25</span>
-<span class="gen-time">📅 20.07.2026, 01:21:53</span>
+<span class="version">Админка v5.9.30</span>
+<span class="gen-time">📅 24.07.2026, 15:04:42</span>
 </div>
 </div>
 <script>
@@ -121,10 +121,8 @@ function initClock(containerId) {
     var now = new Date();
     var hours = now.getHours() % 12;
     var minutes = now.getMinutes();
-    var seconds = now.getSeconds();
     var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
-    var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
-    var secAngle = seconds * 6 - 90;
+    var minAngle = minutes * 6 - 90;
     var hh = document.getElementById("hour-hand");
     var mh = document.getElementById("min-hand");
     if (hh) hh.setAttribute("transform", "rotate(" + hourAngle + ", 50, 50)");
@@ -134,7 +132,6 @@ function initClock(containerId) {
   setInterval(updateClock, 1000);
 }
 initClock("clockContainer");
-// Автообновление каждые 4 минуты
 setTimeout(function() { location.reload(); }, 240000);
 </script>
 </body>
