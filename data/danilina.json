@@ -1,0 +1,115 @@
+{
+  "ПН": [],
+  "ВТ": [
+    {
+      "lesson": 4,
+      "class": "5А",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 5,
+      "class": "5А",
+      "subject": "Труд",
+      "room": "112"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 2,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 3,
+      "class": "6В",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 4,
+      "class": "6В",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 5,
+      "class": "8Б",
+      "subject": "Труд",
+      "room": "111/112"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 2,
+      "class": "7Б",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 5,
+      "class": "5Б",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 6,
+      "class": "5Б",
+      "subject": "Труд",
+      "room": "112"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "7В",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 2,
+      "class": "7В",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 3,
+      "class": "9В",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 4,
+      "class": "9Б",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 5,
+      "class": "8В",
+      "subject": "Труд",
+      "room": "111"
+    },
+    {
+      "lesson": 6,
+      "class": "8А",
+      "subject": "Труд",
+      "room": "111"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-07-24 21:18:33"
+}
