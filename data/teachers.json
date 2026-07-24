@@ -1,20 +1,210 @@
 {
   "teachers": [
     {
-      "id": "mihalitsyn",
-      "name": "Михалицын Александр",
-      "scheduleFile": "mihalitsyn.json"
+      "id": "krasnova",
+      "name": "Краснова",
+      "scheduleFile": "krasnova.json"
+    },
+    {
+      "id": "abramenko",
+      "name": "Абраменко",
+      "scheduleFile": "abramenko.json"
+    },
+    {
+      "id": "solomin",
+      "name": "Соломин",
+      "scheduleFile": "solomin.json"
     },
     {
       "id": "ivanova",
-      "name": "Иванова Мария Петровна",
+      "name": "Иванова",
       "scheduleFile": "ivanova.json"
     },
     {
-      "id": "petrov",
-      "name": "Петров Сергей Иванович",
-      "scheduleFile": "petrov.json"
+      "id": "vavilova",
+      "name": "Вавилова",
+      "scheduleFile": "vavilova.json"
+    },
+    {
+      "id": "komarova",
+      "name": "Комарова",
+      "scheduleFile": "komarova.json"
+    },
+    {
+      "id": "trofimova",
+      "name": "Трофимова",
+      "scheduleFile": "trofimova.json"
+    },
+    {
+      "id": "bezhevets",
+      "name": "Бежевец",
+      "scheduleFile": "bezhevets.json"
+    },
+    {
+      "id": "brazhnikov",
+      "name": "Бражников",
+      "scheduleFile": "brazhnikov.json"
+    },
+    {
+      "id": "galahov",
+      "name": "Галахов",
+      "scheduleFile": "galahov.json"
+    },
+    {
+      "id": "generalova",
+      "name": "Генералова",
+      "scheduleFile": "generalova.json"
+    },
+    {
+      "id": "danilina",
+      "name": "Данилина",
+      "scheduleFile": "danilina.json"
+    },
+    {
+      "id": "zhigulina",
+      "name": "Жигулина",
+      "scheduleFile": "zhigulina.json"
+    },
+    {
+      "id": "zueva",
+      "name": "Зуева",
+      "scheduleFile": "zueva.json"
+    },
+    {
+      "id": "ivanova_o",
+      "name": "Иванова О",
+      "scheduleFile": "ivanova_o.json"
+    },
+    {
+      "id": "ivanova_e",
+      "name": "Иванова Елена",
+      "scheduleFile": "ivanova_e.json"
+    },
+    {
+      "id": "isa",
+      "name": "Иса",
+      "scheduleFile": "isa.json"
+    },
+    {
+      "id": "karimova",
+      "name": "Каримова",
+      "scheduleFile": "karimova.json"
+    },
+    {
+      "id": "konkina",
+      "name": "Конкина",
+      "scheduleFile": "konkina.json"
+    },
+    {
+      "id": "krotova",
+      "name": "Кротова",
+      "scheduleFile": "krotova.json"
+    },
+    {
+      "id": "kuznetsova",
+      "name": "Кузнецова",
+      "scheduleFile": "kuznetsova.json"
+    },
+    {
+      "id": "lukyantseva",
+      "name": "Лукянцева",
+      "scheduleFile": "lukyantseva.json"
+    },
+    {
+      "id": "lukyantseva_s",
+      "name": "Лукянцева София",
+      "scheduleFile": "lukyantseva_s.json"
+    },
+    {
+      "id": "olьhovskaya",
+      "name": "Ольховская",
+      "scheduleFile": "olьhovskaya.json"
+    },
+    {
+      "id": "panin",
+      "name": "Панин",
+      "scheduleFile": "panin.json"
+    },
+    {
+      "id": "pashkevich",
+      "name": "Пашкевич",
+      "scheduleFile": "pashkevich.json"
+    },
+    {
+      "id": "ponomareva",
+      "name": "Пономарева",
+      "scheduleFile": "ponomareva.json"
+    },
+    {
+      "id": "prohorova",
+      "name": "Прохорова",
+      "scheduleFile": "prohorova.json"
+    },
+    {
+      "id": "pyrkova",
+      "name": "Пыркова",
+      "scheduleFile": "pyrkova.json"
+    },
+    {
+      "id": "saksonova",
+      "name": "Саксонова",
+      "scheduleFile": "saksonova.json"
+    },
+    {
+      "id": "semenov",
+      "name": "Семенов",
+      "scheduleFile": "semenov.json"
+    },
+    {
+      "id": "sivolapov",
+      "name": "Сиволапов",
+      "scheduleFile": "sivolapov.json"
+    },
+    {
+      "id": "stepanova",
+      "name": "Степанова",
+      "scheduleFile": "stepanova.json"
+    },
+    {
+      "id": "hikmatova",
+      "name": "Хикматова",
+      "scheduleFile": "hikmatova.json"
+    },
+    {
+      "id": "shaporeva",
+      "name": "Шапорева",
+      "scheduleFile": "shaporeva.json"
+    },
+    {
+      "id": "shatalina",
+      "name": "Шаталина",
+      "scheduleFile": "shatalina.json"
+    },
+    {
+      "id": "shipunova",
+      "name": "Шипунова",
+      "scheduleFile": "shipunova.json"
+    },
+    {
+      "id": "shishmintseva",
+      "name": "Шишминцева",
+      "scheduleFile": "shishmintseva.json"
+    },
+    {
+      "id": "shtukaturova",
+      "name": "Штукатурова",
+      "scheduleFile": "shtukaturova.json"
+    },
+    {
+      "id": "shuvalova",
+      "name": "Шувалова",
+      "scheduleFile": "shuvalova.json"
+    },
+    {
+      "id": "mihalitsyn_a",
+      "name": "Михалицын Александр",
+      "scheduleFile": "mihalitsyn_a.json"
     }
   ],
-  "last_update": "2026-07-24 15:04:42"
+  "last_update": "2026-07-24 21:18:12"
 }
