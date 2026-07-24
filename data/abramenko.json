@@ -1,0 +1,83 @@
+{
+  "ПН": [],
+  "ВТ": [],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 2,
+      "class": "8В",
+      "subject": "Алгебра",
+      "room": "204"
+    },
+    {
+      "lesson": 3,
+      "class": "8А",
+      "subject": "Алгебра",
+      "room": "203"
+    },
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "Алгебра",
+      "room": "203"
+    },
+    {
+      "lesson": 4,
+      "class": "8Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 6,
+      "class": "7А",
+      "subject": "Алгебра",
+      "room": "201"
+    }
+  ],
+  "ЧТ": [],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 2,
+      "class": "7А",
+      "subject": "Алгебра",
+      "room": "201"
+    },
+    {
+      "lesson": 2,
+      "class": "8Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 3,
+      "class": "8А",
+      "subject": "Алгебра",
+      "room": "203"
+    },
+    {
+      "lesson": 5,
+      "class": "7В",
+      "subject": "Алгебра",
+      "room": "203"
+    },
+    {
+      "lesson": 6,
+      "class": "8В",
+      "subject": "Алгебра",
+      "room": "204"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-07-24 21:18:15"
+}
