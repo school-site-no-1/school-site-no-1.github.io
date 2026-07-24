@@ -14,16 +14,16 @@
         
         /* Верхняя строка */
         .header-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px}
-        .header-top-left{display:flex;flex-direction:column;align-items:flex-start;gap:0;flex:0 1 auto;min-width:200px}
-        .header-top-center{flex:1;text-align:center;min-width:100px}
-        .header-top-right{display:flex;align-items:center;gap:8px;min-width:80px;justify-content:flex-end}
+        .header-top-left{display:flex;flex-direction:column;align-items:flex-start;gap:0;flex:0 1 auto;min-width:160px}
+        .header-top-center{flex:1;text-align:center;min-width:80px}
+        .header-top-right{display:flex;align-items:center;gap:8px;min-width:70px;justify-content:flex-end}
         
         /* Стили для селекта */
         .header-selector {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 2px 8px;
+            gap: 4px;
+            padding: 2px 6px;
             background: #ebf8ff;
             border: 1px solid #bee3f8;
             border-radius: 6px;
@@ -31,18 +31,18 @@
         .header-selector label {
             font-weight: 600;
             color: #2b6cb0;
-            font-size: 0.7em;
+            font-size: 0.6em;
             white-space: nowrap;
         }
         .header-selector select {
-            padding: 3px 8px;
+            padding: 2px 6px;
             border: 1px solid #2b6cb0;
             border-radius: 4px;
-            font-size: 0.7em;
+            font-size: 0.6em;
             background: #fff;
             color: #2d3748;
             cursor: pointer;
-            min-width: 160px;
+            min-width: 120px;
             outline: none;
         }
         .header-selector select:hover {
@@ -52,13 +52,13 @@
             box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.2);
         }
         .header-selector .refresh-btn {
-            padding: 2px 8px;
+            padding: 1px 6px;
             background: #2b6cb0;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.65em;
+            font-size: 0.55em;
             transition: background 0.2s;
             white-space: nowrap;
         }
@@ -66,12 +66,12 @@
             background: #1a4f8b;
         }
         
-        /* День недели - увеличенный шрифт */
+        /* День недели */
         .header-day {
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: 700;
             color: #1a365d;
-            padding-left: 10px;
+            padding-left: 8px;
             margin-top: 1px;
         }
         
@@ -80,16 +80,16 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            min-height: 36px;
+            min-height: 32px;
         }
         #clockContainer .clock-wrapper {
             display: flex !important;
             align-items: center !important;
-            gap: 6px !important;
+            gap: 4px !important;
         }
         #clockContainer svg {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             flex-shrink: 0;
         }
         #clockContainer .clock-text {
@@ -99,17 +99,17 @@
             white-space: nowrap;
         }
         #clockContainer .clock-text .date {
-            font-size: 0.5em;
+            font-size: 0.4em;
             color: #2d3748;
             font-weight: 600;
         }
         #clockContainer .clock-text .day {
-            font-size: 0.45em;
+            font-size: 0.35em;
             color: #4a5568;
             font-weight: 500;
         }
         #clockContainer .clock-text .digital-time {
-            font-size: 0.7em;
+            font-size: 0.6em;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
@@ -117,7 +117,7 @@
         
         /* Изменения */
         .changes-text {
-            font-size: 0.8em;
+            font-size: 0.7em;
             font-weight: 700;
             color: #c53030;
             letter-spacing: .5px;
@@ -126,34 +126,38 @@
             text-align: center;
         }
         
-        .info{display:flex;justify-content:space-between;font-size:1em;color:#718096;padding:3px 8px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:4px;border-radius:8px;flex-wrap:wrap;gap:3px}
-        .info .count{color:#2b6cb0;font-weight:600;font-size:0.85em}
-        .info .update{color:#a0aec0;font-size:0.7em}
+        .info{display:flex;justify-content:space-between;font-size:0.85em;color:#718096;padding:2px 6px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:4px;border-radius:6px;flex-wrap:wrap;gap:2px}
+        .info .count{color:#2b6cb0;font-weight:600;font-size:0.8em}
+        .info .update{color:#a0aec0;font-size:0.65em}
         
         .table-wrap{overflow-x:auto}
-        table{width:100%;border-collapse:collapse;font-size:1em;min-width:550px}
-        thead th{background:#2b6cb0;color:#fff;padding:6px 8px;text-align:center;font-weight:700;font-size:0.7em;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid #1a4f8b}
-        tbody tr{border-bottom:2px solid #cbd5e0}
+        
+        /* ТАБЛИЦА - УМЕНЬШЕННАЯ ШИРИНА СТОЛБЦОВ В 2 РАЗА */
+        table{width:100%;border-collapse:collapse;font-size:0.85em;min-width:400px}
+        thead th{background:#2b6cb0;color:#fff;padding:4px 4px;text-align:center;font-weight:700;font-size:0.6em;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;border-bottom:2px solid #1a4f8b}
+        tbody tr{border-bottom:1.5px solid #cbd5e0}
         tbody tr:last-child{border-bottom:none}
         tbody tr.current{background:#bee3f8;font-weight:700}
         tbody tr.current td{color:#1a365d}
         tbody tr.current td.num{color:#1a4f8b;font-weight:800}
-        tbody td{padding:5px 8px;text-align:center;font-size:0.8em;vertical-align:middle}
-        tbody td.num{font-weight:800;color:#1a365d;font-size:1em;text-align:center;vertical-align:middle}
-        tbody td.period{padding:4px 8px;vertical-align:middle;text-align:center;white-space:nowrap}
-        tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:0.9em;line-height:1.2}
-        tbody td.period .time-end{color:#718096;font-size:0.75em;line-height:1.2;margin-top:1px}
+        tbody td{padding:3px 4px;text-align:center;font-size:0.7em;vertical-align:middle}
+        
+        /* Узкие столбцы */
+        tbody td.num{font-weight:800;color:#1a365d;font-size:0.8em;text-align:center;vertical-align:middle;width:25px;min-width:20px;max-width:30px}
+        tbody td.period{padding:2px 4px;vertical-align:middle;text-align:center;white-space:nowrap;width:70px;min-width:55px;max-width:80px}
+        tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:0.75em;line-height:1.1}
+        tbody td.period .time-end{color:#718096;font-size:0.65em;line-height:1.1;margin-top:0px}
         tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
         tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
-        tbody td.class{font-weight:700;color:#1a365d;font-size:0.85em;white-space:nowrap;line-height:1.2;min-width:50px}
-        tbody td.subject{text-align:center;padding-left:10px;font-weight:600;font-size:0.85em;min-width:100px}
-        tbody td.room{font-weight:700;color:#e65100;font-size:0.85em;white-space:nowrap;line-height:1.2;min-width:50px}
+        tbody td.class{font-weight:700;color:#1a365d;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:50px;max-width:65px}
+        tbody td.subject{text-align:center;padding-left:4px;font-weight:600;font-size:0.75em;min-width:50px;width:auto}
+        tbody td.room{font-weight:700;color:#e65100;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:45px;max-width:60px}
         
-        .footer{text-align:center;color:#a0aec0;font-size:0.65em;border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
-        .no-lessons-msg{text-align:center;padding:20px 0;color:#a0aec0;font-size:1em}
+        .footer{text-align:center;color:#a0aec0;font-size:0.55em;border-top:1px solid #e2e8f0;padding-top:4px;margin-top:4px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+        .no-lessons-msg{text-align:center;padding:15px 0;color:#a0aec0;font-size:0.9em}
         
-        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:0.9em;min-width:450px}thead th,td{padding:4px 5px}.header-top{flex-wrap:wrap}}
-        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header-top{flex-wrap:wrap;gap:2px}.header-top-left{min-width:auto;flex:1 1 100%;order:1}.header-top-center{order:2;flex:0 1 auto;min-width:auto}.header-top-right{order:3;flex:0 1 auto}.header-selector select{min-width:100px;font-size:0.6em;padding:2px 6px}.header-selector label{font-size:0.6em}.header-selector .refresh-btn{font-size:0.55em;padding:1px 6px}.header-day{font-size:0.9em;padding-left:6px}.changes-text{font-size:0.65em}table{font-size:0.7em;min-width:280px}thead th,td{padding:3px 3px;font-size:0.7em}td.subject{padding-left:3px;text-align:center!important}td.num{font-size:0.8em}td.class{font-size:0.65em;white-space:normal;min-width:25px}td.room{font-size:0.65em;white-space:normal;min-width:25px}tbody td.period .time-start{font-size:0.7em}tbody td.period .time-end{font-size:0.6em}.info{font-size:0.5em;padding:3px 6px;border-radius:6px}.footer{font-size:0.4em;gap:4px}#clockContainer svg{width:24px;height:24px}#clockContainer .clock-text .date{font-size:0.4em}#clockContainer .clock-text .day{font-size:0.35em}#clockContainer .clock-text .digital-time{font-size:0.55em}}
+        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:0.75em;min-width:350px}thead th,td{padding:3px 3px}}
+        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header-top{flex-wrap:wrap;gap:2px}.header-top-left{min-width:auto;flex:1 1 100%;order:1}.header-top-center{order:2;flex:0 1 auto;min-width:auto}.header-top-right{order:3;flex:0 1 auto}.header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}.header-selector label{font-size:0.55em}.header-selector .refresh-btn{font-size:0.5em;padding:1px 4px}.header-day{font-size:0.85em;padding-left:4px}.changes-text{font-size:0.6em}table{font-size:0.6em;min-width:250px}thead th,td{padding:2px 2px;font-size:0.6em}td.subject{padding-left:2px;text-align:center!important}td.num{font-size:0.7em;width:18px;min-width:14px;max-width:22px}td.class{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.room{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.period{width:50px;min-width:40px;max-width:60px}tbody td.period .time-start{font-size:0.6em}tbody td.period .time-end{font-size:0.5em}.info{font-size:0.45em;padding:2px 4px;border-radius:4px}.footer{font-size:0.35em;gap:3px}#clockContainer svg{width:20px;height:20px}#clockContainer .clock-text .date{font-size:0.35em}#clockContainer .clock-text .day{font-size:0.3em}#clockContainer .clock-text .digital-time{font-size:0.5em}}
     </style>
 </head>
 <body>
@@ -392,10 +396,8 @@
 
     // ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
     function updateUI(teacher, scheduleData, day) {
-        // Только день недели
         document.getElementById('teacherDay').textContent = DAYS_RU[DAYS.indexOf(day)] || day;
         
-        // Изменения
         const dayPrep = DAYS_PREP[DAYS.indexOf(day)] || 'сегодня';
         document.getElementById('changesText').innerHTML = 
             `📌 Изменения<br>на ${dayPrep}`;
