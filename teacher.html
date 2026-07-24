@@ -8,108 +8,158 @@
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
         .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-        .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2b6cb0;padding-bottom:8px;margin-bottom:8px;flex-wrap:wrap}
-        .header-center{text-align:center;flex:1;font-size:1.25em;font-weight:700;color:#c53030;letter-spacing:.5px;text-transform:lowercase;padding:2px 0;line-height:1.3}
-        .header-left{display:flex;flex-direction:column;min-width:100px}
-        .header-left .name{font-size:1.15em;font-weight:700;color:#1a365d}
-        .header-left .subtitle{font-size:.85em;color:#718096}
         
-        /* Стили для селекта */
-        .teacher-selector {
+        /* Шапка - уменьшенные размеры в 2 раза */
+        .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2b6cb0;padding-bottom:4px;margin-bottom:4px;flex-wrap:wrap}
+        .header-left{display:flex;flex-direction:column;min-width:80px}
+        .header-left .name{font-size:0.9em;font-weight:700;color:#1a365d}
+        .header-left .subtitle{font-size:0.7em;color:#718096}
+        .header-center{text-align:center;flex:1;font-size:0.9em;font-weight:700;color:#c53030;letter-spacing:.5px;text-transform:lowercase;padding:2px 0;line-height:1.3}
+        .header-right{text-align:right;min-width:80px}
+        
+        /* Блок с часами */
+        #clockContainer {
             display: flex;
+            justify-content: flex-end;
             align-items: center;
-            gap: 10px;
-            padding: 4px 10px;
-            background: #ebf8ff;
-            border: 1px solid #bee3f8;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
+            min-height: 40px;
         }
-        .teacher-selector label {
-            font-weight: 600;
-            color: #2b6cb0;
-            font-size: 0.9em;
+        #clockContainer .clock-wrapper {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+        #clockContainer svg {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+        #clockContainer .clock-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
             white-space: nowrap;
         }
-        .teacher-selector select {
-            padding: 6px 12px;
-            border: 1px solid #2b6cb0;
+        #clockContainer .clock-text .date {
+            font-size: 0.55em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        #clockContainer .clock-text .day {
+            font-size: 0.5em;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        #clockContainer .clock-text .digital-time {
+            font-size: 0.75em;
+            color: #2b6cb0;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Стили для селекта - в шапке */
+        .header-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 2px 10px;
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
             border-radius: 6px;
-            font-size: 0.9em;
+            flex-wrap: nowrap;
+        }
+        .header-selector label {
+            font-weight: 600;
+            color: #2b6cb0;
+            font-size: 0.65em;
+            white-space: nowrap;
+        }
+        .header-selector select {
+            padding: 3px 8px;
+            border: 1px solid #2b6cb0;
+            border-radius: 4px;
+            font-size: 0.65em;
             background: #fff;
             color: #2d3748;
             cursor: pointer;
-            min-width: 200px;
+            min-width: 140px;
             outline: none;
         }
-        .teacher-selector select:hover {
+        .header-selector select:hover {
             border-color: #1a4f8b;
         }
-        .teacher-selector select:focus {
-            box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
+        .header-selector select:focus {
+            box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.2);
         }
-        .teacher-selector .refresh-btn {
-            padding: 4px 12px;
+        .header-selector .refresh-btn {
+            padding: 2px 8px;
             background: #2b6cb0;
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 0.85em;
+            font-size: 0.6em;
             transition: background 0.2s;
+            white-space: nowrap;
         }
-        .teacher-selector .refresh-btn:hover {
+        .header-selector .refresh-btn:hover {
             background: #1a4f8b;
         }
         
-        .info{display:flex;justify-content:space-between;font-size:1.2em;color:#718096;padding:4px 10px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:6px;border-radius:8px;flex-wrap:wrap;gap:4px}
-        .info .count{color:#2b6cb0;font-weight:600}
-        .info .update{color:#a0aec0;font-size:.85em}
+        .info{display:flex;justify-content:space-between;font-size:1em;color:#718096;padding:3px 8px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:4px;border-radius:8px;flex-wrap:wrap;gap:3px}
+        .info .count{color:#2b6cb0;font-weight:600;font-size:0.85em}
+        .info .update{color:#a0aec0;font-size:0.7em}
+        
         .table-wrap{overflow-x:auto}
-        table{width:100%;border-collapse:collapse;font-size:1.4em;min-width:650px}
-        thead th{background:#2b6cb0;color:#fff;padding:10px 12px;text-align:center;font-weight:700;font-size:.85em;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid #1a4f8b}
-        tbody tr{border-bottom:3px solid #cbd5e0}
+        /* Таблица - уменьшенные размеры в 2 раза */
+        table{width:100%;border-collapse:collapse;font-size:1em;min-width:550px}
+        thead th{background:#2b6cb0;color:#fff;padding:6px 8px;text-align:center;font-weight:700;font-size:0.7em;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid #1a4f8b}
+        tbody tr{border-bottom:2px solid #cbd5e0}
         tbody tr:last-child{border-bottom:none}
         tbody tr.current{background:#bee3f8;font-weight:700}
         tbody tr.current td{color:#1a365d}
         tbody tr.current td.num{color:#1a4f8b;font-weight:800}
-        tbody td{padding:8px 10px;text-align:center;font-size:.95em;vertical-align:middle}
-        tbody td.num{font-weight:800;color:#1a365d;font-size:1.2em;text-align:center;vertical-align:middle}
-        tbody td.period{padding:6px 10px;vertical-align:middle;text-align:center;white-space:nowrap}
-        tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:1.1em;line-height:1.3}
-        tbody td.period .time-end{color:#718096;font-size:.9em;line-height:1.3;margin-top:2px}
+        tbody td{padding:5px 8px;text-align:center;font-size:0.8em;vertical-align:middle}
+        tbody td.num{font-weight:800;color:#1a365d;font-size:1em;text-align:center;vertical-align:middle}
+        tbody td.period{padding:4px 8px;vertical-align:middle;text-align:center;white-space:nowrap}
+        tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:0.9em;line-height:1.2}
+        tbody td.period .time-end{color:#718096;font-size:0.75em;line-height:1.2;margin-top:1px}
         tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
         tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
-        tbody td.class{font-weight:700;color:#1a365d;font-size:1.05em;white-space:nowrap;line-height:1.3;min-width:60px}
-        tbody td.subject{text-align:center;padding-left:14px;font-weight:600;font-size:1.05em;min-width:120px}
-        tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;line-height:1.3;min-width:60px}
-        .footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
-        .no-lessons-msg{text-align:center;padding:30px 0;color:#a0aec0;font-size:1.2em}
+        tbody td.class{font-weight:700;color:#1a365d;font-size:0.85em;white-space:nowrap;line-height:1.2;min-width:50px}
+        tbody td.subject{text-align:center;padding-left:10px;font-weight:600;font-size:0.85em;min-width:100px}
+        tbody td.room{font-weight:700;color:#e65100;font-size:0.85em;white-space:nowrap;line-height:1.2;min-width:50px}
         
-        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}.teacher-selector select{min-width:150px;font-size:.8em}}
-        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header{flex-wrap:nowrap;justify-content:space-between;gap:0;align-items:center}.header-center{font-size:.85em;flex:0 1 auto;order:2;padding:2px 0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}.header-left{min-width:auto;flex:0 1 auto;order:1;text-align:left;white-space:nowrap}.header-left .name{font-size:.8em}.header-left .subtitle{font-size:.6em}table{font-size:.9em;min-width:320px}thead th,td{padding:3px 4px;font-size:.8em}td.subject{padding-left:4px;text-align:center!important}td.num{font-size:.9em}td.class{font-size:.7em;white-space:normal;min-width:30px}td.room{font-size:.7em;white-space:normal;min-width:30px}tbody td.period .time-start{font-size:.8em}tbody td.period .time-end{font-size:.7em}.info{font-size:.6em;padding:4px 8px;border-radius:6px}.footer{font-size:.5em;gap:6px}.teacher-selector{padding:4px 8px;gap:5px}.teacher-selector select{min-width:120px;font-size:.7em;padding:4px 8px}.teacher-selector label{font-size:.75em}.teacher-selector .refresh-btn{font-size:.7em;padding:3px 8px}}
+        .footer{text-align:center;color:#a0aec0;font-size:0.65em;border-top:1px solid #e2e8f0;padding-top:6px;margin-top:6px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+        .no-lessons-msg{text-align:center;padding:20px 0;color:#a0aec0;font-size:1em}
+        
+        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:0.9em;min-width:450px}thead th,td{padding:4px 5px}}
+        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header{flex-wrap:nowrap;justify-content:space-between;gap:0;align-items:center}.header-center{font-size:0.7em;flex:0 1 auto;order:2;padding:2px 0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:35%}.header-left{min-width:auto;flex:0 1 auto;order:1;text-align:left;white-space:nowrap}.header-right{min-width:auto;flex:0 1 auto;order:3;text-align:right;white-space:nowrap}.header-left .name{font-size:0.7em}.header-left .subtitle{font-size:0.5em}.header-selector{padding:2px 6px;gap:4px}.header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}.header-selector label{font-size:0.55em}.header-selector .refresh-btn{font-size:0.5em;padding:1px 6px}table{font-size:0.7em;min-width:280px}thead th,td{padding:3px 3px;font-size:0.7em}td.subject{padding-left:3px;text-align:center!important}td.num{font-size:0.8em}td.class{font-size:0.65em;white-space:normal;min-width:25px}td.room{font-size:0.65em;white-space:normal;min-width:25px}tbody td.period .time-start{font-size:0.7em}tbody td.period .time-end{font-size:0.6em}.info{font-size:0.5em;padding:3px 6px;border-radius:6px}.footer{font-size:0.4em;gap:4px}#clockContainer svg{width:24px;height:24px}#clockContainer .clock-text .date{font-size:0.4em}#clockContainer .clock-text .day{font-size:0.35em}#clockContainer .clock-text .digital-time{font-size:0.55em}}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Шапка -->
+    <!-- Шапка с выбором учителя -->
     <div class="header">
         <div class="header-left">
             <span class="name" id="teacherName">📋 Загрузка...</span>
             <span class="subtitle" id="teacherSubtitle">Расписание на сегодня</span>
         </div>
+        
+        <!-- Выбор учителя в шапке -->
+        <div class="header-selector">
+            <label for="teacherSelect">👨‍🏫</label>
+            <select id="teacherSelect">
+                <option value="">Загрузка...</option>
+            </select>
+            <button class="refresh-btn" onclick="refreshData()">🔄</button>
+        </div>
+        
         <div class="header-center" id="changesText">📌 Изменения<br>на сегодня</div>
-    </div>
-
-    <!-- Выбор учителя -->
-    <div class="teacher-selector">
-        <label for="teacherSelect">👨‍🏫 Учитель:</label>
-        <select id="teacherSelect">
-            <option value="">Загрузка списка...</option>
-        </select>
-        <button class="refresh-btn" onclick="refreshData()">🔄 Обновить</button>
+        <div class="header-right">
+            <div id="clockContainer"></div>
+        </div>
     </div>
 
     <!-- Инфо -->
@@ -131,6 +181,9 @@
         <span class="gen-time" id="genTime">📅 загрузка...</span>
     </div>
 </div>
+
+<!-- clock.js -->
+<script src="/clock.js"></script>
 
 <script>
 (function() {
@@ -214,7 +267,6 @@
         const titleEl = document.getElementById('pageTitle');
         if (!titleEl) return;
         
-        // Сокращаем имя до фамилии и инициалов
         const nameParts = teacherName.split(' ');
         let shortName = teacherName;
         if (nameParts.length >= 2) {
@@ -240,7 +292,6 @@
             const data = await response.json();
             teachersList = data.teachers || [];
             
-            // Заполняем селект
             const select = document.getElementById('teacherSelect');
             select.innerHTML = '';
             
@@ -249,7 +300,6 @@
                 return;
             }
 
-            // Добавляем опции
             teachersList.forEach((teacher, index) => {
                 const option = document.createElement('option');
                 option.value = teacher.id || teacher.name || index;
@@ -263,11 +313,9 @@
                 select.appendChild(option);
             });
 
-            // Выбираем учителя из URL или первого
             let selectedTeacher = null;
             
             if (teacherParam) {
-                // Ищем по имени или ID
                 selectedTeacher = teachersList.find(t => 
                     t.name === teacherParam || 
                     t.id === teacherParam ||
@@ -278,13 +326,11 @@
                 }
             }
 
-            // Если не нашли - берем первого
             if (!selectedTeacher && teachersList.length > 0) {
                 select.value = teachersList[0].id || teachersList[0].name;
                 selectedTeacher = teachersList[0];
             }
 
-            // Загружаем расписание выбранного учителя
             if (selectedTeacher) {
                 currentTeacher = selectedTeacher;
                 await loadTeacherSchedule(selectedTeacher);
@@ -293,7 +339,7 @@
         } catch (error) {
             console.error('Ошибка загрузки списка учителей:', error);
             const select = document.getElementById('teacherSelect');
-            select.innerHTML = '<option value="">❌ Ошибка загрузки</option>';
+            select.innerHTML = '<option value="">❌ Ошибка</option>';
             showError('❌ Не удалось загрузить список учителей');
         }
     }
@@ -301,26 +347,21 @@
     // ===== ЗАГРУЗКА РАСПИСАНИЯ УЧИТЕЛЯ =====
     async function loadTeacherSchedule(teacher) {
         try {
-            // Определяем день
             const dayInfo = getScheduleDay();
             currentDay = dayParam && DAYS.includes(dayParam.toUpperCase()) 
                 ? dayParam.toUpperCase() 
                 : dayInfo.targetDay;
 
-            // Определяем файл расписания
             const scheduleFile = teacher.scheduleFile || 
                                 teacher.fileName?.replace('.html', '.json') || 
                                 `schedule_${teacher.id || 'default'}.json`;
 
-            // Загружаем расписание
             const response = await fetch(`/data/${scheduleFile}?_=${Date.now()}`);
             if (!response.ok) {
                 throw new Error(`Не удалось загрузить расписание: ${scheduleFile}`);
             }
             
             currentScheduleData = await response.json();
-
-            // Обновляем интерфейс
             updateUI(teacher, currentScheduleData, currentDay);
 
         } catch (error) {
@@ -331,12 +372,10 @@
 
     // ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
     function updateUI(teacher, scheduleData, day) {
-        // Имя учителя
         const nameParts = teacher.name.split(' ');
         const shortName = nameParts.slice(0, 2).join(' ');
         document.getElementById('teacherName').textContent = '📋 ' + shortName;
         
-        // День
         document.getElementById('teacherSubtitle').textContent = 
             `Расписание на ${DAYS_RU[DAYS.indexOf(day)]} (${day})`;
         
@@ -344,13 +383,9 @@
         document.getElementById('changesText').innerHTML = 
             `📌 Изменения<br>на ${dayPrep}`;
 
-        // Обновляем заголовок вкладки
         updatePageTitle(teacher.name, day);
-
-        // Рендерим расписание
         renderSchedule(scheduleData, day);
 
-        // Время обновления
         if (scheduleData.last_update) {
             document.getElementById('updateTime').textContent = 
                 '🔄 обновлено: ' + scheduleData.last_update;
@@ -370,7 +405,6 @@
             return;
         }
 
-        // Группируем уроки по номеру
         const grouped = {};
         lessons.forEach(lesson => {
             const num = lesson.lesson || lesson.num || 0;
@@ -391,10 +425,8 @@
             }
         });
 
-        // Определяем текущий урок
         const currentLessonNum = getCurrentLessonNum();
 
-        // Строим таблицу
         let html = `
             <table>
                 <thead>
@@ -468,7 +500,6 @@
             return;
         }
 
-        // Находим учителя в списке
         const teacher = teachersList.find(t => 
             (t.id && t.id === selectedValue) || 
             (t.name && t.name === selectedValue)
@@ -478,7 +509,6 @@
             currentTeacher = teacher;
             loadTeacherSchedule(teacher);
             
-            // Обновляем URL
             const url = new URL(window.location);
             url.searchParams.set('teacher', teacher.name);
             window.history.pushState({}, '', url);
@@ -502,21 +532,21 @@
             } else {
                 loadTeachersList();
             }
-        }, 240000); // 4 минуты
+        }, 240000);
     }
 
     // ===== ЗАПУСК =====
     document.addEventListener('DOMContentLoaded', function() {
-        // Загружаем список учителей
+        if (typeof initClock === 'function') {
+            initClock('clockContainer');
+        } else {
+            console.warn('clock.js не загружен');
+        }
+
         loadTeachersList();
-
-        // Обработчик смены учителя
         document.getElementById('teacherSelect').addEventListener('change', onTeacherChange);
-
-        // Автообновление
         startAutoRefresh();
 
-        // Обновление при возврате на страницу
         window.addEventListener('pageshow', function(e) {
             if (e.persisted) {
                 if (currentTeacher) {
