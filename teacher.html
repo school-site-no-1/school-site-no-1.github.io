@@ -132,26 +132,51 @@
         
         .table-wrap{overflow-x:auto}
         
-        /* ТАБЛИЦА - УЗКАЯ, ШРИФТ УВЕЛИЧЕН В 2 РАЗА */
+        /* ТАБЛИЦА - УЗКАЯ, ШРИФТ УВЕЛИЧЕН, ВЫСОТА СТРОКИ +10px, ПОДСВЕТКА */
         table{width:auto;border-collapse:collapse;font-size:1.4em;margin:0 auto}
         thead th{background:#2b6cb0;color:#fff;padding:4px 4px;text-align:center;font-weight:700;font-size:0.6em;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;border-bottom:2px solid #1a4f8b}
         tbody tr{border-bottom:1.5px solid #cbd5e0}
         tbody tr:last-child{border-bottom:none}
-        tbody tr.current{background:#bee3f8;font-weight:700}
-        tbody tr.current td{color:#1a365d}
-        tbody tr.current td.num{color:#1a4f8b;font-weight:800}
-        tbody td{padding:3px 4px;text-align:center;font-size:0.7em;vertical-align:middle}
+        
+        /* ПОДСВЕТКА ТЕКУЩЕГО УРОКА */
+        tbody tr.current {
+            background: #bee3f8 !important;
+            font-weight: 700;
+            border-left: 4px solid #2b6cb0;
+            border-right: 4px solid #2b6cb0;
+        }
+        tbody tr.current td {
+            color: #1a365d;
+        }
+        tbody tr.current td.num {
+            color: #1a4f8b;
+            font-weight: 800;
+        }
+        tbody tr.current td.period .time-start {
+            color: #1a4f8b;
+            font-weight: 800;
+        }
+        tbody tr.current td.period .time-end {
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+        
+        /* ВЫСОТА СТРОКИ +10px (было 3px 4px -> стало 13px 14px) */
+        tbody td {
+            padding: 13px 14px;
+            text-align: center;
+            font-size: 0.7em;
+            vertical-align: middle;
+        }
         
         /* Узкие столбцы */
         tbody td.num{font-weight:800;color:#1a365d;font-size:0.8em;text-align:center;vertical-align:middle;width:25px;min-width:20px;max-width:30px}
-        tbody td.period{padding:2px 4px;vertical-align:middle;text-align:center;white-space:nowrap;width:70px;min-width:55px;max-width:80px}
+        tbody td.period{padding:11px 12px;vertical-align:middle;text-align:center;white-space:nowrap;width:70px;min-width:55px;max-width:80px}
         tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:0.75em;line-height:1.1}
         tbody td.period .time-end{color:#718096;font-size:0.65em;line-height:1.1;margin-top:0px}
-        tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
-        tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
         tbody td.class{font-weight:700;color:#1a365d;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:50px;max-width:65px}
         /* Предмет - 250px */
-        tbody td.subject{text-align:center;padding-left:4px;font-weight:600;font-size:0.9em;min-width:200px;width:250px;max-width:280px}
+        tbody td.subject{text-align:center;padding-left:12px;font-weight:600;font-size:0.9em;min-width:200px;width:250px;max-width:280px}
         tbody td.room{font-weight:700;color:#e65100;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:45px;max-width:60px}
         
         .footer{text-align:center;color:#a0aec0;font-size:0.55em;border-top:1px solid #e2e8f0;padding-top:4px;margin-top:4px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
@@ -471,6 +496,7 @@
 
             if (!isEmpty) totalLessons++;
 
+            // Подсветка текущего урока
             const isCurrent = (i === currentLessonNum && !isEmpty);
             const rowClass = isCurrent ? ' class="current"' : '';
 
