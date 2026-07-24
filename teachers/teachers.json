@@ -1,0 +1,15 @@
+{
+  "teachers": [
+    {
+      "id": "mihalitsyn",
+      "name": "Михалицын Александр",
+      "scheduleFile": "mihalitsyn.json"
+    },
+    {
+      "id": "ivanova",
+      "name": "Иванова Мария Петровна",
+      "scheduleFile": "ivanova.json"
+    }
+  ],
+  "last_update": "2026-07-24 15:04:42"
+}
