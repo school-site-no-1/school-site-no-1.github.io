@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.18
+ * Версия: 1.0.19
  * Дата: 2026
  */
 
@@ -136,12 +136,9 @@ body {
     font-size: 0.9rem;
     display: flex;
     flex-direction: row;
-    /* Изменено с column на row для переноса */
     flex-wrap: wrap;
-    /* Разрешаем перенос */
     align-items: center;
     gap: 2px 6px;
-    /* Отступы между элементами */
     line-height: 1.2;
     text-align: left;
 }
@@ -196,9 +193,7 @@ body {
     min-height: 32px;
     width: 100%;
     order: -1;
-    /* Перемещаем выше всех элементов в .header-right */
     margin-bottom: 4px;
-    /* Отступ от блока даты обновления */
 }
 
 #clockContainer .clock-placeholder {
@@ -550,6 +545,254 @@ tbody tr.current-lesson .lesson-num {
    МЕДИА-ЗАПРОСЫ
    ============================================================ */
 
+/* ----- 72-дюймовые экраны и больше (ширина > 2560px) ----- */
+@media (min-width: 2561px) {
+    .container {
+        max-width: 100%;
+        padding: 20px 40px;
+        border-radius: 32px;
+    }
+
+    .header {
+        min-height: 80px;
+        padding-bottom: 12px;
+        gap: 12px;
+    }
+
+    .header-banner {
+        height: 80px;
+        max-height: 80px;
+        min-height: 80px;
+        max-width: 1600px;
+        min-width: 120px;
+        border-width: 2px;
+    }
+
+    .header-center {
+        min-width: 200px;
+        padding-left: 20px;
+        gap: 8px;
+    }
+
+    .header-center .day-indicator {
+        font-size: 2.2rem;
+        padding: 8px 28px;
+        border-radius: 32px;
+    }
+
+    .header-center .period {
+        font-size: 1.8rem;
+        gap: 6px 12px;
+    }
+
+    .header-center .period .line1 {
+        font-size: 1.8rem;
+    }
+
+    .header-center .period .line2 {
+        font-size: 1.6rem;
+    }
+
+    .header-right {
+        gap: 4px;
+    }
+
+    .header-right .schedule-updated {
+        font-size: 1.2rem;
+        padding: 4px 16px;
+        border-radius: 16px;
+    }
+
+    #clockContainer {
+        min-height: 64px;
+        margin-bottom: 8px;
+    }
+
+    thead th {
+        font-size: 1.4rem;
+        padding: 12px 8px;
+        border-bottom-width: 4px;
+    }
+
+    thead th:first-child {
+        min-width: 60px;
+    }
+
+    tbody td {
+        font-size: 1.3rem;
+        padding: 8px 6px;
+        border-bottom-width: 2px;
+    }
+
+    .lesson-num {
+        font-size: 1.3rem;
+    }
+
+    .subject {
+        font-size: 1.3rem;
+    }
+
+    .cabinet {
+        font-size: 1.2rem;
+        margin-top: 2px;
+    }
+
+    .footer {
+        font-size: 1.1rem;
+        padding-top: 8px;
+        margin-top: 8px;
+        border-top-width: 2px;
+    }
+
+    .mobile-view {
+        display: none !important;
+    }
+}
+
+/* ----- 32-дюймовые экраны (1920px - 2560px) ----- */
+@media (min-width: 1920px) and (max-width: 2560px) {
+    .container {
+        max-width: 100%;
+        padding: 16px 28px;
+        border-radius: 24px;
+    }
+
+    .header {
+        min-height: 60px;
+        padding-bottom: 8px;
+        gap: 8px;
+    }
+
+    .header-banner {
+        height: 56px;
+        max-height: 56px;
+        min-height: 56px;
+        max-width: 1200px;
+        min-width: 80px;
+        border-width: 2px;
+    }
+
+    .header-center {
+        min-width: 160px;
+        padding-left: 16px;
+        gap: 4px;
+    }
+
+    .header-center .day-indicator {
+        font-size: 1.6rem;
+        padding: 4px 20px;
+        border-radius: 24px;
+    }
+
+    .header-center .period {
+        font-size: 1.3rem;
+        gap: 4px 10px;
+    }
+
+    .header-center .period .line1 {
+        font-size: 1.3rem;
+    }
+
+    .header-center .period .line2 {
+        font-size: 1.2rem;
+    }
+
+    .header-right {
+        gap: 2px;
+    }
+
+    .header-right .schedule-updated {
+        font-size: 1rem;
+        padding: 2px 12px;
+        border-radius: 14px;
+    }
+
+    #clockContainer {
+        min-height: 48px;
+        margin-bottom: 6px;
+    }
+
+    thead th {
+        font-size: 1.1rem;
+        padding: 10px 6px;
+        border-bottom-width: 3px;
+    }
+
+    thead th:first-child {
+        min-width: 48px;
+    }
+
+    tbody td {
+        font-size: 1rem;
+        padding: 6px 4px;
+        border-bottom-width: 2px;
+    }
+
+    .lesson-num {
+        font-size: 1rem;
+    }
+
+    .subject {
+        font-size: 1rem;
+    }
+
+    .cabinet {
+        font-size: 0.95rem;
+        margin-top: 2px;
+    }
+
+    .footer {
+        font-size: 0.9rem;
+        padding-top: 6px;
+        margin-top: 6px;
+        border-top-width: 2px;
+    }
+
+    .mobile-view {
+        display: none !important;
+    }
+}
+
+/* ----- Стандартные десктопы (1025px - 1919px) ----- */
+@media (min-width: 1025px) and (max-width: 1919px) {
+    /* Стандартные размеры, которые уже заданы выше */
+    .container {
+        max-width: 1900px;
+        padding: 8px 12px;
+        border-radius: 16px;
+    }
+
+    .header-banner {
+        height: 40px;
+        max-height: 40px;
+        min-height: 40px;
+        max-width: 800px;
+        min-width: 60px;
+    }
+
+    .header-center .day-indicator {
+        font-size: 1rem;
+        padding: 1px 12px;
+        border-radius: 16px;
+    }
+
+    .header-center .period {
+        font-size: 0.9rem;
+    }
+
+    .header-right .schedule-updated {
+        font-size: 0.75rem;
+    }
+
+    #clockContainer {
+        min-height: 32px;
+    }
+
+    .footer {
+        font-size: 0.7rem;
+    }
+}
+
 /* ----- Планшеты и маленькие экраны (до 768px) ----- */
 @media (max-width: 768px) {
     .container {
@@ -565,12 +808,10 @@ tbody tr.current-lesson .lesson-num {
         flex-wrap: wrap;
     }
 
-    /* Баннер - НАВЕРХУ */
     .header-left {
         flex: 0 0 100%;
         justify-content: center;
         order: 1;
-        /* Баннер наверху */
     }
 
     .header-banner {
@@ -582,7 +823,6 @@ tbody tr.current-lesson .lesson-num {
         flex: 0 0 100%;
     }
 
-    /* Центральная часть (день недели + период) - второй */
     .header-center {
         order: 2;
         flex: 1;
@@ -617,10 +857,8 @@ tbody tr.current-lesson .lesson-num {
         font-size: 12.5px;
     }
 
-    /* Правая часть (часы + дата обновления) - на одном уровне с днем недели */
     .header-right {
         order: 2;
-        /* Такой же порядок как у header-center */
         text-align: right;
         align-items: flex-end;
         width: auto;
@@ -638,7 +876,6 @@ tbody tr.current-lesson .lesson-num {
         align-self: flex-end;
     }
 
-    /* ЧАСЫ - на одном уровне с днем недели */
     #clockContainer {
         order: 1;
         width: 100%;
