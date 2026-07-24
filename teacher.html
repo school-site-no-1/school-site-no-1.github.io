@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Расписание уроков</title>
+    <title id="pageTitle">Расписание уроков</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
@@ -209,6 +209,27 @@
         return 0;
     }
 
+    // ===== ОБНОВЛЕНИЕ TITLE =====
+    function updatePageTitle(teacherName, day) {
+        const titleEl = document.getElementById('pageTitle');
+        if (!titleEl) return;
+        
+        // Сокращаем имя до фамилии и инициалов
+        const nameParts = teacherName.split(' ');
+        let shortName = teacherName;
+        if (nameParts.length >= 2) {
+            const lastName = nameParts[0];
+            const firstName = nameParts[1] ? nameParts[1][0] + '.' : '';
+            const middleName = nameParts[2] ? nameParts[2][0] + '.' : '';
+            shortName = `${lastName} ${firstName}${middleName}`;
+        } else if (nameParts.length === 1) {
+            shortName = nameParts[0];
+        }
+        
+        const dayName = DAYS_RU[DAYS.indexOf(day)] || day;
+        titleEl.textContent = `${shortName} - ${dayName}`;
+    }
+
     // ===== ЗАГРУЗКА СПИСКА УЧИТЕЛЕЙ =====
     async function loadTeachersList() {
         try {
@@ -323,6 +344,9 @@
         document.getElementById('changesText').innerHTML = 
             `📌 Изменения<br>на ${dayPrep}`;
 
+        // Обновляем заголовок вкладки
+        updatePageTitle(teacher.name, day);
+
         // Рендерим расписание
         renderSchedule(scheduleData, day);
 
@@ -428,6 +452,7 @@
         document.getElementById('scheduleTable').innerHTML = 
             `<div class="no-lessons-msg">${message}</div>`;
         document.getElementById('teacherName').textContent = '📋 Ошибка';
+        document.getElementById('pageTitle').textContent = 'Ошибка - Расписание';
     }
 
     // ===== ОБРАБОТЧИК СМЕНЫ УЧИТЕЛЯ =====
@@ -439,6 +464,7 @@
             document.getElementById('scheduleTable').innerHTML = 
                 '<div class="no-lessons-msg">👨‍🏫 Выберите учителя</div>';
             document.getElementById('teacherName').textContent = '📋 Выберите учителя';
+            document.getElementById('pageTitle').textContent = 'Выбор учителя - Расписание';
             return;
         }
 
