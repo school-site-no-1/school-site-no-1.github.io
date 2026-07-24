@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задачи с боковыми закладками</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: #e8edf4;
+            min-height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 2.5rem;
+            padding: 1.8rem 1.8rem 1.8rem 1.2rem;
+            box-shadow: 0 20px 40px -12px rgba(0,20,30,0.15);
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex;
+            gap: 1rem;
+            min-height: 550px;
+        }
+
+        /* Левая панель - закладки */
+        .bookmarks-panel {
+            width: 200px;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            padding-right: 0.5rem;
+            border-right: 2px solid rgba(180, 200, 220, 0.3);
+            position: relative;
+        }
+        .bookmark-item {
+            padding: 0.7rem 1rem 0.7rem 1.2rem;
+            border: none;
+            background: rgba(255,255,255,0.4);
+            border-radius: 0 1.2rem 1.2rem 0;
+            font-weight: 500;
+            color: #3f5a72;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            text-align: left;
+            border-left: 4px solid transparent;
+            position: relative;
+        }
+        .bookmark-item:hover {
+            background: rgba(255,255,255,0.7);
+        }
+        .bookmark-item.active {
+            background: white;
+            border-left-color: #1e2f3f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            color: #1a2a3a;
+        }
+        .bookmark-item .bm-count {
+            margin-left: auto;
+            background: #d0dceb;
+            color: #1a2a3a;
+            border-radius: 2rem;
+            padding: 0 0.6rem;
+            font-size: 0.7rem;
+            line-height: 1.4rem;
+            white-space: nowrap;
+        }
+        .bookmark-item .bm-count.done {
+            background: #2a7a5a;
+            color: white;
+        }
+        .bookmark-item .bm-actions {
+            display: none;
+            gap: 0.2rem;
+            margin-left: 0.3rem;
+        }
+        .bookmark-item:hover .bm-actions {
+            display: flex;
+        }
+        .bookmark-item .bm-actions button {
+            background: transparent;
+            border: none;
+            padding: 0.1rem 0.3rem;
+            border-radius: 1rem;
+            color: #3f5a72;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.1s;
+        }
+        .bookmark-item .bm-actions button:hover {
+            background: #dce8f2;
+        }
+        .bookmark-item .bm-actions .del-bm {
+            color: #a05353;
+        }
+        .bookmark-item .bm-actions .del-bm:hover {
+            background: #f5e0e0;
+        }
+        .bookmark-add {
+            margin-top: auto;
+            padding: 0.6rem 1rem;
+            border: 2px dashed #b0c8dd;
+            background: transparent;
+            border-radius: 1.2rem;
+            color: #3f5a72;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            justify-content: center;
+        }
+        .bookmark-add:hover {
+            background: rgba(200, 215, 235, 0.25);
+            border-color: #8ba8c2;
+        }
+
+        /* Правая панель - задачи */
+        .content-panel {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .panel-header h2 {
+            font-weight: 600;
+            color: #1a2634;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .panel-header h2 .task-count {
+            font-weight: 400;
+            font-size: 0.85rem;
+            background: #dfe8f2;
+            padding: 0 0.9rem;
+            border-radius: 2rem;
+            color: #1f3a4f;
+        }
+        .add-main-btn {
+            padding: 0.6rem 1.6rem;
+            border: none;
+            border-radius: 2.5rem;
+            background: #1e2f3f;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(20, 40, 60, 0.15);
+        }
+        .add-main-btn:hover {
+            background: #2c4055;
+            transform: scale(1.02);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-height: 200px;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.6rem 0.8rem 0.6rem 1.2rem;
+            background: rgba(255,255,255,0.6);
+            border-radius: 2.5rem;
+            border: 1px solid rgba(200, 215, 230, 0.3);
+            transition: 0.1s;
+            flex-wrap: wrap;
+        }
+        .task-item:hover {
+            background: rgba(255,255,255,0.85);
+        }
+        .task-check {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            border: 2px solid #b0c8dd;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            color: white;
+            transition: 0.1s;
+        }
+        .task-check.completed {
+            background: #1d7a4f;
+            border-color: #1d7a4f;
+        }
+        .task-text {
+            flex: 1 1 150px;
+            font-size: 0.98rem;
+            color: #1e2a36;
+            word-break: break-word;
+        }
+        .task-text.done {
+            text-decoration: line-through;
+            color: #7a8fa5;
+            opacity: 0.7;
+        }
+        .task-actions {
+            display: flex;
+            gap: 0.2rem;
+        }
+        .task-actions button {
+            background: transparent;
+            border: none;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1.5rem;
+            color: #3f5a72;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.1s;
+        }
+        .task-actions button:hover {
+            background: #dce8f2;
+        }
+        .task-actions .del-task {
+            color: #a05353;
+        }
+        .task-actions .del-task:hover {
+            background: #f5e0e0;
+        }
+        .empty-tasks {
+            color: #7a93ab;
+            padding: 2.5rem 0;
+            text-align: center;
+            font-style: italic;
+        }
+        .empty-tasks i {
+            display: block;
+            font-size: 2rem;
+            opacity: 0.3;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Модальное окно */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1.5rem;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2rem 2.2rem;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0,20,30,0.3);
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal h2 {
+            font-weight: 600;
+            color: #1a2634;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .modal label {
+            font-weight: 500;
+            color: #2c4055;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .modal input, .modal textarea, .modal select {
+            width: 100%;
+            padding: 0.7rem 1.2rem;
+            border: 1px solid #d5dfe8;
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+            transition: 0.15s;
+            background: white;
+        }
+        .modal input:focus, .modal textarea:focus, .modal select:focus {
+            outline: none;
+            border-color: #6d8aab;
+            box-shadow: 0 0 0 3px rgba(60, 100, 140, 0.08);
+        }
+        .modal textarea {
+            resize: vertical;
+            min-height: 70px;
+            border-radius: 1.2rem;
+        }
+        .modal .modal-row {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            margin: 0.3rem 0 0.8rem;
+        }
+        .modal .modal-row input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .modal .modal-row button {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 2rem;
+            background: #eaf1f9;
+            color: #1a2c3f;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.1s;
+        }
+        .modal .modal-row button:hover {
+            background: #d4e2f0;
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            margin-top: 1.2rem;
+        }
+        .modal .modal-actions button {
+            padding: 0.6rem 1.8rem;
+            border: none;
+            border-radius: 2.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .modal .btn-primary {
+            background: #1e2f3f;
+            color: white;
+        }
+        .modal .btn-primary:hover {
+            background: #2c4055;
+        }
+        .modal .btn-secondary {
+            background: #eaf1f9;
+            color: #1a2c3f;
+        }
+        .modal .btn-secondary:hover {
+            background: #d4e2f0;
+        }
+
+        /* JSON операции */
+        .json-bar {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #dde6ef;
+        }
+        .json-bar button {
+            padding: 0.3rem 1.2rem;
+            border: none;
+            border-radius: 2.5rem;
+            background: #eaf1f9;
+            color: #1a2c3f;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .json-bar button:hover {
+            background: #d4e2f0;
+        }
+        .json-bar .save-btn {
+            background: #1e2f3f;
+            color: white;
+        }
+        .json-bar .save-btn:hover {
+            background: #2c4055;
+        }
+        #fileInput { display: none; }
+
+        @media (max-width: 700px) {
+            .app { flex-direction: column; padding: 1rem; }
+            .bookmarks-panel {
+                width: 100%;
+                min-width: unset;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 2px solid rgba(180, 200, 220, 0.3);
+                padding-bottom: 0.5rem;
+                gap: 0.3rem;
+            }
+            .bookmark-item {
+                border-radius: 1.2rem;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                padding: 0.4rem 0.8rem;
+            }
+            .bookmark-item.active {
+                border-left: none;
+                border-bottom-color: #1e2f3f;
+            }
+            .bookmark-item .bm-actions {
+                display: flex;
+            }
+            .bookmark-add {
+                margin-top: 0;
+            }
+        }
+        @media (max-width: 500px) {
+            .app { padding: 0.8rem; }
+            .modal { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- Левая панель: закладки -->
+    <div class="bookmarks-panel" id="bookmarksPanel">
+        <!-- сюда рендерятся закладки -->
+        <button class="bookmark-add" id="addBookmarkBtn"><i class="fas fa-plus"></i> Добавить раздел</button>
+    </div>
+
+    <!-- Правая панель: задачи -->
+    <div class="content-panel">
+        <div class="panel-header">
+            <h2 id="sectionTitle">
+                <i class="fas fa-folder-open"></i>
+                <span id="sectionName">Раздел</span>
+                <span class="task-count" id="taskCounter">0</span>
+            </h2>
+            <button class="add-main-btn" id="addMainBtn"><i class="fas fa-plus-circle"></i> Добавить задачу</button>
+        </div>
+
+        <div class="task-list" id="taskList">
+            <!-- сюда рендерятся задачи -->
+        </div>
+
+        <!-- JSON операции -->
+        <div class="json-bar">
+            <button id="exportJsonBtn"><i class="fas fa-download"></i> Экспорт JSON</button>
+            <button id="importJsonBtn"><i class="fas fa-upload"></i> Импорт JSON</button>
+            <button id="saveStorageBtn" class="save-btn"><i class="fas fa-save"></i> Сохранить</button>
+            <button id="resetDemoBtn"><i class="fas fa-rotate-left"></i> Демо</button>
+            <input type="file" id="fileInput" accept=".json">
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 id="modalTitle"><i class="fas fa-plus-circle"></i> Новая задача</h2>
+
+        <label for="modalTaskText">Текст задачи</label>
+        <textarea id="modalTaskText" rows="2" placeholder="Введите описание задачи..."></textarea>
+
+        <label for="modalSectionSelect">Раздел</label>
+        <div class="modal-row">
+            <select id="modalSectionSelect"></select>
+            <button id="modalNewSectionBtn"><i class="fas fa-plus"></i> Новый</button>
+        </div>
+
+        <div id="modalNewSectionRow" style="display:none; margin-bottom:0.8rem;">
+            <input type="text" id="modalNewSectionInput" placeholder="Название нового раздела..." maxlength="40">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" id="modalCancelBtn">Отмена</button>
+            <button class="btn-primary" id="modalSaveBtn">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ----- Модель данных -----
+        let sections = [];
+        let activeSectionId = null;
+        let modalMode = 'add'; // 'add' | 'edit'
+        let modalTaskId = null;
+
+        // DOM
+        const bookmarksPanel = document.getElementById('bookmarksPanel');
+        const taskListEl = document.getElementById('taskList');
+        const sectionNameSpan = document.getElementById('sectionName');
+        const taskCounterSpan = document.getElementById('taskCounter');
+        const addMainBtn = document.getElementById('addMainBtn');
+        const addBookmarkBtn = document.getElementById('addBookmarkBtn');
+
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalTaskText = document.getElementById('modalTaskText');
+        const modalSectionSelect = document.getElementById('modalSectionSelect');
+        const modalNewSectionBtn = document.getElementById('modalNewSectionBtn');
+        const modalNewSectionRow = document.getElementById('modalNewSectionRow');
+        const modalNewSectionInput = document.getElementById('modalNewSectionInput');
+        const modalSaveBtn = document.getElementById('modalSaveBtn');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+
+        const exportBtn = document.getElementById('exportJsonBtn');
+        const importBtn = document.getElementById('importJsonBtn');
+        const saveStorageBtn = document.getElementById('saveStorageBtn');
+        const resetDemoBtn = document.getElementById('resetDemoBtn');
+        const fileInput = document.getElementById('fileInput');
+
+        // ---- Вспомогательные ----
+        function generateId() { return Date.now() + Math.floor(Math.random() * 10000); }
+
+        // ---- Загрузка / сохранение ----
+        function loadFromStorage() {
+            const stored = localStorage.getItem('bookmarkTasksData');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.every(s => s && typeof s === 'object' && 'id' in s && 'title' in s && 'tasks' in s && Array.isArray(s.tasks))) {
+                        sections = parsed;
+                        return true;
+                    }
+                } catch(e) {}
+            }
+            return false;
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('bookmarkTasksData', JSON.stringify(sections));
+        }
+
+        // ---- Рендеринг ----
+        function render() {
+            // Если нет разделов, создаём дефолтный
+            if (sections.length === 0) {
+                sections.push({ id: generateId(), title: 'Основные', tasks: [] });
+                saveToStorage();
+            }
+
+            // Активный раздел
+            if (!activeSectionId || !sections.some(s => s.id === activeSectionId)) {
+                activeSectionId = sections[0].id;
+            }
+
+            const activeSection = sections.find(s => s.id === activeSectionId);
+
+            // ---- Рендер закладок ----
+            const addBtn = document.getElementById('addBookmarkBtn');
+            let bmHtml = '';
+            for (const sec of sections) {
+                const isActive = sec.id === activeSectionId;
+                const total = sec.tasks.length;
+                const done = sec.tasks.filter(t => t.completed).length;
+                bmHtml += `
+                    <button class="bookmark-item ${isActive ? 'active' : ''}" data-section-id="${sec.id}" data-action="switchSection">
+                        <i class="fas fa-bookmark"></i>
+                        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(sec.title)}</span>
+                        <span class="bm-count">${total}</span>
+                        ${done > 0 ? `<span class="bm-count done">${done}✓</span>` : ''}
+                        <span class="bm-actions">
+                            <button data-action="renameSection" data-id="${sec.id}" title="Переименовать"><i class="fas fa-pen"></i></button>
+                            <button data-action="deleteSection" data-id="${sec.id}" title="Удалить раздел" class="del-bm"><i class="fas fa-trash"></i></button>
+                        </span>
+                    </button>
+                `;
+            }
+            bookmarksPanel.innerHTML = bmHtml;
+            bookmarksPanel.appendChild(addBtn);
+
+            // ---- Рендер задач ----
+            if (!activeSection) {
+                taskListEl.innerHTML = `<div class="empty-tasks">Раздел не найден</div>`;
+                sectionNameSpan.textContent = '—';
+                taskCounterSpan.textContent = '0';
+                return;
+            }
+
+            sectionNameSpan.textContent = activeSection.title;
+            taskCounterSpan.textContent = activeSection.tasks.length;
+
+            if (activeSection.tasks.length === 0) {
+                taskListEl.innerHTML = `<div class="empty-tasks"><i class="fas fa-inbox"></i>Нет задач в этом разделе</div>`;
+                return;
+            }
+
+            let tasksHtml = '';
+            for (const task of activeSection.tasks) {
+                const checkedClass = task.completed ? 'completed' : '';
+                const textClass = task.completed ? 'done' : '';
+                const icon = task.completed ? 'fa-check' : 'fa-circle';
+                tasksHtml += `
+                    <div class="task-item" data-task-id="${task.id}">
+                        <div class="task-check ${checkedClass}" data-action="toggleTask" data-task-id="${task.id}">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <span class="task-text ${textClass}">${escapeHtml(task.text)}</span>
+                        <div class="task-actions">
+                            <button data-action="editTaskModal" data-task-id="${task.id}" title="Редактировать"><i class="fas fa-pen"></i></button>
+                            <button class="del-task" data-action="deleteTask" data-task-id="${task.id}" title="Удалить"><i class="fas fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            }
+            taskListEl.innerHTML = tasksHtml;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ---- Операции с разделами ----
+        function addSection(title) {
+            const trimmed = title.trim();
+            if (!trimmed) { alert('Введите название раздела'); return false; }
+            if (sections.some(s => s.title.toLowerCase() === trimmed.toLowerCase())) {
+                alert('Раздел с таким названием уже есть');
+                return false;
+            }
+            const newSec = { id: generateId(), title: trimmed, tasks: [] };
+            sections.push(newSec);
+            activeSectionId = newSec.id;
+            saveToStorage();
+            render();
+            return true;
+        }
+
+        function deleteSection(id) {
+            if (sections.length <= 1) {
+                alert('Нельзя удалить единственный раздел');
+                return;
+            }
+            if (!confirm(`Удалить раздел и все задачи?`)) return;
+            sections = sections.filter(s => s.id !== id);
+            if (activeSectionId === id) {
+                activeSectionId = sections[0].id;
+            }
+            saveToStorage();
+            render();
+        }
+
+        function renameSection(id) {
+            const sec = sections.find(s => s.id === id);
+            if (!sec) return;
+            const newTitle = prompt('Новое название раздела:', sec.title);
+            if (newTitle === null) return;
+            const trimmed = newTitle.trim();
+            if (!trimmed) { alert('Название не может быть пустым'); return; }
+            if (sections.some(s => s.id !== id && s.title.toLowerCase() === trimmed.toLowerCase())) {
+                alert('Раздел с таким названием уже есть');
+                return;
+            }
+            sec.title = trimmed;
+            saveToStorage();
+            render();
+        }
+
+        function switchSection(id) {
+            if (sections.some(s => s.id === id)) {
+                activeSectionId = id;
+                render();
+            }
+        }
+
+        function getActiveSection() {
+            return sections.find(s => s.id === activeSectionId);
+        }
+
+        // ---- Операции с задачами ----
+        function addTaskToSection(sectionId, text) {
+            const trimmed = text.trim();
+            if (!trimmed) { alert('Введите текст задачи'); return false; }
+            const sec = sections.find(s => s.id === sectionId);
+            if (!sec) return false;
+            sec.tasks.push({ id: generateId(), text: trimmed, completed: false });
+            saveToStorage();
+            render();
+            return true;
+        }
+
+        function toggleTask(taskId) {
+            const sec = getActiveSection();
+            if (!sec) return;
+            const task = sec.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                saveToStorage();
+                render();
+            }
+        }
+
+        function deleteTask(taskId) {
+            if (!confirm('Удалить задачу?')) return;
+            const sec = getActiveSection();
+            if (!sec) return;
+            sec.tasks = sec.tasks.filter(t => t.id !== taskId);
+            saveToStorage();
+            render();
+        }
+
+        function editTaskInSection(sectionId, taskId, newText) {
+            const trimmed = newText.trim();
+            if (!trimmed) { alert('Введите текст задачи'); return false; }
+            const sec = sections.find(s => s.id === sectionId);
+            if (!sec) return false;
+            const task = sec.tasks.find(t => t.id === taskId);
+            if (!task) return false;
+            task.text = trimmed;
+            saveToStorage();
+            render();
+            return true;
+        }
+
+        // ---- Модальное окно ----
+        function openModal(mode, sectionId, taskId) {
+            modalMode = mode;
+            modalTaskId = taskId || null;
+
+            // Заполняем select разделами
+            modalSectionSelect.innerHTML = '';
+            for (const sec of sections) {
+                const opt = document.createElement('option');
+                opt.value = sec.id;
+                opt.textContent = sec.title;
+                modalSectionSelect.appendChild(opt);
+            }
+            // Выбираем нужный раздел
+            const targetSectionId = sectionId || activeSectionId;
+            if (sections.some(s => s.id === targetSectionId)) {
+                modalSectionSelect.value = targetSectionId;
+            }
+
+            if (mode === 'add') {
+                modalTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Новая задача';
+                modalTaskText.value = '';
+                modalNewSectionRow.style.display = 'none';
+                modalNewSectionInput.value = '';
+            } else if (mode === 'edit' && taskId) {
+                const sec = sections.find(s => s.id === sectionId);
+                if (!sec) return;
+                const task = sec.tasks.find(t => t.id === taskId);
+                if (!task) return;
+                modalTitle.innerHTML = '<i class="fas fa-pen"></i> Редактировать задачу';
+                modalTaskText.value = task.text;
+                modalNewSectionRow.style.display = 'none';
+                modalNewSectionInput.value = '';
+            } else {
+                return;
+            }
+
+            modalOverlay.classList.add('active');
+            modalTaskText.focus();
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            modalTaskText.value = '';
+            modalNewSectionInput.value = '';
+            modalNewSectionRow.style.display = 'none';
+            modalTaskId = null;
+        }
+
+        function saveModalTask() {
+            const text = modalTaskText.value.trim();
+            if (!text) { alert('Введите текст задачи'); return; }
+
+            let sectionId = Number(modalSectionSelect.value);
+            // Проверяем, есть ли новый раздел
+            const newSectionTitle = modalNewSectionInput.value.trim();
+            if (newSectionTitle) {
+                // Создаём новый раздел
+                if (sections.some(s => s.title.toLowerCase() === newSectionTitle.toLowerCase())) {
+                    alert('Раздел с таким названием уже существует');
+                    return;
+                }
+                const newSec = { id: generateId(), title: newSectionTitle, tasks: [] };
+                sections.push(newSec);
+                sectionId = newSec.id;
+                // Обновляем select
+                const opt = document.createElement('option');
+                opt.value = newSec.id;
+                opt.textContent = newSec.title;
+                modalSectionSelect.appendChild(opt);
+                modalSectionSelect.value = newSec.id;
+                modalNewSectionInput.value = '';
+                modalNewSectionRow.style.display = 'none';
+                saveToStorage();
+            }
+
+            if (modalMode === 'add') {
+                addTaskToSection(sectionId, text);
+            } else if (modalMode === 'edit' && modalTaskId) {
+                editTaskInSection(sectionId, modalTaskId, text);
+            }
+            closeModal();
+            // Обновляем активный раздел, если задача добавлена в другой
+            if (sectionId !== activeSectionId) {
+                activeSectionId = sectionId;
+            }
+            render();
+        }
+
+        // ---- Демо данные ----
+        function setDemoData() {
+            sections = [
+                { id: generateId(), title: 'Работа', tasks: [
+                    { id: generateId(), text: 'Завершить отчёт по проекту', completed: false },
+                    { id: generateId(), text: 'Созвон с командой в 15:00', completed: true },
+                    { id: generateId(), text: 'Написать письмо клиенту', completed: false },
+                ]},
+                { id: generateId(), title: 'Личное', tasks: [
+                    { id: generateId(), text: 'Купить продукты на неделю', completed: false },
+                    { id: generateId(), text: 'Позвонить родителям', completed: false },
+                ]},
+                { id: generateId(), title: 'Обучение', tasks: [
+                    { id: generateId(), text: 'Прочитать главу 5', completed: true },
+                    { id: generateId(), text: 'Сделать упражнения', completed: false },
+                ]}
+            ];
+            activeSectionId = sections[0].id;
+            saveToStorage();
+            render();
+        }
+
+        // ---- Импорт / Экспорт ----
+        function exportJSON() {
+            const data = JSON.stringify(sections, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bookmarks_tasks_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importJSON(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data) && data.every(s => s && typeof s === 'object' && 'id' in s && 'title' in s && 'tasks' in s && Array.isArray(s.tasks))) {
+                        sections = data;
+                        if (sections.length > 0) activeSectionId = sections[0].id;
+                        saveToStorage();
+                        render();
+                        alert('Импорт выполнен!');
+                    } else {
+                        alert('Неверный формат JSON.');
+                    }
+                } catch(err) {
+                    alert('Ошибка чтения файла: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ---- Обработка событий (делегирование) ----
+        function handleClick(e) {
+            const target = e.target.closest('[data-action]');
+            if (target) {
+                const action = target.dataset.action;
+                const id = Number(target.dataset.id);
+                const taskId = Number(target.dataset.taskId);
+                const sectionId = Number(target.dataset.sectionId);
+
+                switch(action) {
+                    case 'switchSection': if (sectionId) switchSection(sectionId); break;
+                    case 'deleteSection': if (id) deleteSection(id); break;
+                    case 'renameSection': if (id) renameSection(id); break;
+                    case 'toggleTask': if (taskId) toggleTask(taskId); break;
+                    case 'deleteTask': if (taskId) deleteTask(taskId); break;
+                    case 'editTaskModal': if (taskId) openModal('edit', activeSectionId, taskId); break;
+                    default: break;
+                }
+                return;
+            }
+
+            // Кнопка "Добавить раздел" в боковой панели
+            if (e.target.closest('#addBookmarkBtn')) {
+                const title = prompt('Название нового раздела:');
+                if (title !== null) addSection(title);
+                return;
+            }
+        }
+
+        // ---- Инициализация ----
+        function init() {
+            if (!loadFromStorage()) {
+                setDemoData();
+            } else {
+                if (sections.length > 0) activeSectionId = sections[0].id;
+                render();
+            }
+
+            // Главная кнопка "Добавить задачу"
+            addMainBtn.addEventListener('click', function() {
+                openModal('add', activeSectionId, null);
+            });
+
+            // Кнопка "Новый" в модалке (для создания раздела)
+            modalNewSectionBtn.addEventListener('click', function() {
+                if (modalNewSectionRow.style.display === 'none') {
+                    modalNewSectionRow.style.display = 'block';
+                    modalNewSectionInput.focus();
+                } else {
+                    // Если поле видимо, пытаемся создать раздел
+                    const title = modalNewSectionInput.value.trim();
+                    if (title) {
+                        if (sections.some(s => s.title.toLowerCase() === title.toLowerCase())) {
+                            alert('Раздел с таким названием уже существует');
+                            return;
+                        }
+                        const newSec = { id: generateId(), title: title, tasks: [] };
+                        sections.push(newSec);
+                        saveToStorage();
+                        // Добавляем в select
+                        const opt = document.createElement('option');
+                        opt.value = newSec.id;
+                        opt.textContent = newSec.title;
+                        modalSectionSelect.appendChild(opt);
+                        modalSectionSelect.value = newSec.id;
+                        modalNewSectionInput.value = '';
+                        modalNewSectionRow.style.display = 'none';
+                        render();
+                    } else {
+                        alert('Введите название раздела');
+                    }
+                }
+            });
+
+            // Модалка: закрытие
+            modalCancelBtn.addEventListener('click', closeModal);
+            modalSaveBtn.addEventListener('click', saveModalTask);
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+                if (e.key === 'Enter' && modalOverlay.classList.contains('active') && e.target === modalTaskText) {
+                    saveModalTask();
+                }
+                if (e.key === 'Enter' && modalNewSectionRow.style.display !== 'none' && e.target === modalNewSectionInput) {
+                    modalNewSectionBtn.click();
+                }
+            });
+
+            // JSON операции
+            exportBtn.addEventListener('click', exportJSON);
+            importBtn.addEventListener('click', function() { fileInput.click(); });
+            fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    importJSON(this.files[0]);
+                    this.value = '';
+                }
+            });
+            saveStorageBtn.addEventListener('click', function() {
+                saveToStorage();
+                alert('Данные сохранены в localStorage!');
+            });
+            resetDemoBtn.addEventListener('click', function() {
+                if (confirm('Сбросить на демо-данные?')) setDemoData();
+            });
+
+            // Глобальный клик
+            document.addEventListener('click', handleClick);
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
