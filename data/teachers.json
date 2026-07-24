@@ -9,6 +9,11 @@
       "id": "ivanova",
       "name": "Иванова Мария Петровна",
       "scheduleFile": "ivanova.json"
+    },
+    {
+      "id": "petrov",
+      "name": "Петров Сергей Иванович",
+      "scheduleFile": "petrov.json"
     }
   ],
   "last_update": "2026-07-24 15:04:42"
