@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Расписание уроков</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
+        .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+        .header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2b6cb0;padding-bottom:8px;margin-bottom:8px;flex-wrap:wrap}
+        .header-center{text-align:center;flex:1;font-size:1.25em;font-weight:700;color:#c53030;letter-spacing:.5px;text-transform:lowercase;padding:2px 0;line-height:1.3}
+        .header-left{display:flex;flex-direction:column;min-width:100px}
+        .header-left .name{font-size:1.15em;font-weight:700;color:#1a365d}
+        .header-left .subtitle{font-size:.85em;color:#718096}
+        .header-right{text-align:right;font-size:1.6em;color:#4a5568;line-height:1.3;min-width:100px}
+        .header-right #clockContainer{display:flex;justify-content:flex-end;align-items:center;min-height:50px}
+        .info{display:flex;justify-content:space-between;font-size:1.2em;color:#718096;padding:4px 10px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:6px;border-radius:8px;flex-wrap:wrap;gap:4px}
+        .info .count{color:#2b6cb0;font-weight:600}
+        .info .update{color:#a0aec0;font-size:.85em}
+        .table-wrap{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;font-size:1.4em;min-width:650px}
+        thead th{background:#2b6cb0;color:#fff;padding:10px 12px;text-align:center;font-weight:700;font-size:.85em;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border-bottom:3px solid #1a4f8b}
+        tbody tr{border-bottom:3px solid #cbd5e0}
+        tbody tr:last-child{border-bottom:none}
+        tbody tr.current{background:#bee3f8;font-weight:700}
+        tbody tr.current td{color:#1a365d}
+        tbody tr.current td.num{color:#1a4f8b;font-weight:800}
+        tbody td{padding:8px 10px;text-align:center;font-size:.95em;vertical-align:middle}
+        tbody td.num{font-weight:800;color:#1a365d;font-size:1.2em;text-align:center;vertical-align:middle}
+        tbody td.period{padding:6px 10px;vertical-align:middle;text-align:center;white-space:nowrap}
+        tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:1.1em;line-height:1.3}
+        tbody td.period .time-end{color:#718096;font-size:.9em;line-height:1.3;margin-top:2px}
+        tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
+        tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
+        tbody td.class{font-weight:700;color:#1a365d;font-size:1.05em;white-space:nowrap;line-height:1.3;min-width:60px}
+        tbody td.subject{text-align:center;padding-left:14px;font-weight:600;font-size:1.05em;min-width:120px}
+        tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;line-height:1.3;min-width:60px}
+        .footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+        .no-lessons-msg{text-align:center;padding:30px 0;color:#a0aec0;font-size:1.2em}
+        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-right{font-size:1.2em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
+        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header{flex-wrap:nowrap;justify-content:space-between;gap:0;align-items:center}.header-center{font-size:.85em;flex:0 1 auto;order:2;padding:2px 0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}.header-left{min-width:auto;flex:0 1 auto;order:1;text-align:left;white-space:nowrap}.header-right{min-width:auto;flex:0 1 auto;order:3;text-align:right;white-space:nowrap}.header-left .name{font-size:.8em}.header-left .subtitle{font-size:.6em}.header-right{font-size:.8em}.header-right #clockContainer{min-height:30px}table{font-size:.9em;min-width:320px}thead th,td{padding:3px 4px;font-size:.8em}td.subject{padding-left:4px;text-align:center!important}td.num{font-size:.9em}td.class{font-size:.7em;white-space:normal;min-width:30px}td.room{font-size:.7em;white-space:normal;min-width:30px}tbody td.period .time-start{font-size:.8em}tbody td.period .time-end{font-size:.7em}.info{font-size:.6em;padding:4px 8px;border-radius:6px}.footer{font-size:.5em;gap:6px}}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Шапка -->
+    <div class="header">
+        <div class="header-left">
+            <span class="name" id="teacherName">📋 Загрузка...</span>
+            <span class="subtitle" id="teacherSubtitle">Расписание на сегодня</span>
+        </div>
+        <div class="header-center" id="changesText">📌 Изменения<br>на сегодня</div>
+        <div class="header-right">
+            <div id="clockContainer"></div>
+        </div>
+    </div>
+
+    <!-- Инфо -->
+    <div class="info">
+        <span class="count" id="lessonCount">📚 0 уроков</span>
+        <span class="update" id="updateTime">🔄 обновлено: загрузка...</span>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-wrap">
+        <div id="scheduleTable">
+            <div class="no-lessons-msg">⏳ Загрузка расписания...</div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <div class="footer">
+        <span class="version">🏷️ v6.0.0</span>
+        <span class="gen-time" id="genTime">📅 загрузка...</span>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ===== КОНСТАНТЫ =====
+    const DAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+    const DAYS_RU = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+    const DAYS_PREP = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу'];
+    const LESSON_PERIODS = [
+        {start:'08:30',end:'09:10'},{start:'09:20',end:'10:00'},
+        {start:'10:10',end:'10:50'},{start:'11:05',end:'11:45'},
+        {start:'12:00',end:'12:40'},{start:'12:55',end:'13:35'},
+        {start:'13:45',end:'14:25'},{start:'14:35',end:'15:15'},
+        {start:'15:25',end:'16:05'}
+    ];
+
+    // ===== ПАРАМЕТРЫ URL =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherId = urlParams.get('teacher') || urlParams.get('id') || '';
+    const dayParam = urlParams.get('day') || urlParams.get('d') || '';
+
+    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+    function getLessonWord(num) {
+        const lastDigit = num % 10;
+        const lastTwoDigits = num % 100;
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) return 'уроков';
+        if (lastDigit === 1) return 'урок';
+        if (lastDigit >= 2 && lastDigit <= 4) return 'урока';
+        return 'уроков';
+    }
+
+    function parseTime(str) {
+        if (!str) return 0;
+        const parts = str.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+
+    function getScheduleDay() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        const threshold = 16 * 60 + 40;
+
+        const targetDate = new Date(now);
+        if (totalMin >= threshold) {
+            targetDate.setDate(targetDate.getDate() + 1);
+        }
+
+        let dayNum = targetDate.getDay();
+        if (dayNum === 0) dayNum = 7;
+        
+        return {
+            targetDay: DAYS[dayNum - 1] || 'ПН',
+            targetDayFull: DAYS_RU[dayNum - 1] || 'Понедельник',
+            targetDayPrep: DAYS_PREP[dayNum - 1] || 'понедельник',
+            isTomorrow: totalMin >= threshold
+        };
+    }
+
+    function getCurrentLessonNum() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        for (let i = 0; i < LESSON_PERIODS.length; i++) {
+            const start = parseTime(LESSON_PERIODS[i].start);
+            const end = parseTime(LESSON_PERIODS[i].end);
+            if (totalMin >= start && totalMin < end) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+
+    // ===== ОСНОВНАЯ ЛОГИКА =====
+    async function loadData() {
+        try {
+            // 1. Загружаем список учителей
+            const teachersResponse = await fetch('/data/teachers.json?_=' + Date.now());
+            if (!teachersResponse.ok) {
+                throw new Error('Не удалось загрузить список учителей');
+            }
+            const teachersData = await teachersResponse.json();
+            const teachers = teachersData.teachers || [];
+
+            if (teachers.length === 0) {
+                throw new Error('Список учителей пуст');
+            }
+
+            // 2. Находим нужного учителя
+            let teacher = null;
+            
+            if (teacherId) {
+                // Ищем по разным полям
+                teacher = teachers.find(t => 
+                    t.name === teacherId || 
+                    t.id === teacherId || 
+                    t.fileName === teacherId + '.html' ||
+                    t.scheduleFile === teacherId + '.json'
+                );
+                
+                // Если не нашли - ищем по частичному совпадению
+                if (!teacher) {
+                    const lowerId = teacherId.toLowerCase();
+                    teacher = teachers.find(t => 
+                        t.name.toLowerCase().includes(lowerId) ||
+                        (t.id && t.id.toLowerCase().includes(lowerId)) ||
+                        (t.fileName && t.fileName.toLowerCase().includes(lowerId))
+                    );
+                }
+            }
+
+            // Если учитель не найден, берем первого
+            if (!teacher) {
+                teacher = teachers[0];
+            }
+
+            if (!teacher) {
+                showError('👨‍🏫 Учитель не найден');
+                return;
+            }
+
+            // 3. Обновляем имя учителя
+            const nameParts = teacher.name.split(' ');
+            const shortName = nameParts.slice(0, 2).join(' ');
+            document.getElementById('teacherName').textContent = '📋 ' + shortName;
+
+            // 4. Определяем день
+            const dayInfo = getScheduleDay();
+            const currentDay = dayParam && DAYS.includes(dayParam.toUpperCase()) 
+                ? dayParam.toUpperCase() 
+                : dayInfo.targetDay;
+
+            // 5. Загружаем расписание учителя
+            const scheduleFile = teacher.scheduleFile || teacher.fileName?.replace('.html', '.json') || `schedule_${teacher.id || 'default'}.json`;
+            const scheduleResponse = await fetch(`/data/${scheduleFile}?_=${Date.now()}`);
+            
+            if (!scheduleResponse.ok) {
+                throw new Error(`Не удалось загрузить расписание: ${scheduleFile}`);
+            }
+            
+            const scheduleData = await scheduleResponse.json();
+
+            // 6. Обновляем заголовки
+            document.getElementById('teacherSubtitle').textContent = 
+                `Расписание на ${DAYS_RU[DAYS.indexOf(currentDay)]} (${currentDay})`;
+            
+            const dayPrep = DAYS_PREP[DAYS.indexOf(currentDay)] || 'сегодня';
+            document.getElementById('changesText').innerHTML = 
+                `📌 Изменения<br>на ${dayPrep}`;
+
+            // 7. Рендерим расписание
+            renderSchedule(scheduleData, currentDay);
+
+            // 8. Обновляем время
+            if (scheduleData.last_update) {
+                document.getElementById('updateTime').textContent = 
+                    '🔄 обновлено: ' + scheduleData.last_update;
+            }
+            document.getElementById('genTime').textContent = 
+                '📅 ' + new Date().toLocaleString('ru-RU');
+
+        } catch (error) {
+            console.error('Ошибка загрузки:', error);
+            showError('❌ ' + error.message);
+        }
+    }
+
+    function renderSchedule(data, day) {
+        const container = document.getElementById('scheduleTable');
+        const lessons = data[day] || [];
+
+        if (!lessons || lessons.length === 0) {
+            container.innerHTML = `<div class="no-lessons-msg">📌 Уроков нет на ${DAYS_RU[DAYS.indexOf(day)] || day}</div>`;
+            document.getElementById('lessonCount').textContent = '📚 0 уроков';
+            return;
+        }
+
+        // Группируем уроки по номеру
+        const grouped = {};
+        lessons.forEach(lesson => {
+            const num = lesson.lesson || lesson.num || 0;
+            if (num === 0) return;
+            
+            if (!grouped[num]) {
+                grouped[num] = { classes: [], subjects: [], rooms: [] };
+            }
+            
+            if (lesson.class && !grouped[num].classes.includes(lesson.class)) {
+                grouped[num].classes.push(lesson.class);
+            }
+            if (lesson.subject && !grouped[num].subjects.includes(lesson.subject)) {
+                grouped[num].subjects.push(lesson.subject);
+            }
+            if (lesson.room && !grouped[num].rooms.includes(lesson.room)) {
+                grouped[num].rooms.push(lesson.room);
+            }
+        });
+
+        // Определяем текущий урок
+        const currentLessonNum = getCurrentLessonNum();
+
+        // Строим таблицу
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Время</th>
+                        <th>Класс</th>
+                        <th>Предмет</th>
+                        <th>Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        let totalLessons = 0;
+        const maxLessons = 9;
+
+        for (let i = 1; i <= maxLessons; i++) {
+            const item = grouped[i];
+            const period = LESSON_PERIODS[i - 1] || {start:'--:--',end:'--:--'};
+            const isEmpty = !item || item.classes.length === 0;
+
+            if (!isEmpty) totalLessons++;
+
+            const isCurrent = (i === currentLessonNum && !isEmpty);
+            const rowClass = isCurrent ? ' class="current"' : '';
+
+            const classesDisplay = isEmpty ? '—' : item.classes.join(', ');
+            const subjectsDisplay = isEmpty ? '—' : item.subjects.join(', ');
+            const roomsDisplay = isEmpty ? '—' : item.rooms.join(', ');
+
+            html += `
+                <tr${rowClass}>
+                    <td class="num">${i}</td>
+                    <td class="period">
+                        <div class="time-start">${period.start}</div>
+                        <div class="time-end">${period.end}</div>
+                    </td>
+                    <td class="class">${classesDisplay}</td>
+                    <td class="subject">${subjectsDisplay}</td>
+                    <td class="room">${roomsDisplay}</td>
+                </tr>
+            `;
+        }
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        const lessonWord = getLessonWord(totalLessons);
+        document.getElementById('lessonCount').textContent = 
+            `📚 ${totalLessons} ${lessonWord}`;
+    }
+
+    function showError(message) {
+        document.getElementById('scheduleTable').innerHTML = 
+            `<div class="no-lessons-msg">${message}</div>`;
+        document.getElementById('teacherName').textContent = '📋 Ошибка';
+    }
+
+    // ===== ЧАСЫ =====
+    function initClock() {
+        const container = document.getElementById('clockContainer');
+        if (!container) return;
+
+        // Создаем SVG часы
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.setAttribute('width', '50');
+        svg.setAttribute('height', '50');
+
+        // Фон
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '50');
+        circle.setAttribute('cy', '50');
+        circle.setAttribute('r', '45');
+        circle.setAttribute('fill', '#f7fafc');
+        circle.setAttribute('stroke', '#2b6cb0');
+        circle.setAttribute('stroke-width', '3');
+        svg.appendChild(circle);
+
+        // Метки
+        for (let i = 1; i <= 12; i++) {
+            const angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
+            const x1 = 50 + 38 * Math.cos(angle);
+            const y1 = 50 + 38 * Math.sin(angle);
+            const x2 = 50 + 32 * Math.cos(angle);
+            const y2 = 50 + 32 * Math.sin(angle);
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#2d3748');
+            line.setAttribute('stroke-width', i % 3 === 0 ? '3' : '1.5');
+            line.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(line);
+        }
+
+        // Часовая стрелка
+        const hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        hourHand.setAttribute('id', 'hour-hand');
+        hourHand.setAttribute('x1', '50');
+        hourHand.setAttribute('y1', '50');
+        hourHand.setAttribute('x2', '50');
+        hourHand.setAttribute('y2', '28');
+        hourHand.setAttribute('stroke', '#2b6cb0');
+        hourHand.setAttribute('stroke-width', '4');
+        hourHand.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(hourHand);
+
+        // Минутная стрелка
+        const minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        minHand.setAttribute('id', 'min-hand');
+        minHand.setAttribute('x1', '50');
+        minHand.setAttribute('y1', '50');
+        minHand.setAttribute('x2', '50');
+        minHand.setAttribute('y2', '18');
+        minHand.setAttribute('stroke', '#2b6cb0');
+        minHand.setAttribute('stroke-width', '3');
+        minHand.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(minHand);
+
+        // Центр
+        const center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        center.setAttribute('cx', '50');
+        center.setAttribute('cy', '50');
+        center.setAttribute('r', '4');
+        center.setAttribute('fill', '#2b6cb0');
+        svg.appendChild(center);
+
+        // Контейнер для часов
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'display:flex;align-items:center;gap:10px;';
+        wrapper.appendChild(svg);
+
+        // Цифровое время
+        const digitalContainer = document.createElement('div');
+        digitalContainer.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;white-space:nowrap;';
+        
+        const digitalTime = document.createElement('span');
+        digitalTime.id = 'digital-time';
+        digitalTime.style.cssText = 'font-size:1em;color:#2b6cb0;font-weight:700;font-variant-numeric:tabular-nums;';
+        digitalTime.textContent = '--:--:--';
+        
+        digitalContainer.appendChild(digitalTime);
+        wrapper.appendChild(digitalContainer);
+        container.appendChild(wrapper);
+
+        // Обновление часов
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            const hourAngle = (hours * 30) + (minutes * 0.5) - 90;
+            const minAngle = (minutes * 6) + (seconds * 0.1) - 90;
+
+            const hh = document.getElementById('hour-hand');
+            const mh = document.getElementById('min-hand');
+            
+            if (hh) {
+                hh.setAttribute('transform', `rotate(${hourAngle}, 50, 50)`);
+            }
+            if (mh) {
+                mh.setAttribute('transform', `rotate(${minAngle}, 50, 50)`);
+            }
+
+            const digital = document.getElementById('digital-time');
+            if (digital) {
+                digital.textContent = now.toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    // ===== АВТООБНОВЛЕНИЕ =====
+    function startAutoRefresh() {
+        setInterval(() => {
+            loadData();
+        }, 240000); // 4 минуты
+    }
+
+    // ===== ЗАПУСК =====
+    document.addEventListener('DOMContentLoaded', function() {
+        initClock();
+        loadData();
+        startAutoRefresh();
+    });
+
+})();
+</script>
+
+</body>
+</html>
