@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.23
+ * Версия: 1.0.24
  * Дата: 2026
  */
 
@@ -612,7 +612,6 @@ tbody tr.current-lesson .lesson-num {
         margin-bottom: 1px;
     }
 
-    /* Максимальное уменьшение таблицы для 72" экранов */
     table {
         table-layout: auto;
     }
@@ -667,127 +666,142 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ----- 32-дюймовые экраны (1920px - 2560px) ----- */
-@media (min-width: 1920px) and (max-width: 2560px) {
+/* ----- 32-дюймовые экраны (1400px - 2560px) - расширенный диапазон ----- */
+@media (min-width: 1400px) and (max-width: 2560px) {
     .container {
         max-width: 100%;
-        padding: 3px 6px;
-        border-radius: 10px;
+        padding: 2px 4px;
+        border-radius: 8px;
     }
 
     .header {
-        min-height: 26px;
-        padding-bottom: 2px;
-        gap: 2px;
+        min-height: 20px;
+        padding-bottom: 1px;
+        gap: 1px;
+        border-bottom-width: 1px;
     }
 
     .header-banner {
-        height: 20px;
-        max-height: 20px;
-        min-height: 20px;
-        max-width: 300px;
-        min-width: 25px;
+        height: 16px;
+        max-height: 16px;
+        min-height: 16px;
+        max-width: 200px;
+        min-width: 20px;
         border-width: 0.5px;
-        padding: 0 3px;
+        padding: 0 2px;
+    }
+
+    .header-left {
+        gap: 2px;
     }
 
     .header-center {
-        min-width: 50px;
-        padding-left: 3px;
+        min-width: 40px;
+        padding-left: 2px;
         gap: 0px;
     }
 
     .header-center .day-indicator {
-        font-size: 0.45rem;
-        padding: 0 5px;
-        border-radius: 8px;
-        line-height: 1.4;
-    }
-
-    .header-center .period {
-        font-size: 0.4rem;
-        gap: 0 2px;
-        line-height: 1.1;
-    }
-
-    .header-center .period .line1 {
-        font-size: 0.4rem;
-    }
-
-    .header-center .period .line2 {
         font-size: 0.35rem;
-    }
-
-    .header-right .schedule-updated {
-        font-size: 0.35rem;
-        padding: 0 3px;
-        border-radius: 4px;
-        margin-top: 0;
+        padding: 0 4px;
+        border-radius: 6px;
         line-height: 1.3;
     }
 
-    #clockContainer {
-        min-height: 14px;
-        margin-bottom: 1px;
+    .header-center .period {
+        font-size: 0.3rem;
+        gap: 0 1px;
+        line-height: 1;
     }
 
-    /* Максимальное уменьшение таблицы для 32" экранов */
-    table {
-        table-layout: auto;
-        font-size: 0.35rem;
+    .header-center .period .line1 {
+        font-size: 0.3rem;
     }
 
-    thead th {
-        font-size: 0.35rem;
-        padding: 1px 1px;
-        border-bottom-width: 1px;
+    .header-center .period .line2 {
+        font-size: 0.25rem;
+    }
+
+    .header-right {
+        gap: 0px;
+    }
+
+    .header-right .schedule-updated {
+        font-size: 0.25rem;
+        padding: 0 2px;
+        border-radius: 3px;
+        margin-top: 0;
         line-height: 1.2;
     }
 
+    #clockContainer {
+        min-height: 10px;
+        margin-bottom: 0px;
+    }
+
+    #clockContainer .clock-placeholder {
+        font-size: 0.3rem;
+    }
+
+    /* Критическое уменьшение таблицы для 32" экранов */
+    table {
+        table-layout: auto;
+        font-size: 0.25rem;
+    }
+
+    thead th {
+        font-size: 0.25rem;
+        padding: 1px 0.5px;
+        border-bottom-width: 0.5px;
+        line-height: 1;
+        min-height: 12px;
+    }
+
     thead th:first-child {
-        min-width: 10px;
+        min-width: 8px;
         width: auto;
-        padding: 1px 1px;
+        padding: 1px 0.5px;
     }
 
     thead th:not(:first-child) {
         width: auto;
-        min-width: 20px;
-        padding: 1px 1px;
-        font-size: 0.35rem;
+        min-width: 14px;
+        padding: 1px 0.5px;
+        font-size: 0.25rem;
     }
 
     tbody td {
-        font-size: 0.3rem;
-        padding: 1px 1px;
-        border-bottom-width: 0.5px;
-        line-height: 1.1;
+        font-size: 0.2rem;
+        padding: 0.5px 0.5px;
+        border-bottom-width: 0.3px;
+        line-height: 1;
+        min-height: 10px;
     }
 
     .lesson-num {
-        font-size: 0.3rem;
+        font-size: 0.2rem;
     }
 
     .subject {
-        font-size: 0.3rem;
-        line-height: 1.1;
+        font-size: 0.2rem;
+        line-height: 1;
     }
 
     .cabinet {
-        font-size: 0.28rem;
+        font-size: 0.18rem;
         margin-top: 0;
     }
 
     .empty-cell {
-        font-size: 0.3rem;
+        font-size: 0.2rem;
     }
 
     .footer {
-        font-size: 0.3rem;
-        padding-top: 1px;
-        margin-top: 1px;
-        border-top-width: 0.5px;
-        line-height: 1.2;
+        font-size: 0.2rem;
+        padding-top: 0.5px;
+        margin-top: 0.5px;
+        border-top-width: 0.3px;
+        line-height: 1;
     }
 
     .mobile-view {
@@ -795,12 +809,12 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ----- Стандартные десктопы (1025px - 1919px) ----- */
-@media (min-width: 1025px) and (max-width: 1919px) {
+/* ----- Стандартные десктопы (1025px - 1399px) ----- */
+@media (min-width: 1025px) and (max-width: 1399px) {
     .container {
         max-width: 1900px;
-        padding: 8px 12px;
-        border-radius: 16px;
+        padding: 6px 10px;
+        border-radius: 14px;
     }
 
     table {
@@ -808,33 +822,51 @@ tbody tr.current-lesson .lesson-num {
     }
 
     .header-banner {
-        height: 40px;
-        max-height: 40px;
-        min-height: 40px;
-        max-width: 800px;
-        min-width: 60px;
+        height: 34px;
+        max-height: 34px;
+        min-height: 34px;
+        max-width: 600px;
+        min-width: 50px;
     }
 
     .header-center .day-indicator {
-        font-size: 1rem;
-        padding: 1px 12px;
-        border-radius: 16px;
+        font-size: 0.85rem;
+        padding: 1px 10px;
+        border-radius: 14px;
     }
 
     .header-center .period {
-        font-size: 0.9rem;
-    }
-
-    .header-right .schedule-updated {
         font-size: 0.75rem;
     }
 
+    .header-right .schedule-updated {
+        font-size: 0.65rem;
+    }
+
     #clockContainer {
-        min-height: 32px;
+        min-height: 26px;
+    }
+
+    thead th {
+        font-size: 0.7rem;
+        padding: 5px 3px;
+    }
+
+    tbody td {
+        font-size: 0.7rem;
+        padding: 4px 3px;
+    }
+
+    .subject {
+        font-size: 0.7rem;
+    }
+
+    .cabinet {
+        font-size: 0.65rem;
     }
 
     .footer {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
     }
 }
 
