@@ -1,0 +1,78 @@
+{
+  "ПН": [],
+  "ВТ": [
+    {
+      "lesson": 3,
+      "class": "7Б",
+      "subject": "История",
+      "room": "204"
+    },
+    {
+      "lesson": 7,
+      "class": "7А",
+      "subject": "История",
+      "room": "308"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "8В",
+      "subject": "История",
+      "room": "308"
+    },
+    {
+      "lesson": 2,
+      "class": "8А",
+      "subject": "История",
+      "room": "308"
+    },
+    {
+      "lesson": 5,
+      "class": "7А",
+      "subject": "История",
+      "room": "308"
+    },
+    {
+      "lesson": 5,
+      "class": "7Б",
+      "subject": "История",
+      "room": "211"
+    },
+    {
+      "lesson": 6,
+      "class": "8Б",
+      "subject": "История",
+      "room": "308"
+    },
+    {
+      "lesson": 7,
+      "class": "7В",
+      "subject": "История",
+      "room": "308"
+    }
+  ],
+  "ЧТ": [],
+  "ПТ": [
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "История",
+      "room": "308"
+    },
+    {
+      "lesson": 5,
+      "class": "7Б",
+      "subject": "История",
+      "room": "206"
+    },
+    {
+      "lesson": 7,
+      "class": "7А",
+      "subject": "История",
+      "room": "308"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-07-24 21:18:17"
+}
