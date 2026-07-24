@@ -1,0 +1,66 @@
+{
+  "ПН": [],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "6Б",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 2,
+      "class": "6Б",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 6,
+      "class": "6А",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 6,
+      "class": "6В",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 7,
+      "class": "6А",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 7,
+      "class": "6В",
+      "subject": "Физ-ра",
+      "room": "Док"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "6Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "6А",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    }
+  ],
+  "ЧТ": [],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-07-24 21:18:28"
+}
