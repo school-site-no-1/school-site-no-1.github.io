@@ -1,6 +1,6 @@
 /*
  * style.css - Полная версия
- * Версия: 1.0.24
+ * Версия: 1.0.26
  * Дата: 2026
  */
 
@@ -666,60 +666,56 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ----- 32-дюймовые экраны (1400px - 2560px) - расширенный диапазон ----- */
-@media (min-width: 1400px) and (max-width: 2560px) {
+/* ----- 32-дюймовые экраны (1920px - 2560px) - УМЕНЬШЕНО В 2 РАЗА ----- */
+@media (min-width: 1920px) and (max-width: 2560px) {
     .container {
         max-width: 100%;
-        padding: 2px 4px;
+        padding: 4px 6px;
         border-radius: 8px;
     }
 
     .header {
-        min-height: 20px;
-        padding-bottom: 1px;
-        gap: 1px;
+        min-height: 22px;
+        padding-bottom: 2px;
+        gap: 2px;
         border-bottom-width: 1px;
     }
 
     .header-banner {
-        height: 16px;
-        max-height: 16px;
-        min-height: 16px;
-        max-width: 200px;
-        min-width: 20px;
+        height: 20px;
+        max-height: 20px;
+        min-height: 20px;
+        max-width: 400px;
+        min-width: 30px;
         border-width: 0.5px;
-        padding: 0 2px;
-    }
-
-    .header-left {
-        gap: 2px;
+        padding: 0 3px;
     }
 
     .header-center {
-        min-width: 40px;
-        padding-left: 2px;
-        gap: 0px;
+        min-width: 60px;
+        padding-left: 5px;
+        gap: 1px;
     }
 
     .header-center .day-indicator {
-        font-size: 0.35rem;
-        padding: 0 4px;
-        border-radius: 6px;
+        font-size: 0.5rem;
+        padding: 0 6px;
+        border-radius: 8px;
         line-height: 1.3;
     }
 
     .header-center .period {
-        font-size: 0.3rem;
-        gap: 0 1px;
-        line-height: 1;
+        font-size: 0.45rem;
+        gap: 0 3px;
+        line-height: 1.1;
     }
 
     .header-center .period .line1 {
-        font-size: 0.3rem;
+        font-size: 0.45rem;
     }
 
     .header-center .period .line2 {
-        font-size: 0.25rem;
+        font-size: 0.4rem;
     }
 
     .header-right {
@@ -727,81 +723,80 @@ tbody tr.current-lesson .lesson-num {
     }
 
     .header-right .schedule-updated {
-        font-size: 0.25rem;
-        padding: 0 2px;
-        border-radius: 3px;
+        font-size: 0.38rem;
+        padding: 0 4px;
+        border-radius: 5px;
         margin-top: 0;
         line-height: 1.2;
     }
 
     #clockContainer {
-        min-height: 10px;
-        margin-bottom: 0px;
+        min-height: 16px;
+        margin-bottom: 1px;
     }
 
     #clockContainer .clock-placeholder {
-        font-size: 0.3rem;
+        font-size: 0.38rem;
     }
 
-    /* Критическое уменьшение таблицы для 32" экранов */
+    /* Уменьшаем таблицу в 2 раза для 32" экранов */
     table {
         table-layout: auto;
-        font-size: 0.25rem;
     }
 
     thead th {
-        font-size: 0.25rem;
-        padding: 1px 0.5px;
-        border-bottom-width: 0.5px;
-        line-height: 1;
-        min-height: 12px;
+        font-size: 0.42rem;
+        padding: 2px 2px;
+        border-bottom-width: 1px;
+        line-height: 1.1;
+        min-height: 14px;
     }
 
     thead th:first-child {
-        min-width: 8px;
+        min-width: 12px;
         width: auto;
-        padding: 1px 0.5px;
+        padding: 2px 1px;
     }
 
     thead th:not(:first-child) {
         width: auto;
-        min-width: 14px;
-        padding: 1px 0.5px;
-        font-size: 0.25rem;
+        min-width: 18px;
+        padding: 2px 1px;
+        font-size: 0.42rem;
     }
 
     tbody td {
-        font-size: 0.2rem;
-        padding: 0.5px 0.5px;
-        border-bottom-width: 0.3px;
-        line-height: 1;
-        min-height: 10px;
+        font-size: 0.38rem;
+        padding: 1.5px 1.5px;
+        border-bottom-width: 0.5px;
+        line-height: 1.1;
+        min-height: 12px;
     }
 
     .lesson-num {
-        font-size: 0.2rem;
+        font-size: 0.38rem;
     }
 
     .subject {
-        font-size: 0.2rem;
-        line-height: 1;
+        font-size: 0.38rem;
+        line-height: 1.1;
     }
 
     .cabinet {
-        font-size: 0.18rem;
+        font-size: 0.35rem;
         margin-top: 0;
     }
 
     .empty-cell {
-        font-size: 0.2rem;
+        font-size: 0.38rem;
     }
 
     .footer {
-        font-size: 0.2rem;
-        padding-top: 0.5px;
-        margin-top: 0.5px;
-        border-top-width: 0.3px;
-        line-height: 1;
+        font-size: 0.35rem;
+        padding-top: 1px;
+        margin-top: 1px;
+        border-top-width: 0.5px;
+        line-height: 1.1;
     }
 
     .mobile-view {
@@ -809,8 +804,8 @@ tbody tr.current-lesson .lesson-num {
     }
 }
 
-/* ----- Стандартные десктопы (1025px - 1399px) ----- */
-@media (min-width: 1025px) and (max-width: 1399px) {
+/* ----- Стандартные десктопы (1400px - 1919px) ----- */
+@media (min-width: 1400px) and (max-width: 1919px) {
     .container {
         max-width: 1900px;
         padding: 6px 10px;
