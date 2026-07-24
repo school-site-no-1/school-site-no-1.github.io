@@ -132,11 +132,39 @@
         
         .table-wrap{overflow-x:auto}
         
-        /* ТАБЛИЦА - ДЕСКТОПНАЯ ВЕРСИЯ */
+        /* ТАБЛИЦА С ГРАНИЦАМИ СТОЛБЦОВ */
         table{width:auto;border-collapse:collapse;font-size:1.4em;margin:0 auto}
-        thead th{background:#2b6cb0;color:#fff;padding:4px 4px;text-align:center;font-weight:700;font-size:0.6em;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;border-bottom:2px solid #1a4f8b}
+        thead th{
+            background:#2b6cb0;
+            color:#fff;
+            padding:4px 4px;
+            text-align:center;
+            font-weight:700;
+            font-size:0.6em;
+            white-space:nowrap;
+            letter-spacing:.3px;
+            text-transform:uppercase;
+            border-bottom:2px solid #1a4f8b;
+            border-right:1px solid #4a8bc2;
+        }
+        thead th:last-child{
+            border-right:none;
+        }
+        
         tbody tr{border-bottom:1.5px solid #cbd5e0}
         tbody tr:last-child{border-bottom:none}
+        
+        /* ГРАНИЦЫ СТОЛБЦОВ */
+        tbody td{
+            padding:13px 14px;
+            text-align:center;
+            font-size:0.7em;
+            vertical-align:middle;
+            border-right:1px solid #e2e8f0;
+        }
+        tbody td:last-child{
+            border-right:none;
+        }
         
         /* ПОДСВЕТКА ТЕКУЩЕГО УРОКА */
         tbody tr.current {
@@ -147,6 +175,7 @@
         }
         tbody tr.current td {
             color: #1a365d;
+            border-right-color: #93c5e4;
         }
         tbody tr.current td.num {
             color: #1a4f8b;
@@ -159,14 +188,6 @@
         tbody tr.current td.period .time-end {
             color: #2b6cb0;
             font-weight: 700;
-        }
-        
-        /* ВЫСОТА СТРОКИ +10px */
-        tbody td {
-            padding: 13px 14px;
-            text-align: center;
-            font-size: 0.7em;
-            vertical-align: middle;
         }
         
         /* Узкие столбцы */
@@ -197,12 +218,13 @@
             .header-day{font-size:0.85em;padding-left:4px}
             .changes-text{font-size:0.6em}
             
-            /* МОБИЛЬНАЯ ТАБЛИЦА - УВЕЛИЧЕННЫЙ ШРИФТ */
+            /* МОБИЛЬНАЯ ТАБЛИЦА */
             table{font-size:1.2em;min-width:280px}
-            thead th{padding:4px 3px;font-size:0.65em}
-            tbody td{padding:10px 6px;font-size:0.75em}
+            thead th{padding:4px 3px;font-size:0.65em;border-right:1px solid #4a8bc2}
+            tbody td{padding:10px 6px;font-size:0.75em;border-right:1px solid #e2e8f0}
+            tbody td:last-child{border-right:none}
             
-            /* ВРЕМЯ - УВЕЛИЧЕННЫЙ ШРИФТ НА 1 ПОРЯДОК */
+            /* ВРЕМЯ - УВЕЛИЧЕННЫЙ ШРИФТ */
             tbody td.period{padding:8px 6px;width:65px;min-width:50px;max-width:75px}
             tbody td.period .time-start{font-size:1.0em;font-weight:700}
             tbody td.period .time-end{font-size:0.85em}
