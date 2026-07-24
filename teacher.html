@@ -132,8 +132,8 @@
         
         .table-wrap{overflow-x:auto}
         
-        /* ТАБЛИЦА - УМЕНЬШЕННАЯ ШИРИНА СТОЛБЦОВ В 2 РАЗА */
-        table{width:100%;border-collapse:collapse;font-size:0.85em;min-width:400px}
+        /* ТАБЛИЦА - УЗКАЯ, ШРИФТ УВЕЛИЧЕН В 2 РАЗА */
+        table{width:auto;border-collapse:collapse;font-size:1.4em;margin:0 auto}
         thead th{background:#2b6cb0;color:#fff;padding:4px 4px;text-align:center;font-weight:700;font-size:0.6em;white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;border-bottom:2px solid #1a4f8b}
         tbody tr{border-bottom:1.5px solid #cbd5e0}
         tbody tr:last-child{border-bottom:none}
@@ -150,14 +150,15 @@
         tbody tr.current td.period .time-start{color:#1a4f8b;font-weight:800}
         tbody tr.current td.period .time-end{color:#2b6cb0;font-weight:700}
         tbody td.class{font-weight:700;color:#1a365d;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:50px;max-width:65px}
-        tbody td.subject{text-align:center;padding-left:4px;font-weight:600;font-size:0.75em;min-width:50px;width:auto}
+        /* Предмет - 250px */
+        tbody td.subject{text-align:center;padding-left:4px;font-weight:600;font-size:0.9em;min-width:200px;width:250px;max-width:280px}
         tbody td.room{font-weight:700;color:#e65100;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:45px;max-width:60px}
         
         .footer{text-align:center;color:#a0aec0;font-size:0.55em;border-top:1px solid #e2e8f0;padding-top:4px;margin-top:4px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
         .no-lessons-msg{text-align:center;padding:15px 0;color:#a0aec0;font-size:0.9em}
         
-        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:0.75em;min-width:350px}thead th,td{padding:3px 3px}}
-        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header-top{flex-wrap:wrap;gap:2px}.header-top-left{min-width:auto;flex:1 1 100%;order:1}.header-top-center{order:2;flex:0 1 auto;min-width:auto}.header-top-right{order:3;flex:0 1 auto}.header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}.header-selector label{font-size:0.55em}.header-selector .refresh-btn{font-size:0.5em;padding:1px 4px}.header-day{font-size:0.85em;padding-left:4px}.changes-text{font-size:0.6em}table{font-size:0.6em;min-width:250px}thead th,td{padding:2px 2px;font-size:0.6em}td.subject{padding-left:2px;text-align:center!important}td.num{font-size:0.7em;width:18px;min-width:14px;max-width:22px}td.class{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.room{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.period{width:50px;min-width:40px;max-width:60px}tbody td.period .time-start{font-size:0.6em}tbody td.period .time-end{font-size:0.5em}.info{font-size:0.45em;padding:2px 4px;border-radius:4px}.footer{font-size:0.35em;gap:3px}#clockContainer svg{width:20px;height:20px}#clockContainer .clock-text .date{font-size:0.35em}#clockContainer .clock-text .day{font-size:0.3em}#clockContainer .clock-text .digital-time{font-size:0.5em}}
+        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:1.2em}thead th,td{padding:3px 3px}}
+        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header-top{flex-wrap:wrap;gap:2px}.header-top-left{min-width:auto;flex:1 1 100%;order:1}.header-top-center{order:2;flex:0 1 auto;min-width:auto}.header-top-right{order:3;flex:0 1 auto}.header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}.header-selector label{font-size:0.55em}.header-selector .refresh-btn{font-size:0.5em;padding:1px 4px}.header-day{font-size:0.85em;padding-left:4px}.changes-text{font-size:0.6em}table{font-size:1em;min-width:250px}thead th,td{padding:2px 2px;font-size:0.6em}td.subject{padding-left:2px;text-align:center!important;min-width:120px;width:140px;max-width:160px;font-size:0.8em}td.num{font-size:0.7em;width:18px;min-width:14px;max-width:22px}td.class{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.room{font-size:0.6em;white-space:normal;min-width:20px;width:30px;max-width:45px}td.period{width:50px;min-width:40px;max-width:60px}tbody td.period .time-start{font-size:0.6em}tbody td.period .time-end{font-size:0.5em}.info{font-size:0.45em;padding:2px 4px;border-radius:4px}.footer{font-size:0.35em;gap:3px}#clockContainer svg{width:20px;height:20px}#clockContainer .clock-text .date{font-size:0.35em}#clockContainer .clock-text .day{font-size:0.3em}#clockContainer .clock-text .digital-time{font-size:0.5em}}
     </style>
 </head>
 <body>
