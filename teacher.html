@@ -15,6 +15,56 @@
         .header-left .subtitle{font-size:.85em;color:#718096}
         .header-right{text-align:right;font-size:1.6em;color:#4a5568;line-height:1.3;min-width:100px}
         .header-right #clockContainer{display:flex;justify-content:flex-end;align-items:center;min-height:50px}
+        
+        /* Стили для селекта */
+        .teacher-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 10px;
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .teacher-selector label {
+            font-weight: 600;
+            color: #2b6cb0;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .teacher-selector select {
+            padding: 6px 12px;
+            border: 1px solid #2b6cb0;
+            border-radius: 6px;
+            font-size: 0.9em;
+            background: #fff;
+            color: #2d3748;
+            cursor: pointer;
+            min-width: 200px;
+            outline: none;
+        }
+        .teacher-selector select:hover {
+            border-color: #1a4f8b;
+        }
+        .teacher-selector select:focus {
+            box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
+        }
+        .teacher-selector .refresh-btn {
+            padding: 4px 12px;
+            background: #2b6cb0;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+        }
+        .teacher-selector .refresh-btn:hover {
+            background: #1a4f8b;
+        }
+        
         .info{display:flex;justify-content:space-between;font-size:1.2em;color:#718096;padding:4px 10px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:6px;border-radius:8px;flex-wrap:wrap;gap:4px}
         .info .count{color:#2b6cb0;font-weight:600}
         .info .update{color:#a0aec0;font-size:.85em}
@@ -38,8 +88,9 @@
         tbody td.room{font-weight:700;color:#e65100;font-size:1.05em;white-space:nowrap;line-height:1.3;min-width:60px}
         .footer{text-align:center;color:#a0aec0;font-size:.8em;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
         .no-lessons-msg{text-align:center;padding:30px 0;color:#a0aec0;font-size:1.2em}
-        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-right{font-size:1.2em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}}
-        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header{flex-wrap:nowrap;justify-content:space-between;gap:0;align-items:center}.header-center{font-size:.85em;flex:0 1 auto;order:2;padding:2px 0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}.header-left{min-width:auto;flex:0 1 auto;order:1;text-align:left;white-space:nowrap}.header-right{min-width:auto;flex:0 1 auto;order:3;text-align:right;white-space:nowrap}.header-left .name{font-size:.8em}.header-left .subtitle{font-size:.6em}.header-right{font-size:.8em}.header-right #clockContainer{min-height:30px}table{font-size:.9em;min-width:320px}thead th,td{padding:3px 4px;font-size:.8em}td.subject{padding-left:4px;text-align:center!important}td.num{font-size:.9em}td.class{font-size:.7em;white-space:normal;min-width:30px}td.room{font-size:.7em;white-space:normal;min-width:30px}tbody td.period .time-start{font-size:.8em}tbody td.period .time-end{font-size:.7em}.info{font-size:.6em;padding:4px 8px;border-radius:6px}.footer{font-size:.5em;gap:6px}}
+        
+        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}.header-center{font-size:1em}.header-left .name{font-size:1em}.header-right{font-size:1.2em}table{font-size:1.2em;min-width:500px}thead th,td{padding:5px 6px}.info{font-size:.9em}.footer{font-size:.65em}tbody td.period .time-start{font-size:.95em}tbody td.period .time-end{font-size:.85em}.teacher-selector select{min-width:150px;font-size:.8em}}
+        @media(max-width:600px){body{padding:8px}.container{padding:12px;border-radius:12px}.header{flex-wrap:nowrap;justify-content:space-between;gap:0;align-items:center}.header-center{font-size:.85em;flex:0 1 auto;order:2;padding:2px 0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}.header-left{min-width:auto;flex:0 1 auto;order:1;text-align:left;white-space:nowrap}.header-right{min-width:auto;flex:0 1 auto;order:3;text-align:right;white-space:nowrap}.header-left .name{font-size:.8em}.header-left .subtitle{font-size:.6em}.header-right{font-size:.8em}.header-right #clockContainer{min-height:30px}table{font-size:.9em;min-width:320px}thead th,td{padding:3px 4px;font-size:.8em}td.subject{padding-left:4px;text-align:center!important}td.num{font-size:.9em}td.class{font-size:.7em;white-space:normal;min-width:30px}td.room{font-size:.7em;white-space:normal;min-width:30px}tbody td.period .time-start{font-size:.8em}tbody td.period .time-end{font-size:.7em}.info{font-size:.6em;padding:4px 8px;border-radius:6px}.footer{font-size:.5em;gap:6px}.teacher-selector{padding:4px 8px;gap:5px}.teacher-selector select{min-width:120px;font-size:.7em;padding:4px 8px}.teacher-selector label{font-size:.75em}.teacher-selector .refresh-btn{font-size:.7em;padding:3px 8px}}
     </style>
 </head>
 <body>
@@ -55,6 +106,15 @@
         <div class="header-right">
             <div id="clockContainer"></div>
         </div>
+    </div>
+
+    <!-- Выбор учителя -->
+    <div class="teacher-selector">
+        <label for="teacherSelect">👨‍🏫 Учитель:</label>
+        <select id="teacherSelect">
+            <option value="">Загрузка списка...</option>
+        </select>
+        <button class="refresh-btn" onclick="refreshData()">🔄 Обновить</button>
     </div>
 
     <!-- Инфо -->
@@ -93,9 +153,15 @@
         {start:'15:25',end:'16:05'}
     ];
 
+    // ===== ПЕРЕМЕННЫЕ =====
+    let teachersList = [];
+    let currentTeacher = null;
+    let currentDay = '';
+    let currentScheduleData = {};
+
     // ===== ПАРАМЕТРЫ URL =====
     const urlParams = new URLSearchParams(window.location.search);
-    const teacherId = urlParams.get('teacher') || urlParams.get('id') || '';
+    const teacherParam = urlParams.get('teacher') || urlParams.get('id') || '';
     const dayParam = urlParams.get('day') || urlParams.get('d') || '';
 
     // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
@@ -148,100 +214,133 @@
         return 0;
     }
 
-    // ===== ОСНОВНАЯ ЛОГИКА =====
-    async function loadData() {
+    // ===== ЗАГРУЗКА СПИСКА УЧИТЕЛЕЙ =====
+    async function loadTeachersList() {
         try {
-            // 1. Загружаем список учителей
-            const teachersResponse = await fetch('/data/teachers.json?_=' + Date.now());
-            if (!teachersResponse.ok) {
+            const response = await fetch('/data/teachers.json?_=' + Date.now());
+            if (!response.ok) {
                 throw new Error('Не удалось загрузить список учителей');
             }
-            const teachersData = await teachersResponse.json();
-            const teachers = teachersData.teachers || [];
-
-            if (teachers.length === 0) {
-                throw new Error('Список учителей пуст');
-            }
-
-            // 2. Находим нужного учителя
-            let teacher = null;
+            const data = await response.json();
+            teachersList = data.teachers || [];
             
-            if (teacherId) {
-                // Ищем по разным полям
-                teacher = teachers.find(t => 
-                    t.name === teacherId || 
-                    t.id === teacherId || 
-                    t.fileName === teacherId + '.html' ||
-                    t.scheduleFile === teacherId + '.json'
-                );
-                
-                // Если не нашли - ищем по частичному совпадению
-                if (!teacher) {
-                    const lowerId = teacherId.toLowerCase();
-                    teacher = teachers.find(t => 
-                        t.name.toLowerCase().includes(lowerId) ||
-                        (t.id && t.id.toLowerCase().includes(lowerId)) ||
-                        (t.fileName && t.fileName.toLowerCase().includes(lowerId))
-                    );
-                }
-            }
-
-            // Если учитель не найден, берем первого
-            if (!teacher) {
-                teacher = teachers[0];
-            }
-
-            if (!teacher) {
-                showError('👨‍🏫 Учитель не найден');
+            // Заполняем селект
+            const select = document.getElementById('teacherSelect');
+            select.innerHTML = '';
+            
+            if (teachersList.length === 0) {
+                select.innerHTML = '<option value="">Нет учителей</option>';
                 return;
             }
 
-            // 3. Обновляем имя учителя
-            const nameParts = teacher.name.split(' ');
-            const shortName = nameParts.slice(0, 2).join(' ');
-            document.getElementById('teacherName').textContent = '📋 ' + shortName;
+            // Добавляем опции
+            teachersList.forEach((teacher, index) => {
+                const option = document.createElement('option');
+                option.value = teacher.id || teacher.name || index;
+                option.textContent = teacher.name || teacher.id || `Учитель ${index + 1}`;
+                if (teacher.id) {
+                    option.dataset.id = teacher.id;
+                }
+                if (teacher.scheduleFile) {
+                    option.dataset.scheduleFile = teacher.scheduleFile;
+                }
+                select.appendChild(option);
+            });
 
-            // 4. Определяем день
+            // Выбираем учителя из URL или первого
+            let selectedTeacher = null;
+            
+            if (teacherParam) {
+                // Ищем по имени или ID
+                selectedTeacher = teachersList.find(t => 
+                    t.name === teacherParam || 
+                    t.id === teacherParam ||
+                    t.fileName === teacherParam + '.html'
+                );
+                if (selectedTeacher) {
+                    select.value = selectedTeacher.id || selectedTeacher.name;
+                }
+            }
+
+            // Если не нашли - берем первого
+            if (!selectedTeacher && teachersList.length > 0) {
+                select.value = teachersList[0].id || teachersList[0].name;
+                selectedTeacher = teachersList[0];
+            }
+
+            // Загружаем расписание выбранного учителя
+            if (selectedTeacher) {
+                currentTeacher = selectedTeacher;
+                await loadTeacherSchedule(selectedTeacher);
+            }
+
+        } catch (error) {
+            console.error('Ошибка загрузки списка учителей:', error);
+            const select = document.getElementById('teacherSelect');
+            select.innerHTML = '<option value="">❌ Ошибка загрузки</option>';
+            showError('❌ Не удалось загрузить список учителей');
+        }
+    }
+
+    // ===== ЗАГРУЗКА РАСПИСАНИЯ УЧИТЕЛЯ =====
+    async function loadTeacherSchedule(teacher) {
+        try {
+            // Определяем день
             const dayInfo = getScheduleDay();
-            const currentDay = dayParam && DAYS.includes(dayParam.toUpperCase()) 
+            currentDay = dayParam && DAYS.includes(dayParam.toUpperCase()) 
                 ? dayParam.toUpperCase() 
                 : dayInfo.targetDay;
 
-            // 5. Загружаем расписание учителя
-            const scheduleFile = teacher.scheduleFile || teacher.fileName?.replace('.html', '.json') || `schedule_${teacher.id || 'default'}.json`;
-            const scheduleResponse = await fetch(`/data/${scheduleFile}?_=${Date.now()}`);
-            
-            if (!scheduleResponse.ok) {
+            // Определяем файл расписания
+            const scheduleFile = teacher.scheduleFile || 
+                                teacher.fileName?.replace('.html', '.json') || 
+                                `schedule_${teacher.id || 'default'}.json`;
+
+            // Загружаем расписание
+            const response = await fetch(`/data/${scheduleFile}?_=${Date.now()}`);
+            if (!response.ok) {
                 throw new Error(`Не удалось загрузить расписание: ${scheduleFile}`);
             }
             
-            const scheduleData = await scheduleResponse.json();
+            currentScheduleData = await response.json();
 
-            // 6. Обновляем заголовки
-            document.getElementById('teacherSubtitle').textContent = 
-                `Расписание на ${DAYS_RU[DAYS.indexOf(currentDay)]} (${currentDay})`;
-            
-            const dayPrep = DAYS_PREP[DAYS.indexOf(currentDay)] || 'сегодня';
-            document.getElementById('changesText').innerHTML = 
-                `📌 Изменения<br>на ${dayPrep}`;
-
-            // 7. Рендерим расписание
-            renderSchedule(scheduleData, currentDay);
-
-            // 8. Обновляем время
-            if (scheduleData.last_update) {
-                document.getElementById('updateTime').textContent = 
-                    '🔄 обновлено: ' + scheduleData.last_update;
-            }
-            document.getElementById('genTime').textContent = 
-                '📅 ' + new Date().toLocaleString('ru-RU');
+            // Обновляем интерфейс
+            updateUI(teacher, currentScheduleData, currentDay);
 
         } catch (error) {
-            console.error('Ошибка загрузки:', error);
+            console.error('Ошибка загрузки расписания:', error);
             showError('❌ ' + error.message);
         }
     }
 
+    // ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
+    function updateUI(teacher, scheduleData, day) {
+        // Имя учителя
+        const nameParts = teacher.name.split(' ');
+        const shortName = nameParts.slice(0, 2).join(' ');
+        document.getElementById('teacherName').textContent = '📋 ' + shortName;
+        
+        // День
+        document.getElementById('teacherSubtitle').textContent = 
+            `Расписание на ${DAYS_RU[DAYS.indexOf(day)]} (${day})`;
+        
+        const dayPrep = DAYS_PREP[DAYS.indexOf(day)] || 'сегодня';
+        document.getElementById('changesText').innerHTML = 
+            `📌 Изменения<br>на ${dayPrep}`;
+
+        // Рендерим расписание
+        renderSchedule(scheduleData, day);
+
+        // Время обновления
+        if (scheduleData.last_update) {
+            document.getElementById('updateTime').textContent = 
+                '🔄 обновлено: ' + scheduleData.last_update;
+        }
+        document.getElementById('genTime').textContent = 
+            '📅 ' + new Date().toLocaleString('ru-RU');
+    }
+
+    // ===== РЕНДЕРИНГ РАСПИСАНИЯ =====
     function renderSchedule(data, day) {
         const container = document.getElementById('scheduleTable');
         const lessons = data[day] || [];
@@ -335,6 +434,44 @@
             `<div class="no-lessons-msg">${message}</div>`;
         document.getElementById('teacherName').textContent = '📋 Ошибка';
     }
+
+    // ===== ОБРАБОТЧИК СМЕНЫ УЧИТЕЛЯ =====
+    function onTeacherChange() {
+        const select = document.getElementById('teacherSelect');
+        const selectedValue = select.value;
+        
+        if (!selectedValue) {
+            document.getElementById('scheduleTable').innerHTML = 
+                '<div class="no-lessons-msg">👨‍🏫 Выберите учителя</div>';
+            document.getElementById('teacherName').textContent = '📋 Выберите учителя';
+            return;
+        }
+
+        // Находим учителя в списке
+        const teacher = teachersList.find(t => 
+            (t.id && t.id === selectedValue) || 
+            (t.name && t.name === selectedValue)
+        );
+
+        if (teacher) {
+            currentTeacher = teacher;
+            loadTeacherSchedule(teacher);
+            
+            // Обновляем URL
+            const url = new URL(window.location);
+            url.searchParams.set('teacher', teacher.name);
+            window.history.pushState({}, '', url);
+        }
+    }
+
+    // ===== ОБНОВЛЕНИЕ ДАННЫХ =====
+    window.refreshData = function() {
+        if (currentTeacher) {
+            loadTeacherSchedule(currentTeacher);
+        } else {
+            loadTeachersList();
+        }
+    };
 
     // ===== ЧАСЫ =====
     function initClock() {
@@ -463,15 +600,38 @@
     // ===== АВТООБНОВЛЕНИЕ =====
     function startAutoRefresh() {
         setInterval(() => {
-            loadData();
+            if (currentTeacher) {
+                loadTeacherSchedule(currentTeacher);
+            } else {
+                loadTeachersList();
+            }
         }, 240000); // 4 минуты
     }
 
     // ===== ЗАПУСК =====
     document.addEventListener('DOMContentLoaded', function() {
+        // Инициализируем часы
         initClock();
-        loadData();
+
+        // Загружаем список учителей
+        loadTeachersList();
+
+        // Обработчик смены учителя
+        document.getElementById('teacherSelect').addEventListener('change', onTeacherChange);
+
+        // Автообновление
         startAutoRefresh();
+
+        // Обновление при возврате на страницу
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                if (currentTeacher) {
+                    loadTeacherSchedule(currentTeacher);
+                } else {
+                    loadTeachersList();
+                }
+            }
+        });
     });
 
 })();
