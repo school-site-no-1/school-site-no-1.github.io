@@ -154,17 +154,59 @@
   ],
   "СБ": [
     {
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "Информатика",
+      "room": "113"
+    },
+    {
+      "lesson": 2,
+      "class": "7Б",
+      "subject": "Информатика",
+      "room": "113"
+    },
+    {
+      "lesson": 3,
+      "class": "7Б",
+      "subject": "Информатика",
+      "room": "113"
+    },
+    {
       "lesson": 4,
       "class": "7Б",
       "subject": "Англ/информатика",
-      "room": ""
+      "room": "203"
     },
     {
       "lesson": 5,
       "class": "7Б",
       "subject": "Информатика",
-      "room": ""
+      "room": "113"
+    },
+    {
+      "lesson": 6,
+      "class": "7Б",
+      "subject": "Информатика",
+      "room": "113"
+    },
+    {
+      "lesson": 7,
+      "class": "7Б",
+      "subject": "Информатика",
+      "room": "201"
+    },
+    {
+      "lesson": 8,
+      "class": "7Б",
+      "subject": "Информатика",
+      "room": "204"
+    },
+    {
+      "lesson": 9,
+      "class": "7Б",
+      "subject": "Англ/информатика",
+      "room": "204"
     }
   ],
-  "last_update": "2026-07-24 21:26:47"
+  "last_update": "2026-07-24 21:47:53"
 }
