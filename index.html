@@ -158,6 +158,7 @@
     var dataLoaded = false;
     var scheduleUpdatedDate = null;
     var currentDataVersion = APP_VERSION;
+    var isChangesMode = false; // Флаг для режима "Изменения"
 
     // ================================================================
     // ДИНАМИЧЕСКОЕ ОПРЕДЕЛЕНИЕ НАСТРОЕК ДЛЯ РАЗНЫХ ЭКРАНОВ
@@ -172,13 +173,10 @@
         var isLargeScreen = width >= 1920;
         
         if (isMobile) {
-            // Мобильные - отключаем масштабирование
             viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
         } else if (isLargeScreen) {
-            // 32" и 72" экраны - разрешаем масштабирование
             viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes';
         } else {
-            // Стандартные десктопы - разрешаем масштабирование до 2x
             viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes';
         }
         
@@ -283,10 +281,10 @@
     }
 
     // ================================================================
-    // ОБНОВЛЁННАЯ ФУНКЦИЯ getPeriodName()
+    // ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ ТЕКУЩЕГО УРОКА/ПЕРЕМЕНЫ
     // ================================================================
 
-    function getPeriodName() {
+    function getLessonOrBreakText() {
         var info = getCurrentPeriodInfo();
 
         if (info.type === 'lesson') {
@@ -301,10 +299,21 @@
             return '⏳ До начала занятий ' + formatMinutes(info.remaining);
         }
         if (info.type === 'after') {
-            // ВСЕГДА ПОКАЗЫВАЕМ "Изменения на ..."
             return getChangesText();
         }
         return '⏰ Загрузка...';
+    }
+
+    // ================================================================
+    // ФУНКЦИЯ ДЛЯ ОБНОВЛЕНИЯ ШАПКИ (ВСЕГДА ПОКАЗЫВАЕТ "Изменения")
+    // ================================================================
+
+    function updateHeader() {
+        var periodEl = document.getElementById('currentPeriod');
+        if (!periodEl) return;
+        
+        // ВСЕГДА показываем "Изменения на ..."
+        periodEl.innerHTML = getChangesText();
     }
 
     function getDisplayDay() {
@@ -425,10 +434,7 @@
                 processLoadedData();
 
                 // После загрузки данных ВСЕГДА показываем "Изменения на ..."
-                var periodEl = document.getElementById('currentPeriod');
-                if (periodEl) {
-                    periodEl.innerHTML = getChangesText();
-                }
+                updateHeader();
             })
             .catch(function(err) {
                 console.warn('Ошибка загрузки schedule.primary.json:', err.message);
@@ -504,16 +510,7 @@
         document.getElementById('dayIndicator').textContent = displayFull;
         
         // ВСЕГДА ПОКАЗЫВАЕМ "Изменения на ..." в шапке
-        var periodEl = document.getElementById('currentPeriod');
-        if (periodEl) {
-            // Если после уроков - показываем изменения
-            if (info.type === 'after') {
-                periodEl.innerHTML = getChangesText();
-            } else {
-                // Иначе показываем текущий урок или перемену
-                periodEl.innerHTML = getPeriodName();
-            }
-        }
+        updateHeader();
 
         var dayData = weekDays[dayKey];
         if (!dayData || Object.keys(dayData).length === 0) {
@@ -622,15 +619,9 @@
     // ================================================================
 
     function refreshAll() {
-        var info = getCurrentPeriodInfo();
-        var periodEl = document.getElementById('currentPeriod');
-        if (periodEl) {
-            if (info.type === 'after') {
-                periodEl.innerHTML = getChangesText();
-            } else {
-                periodEl.innerHTML = getPeriodName();
-            }
-        }
+        // ВСЕГДА обновляем шапку с "Изменения на ..."
+        updateHeader();
+        
         if (dataLoaded || Object.keys(weekDays).length > 0) {
             renderTable();
             renderMobile();
