@@ -211,6 +211,39 @@
         return { type: 'unknown' };
     }
 
+    // ================================================================
+    // ФУНКЦИЯ ДЛЯ ТЕКСТА "Изменения на ..." (ВСЕГДА)
+    // ================================================================
+
+    function getChangesText() {
+        var now = new Date();
+        var totalMinutes = now.getHours() * 60 + now.getMinutes();
+        
+        // Если после 17:00 - показываем завтрашний день
+        var shift = (totalMinutes >= 17 * 60) ? 1 : 0;
+        var dayNum = now.getDay() + shift;
+        if (dayNum === 0) dayNum = 1;
+        if (dayNum > 6) dayNum = 1;
+        
+        var dayFull = DAYS_FULL[dayNum] || 'Понедельник';
+        var dayGenitive = {
+            'Понедельник': 'понедельник',
+            'Вторник': 'вторник',
+            'Среда': 'среду',
+            'Четверг': 'четверг',
+            'Пятница': 'пятницу',
+            'Суббота': 'субботу',
+            'Воскресенье': 'воскресенье'
+        };
+        var dayGen = dayGenitive[dayFull] || dayFull.toLowerCase();
+        
+        return '<span class="line1">📌 Изменения</span><span class="line2">на ' + dayGen + '</span>';
+    }
+
+    // ================================================================
+    // ОБНОВЛЁННАЯ ФУНКЦИЯ getPeriodName()
+    // ================================================================
+
     function getPeriodName() {
         var info = getCurrentPeriodInfo();
 
@@ -226,14 +259,8 @@
             return '⏳ До начала занятий ' + formatMinutes(info.remaining);
         }
         if (info.type === 'after') {
-            var today = new Date();
-            var nextDayNum = today.getDay() + 1;
-            if (nextDayNum === 7) nextDayNum = 1;
-            if (nextDayNum === 0) nextDayNum = 1;
-            var nextDayFull = DAYS_FULL[nextDayNum] || 'Понедельник';
-            var dayGenitive = { 'Понедельник': 'понедельник', 'Вторник': 'вторник', 'Среда': 'среду', 'Четверг': 'четверг', 'Пятница': 'пятницу', 'Суббота': 'субботу', 'Воскресенье': 'воскресенье' };
-            var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
-            return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
+            // ВСЕГДА ПОКАЗЫВАЕМ "Изменения на ..."
+            return getChangesText();
         }
         return '⏰ Загрузка...';
     }
@@ -355,8 +382,11 @@
                 if (statusMobile) statusMobile.textContent = '✅ schedule.primary.json загружен (v' + dataVersion + ')';
                 processLoadedData();
 
-                // Обновляем "Изменения на ..." в шапке
-                updateHeaderChanges();
+                // После загрузки данных ВСЕГДА показываем "Изменения на ..."
+                var periodEl = document.getElementById('currentPeriod');
+                if (periodEl) {
+                    periodEl.innerHTML = getChangesText();
+                }
             })
             .catch(function(err) {
                 console.warn('Ошибка загрузки schedule.primary.json:', err.message);
@@ -367,42 +397,6 @@
                 document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                 processLoadedData();
             });
-    }
-
-    // ================================================================
-    // ОБНОВЛЕНИЕ ШАПКИ: "Изменения на ..."
-    // ================================================================
-
-    function updateHeaderChanges() {
-        var now = new Date();
-        var totalMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        // Если после 17:00, показываем изменения на завтра
-        var shift = (totalMinutes >= 17 * 60) ? 1 : 0;
-        var dayNum = now.getDay() + shift;
-        if (dayNum === 0) dayNum = 1;
-        if (dayNum > 6) dayNum = 1;
-        
-        var dayFull = DAYS_FULL[dayNum] || 'Понедельник';
-        var dayGenitive = {
-            'Понедельник': 'понедельник',
-            'Вторник': 'вторник',
-            'Среда': 'среду',
-            'Четверг': 'четверг',
-            'Пятница': 'пятницу',
-            'Суббота': 'субботу',
-            'Воскресенье': 'воскресенье'
-        };
-        var dayGen = dayGenitive[dayFull] || dayFull.toLowerCase();
-        
-        // Обновляем текст в шапке
-        var periodEl = document.getElementById('currentPeriod');
-        if (periodEl) {
-            var info = getCurrentPeriodInfo();
-            if (info.type === 'after') {
-                periodEl.innerHTML = '<span class="line1">📌 Изменения</span><span class="line2">на ' + dayGen + '</span>';
-            }
-        }
     }
 
     function processLoadedData() {
@@ -443,6 +437,10 @@
         });
     }
 
+    // ================================================================
+    // ОБНОВЛЁННАЯ ФУНКЦИЯ renderTable()
+    // ================================================================
+
     function renderTable() {
         if (!dataLoaded && Object.keys(weekDays).length === 0) return;
 
@@ -463,12 +461,14 @@
 
         document.getElementById('dayIndicator').textContent = displayFull;
         
-        // Обновляем период, но если после уроков - показываем "Изменения на ..."
+        // ВСЕГДА ПОКАЗЫВАЕМ "Изменения на ..." в шапке
         var periodEl = document.getElementById('currentPeriod');
         if (periodEl) {
+            // Если после уроков - показываем изменения
             if (info.type === 'after') {
-                updateHeaderChanges();
+                periodEl.innerHTML = getChangesText();
             } else {
+                // Иначе показываем текущий урок или перемену
                 periodEl.innerHTML = getPeriodName();
             }
         }
@@ -575,12 +575,16 @@
         document.getElementById('mobileView').innerHTML = html;
     }
 
+    // ================================================================
+    // ОБНОВЛЁННАЯ ФУНКЦИЯ refreshAll()
+    // ================================================================
+
     function refreshAll() {
         var info = getCurrentPeriodInfo();
         var periodEl = document.getElementById('currentPeriod');
         if (periodEl) {
             if (info.type === 'after') {
-                updateHeaderChanges();
+                periodEl.innerHTML = getChangesText();
             } else {
                 periodEl.innerHTML = getPeriodName();
             }
