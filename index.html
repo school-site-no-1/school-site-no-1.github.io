@@ -277,21 +277,21 @@
     }
 
     // ================================================================
-    // ЗАГРУЗКА ДАННЫХ (с версионированием)
+    // ЗАГРУЗКА ДАННЫХ (из schedule.primary.json)
     // ================================================================
 
     function loadData() {
         var statusEl = document.getElementById('loadStatus');
         var statusMobile = document.getElementById('loadStatusMobile');
-        if (statusEl) statusEl.textContent = 'Загрузка data.json...';
-        if (statusMobile) statusMobile.textContent = 'Загрузка data.json...';
+        if (statusEl) statusEl.textContent = 'Загрузка schedule.primary.json...';
+        if (statusMobile) statusMobile.textContent = 'Загрузка schedule.primary.json...';
 
         var version = localStorage.getItem('schedule_version') || '1.0.0';
-        var url = 'data.json?v=' + version;
+        var url = 'schedule.primary.json?v=' + version;
 
         fetch(url, { cache: 'default' })
             .then(function(res) {
-                if (!res.ok) throw new Error('data.json не найден (код ' + res.status + ')');
+                if (!res.ok) throw new Error('schedule.primary.json не найден (код ' + res.status + ')');
                 return res.json();
             })
             .then(function(data) {
@@ -324,6 +324,7 @@
                     document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                 }
 
+                // Парсим данные (поддерживаем разные структуры)
                 if (data.schedule) {
                     scheduleData = data.schedule.primary || data.schedule;
                 } else if (data.primary) {
@@ -350,12 +351,15 @@
                     DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
                 }
 
-                if (statusEl) statusEl.textContent = '✅ data.json загружен (v' + dataVersion + ')';
-                if (statusMobile) statusMobile.textContent = '✅ data.json загружен (v' + dataVersion + ')';
+                if (statusEl) statusEl.textContent = '✅ schedule.primary.json загружен (v' + dataVersion + ')';
+                if (statusMobile) statusMobile.textContent = '✅ schedule.primary.json загружен (v' + dataVersion + ')';
                 processLoadedData();
+
+                // Обновляем "Изменения на ..." в шапке
+                updateHeaderChanges();
             })
             .catch(function(err) {
-                console.warn('Ошибка загрузки data.json:', err.message);
+                console.warn('Ошибка загрузки schedule.primary.json:', err.message);
                 if (statusEl) statusEl.textContent = '❌ ' + err.message;
                 if (statusMobile) statusMobile.textContent = '❌ ' + err.message;
                 DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
@@ -363,6 +367,42 @@
                 document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                 processLoadedData();
             });
+    }
+
+    // ================================================================
+    // ОБНОВЛЕНИЕ ШАПКИ: "Изменения на ..."
+    // ================================================================
+
+    function updateHeaderChanges() {
+        var now = new Date();
+        var totalMinutes = now.getHours() * 60 + now.getMinutes();
+        
+        // Если после 17:00, показываем изменения на завтра
+        var shift = (totalMinutes >= 17 * 60) ? 1 : 0;
+        var dayNum = now.getDay() + shift;
+        if (dayNum === 0) dayNum = 1;
+        if (dayNum > 6) dayNum = 1;
+        
+        var dayFull = DAYS_FULL[dayNum] || 'Понедельник';
+        var dayGenitive = {
+            'Понедельник': 'понедельник',
+            'Вторник': 'вторник',
+            'Среда': 'среду',
+            'Четверг': 'четверг',
+            'Пятница': 'пятницу',
+            'Суббота': 'субботу',
+            'Воскресенье': 'воскресенье'
+        };
+        var dayGen = dayGenitive[dayFull] || dayFull.toLowerCase();
+        
+        // Обновляем текст в шапке
+        var periodEl = document.getElementById('currentPeriod');
+        if (periodEl) {
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'after') {
+                periodEl.innerHTML = '<span class="line1">📌 Изменения</span><span class="line2">на ' + dayGen + '</span>';
+            }
+        }
     }
 
     function processLoadedData() {
@@ -422,7 +462,16 @@
         }
 
         document.getElementById('dayIndicator').textContent = displayFull;
-        document.getElementById('currentPeriod').innerHTML = getPeriodName();
+        
+        // Обновляем период, но если после уроков - показываем "Изменения на ..."
+        var periodEl = document.getElementById('currentPeriod');
+        if (periodEl) {
+            if (info.type === 'after') {
+                updateHeaderChanges();
+            } else {
+                periodEl.innerHTML = getPeriodName();
+            }
+        }
 
         var dayData = weekDays[dayKey];
         if (!dayData || Object.keys(dayData).length === 0) {
@@ -527,7 +576,15 @@
     }
 
     function refreshAll() {
-        document.getElementById('currentPeriod').innerHTML = getPeriodName();
+        var info = getCurrentPeriodInfo();
+        var periodEl = document.getElementById('currentPeriod');
+        if (periodEl) {
+            if (info.type === 'after') {
+                updateHeaderChanges();
+            } else {
+                periodEl.innerHTML = getPeriodName();
+            }
+        }
         if (dataLoaded || Object.keys(weekDays).length > 0) {
             renderTable();
             renderMobile();
