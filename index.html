@@ -231,7 +231,6 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            /* УМЕНЬШЕННАЯ ВЫСОТА */
             padding: 2px 4px !important;
             line-height: 1.1 !important;
             height: 22px !important;
@@ -256,7 +255,6 @@
             overflow-wrap: break-word !important;
             hyphens: auto !important;
             line-height: 1.1 !important;
-            /* УМЕНЬШЕННАЯ ВЫСОТА */
             padding: 2px 4px !important;
             height: 26px !important;
             min-height: 26px !important;
@@ -335,7 +333,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* УМЕНЬШЕННАЯ ВЫСОТА */
             padding: 4px 10px !important;
             font-size: 14px !important;
             min-height: 22px !important;
@@ -346,7 +343,6 @@
             align-items: center;
             gap: 4px;
             border-bottom: 1px solid #f0f4f8;
-            /* УМЕНЬШЕННАЯ ВЫСОТА */
             padding: 3px 8px !important;
             min-height: 20px !important;
             height: 20px !important;
@@ -498,7 +494,7 @@
         }
 
         /* ============================
-           АДАПТИВНОСТЬ (с уменьшенной высотой)
+           АДАПТИВНОСТЬ
            ============================ */
         @media (min-width: 769px) and (max-width: 1024px) {
             .header-banner { height: 36px; max-height: 36px; min-height: 36px; }
@@ -650,7 +646,6 @@
             .clock-text .day { font-size: 0.5em; }
             .clock-text .date { font-size: 0.6em; }
             .clock-text .digital-time { font-size: 0.8em; }
-            /* Мобильные карточки — уменьшенная высота */
             .mobile-class-header { padding: 3px 8px !important; font-size: 13px !important; min-height: 18px !important; height: 18px !important; }
             .mobile-lesson-card { padding: 2px 6px !important; min-height: 16px !important; height: 16px !important; gap: 3px; }
             .mobile-lesson-card .lesson-num-mobile { font-size: 10px !important; min-width: 18px !important; }
@@ -835,7 +830,6 @@
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.setAttribute('transform', 'rotate(-45, 50, 50)');
 
-            // Циферблат
             var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             circle.setAttribute('cx', '50');
             circle.setAttribute('cy', '50');
@@ -845,7 +839,6 @@
             circle.setAttribute('stroke-width', '3');
             g.appendChild(circle);
 
-            // Метки часов
             for (var i = 1; i <= 12; i++) {
                 var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
                 var x1 = 50 + 38 * Math.cos(angle);
@@ -865,7 +858,6 @@
 
             svg.appendChild(g);
 
-            // Часовая стрелка
             var hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             hourHand.setAttribute('x1', '50');
             hourHand.setAttribute('y1', '50');
@@ -877,7 +869,6 @@
             hourHand.setAttribute('id', 'hour-hand');
             svg.appendChild(hourHand);
 
-            // Минутная стрелка
             var minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             minHand.setAttribute('x1', '50');
             minHand.setAttribute('y1', '50');
@@ -889,7 +880,6 @@
             minHand.setAttribute('id', 'min-hand');
             svg.appendChild(minHand);
 
-            // Центр
             var center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             center.setAttribute('cx', '50');
             center.setAttribute('cy', '50');
@@ -899,7 +889,6 @@
 
             wrapper.appendChild(svg);
 
-            // Текстовый блок
             var textBlock = document.createElement('div');
             textBlock.className = 'clock-text';
 
@@ -931,7 +920,6 @@
             wrapper.appendChild(textBlock);
             container.appendChild(wrapper);
 
-            // Обновление часов
             function updateClock() {
                 var now = new Date();
                 var hours = now.getHours() % 12;
@@ -1115,31 +1103,45 @@
         }
 
         // ================================================================
-        // ЗАГРУЗКА ДАННЫХ (с ETag-кешированием)
+        // ЗАГРУЗКА schedule.primary.json С ETag-КЕШИРОВАНИЕМ
         // ================================================================
 
         function loadData() {
             var statusEl = document.getElementById('loadStatus');
             var statusMobile = document.getElementById('loadStatusMobile');
-            if (statusEl) statusEl.textContent = 'Загрузка data.json...';
-            if (statusMobile) statusMobile.textContent = 'Загрузка data.json...';
+            if (statusEl) statusEl.textContent = 'Загрузка schedule.primary.json...';
+            if (statusMobile) statusMobile.textContent = 'Загрузка schedule.primary.json...';
 
+            // Кеш-бастер для обхода кеша браузера (обновляется каждый час)
             var cacheBuster = Math.floor(Date.now() / 3600000);
-            var url = 'data.json?t=' + cacheBuster;
+            var url = 'schedule.primary.json?t=' + cacheBuster;
 
             fetch(url, { cache: 'default' })
                 .then(function(res) {
-                    if (!res.ok) throw new Error('data.json не найден (код ' + res.status + ')');
+                    if (!res.ok) throw new Error('schedule.primary.json не найден (код ' + res.status + ')');
                     
+                    // ⭐ ПОЛУЧАЕМ ETag ИЗ ЗАГОЛОВКА
                     var etag = res.headers.get('ETag');
+                    
                     if (etag) {
-                        var cachedEtag = localStorage.getItem('data_etag');
+                        // ⭐ СРАВНИВАЕМ С СОХРАНЁННЫМ ETag
+                        var cachedEtag = localStorage.getItem('schedule_etag');
+                        
                         if (cachedEtag === etag) {
+                            // ✅ ETag СОВПАДАЕТ → файл НЕ ИЗМЕНИЛСЯ → используем кеш
                             if (statusEl) statusEl.textContent = '✅ данные актуальны (ETag)';
                             if (statusMobile) statusMobile.textContent = '✅ данные актуальны (ETag)';
                             return res.json();
                         }
-                        localStorage.setItem('data_etag', etag);
+                        
+                        // ⭐ ETag ИЗМЕНИЛСЯ → сохраняем новый и загружаем данные
+                        localStorage.setItem('schedule_etag', etag);
+                        if (statusEl) statusEl.textContent = '🔄 данные обновлены (новый ETag)';
+                        if (statusMobile) statusMobile.textContent = '🔄 данные обновлены (новый ETag)';
+                    } else {
+                        // ⚠️ Сервер не отдаёт ETag → просто загружаем данные
+                        if (statusEl) statusEl.textContent = '⚠️ ETag не поддерживается';
+                        if (statusMobile) statusMobile.textContent = '⚠️ ETag не поддерживается';
                     }
                     
                     return res.json();
@@ -1163,6 +1165,7 @@
                         document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                     }
 
+                    // Парсим schedule.primary.json
                     if (data.schedule) {
                         scheduleData = data.schedule.primary || data.schedule;
                     } else if (data.primary) {
@@ -1189,12 +1192,12 @@
                         DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
                     }
 
-                    if (statusEl) statusEl.textContent = '✅ data.json загружен';
-                    if (statusMobile) statusMobile.textContent = '✅ data.json загружен';
+                    if (statusEl) statusEl.textContent = '✅ schedule.primary.json загружен';
+                    if (statusMobile) statusMobile.textContent = '✅ schedule.primary.json загружен';
                     processLoadedData();
                 })
                 .catch(function(err) {
-                    console.warn('Ошибка загрузки data.json:', err.message);
+                    console.warn('Ошибка загрузки schedule.primary.json:', err.message);
                     if (statusEl) statusEl.textContent = '❌ ' + err.message;
                     if (statusMobile) statusMobile.textContent = '❌ ' + err.message;
                     DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
