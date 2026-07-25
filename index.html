@@ -13,29 +13,110 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     
-    <!-- Подключаем отдельный CSS файл с версией -->
-    <link rel="stylesheet" href="style.css?v=1.0.20">
-    
     <style>
-        /* Дополнительные стили для центрирования */
+        /* ================================================================
+           ПОЛНЫЕ СТИЛИ ДЛЯ РАСПИСАНИЯ
+           ================================================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f7fafc;
+            color: #2d3748;
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 20px 24px 16px;
+            transition: all 0.2s;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            flex: 0 0 180px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-banner {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #edf2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
         .header-center {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            min-width: 200px;
+            padding: 0 10px;
         }
-        
+
         .header-center-top {
             text-align: center;
             width: 100%;
+            margin-bottom: 2px;
         }
-        
+
+        .day-indicator {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2b6cb0;
+            letter-spacing: 0.5px;
+            background: #ebf4ff;
+            padding: 2px 18px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
         .header-center-bottom {
             text-align: center;
             width: 100%;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
         .period {
             display: flex;
             flex-direction: column;
@@ -43,18 +124,538 @@
             justify-content: center;
             text-align: center;
             line-height: 1.3;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #2d3748;
         }
-        
+
         .period .line1 {
             display: block;
             font-weight: 600;
             font-size: 1.1em;
+            color: #2b6cb0;
         }
-        
+
         .period .line2 {
             display: block;
             font-size: 1em;
-            color: #fbd38d;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .header-right {
+            flex: 0 0 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            min-width: 150px;
+        }
+
+        #clockContainer {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2b6cb0;
+            text-align: right;
+            line-height: 1.3;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #clockContainer .clock-placeholder {
+            color: #a0aec0;
+            font-weight: 400;
+            font-size: 0.8rem;
+        }
+
+        .schedule-updated {
+            font-size: 0.8rem;
+            color: #48bb78;
+            text-align: right;
+            font-weight: 500;
+            background: #f0fff4;
+            padding: 2px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .schedule-updated.error {
+            color: #fc8181;
+            background: #fff5f5;
+        }
+
+        /* ===== PWA NOTIFICATION ===== */
+        #pwaNotification {
+            display: none;
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        #pwaNotification .small {
+            font-size: 0.75rem;
+            color: #4a5568;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-layout {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== DESKTOP TABLE ===== */
+        .desktop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 700px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .desktop-table thead th {
+            background: #2b6cb0;
+            color: white;
+            font-weight: 600;
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #2b6cb0;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .desktop-table thead th:first-child {
+            background: #2b6cb0;
+            min-width: 40px;
+            width: 40px;
+        }
+
+        .desktop-table tbody td {
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            vertical-align: middle;
+            background: white;
+            font-size: 0.82rem;
+        }
+
+        .desktop-table tbody td:first-child {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2b6cb0;
+            width: 40px;
+            min-width: 40px;
+            font-size: 0.8rem;
+        }
+
+        .desktop-table tbody tr:nth-child(even) td:not(:first-child) {
+            background: #fafcff;
+        }
+
+        .desktop-table tbody tr.current-lesson td {
+            background: #ebf8ff !important;
+        }
+
+        .desktop-table tbody tr.current-lesson td:first-child {
+            background: #bee3f8 !important;
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+
+        .desktop-table tbody tr.current-lesson td .subject {
+            color: #2b6cb0;
+            font-weight: 600;
+        }
+
+        .subject {
+            display: block;
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 0.82rem;
+        }
+
+        .cabinet {
+            display: block;
+            font-size: 0.7rem;
+            color: #718096;
+            margin-top: 1px;
+        }
+
+        .empty-cell {
+            color: #cbd5e0;
+            font-size: 0.8rem;
+        }
+
+        .lesson-num {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .loading-overlay {
+            text-align: center;
+            padding: 40px 20px !important;
+            font-size: 1.1rem;
+            color: #4a5568;
+            background: #f7fafc !important;
+        }
+
+        .loading-overlay .sub {
+            display: block;
+            font-size: 0.75rem;
+            color: #a0aec0;
+            margin-top: 6px;
+        }
+
+        /* ===== MOBILE VIEW ===== */
+        .mobile-view {
+            display: none;
+            width: 100%;
+        }
+
+        .mobile-class-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .mobile-class-header {
+            background: #2b6cb0;
+            color: white;
+            padding: 10px 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-class-header .class-name {
+            font-size: 1.1rem;
+        }
+
+        .mobile-lesson-card {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #edf2f7;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+
+        .mobile-lesson-card:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-lesson-card.current {
+            background: #ebf8ff;
+        }
+
+        .mobile-lesson-card .lesson-num-mobile {
+            font-weight: 700;
+            color: #2b6cb0;
+            font-size: 0.85rem;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .mobile-lesson-card .lesson-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .mobile-lesson-card .subject-name {
+            font-weight: 500;
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+
+        .mobile-lesson-card .subject-name.empty {
+            color: #a0aec0;
+            font-weight: 400;
+            font-size: 0.8rem;
+        }
+
+        .mobile-lesson-card .room-name {
+            font-size: 0.7rem;
+            color: #718096;
+            margin-top: 1px;
+        }
+
+        .mobile-lesson-card .lesson-time {
+            font-size: 0.7rem;
+            color: #a0aec0;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #edf2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer .version {
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+
+        /* ===== NOTIFICATION ===== */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2d3748;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+            max-width: 90%;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification.success {
+            background: #276749;
+        }
+
+        .notification.error {
+            background: #9b2c2c;
+        }
+
+        .notification.info {
+            background: #2b6cb0;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .header-left {
+                flex: 0 0 140px;
+            }
+            
+            .header-banner {
+                max-width: 140px;
+            }
+            
+            .header-right {
+                flex: 0 0 160px;
+            }
+            
+            .day-indicator {
+                font-size: 1.3rem;
+                padding: 2px 14px;
+            }
+            
+            .period {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 6px;
+            }
+            
+            .container {
+                padding: 12px;
+                border-radius: 12px;
+            }
+            
+            .header {
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: nowrap;
+            }
+            
+            .header-left {
+                flex: 0 0 60px;
+            }
+            
+            .header-banner {
+                max-width: 60px;
+                border-radius: 8px;
+            }
+            
+            .header-center {
+                flex: 1;
+                min-width: 0;
+                padding: 0 4px;
+            }
+            
+            .day-indicator {
+                font-size: 1rem;
+                padding: 1px 10px;
+            }
+            
+            .header-center-bottom {
+                min-height: 30px;
+            }
+            
+            .period {
+                font-size: 0.75rem;
+                line-height: 1.2;
+            }
+            
+            .period .line1 {
+                font-size: 0.8rem;
+            }
+            
+            .period .line2 {
+                font-size: 0.7rem;
+            }
+            
+            .header-right {
+                flex: 0 0 70px;
+                min-width: 0;
+                align-items: flex-end;
+            }
+            
+            #clockContainer {
+                font-size: 0.7rem;
+            }
+            
+            .schedule-updated {
+                font-size: 0.55rem;
+                padding: 1px 6px;
+            }
+            
+            .desktop-table {
+                display: none;
+            }
+            
+            .mobile-view {
+                display: block;
+            }
+            
+            .table-wrapper {
+                overflow-x: visible;
+            }
+            
+            .mobile-lesson-card {
+                padding: 6px 10px;
+                gap: 6px;
+            }
+            
+            .mobile-lesson-card .subject-name {
+                font-size: 0.8rem;
+            }
+            
+            .mobile-lesson-card .lesson-time {
+                font-size: 0.6rem;
+            }
+            
+            .mobile-class-header {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header-left {
+                flex: 0 0 44px;
+            }
+            
+            .header-banner {
+                max-width: 44px;
+            }
+            
+            .header-right {
+                flex: 0 0 60px;
+            }
+            
+            #clockContainer {
+                font-size: 0.6rem;
+            }
+            
+            .period {
+                font-size: 0.65rem;
+            }
+            
+            .day-indicator {
+                font-size: 0.8rem;
+                padding: 1px 8px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-view {
+                display: none !important;
+            }
+            
+            .desktop-table {
+                display: table;
+            }
+        }
+
+        /* ===== ПЕЧАТЬ ===== */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 10px;
+            }
+            
+            .desktop-table thead th {
+                background: #2b6cb0 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .desktop-table tbody tr.current-lesson td {
+                background: #ebf8ff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
@@ -78,11 +679,9 @@
             </div>
 
             <div class="header-right">
-                <!-- Блок для clock.js - выше всех элементов -->
                 <div id="clockContainer">
                     <span class="clock-placeholder">⏳ загрузка часов...</span>
                 </div>
-                <!-- Сообщение об ошибке загрузки теперь ниже часов -->
                 <div class="schedule-updated" id="scheduleUpdated">📅 загрузка...</div>
             </div>
         </div>
@@ -158,7 +757,6 @@
     var dataLoaded = false;
     var scheduleUpdatedDate = null;
     var currentDataVersion = APP_VERSION;
-    var isChangesMode = false; // Флаг для режима "Изменения"
 
     // ================================================================
     // ДИНАМИЧЕСКОЕ ОПРЕДЕЛЕНИЕ НАСТРОЕК ДЛЯ РАЗНЫХ ЭКРАНОВ
@@ -278,30 +876,6 @@
         var dayGen = dayGenitive[dayFull] || dayFull.toLowerCase();
         
         return '<span class="line1">📌 Изменения</span><span class="line2">на ' + dayGen + '</span>';
-    }
-
-    // ================================================================
-    // ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ ТЕКУЩЕГО УРОКА/ПЕРЕМЕНЫ
-    // ================================================================
-
-    function getLessonOrBreakText() {
-        var info = getCurrentPeriodInfo();
-
-        if (info.type === 'lesson') {
-            return '📖 ' + info.num + '-й урок (' + info.start + '–' + info.end + ')';
-        }
-        if (info.type === 'break') {
-            if (info.remaining <= 0) return '⏰ ' + info.nextLesson + '-й урок начинается';
-            return '⏳ До ' + info.nextLesson + '-го урока ' + formatMinutes(info.remaining);
-        }
-        if (info.type === 'before') {
-            if (info.remaining <= 0) return '⏰ ' + info.nextLesson + '-й урок начинается';
-            return '⏳ До начала занятий ' + formatMinutes(info.remaining);
-        }
-        if (info.type === 'after') {
-            return getChangesText();
-        }
-        return '⏰ Загрузка...';
     }
 
     // ================================================================
@@ -486,7 +1060,7 @@
     }
 
     // ================================================================
-    // ОБНОВЛЁННАЯ ФУНКЦИЯ renderTable()
+    // ФУНКЦИЯ renderTable()
     // ================================================================
 
     function renderTable() {
@@ -615,7 +1189,7 @@
     }
 
     // ================================================================
-    // ОБНОВЛЁННАЯ ФУНКЦИЯ refreshAll()
+    // ФУНКЦИЯ refreshAll()
     // ================================================================
 
     function refreshAll() {
