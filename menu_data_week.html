@@ -16,6 +16,8 @@
             background: #000;
             min-height: 100vh;
             overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .container {
@@ -34,9 +36,6 @@
             overflow: hidden;
         }
 
-        /* ============================================ */
-        /*          ШАПКА (поверх всего)                 */
-        /* ============================================ */
         .header {
             position: absolute;
             top: 0;
@@ -106,7 +105,6 @@
             flex-shrink: 0;
         }
 
-        /* ПРОДУКТЫ В ШАПКЕ — вертикально, полупрозрачные, без фона */
         .header-products {
             display: flex;
             flex-direction: column;
@@ -129,9 +127,6 @@
             text-shadow: 0 2px 8px rgba(0,0,0,0.7);
         }
 
-        /* ============================================ */
-        /*          ОСНОВНОЙ СЛАЙДЕР (дни)              */
-        /* ============================================ */
         .day-slider-container {
             flex: 1;
             position: relative;
@@ -139,6 +134,11 @@
             touch-action: none;
             width: 100%;
             height: 100vh;
+            cursor: grab;
+        }
+
+        .day-slider-container:active {
+            cursor: grabbing;
         }
 
         .day-slider-track {
@@ -155,15 +155,17 @@
             overflow: hidden;
         }
 
-        /* ============================================ */
-        /*          СЛАЙДЕР БЛЮД (вертикальный)         */
-        /* ============================================ */
         .dish-slider-container {
             width: 100%;
             height: 100%;
             position: relative;
             overflow: hidden;
             touch-action: none;
+            cursor: grab;
+        }
+
+        .dish-slider-container:active {
+            cursor: grabbing;
         }
 
         .dish-slider-track {
@@ -184,9 +186,6 @@
             justify-content: center;
         }
 
-        /* ============================================ */
-        /*          КАРТОЧКА БЛЮДА                      */
-        /* ============================================ */
         .meal-card {
             width: 100%;
             height: 100%;
@@ -290,9 +289,6 @@
             flex-shrink: 0;
         }
 
-        /* ============================================ */
-        /*          ТОЧКИ ИНДИКАТОРЫ                    */
-        /* ============================================ */
         .dish-dots {
             position: absolute;
             right: 16px;
@@ -352,9 +348,6 @@
             border-radius: 10px;
         }
 
-        /* ============================================ */
-        /*          НАВИГАЦИЯ ПО ДНЯМ                   */
-        /* ============================================ */
         .day-nav {
             position: absolute;
             bottom: 24px;
@@ -630,14 +623,12 @@
 
             dayDishes = prepareDayDishes(menuData);
 
-            // Проверка границ
             if (currentDayIndex >= dayDishes.length) currentDayIndex = 0;
             const dishes = dayDishes[currentDayIndex] || [];
             if (currentDishIndex >= dishes.length) currentDishIndex = 0;
 
             let html = '';
 
-            // Шапка
             const dayKey = getDayKey(currentDayIndex);
             const day = menuData[dayKey];
             const total = getDayTotal(day);
@@ -666,7 +657,6 @@
                 </div>
             `;
 
-            // Дневной слайдер (горизонтальный)
             html += `
                 <div class="day-slider-container" id="daySliderContainer">
                     <div class="day-slider-track" id="daySliderTrack" style="transform: translateX(-${currentDayIndex * 100}%);">
@@ -732,7 +722,6 @@
                 </div>
             `;
 
-            // Точки для блюд (вертикальные справа)
             const currentDishes = dayDishes[currentDayIndex] || [];
             if (currentDishes.length > 1) {
                 html += `
@@ -748,7 +737,6 @@
                 `;
             }
 
-            // Точки для дней (горизонтальные внизу)
             html += `
                 <div class="day-dots" id="dayDots">
             `;
@@ -761,7 +749,6 @@
                 </div>
             `;
 
-            // Навигация по дням
             html += `
                 <div class="day-nav">
                     <button class="day-nav-btn" id="prevDayBtn">‹</button>
@@ -772,37 +759,32 @@
 
             content.innerHTML = html;
 
-            // ===== ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ =====
             initDaySlider();
             initDishSliders();
             initDishDots();
             initDayDots();
             initDayNavButtons();
-            initTouchEvents();
+            initDragEvents();
         }
 
-        // ===== ИНИЦИАЛИЗАЦИЯ СЛАЙДЕРОВ =====
+        // ===== ИНИЦИАЛИЗАЦИЯ =====
         function initDaySlider() {
             const track = document.getElementById('daySliderTrack');
             if (!track) return;
-            const totalDays = dayDishes.length;
-            const translateX = -currentDayIndex * 100;
-            track.style.transform = `translateX(${translateX}%)`;
+            track.style.transform = `translateX(-${currentDayIndex * 100}%)`;
         }
 
         function initDishSliders() {
             for (let d = 0; d < dayDishes.length; d++) {
                 const track = document.getElementById(`dishSliderTrack_${d}`);
                 if (!track) continue;
-                const dishes = dayDishes[d] || [];
                 const translateY = -(d === currentDayIndex ? currentDishIndex : 0) * 100;
                 track.style.transform = `translateY(${translateY}%)`;
             }
         }
 
         function initDishDots() {
-            const dots = document.querySelectorAll('.dish-dot');
-            dots.forEach(dot => {
+            document.querySelectorAll('.dish-dot').forEach(dot => {
                 dot.addEventListener('click', function() {
                     const idx = parseInt(this.dataset.dish);
                     goToDish(idx);
@@ -811,8 +793,7 @@
         }
 
         function initDayDots() {
-            const dots = document.querySelectorAll('.day-dot');
-            dots.forEach(dot => {
+            document.querySelectorAll('.day-dot').forEach(dot => {
                 dot.addEventListener('click', function() {
                     const idx = parseInt(this.dataset.day);
                     goToDay(idx);
@@ -840,18 +821,15 @@
             currentDayIndex = index;
             currentDishIndex = 0;
 
-            // Обновляем горизонтальный трек
             const track = document.getElementById('daySliderTrack');
             if (track) {
                 track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 track.style.transform = `translateX(-${currentDayIndex * 100}%)`;
             }
 
-            // Обновляем вертикальные треки
             for (let d = 0; d < dayDishes.length; d++) {
                 const dishTrack = document.getElementById(`dishSliderTrack_${d}`);
                 if (!dishTrack) continue;
-                const dishes = dayDishes[d] || [];
                 const translateY = -(d === currentDayIndex ? 0 : 0) * 100;
                 dishTrack.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 dishTrack.style.transform = `translateY(${translateY}%)`;
@@ -860,7 +838,6 @@
             setTimeout(() => {
                 isDayAnimating = false;
                 updateUI();
-                // Обновляем точки для блюд
                 updateDishDots();
                 updateDayDots();
             }, 550);
@@ -911,7 +888,6 @@
 
         // ===== ОБНОВЛЕНИЕ UI =====
         function updateUI() {
-            // Обновляем информацию в шапке
             const dayKey = getDayKey(currentDayIndex);
             const day = menuData[dayKey];
             const total = getDayTotal(day);
@@ -944,7 +920,6 @@
                 }
             }
 
-            // Обновляем дневную метку внизу
             const dayLabel = document.querySelector('.day-nav .day-label');
             if (dayLabel) dayLabel.textContent = DAY_LABELS_SHORT[currentDayIndex];
 
@@ -952,15 +927,13 @@
         }
 
         function updateDishDots() {
-            const dots = document.querySelectorAll('.dish-dot');
-            dots.forEach((dot, idx) => {
+            document.querySelectorAll('.dish-dot').forEach((dot, idx) => {
                 dot.classList.toggle('active', idx === currentDishIndex);
             });
         }
 
         function updateDayDots() {
-            const dots = document.querySelectorAll('.day-dot');
-            dots.forEach((dot, idx) => {
+            document.querySelectorAll('.day-dot').forEach((dot, idx) => {
                 dot.classList.toggle('active', idx === currentDayIndex);
             });
         }
@@ -980,48 +953,203 @@
             }
         }
 
-        // ===== TOUCH EVENTS =====
-        function initTouchEvents() {
-            const container = document.getElementById('daySliderContainer');
-            if (!container) return;
+        // ===== DRAG EVENTS (мышь + тач) =====
+        function initDragEvents() {
+            const dayContainer = document.getElementById('daySliderContainer');
+            if (!dayContainer) return;
 
-            let startX = 0;
-            let startY = 0;
-            let isSwiping = false;
+            // --- для дней (горизонтальный drag) ---
+            let dayStartX = 0;
+            let dayCurrentX = 0;
+            let dayIsDragging = false;
+            let dayStartTranslate = 0;
 
-            container.addEventListener('touchstart', function(e) {
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-                isSwiping = true;
-            }, { passive: true });
-
-            container.addEventListener('touchend', function(e) {
-                if (!isSwiping) return;
-                isSwiping = false;
-                const touch = e.changedTouches[0];
-                const deltaX = startX - touch.clientX;
-                const deltaY = startY - touch.clientY;
-
-                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-                    // Горизонтальный свайп — переключение дней
-                    if (deltaX > 0) {
-                        goToDay(currentDayIndex + 1);
+            function onDayStart(clientX) {
+                if (isDayAnimating) return;
+                dayStartX = clientX;
+                dayIsDragging = true;
+                const track = document.getElementById('daySliderTrack');
+                if (track) {
+                    const style = window.getComputedStyle(track);
+                    const matrix = style.transform;
+                    if (matrix !== 'none') {
+                        const values = matrix.match(/matrix.*\((.+)\)/);
+                        if (values) {
+                            const nums = values[1].split(', ');
+                            dayStartTranslate = parseFloat(nums[4]) || 0;
+                        } else {
+                            dayStartTranslate = 0;
+                        }
                     } else {
-                        goToDay(currentDayIndex - 1);
+                        dayStartTranslate = 0;
                     }
-                } else if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 30) {
-                    // Вертикальный свайп — переключение блюд
-                    if (deltaY > 0) {
-                        nextDish();
+                    track.style.transition = 'none';
+                }
+            }
+
+            function onDayMove(clientX) {
+                if (!dayIsDragging) return;
+                dayCurrentX = clientX;
+                const deltaX = dayCurrentX - dayStartX;
+                const track = document.getElementById('daySliderTrack');
+                if (track) {
+                    const containerWidth = track.parentElement.offsetWidth || window.innerWidth;
+                    const percent = (deltaX / containerWidth) * 100;
+                    const newTranslate = dayStartTranslate + percent;
+                    const maxTranslate = 0;
+                    const minTranslate = -(dayDishes.length - 1) * 100;
+                    const clamped = Math.max(minTranslate, Math.min(maxTranslate, newTranslate));
+                    track.style.transform = `translateX(${clamped}%)`;
+                }
+            }
+
+            function onDayEnd() {
+                if (!dayIsDragging) return;
+                dayIsDragging = false;
+                const track = document.getElementById('daySliderTrack');
+                if (track) {
+                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    const style = window.getComputedStyle(track);
+                    const matrix = style.transform;
+                    let currentTranslate = 0;
+                    if (matrix !== 'none') {
+                        const values = matrix.match(/matrix.*\((.+)\)/);
+                        if (values) {
+                            const nums = values[1].split(', ');
+                            currentTranslate = parseFloat(nums[4]) || 0;
+                        }
+                    }
+                    const slideWidth = 100;
+                    const ratio = Math.round(-currentTranslate / slideWidth);
+                    const targetIndex = Math.max(0, Math.min(dayDishes.length - 1, ratio));
+                    if (targetIndex !== currentDayIndex) {
+                        goToDay(targetIndex);
                     } else {
-                        prevDish();
+                        track.style.transform = `translateX(-${currentDayIndex * 100}%)`;
                     }
                 }
+            }
+
+            // --- для блюд (вертикальный drag) ---
+            let dishStartY = 0;
+            let dishCurrentY = 0;
+            let dishIsDragging = false;
+            let dishStartTranslate = 0;
+
+            function getDishTrack() {
+                return document.getElementById(`dishSliderTrack_${currentDayIndex}`);
+            }
+
+            function onDishStart(clientY) {
+                if (isDishAnimating) return;
+                const dishes = dayDishes[currentDayIndex] || [];
+                if (dishes.length <= 1) return;
+                dishStartY = clientY;
+                dishIsDragging = true;
+                const track = getDishTrack();
+                if (track) {
+                    const style = window.getComputedStyle(track);
+                    const matrix = style.transform;
+                    if (matrix !== 'none') {
+                        const values = matrix.match(/matrix.*\((.+)\)/);
+                        if (values) {
+                            const nums = values[1].split(', ');
+                            dishStartTranslate = parseFloat(nums[5]) || 0;
+                        } else {
+                            dishStartTranslate = 0;
+                        }
+                    } else {
+                        dishStartTranslate = 0;
+                    }
+                    track.style.transition = 'none';
+                }
+            }
+
+            function onDishMove(clientY) {
+                if (!dishIsDragging) return;
+                dishCurrentY = clientY;
+                const deltaY = dishCurrentY - dishStartY;
+                const track = getDishTrack();
+                if (track) {
+                    const containerHeight = track.parentElement.offsetHeight || window.innerHeight;
+                    const percent = (deltaY / containerHeight) * 100;
+                    const newTranslate = dishStartTranslate + percent;
+                    const dishes = dayDishes[currentDayIndex] || [];
+                    const maxTranslate = 0;
+                    const minTranslate = -(dishes.length - 1) * 100;
+                    const clamped = Math.max(minTranslate, Math.min(maxTranslate, newTranslate));
+                    track.style.transform = `translateY(${clamped}%)`;
+                }
+            }
+
+            function onDishEnd() {
+                if (!dishIsDragging) return;
+                dishIsDragging = false;
+                const track = getDishTrack();
+                if (track) {
+                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    const style = window.getComputedStyle(track);
+                    const matrix = style.transform;
+                    let currentTranslate = 0;
+                    if (matrix !== 'none') {
+                        const values = matrix.match(/matrix.*\((.+)\)/);
+                        if (values) {
+                            const nums = values[1].split(', ');
+                            currentTranslate = parseFloat(nums[5]) || 0;
+                        }
+                    }
+                    const dishes = dayDishes[currentDayIndex] || [];
+                    const slideHeight = 100;
+                    const ratio = Math.round(-currentTranslate / slideHeight);
+                    const targetIndex = Math.max(0, Math.min(dishes.length - 1, ratio));
+                    if (targetIndex !== currentDishIndex) {
+                        goToDish(targetIndex);
+                    } else {
+                        track.style.transform = `translateY(-${currentDishIndex * 100}%)`;
+                    }
+                }
+            }
+
+            // --- Mouse events ---
+            dayContainer.addEventListener('mousedown', function(e) {
+                const target = e.target;
+                if (target.closest('.dish-dot') || target.closest('.day-dot') || target.closest('.day-nav-btn')) return;
+                onDayStart(e.clientX);
+                onDishStart(e.clientY);
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                onDayMove(e.clientX);
+                onDishMove(e.clientY);
+            });
+
+            document.addEventListener('mouseup', function() {
+                onDayEnd();
+                onDishEnd();
+            });
+
+            // --- Touch events ---
+            dayContainer.addEventListener('touchstart', function(e) {
+                const touch = e.touches[0];
+                const target = e.target;
+                if (target.closest('.dish-dot') || target.closest('.day-dot') || target.closest('.day-nav-btn')) return;
+                onDayStart(touch.clientX);
+                onDishStart(touch.clientY);
             }, { passive: true });
 
-            // Колесо мыши для десктопа
-            container.addEventListener('wheel', function(e) {
+            dayContainer.addEventListener('touchmove', function(e) {
+                const touch = e.touches[0];
+                onDayMove(touch.clientX);
+                onDishMove(touch.clientY);
+            }, { passive: true });
+
+            dayContainer.addEventListener('touchend', function() {
+                onDayEnd();
+                onDishEnd();
+            }, { passive: true });
+
+            // --- wheel ---
+            dayContainer.addEventListener('wheel', function(e) {
                 e.preventDefault();
                 if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 15) {
                     if (e.deltaX > 0) goToDay(currentDayIndex + 1);
@@ -1032,7 +1160,7 @@
                 }
             }, { passive: false });
 
-            // Клавиши
+            // --- keyboard ---
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'ArrowLeft') goToDay(currentDayIndex - 1);
                 else if (e.key === 'ArrowRight') goToDay(currentDayIndex + 1);
