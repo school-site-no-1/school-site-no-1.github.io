@@ -85,23 +85,23 @@
             flex-shrink: 0;
         }
 
-        /* СПИСОК ПРОДУКТОВ — ВЕРТИКАЛЬНО, ПОЛУПРОЗРАЧНЫЙ, БЕЗ ФОНА */
+        /* СПИСОК ПРОДУКТОВ — ВЕРТИКАЛЬНО, ПОЛУПРОЗРАЧНЫЙ, БЕЗ ФОНА, УВЕЛИЧЕННЫЙ ШРИФТ */
         .header-products {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 1px;
-            margin-top: 6px;
-            padding-top: 6px;
+            gap: 2px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px solid rgba(0,0,0,0.06);
             width: 100%;
         }
 
         .header-products .product-tag {
             color: rgba(0,0,0,0.5);
-            font-size: 13px;
+            font-size: 18px;
             font-weight: 400;
-            padding: 1px 0;
+            padding: 2px 0;
             line-height: 1.4;
             background: none;
             border: none;
@@ -436,23 +436,23 @@
                 flex-shrink: 0;
             }
 
-            /* ПРОДУКТЫ В ШАПКЕ — ВЕРТИКАЛЬНО, ПОЛУПРОЗРАЧНЫЕ, БЕЗ ФОНА */
+            /* ПРОДУКТЫ В ШАПКЕ — УВЕЛИЧЕННЫЙ ШРИФТ ДЛЯ МОБИЛЬНЫХ */
             .header-products {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 1px;
-                margin-top: 6px;
-                padding-top: 6px;
+                gap: 2px;
+                margin-top: 8px;
+                padding-top: 8px;
                 border-top: 1px solid rgba(255,255,255,0.06);
                 width: 100%;
             }
 
             .header-products .product-tag {
                 color: rgba(255,255,255,0.4);
-                font-size: 13px;
+                font-size: 20px;
                 font-weight: 400;
-                padding: 1px 0;
+                padding: 2px 0;
                 line-height: 1.4;
                 background: none;
                 border: none;
@@ -843,7 +843,7 @@
                             ${isToday ? '<span class="today-badge">⭐ Сегодня</span>' : ''}
                         </div>
                         <div class="day-total">🔥 ${total} ккал</div>
-                        <!-- ПРОДУКТЫ ТЕКУЩЕГО БЛЮДА — ВЕРТИКАЛЬНО, ПОЛУПРОЗРАЧНЫЕ, БЕЗ ФОНА -->
+                        <!-- ПРОДУКТЫ ТЕКУЩЕГО БЛЮДА — ВЕРТИКАЛЬНО, ПОЛУПРОЗРАЧНЫЕ, БЕЗ ФОНА, УВЕЛИЧЕННЫЙ ШРИФТ -->
                         ${currentProducts.length > 0 ? `
                             <div class="header-products">
                                 ${currentProducts.map(p => `<span class="product-tag">${p}</span>`).join('')}
