@@ -30,10 +30,6 @@
             width: 100%;
         }
 
-        /* ============================================ */
-        /*          ДЕСКТОПНАЯ ВЕРСИЯ                    */
-        /* ============================================ */
-
         .header {
             text-align: center;
             padding-bottom: 16px;
@@ -590,44 +586,11 @@
                 text-shadow: 0 4px 16px rgba(0,0,0,0.9);
             }
 
+            /* ============================================ */
+            /*   ПРОДУКТЫ НА ЗАВТРА - СКРЫТЫ НА МОБИЛЬНЫХ   */
+            /* ============================================ */
             .tomorrow-products {
-                position: absolute;
-                right: 16px;
-                bottom: 220px;
-                z-index: 15;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                gap: 6px;
-                pointer-events: none;
-                max-width: 120px;
-            }
-
-            .tomorrow-products .label {
-                color: rgba(255,255,255,0.3);
-                font-size: 9px !important;
-                font-weight: 400;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-                text-align: right;
-            }
-
-            .tomorrow-products .product-chip {
-                background: rgba(255,215,0,0.08);
-                color: #ffd700;
-                font-size: 10px !important;
-                font-weight: 400;
-                padding: 3px 10px;
-                border-radius: 12px;
-                border: 1px solid rgba(255,215,0,0.06);
-                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-                white-space: nowrap;
-                opacity: 0.7;
-                transition: 0.3s;
-                text-align: right;
-                width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                display: none !important;
             }
 
             .slider-dots {
@@ -948,6 +911,7 @@
                     </div>
                 </div>
 
+                <!-- Блок "Продукты на завтра" — скрыт на мобильных через CSS -->
                 ${tomorrowProducts.length > 0 ? `
                     <div class="tomorrow-products" id="tomorrowProducts">
                         <span class="label">🛒 завтра</span>
@@ -1150,10 +1114,8 @@
                     return res.json();
                 })
                 .then(data => {
-                    // Поддержка обёртки { menu: ... }
                     let menuDataRaw = data;
                     if (data.menu && data.menu.rows) {
-                        // Конвертируем формат { menu: { rows: [...] } } в нужный
                         const rows = data.menu.rows;
                         const converted = {};
                         rows.forEach(row => {
@@ -1174,7 +1136,6 @@
                         });
                         menuData = converted;
                     } else if (data.rows) {
-                        // Формат без обёртки
                         const rows = data.rows;
                         const converted = {};
                         rows.forEach(row => {
