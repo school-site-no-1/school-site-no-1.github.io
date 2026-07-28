@@ -31,13 +31,13 @@
         }
 
         .header {
-            text-align: center;
             padding-bottom: 16px;
             border-bottom: 2px solid #e8ece4;
             margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .header .day-name {
@@ -81,6 +81,26 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 2px;
+        }
+
+        /* СПИСОК ПРОДУКТОВ ПОД КАЛОРИЯМИ В ШАПКЕ */
+        .header-products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 8px;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed #e0e4dc;
+            width: 100%;
+        }
+
+        .header-products .product-tag {
+            background: #f0f3ee;
+            color: #b68a4a;
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid #e0e4dc;
         }
 
         .slider-container {
@@ -188,22 +208,6 @@
         .meal-card .meal-bread {
             font-size: 14px;
             color: #b68a4a;
-        }
-
-        .meal-card .meal-products {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 6px;
-        }
-
-        .meal-card .meal-products .product-tag {
-            background: #f0f3ee;
-            color: #b68a4a;
-            font-size: 12px;
-            padding: 2px 10px;
-            border-radius: 12px;
-            border: 1px solid #e0e4dc;
         }
 
         .slider-dots {
@@ -375,6 +379,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
+                flex-wrap: wrap;
             }
 
             .header .day-name {
@@ -414,13 +419,39 @@
             .header-left {
                 display: flex;
                 flex-direction: column;
+                align-items: flex-start;
                 gap: 2px;
+                flex: 1;
             }
 
             .header-right {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-end;
+                gap: 2px;
+                flex-shrink: 0;
+            }
+
+            /* СПИСОК ПРОДУКТОВ В ШАПКЕ НА МОБИЛЬНЫХ */
+            .header-products {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px 8px;
+                margin-top: 6px;
+                padding-top: 6px;
+                border-top: 1px solid rgba(255,255,255,0.08);
+                width: 100%;
+            }
+
+            .header-products .product-tag {
+                background: rgba(255,215,0,0.1);
+                color: #ffd700;
+                font-size: 11px !important;
+                font-weight: 500;
+                padding: 2px 12px;
+                border-radius: 20px;
+                border: 1px solid rgba(255,215,0,0.08);
+                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
             }
 
             .slider-container {
@@ -563,27 +594,9 @@
                 flex-shrink: 0;
             }
 
-            /* ПРОДУКТЫ — СПРАВА ПОД КАЛОРИЯМИ */
+            /* продукты в карточке убраны — теперь они только в шапке */
             .meal-card .meal-products {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: flex-end;
-                gap: 6px;
-                margin-top: 6px;
-                width: 100%;
-            }
-
-            .meal-card .meal-products .product-tag {
-                background: rgba(255,215,0,0.1);
-                color: #ffd700;
-                font-size: 13px !important;
-                font-weight: 500;
-                padding: 4px 14px;
-                border-radius: 20px;
-                border: 1px solid rgba(255,215,0,0.1);
-                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-                letter-spacing: 0.3px;
-                white-space: nowrap;
+                display: none !important;
             }
 
             .tomorrow-products {
@@ -771,7 +784,7 @@
                 .sort((a, b) => MEAL_ORDER.indexOf(a.label) - MEAL_ORDER.indexOf(b.label));
         }
 
-        function getAllProducts(day) {
+        function getAllProductsForDay(day) {
             if (!day || !day.meals) return [];
             const products = [];
             day.meals.forEach(meal => {
@@ -819,11 +832,7 @@
             const isToday = index === todayIndex;
             const total = getDayTotal(day);
             const meals = getFilteredMeals(day);
-
-            const nextIndex = getNextDayIndex(index);
-            const nextDayKey = getDayKey(nextIndex);
-            const nextDay = menuData[nextDayKey];
-            const tomorrowProducts = nextDay ? getAllProducts(nextDay) : [];
+            const allProducts = getAllProductsForDay(day);
 
             if (currentMealIndex >= meals.length) {
                 currentMealIndex = 0;
@@ -841,6 +850,12 @@
                             ${isToday ? '<span class="today-badge">⭐ Сегодня</span>' : ''}
                         </div>
                         <div class="day-total">🔥 ${total} ккал</div>
+                        <!-- СПИСОК ПРОДУКТОВ ПОД КАЛОРИЯМИ -->
+                        ${allProducts.length > 0 ? `
+                            <div class="header-products">
+                                ${allProducts.map(p => `<span class="product-tag">${p}</span>`).join('')}
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="header-right">
                         <div class="header-time">${currentTime}</div>
@@ -878,8 +893,6 @@
                 const kc = parseKcal(m.kcal);
                 const br = m.bread || '';
 
-                const products = m.products && Array.isArray(m.products) ? m.products : [];
-
                 html += `
                     <div class="slider-slide" data-index="${idx}">
                         <div class="meal-card">
@@ -893,11 +906,6 @@
                                     <span class="meal-kcal">🔥 ${kc} ккал</span>
                                     ${br ? `<span class="meal-bread">${br}</span>` : ''}
                                 </div>
-                                ${products.length > 0 ? `
-                                    <div class="meal-products">
-                                        ${products.map(p => `<span class="product-tag">${p}</span>`).join('')}
-                                    </div>
-                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -907,15 +915,6 @@
             html += `
                     </div>
                 </div>
-
-                <!-- Блок "Продукты на завтра" — скрыт на мобильных через CSS -->
-                ${tomorrowProducts.length > 0 ? `
-                    <div class="tomorrow-products" id="tomorrowProducts">
-                        <span class="label">🛒 завтра</span>
-                        ${tomorrowProducts.slice(0, 6).map(p => `<span class="product-chip">${p}</span>`).join('')}
-                        ${tomorrowProducts.length > 6 ? `<span class="product-chip">+${tomorrowProducts.length - 6} ещё</span>` : ''}
-                    </div>
-                ` : ''}
 
                 <div class="slider-dots" id="sliderDots">
             `;
