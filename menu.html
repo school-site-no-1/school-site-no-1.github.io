@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Меню на сегодня</title>
     <style>
         * {
@@ -15,289 +15,164 @@
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             background: #f5f5f5;
             padding: 20px;
-            min-height: 100vh;
         }
 
         .container {
             max-width: 700px;
             margin: 0 auto;
             background: #fff;
-            padding: 24px 20px 30px;
+            padding: 24px;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: hidden;
-            position: relative;
-            width: 100%;
         }
 
-        /* Шапка */
-        .header {
-            text-align: center;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #e8ece4;
-            margin-bottom: 16px;
-        }
-
-        .header .day-name {
+        h1 {
             font-size: 24px;
-            font-weight: 700;
             color: #1f4a1e;
+            text-align: center;
+            margin-bottom: 4px;
         }
 
-        .header .day-name .today-badge {
-            font-size: 13px;
-            color: #fff;
-            background: #1f4a1e;
-            padding: 2px 12px;
-            border-radius: 30px;
-            margin-left: 8px;
-            display: inline-block;
-            vertical-align: middle;
+        .subtitle {
+            text-align: center;
+            color: #6b7a6a;
+            margin-bottom: 16px;
+            font-size: 15px;
         }
 
-        .header .day-total {
-            font-size: 16px;
-            color: #d68a3c;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        /* Слайдер */
-        .slider-container {
-            position: relative;
-            overflow: hidden;
-            touch-action: pan-y;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .slider-track {
-            display: flex;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: transform;
-            cursor: grab;
-        }
-
-        .slider-track:active {
-            cursor: grabbing;
-        }
-
-        .slider-slide {
-            min-width: 100%;
-            padding: 0 4px;
-            box-sizing: border-box;
-        }
-
-        /* Карточка приёма - горизонтальная */
-        .meal-card {
-            border: 1px solid #e8ece4;
-            border-radius: 12px;
-            overflow: hidden;
+        .day-card {
+            border: 1px solid #e0e4dc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
             background: #fafbf9;
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            min-height: 280px;
         }
 
-        .meal-card .meal-image {
-            width: 380px;
-            min-height: 280px;
-            object-fit: cover;
-            background: #f0f3ee;
-            flex-shrink: 0;
+        .day-card.today {
+            border: 2px solid #1f4a1e;
         }
 
-        .meal-card .meal-image.empty {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 56px;
-            color: #ccc;
-            background: #f8faf5;
-            width: 380px;
-            min-height: 280px;
-            flex-shrink: 0;
-        }
-
-        .meal-card .meal-body {
-            padding: 20px 22px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .meal-card .meal-header {
+        .day-title {
+            font-weight: 700;
+            font-size: 18px;
+            color: #1f4a1e;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
         }
 
-        .meal-card .meal-label {
-            font-weight: 700;
-            font-size: 20px;
+        .day-title .total {
+            color: #d68a3c;
+            font-size: 16px;
+        }
+
+        .day-title .badge {
+            font-size: 12px;
+            background: #1f4a1e;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .meal-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f3ee;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .meal-row:last-child {
+            border-bottom: none;
+        }
+
+        .meal-row .meal-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+            background: #f0f3ee;
+        }
+
+        .meal-row .meal-image.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #ccc;
+            background: #f8faf5;
+        }
+
+        .meal-row .meal-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .meal-row .meal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .meal-row .meal-time {
+            font-size: 13px;
+            color: #8a9a88;
+            font-weight: 500;
+            min-width: 50px;
+        }
+
+        .meal-row .meal-label {
+            font-weight: 600;
+            font-size: 14px;
             color: #1f4a1e;
         }
 
-        .meal-card .meal-label.snack {
+        .meal-row .meal-label.snack {
             color: #8a7a5a;
         }
 
-        .meal-card .meal-time {
-            font-size: 15px;
-            color: #8a9a88;
-            font-weight: 500;
-        }
-
-        .meal-card .meal-text {
-            color: #222;
-            font-size: 17px;
-            line-height: 1.5;
-        }
-
-        .meal-card .meal-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .meal-card .meal-kcal {
-            font-weight: 600;
-            color: #7a8a78;
-            font-size: 16px;
-        }
-
-        .meal-card .meal-bread {
-            font-size: 15px;
-            color: #b68a4a;
-        }
-
-        /* Индикаторы */
-        .slider-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 16px;
-            padding: 4px 0;
-        }
-
-        .slider-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #d0d8cc;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-            padding: 0;
-        }
-
-        .slider-dot.active {
-            background: #1f4a1e;
-            width: 24px;
-            border-radius: 10px;
-        }
-
-        /* Навигация по дням */
-        .day-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            padding-top: 14px;
-            border-top: 2px solid #e8ece4;
-        }
-
-        .day-nav-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 4px 16px;
-            border-radius: 8px;
-            transition: 0.2s;
-            color: #1f4a1e;
-            line-height: 1;
-        }
-
-        .day-nav-btn:hover {
-            background: #f0f3ee;
-        }
-
-        .day-nav-btn:active {
-            transform: scale(0.9);
-        }
-
-        .day-nav .day-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f4a1e;
-        }
-
-        .day-nav .day-label .date {
-            font-weight: 400;
-            color: #8a9a88;
+        .meal-row .meal-text {
             font-size: 14px;
+            color: #222;
+            line-height: 1.4;
         }
 
-        /* Тост */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f4a1e;
-            color: #fff;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-size: 16px;
+        .meal-row .meal-kcal {
+            font-size: 13px;
+            color: #7a8a78;
             font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-            z-index: 999;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+            margin-left: 8px;
         }
 
-        .toast.show {
-            opacity: 1;
+        .meal-row .meal-products {
+            font-size: 12px;
+            color: #b68a4a;
+            margin-top: 2px;
         }
 
-        .toast.error {
-            background: #b33;
+        .footer {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #7a8a78;
+            text-align: center;
+            border-top: 1px solid #e0e4dc;
+            padding-top: 12px;
         }
 
         .loading {
             text-align: center;
             padding: 40px;
             color: #6b7a6a;
-            font-size: 16px;
-        }
-
-        .loading .spinner {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            border: 3px solid #e0e4dc;
-            border-top: 3px solid #1f4a1e;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 12px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .error {
             text-align: center;
             padding: 30px;
             color: #b33;
-            font-size: 15px;
         }
 
         .error .icon {
@@ -306,438 +181,24 @@
             margin-bottom: 10px;
         }
 
-        /* ============================================ */
-        /*          МОБИЛЬНАЯ ВЕРСИЯ (REELS)            */
-        /* ============================================ */
-        @media (max-width: 600px) {
-            body {
-                padding: 0;
-                background: #000;
-                min-height: 100vh;
-            }
-
-            .container {
-                max-width: 100%;
-                margin: 0;
-                padding: 0;
-                border-radius: 0;
-                box-shadow: none;
-                background: #000;
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* Шапка - поверх карточки */
-            .header {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 20;
-                padding: 20px 20px 12px;
-                border-bottom: none;
-                margin-bottom: 0;
-                background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-                pointer-events: none;
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-            }
-
-            .header .day-name {
-                color: #fff;
-                font-size: 28px !important;
-                font-weight: 800;
-                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-                letter-spacing: 0.5px;
-            }
-
-            .header .day-name .today-badge {
-                background: #fff;
-                color: #1f4a1e;
-                font-size: 12px;
-                padding: 2px 12px;
-                display: inline-block;
-                margin-left: 6px;
-            }
-
-            .header .day-total {
-                color: #ffd700;
-                font-size: 16px;
-                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-            }
-
-            .header .header-time {
-                color: rgba(255,255,255,0.95);
-                font-size: 32px !important;
-                font-weight: 800;
-                text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-                letter-spacing: 1px;
-                line-height: 1;
-                text-align: right;
-                margin-top: 4px;
-            }
-
-            .header-left {
-                display: flex;
-                flex-direction: column;
-                gap: 2px;
-            }
-
-            .header-right {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-            }
-
-            /* Слайдер на весь экран */
-            .slider-container {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                width: 100%;
-                position: relative;
-            }
-
-            .slider-track {
-                height: 100vh;
-                align-items: center;
-                width: 100%;
-            }
-
-            .slider-slide {
-                padding: 0;
-                height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-            }
-
-            /* Карточка как Reels - вертикальная на весь экран */
-            .meal-card {
-                flex-direction: column;
-                min-height: auto;
-                border: none;
-                border-radius: 0;
-                background: #000;
-                width: 100%;
-                height: 100vh;
-                position: relative;
-                justify-content: center;
-                align-items: center;
-                display: flex;
-            }
-
-            .meal-card .meal-image {
-                width: 100%;
-                height: 100vh;
-                min-height: 100vh;
-                max-height: 100vh;
-                object-fit: cover;
-                border-radius: 0;
-                position: absolute;
-                top: 0;
-                left: 0;
-                display: block;
-                flex-shrink: 0;
-            }
-
-            .meal-card .meal-image.empty {
-                width: 100%;
-                height: 100vh;
-                min-height: 100vh;
-                font-size: 100px;
-                background: #1a1a1a;
-                border-radius: 0;
-                position: absolute;
-                top: 0;
-                left: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #555;
-            }
-
-            .meal-card .meal-body {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 30px 24px 140px;
-                background: linear-gradient(0deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
-                color: #fff;
-                z-index: 10;
-                pointer-events: none;
-                display: block !important;
-            }
-
-            .meal-card .meal-header {
-                margin-bottom: 10px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-direction: row;
-            }
-
-            .meal-card .meal-label {
-                color: #fff;
-                font-size: 30px !important;
-                font-weight: 800;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-                display: block !important;
-                letter-spacing: 0.5px;
-            }
-
-            .meal-card .meal-label.snack {
-                color: #ffd700;
-            }
-
-            .meal-card .meal-products {
-                margin: 0 auto 12px;
-                padding: 14px 18px;
-                background: rgba(255,255,255,0.06);
-                border-radius: 14px;
-                border: 1px solid rgba(255,255,255,0.08);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-                max-width: 92%;
-            }
-
-            .meal-card .meal-products .product-tag {
-                background: rgba(255,215,0,0.1);
-                color: #ffd700;
-                font-size: 13px !important;
-                font-weight: 500;
-                padding: 4px 14px;
-                border-radius: 20px;
-                border: 1px solid rgba(255,215,0,0.1);
-                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-                letter-spacing: 0.3px;
-                white-space: nowrap;
-            }
-
-            .meal-card .meal-products .product-tag .qty {
-                color: rgba(255,215,0,0.4);
-                font-size: 11px;
-                margin-left: 4px;
-            }
-
-            .meal-card .meal-text {
-                color: #fff;
-                font-size: 24px !important;
-                font-weight: 500;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-                line-height: 1.4;
-                display: block !important;
-                margin-top: 2px;
-                text-align: center;
-            }
-
-            .meal-card .meal-bottom {
-                margin-top: 10px;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .meal-card .meal-kcal {
-                color: #ffd700;
-                font-size: 18px !important;
-                font-weight: 700;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-            }
-
-            .meal-card .meal-bread {
-                color: #ffd700;
-                font-size: 16px !important;
-                font-weight: 500;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-            }
-
-            /* ============================================ */
-            /*   ПРОДУКТЫ НА ЗАВТРА - ПОДНЯТЫ НА 100px      */
-            /* ============================================ */
-            .tomorrow-products {
-                position: absolute;
-                right: 16px;
-                bottom: 220px; /* было 120px, подняли на 100px */
-                z-index: 15;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                gap: 6px;
-                pointer-events: none;
-                max-width: 120px;
-            }
-
-            .tomorrow-products .label {
-                color: rgba(255,255,255,0.3);
-                font-size: 9px !important;
-                font-weight: 400;
-                letter-spacing: 1px;
-                text-transform: uppercase;
-                text-align: right;
-            }
-
-            .tomorrow-products .product-chip {
-                background: rgba(255,215,0,0.08);
-                color: #ffd700;
-                font-size: 10px !important;
-                font-weight: 400;
-                padding: 3px 10px;
-                border-radius: 12px;
-                border: 1px solid rgba(255,215,0,0.06);
-                text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-                white-space: nowrap;
-                opacity: 0.7;
-                transition: 0.3s;
-                text-align: right;
-                width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            /* Точки - поверх картинки справа, под продуктами */
-            .slider-dots {
-                position: absolute;
-                right: 16px;
-                top: 50%;
-                transform: translateY(-50%);
-                flex-direction: column;
-                gap: 14px;
-                z-index: 14;
-                margin-top: 0;
-                padding: 0;
-                pointer-events: auto;
-                display: flex !important;
-            }
-
-            .slider-dot {
-                width: 12px;
-                height: 12px;
-                background: rgba(255,255,255,0.2);
-                border: 2px solid rgba(255,255,255,0.05);
-                border-radius: 50%;
-                display: block;
-                transition: 0.3s;
-            }
-
-            .slider-dot.active {
-                background: #fff;
-                width: 18px;
-                height: 18px;
-                border-color: #fff;
-                box-shadow: 0 0 20px rgba(255,255,255,0.15);
-            }
-
-            /* Навигация по дням - поверх картинки внизу */
-            .day-nav {
-                position: absolute;
-                bottom: 24px;
-                left: 0;
-                right: 0;
-                z-index: 15;
-                margin-top: 0;
-                padding: 0 20px;
-                border-top: none;
-                pointer-events: auto;
-                display: flex !important;
-            }
-
-            .day-nav-btn {
-                color: #fff;
-                font-size: 36px;
-                text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-                padding: 10px 18px;
-                background: rgba(0,0,0,0.3);
-                border-radius: 50%;
-                width: 54px;
-                height: 54px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-                border: 1px solid rgba(255,255,255,0.08);
-                transition: 0.3s;
-            }
-
-            .day-nav-btn:hover {
-                background: rgba(255,255,255,0.12);
-            }
-
-            .day-nav .day-label {
-                color: #fff;
-                font-size: 20px;
-                font-weight: 700;
-                text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-            }
-        }
-
-        @media print {
-            .day-nav-btn, .slider-dots, .tomorrow-products {
-                display: none !important;
-            }
-            .container {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-            .meal-card {
-                flex-direction: row !important;
-            }
-            .meal-card .meal-image {
-                width: 180px !important;
-                height: 140px !important;
-                min-height: 140px !important;
-            }
-            .meal-card .meal-image.empty {
-                width: 180px !important;
-                height: 140px !important;
-                min-height: 140px !important;
+        @media (max-width: 500px) {
+            .meal-row .meal-image {
+                width: 50px;
+                height: 50px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="app">
         <div id="content">
-            <div class="loading">
-                <div class="spinner"></div>
-                <div>Загрузка меню...</div>
-            </div>
+            <div class="loading">Загрузка меню...</div>
         </div>
     </div>
-
-    <div class="toast" id="toast"></div>
 
     <script>
         // ===== CONFIG =====
         const MEAL_ORDER = ['Завтрак', 'Перекус', 'Обед', 'Полдник', 'Ужин'];
-        const MEAL_ICONS = {
-            'Завтрак': '🍳',
-            'Перекус': '🍎',
-            'Обед': '🍗',
-            'Полдник': '🥛',
-            'Ужин': '🥘'
-        };
-        const MEAL_TIMES = {
-            'Завтрак': '08:00',
-            'Перекус': '10:00',
-            'Обед': '14:00',
-            'Полдник': '16:00',
-            'Ужин': '19:00'
-        };
-
         const DAY_NAMES = {
             mon: 'Понедельник',
             tue: 'Вторник',
@@ -747,40 +208,22 @@
             sat: 'Суббота',
             sun: 'Воскресенье'
         };
-
         const DAY_ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-        let menuData = null;
-        let currentDayIndex = 0;
-        let currentMealIndex = 0;
-
         // ===== HELPERS =====
-        function getTodayIndex() {
-            const today = new Date().getDay();
-            return today === 0 ? 6 : today - 1;
-        }
-
-        function getDayKey(index) {
-            return DAY_ORDER[index];
-        }
-
-        function getNextDayIndex(index) {
-            return (index + 1) % 7;
+        function getTodayKey() {
+            const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+            return days[new Date().getDay()];
         }
 
         function parseKcal(kcalStr) {
             if (!kcalStr) return 0;
-            const cleaned = String(kcalStr).replace(/[^0-9]/g, '');
-            return parseInt(cleaned) || 0;
+            return parseInt(String(kcalStr).replace(/[^0-9]/g, '')) || 0;
         }
 
-        function getDayTotal(dayData) {
-            if (!dayData || !dayData.meals) return 0;
-            return dayData.meals.reduce((sum, m) => sum + parseKcal(m.kcal), 0);
-        }
-
-        function getMealTime(label) {
-            return MEAL_TIMES[label] || '';
+        function getDayTotal(day) {
+            if (!day || !day.meals) return 0;
+            return day.meals.reduce((sum, m) => sum + parseKcal(m.kcal), 0);
         }
 
         function getFilteredMeals(day) {
@@ -790,389 +233,103 @@
                 .sort((a, b) => MEAL_ORDER.indexOf(a.label) - MEAL_ORDER.indexOf(b.label));
         }
 
-        function getAllProducts(day) {
-            if (!day || !day.meals) return [];
-            const products = [];
-            day.meals.forEach(meal => {
-                if (meal.products && Array.isArray(meal.products)) {
-                    meal.products.forEach(p => {
-                        const trimmed = p.trim();
-                        if (trimmed && !products.includes(trimmed)) {
-                            products.push(trimmed);
-                        }
-                    });
-                }
-            });
-            return products;
-        }
-
-        // ===== TOAST =====
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
-        }
-
         // ===== RENDER =====
-        function renderDay(index) {
-            if (!menuData) return;
-
-            const dayKey = getDayKey(index);
-            const day = menuData[dayKey];
-            if (!day) {
-                document.getElementById('content').innerHTML = `
-                    <div class="error">
-                        <span class="icon">📂</span>
-                        Нет данных для этого дня
-                    </div>
-                `;
-                return;
-            }
-
-            const todayIndex = getTodayIndex();
-            const isToday = index === todayIndex;
-            const total = getDayTotal(day);
-            const meals = getFilteredMeals(day);
-
-            // Продукты на завтра (следующий день)
-            const nextIndex = getNextDayIndex(index);
-            const nextDayKey = getDayKey(nextIndex);
-            const nextDay = menuData[nextDayKey];
-            const tomorrowProducts = nextDay ? getAllProducts(nextDay) : [];
-
-            if (currentMealIndex >= meals.length) {
-                currentMealIndex = 0;
-            }
-
+        function renderMenu(data) {
             const container = document.getElementById('content');
-            const currentMeal = meals[currentMealIndex] || meals[0];
-            const currentTime = currentMeal ? getMealTime(currentMeal.label) : '';
+            const todayKey = getTodayKey();
 
             let html = `
-                <div class="header">
-                    <div class="header-left">
-                        <div class="day-name">
-                            ${DAY_NAMES[dayKey]}
-                            ${isToday ? '<span class="today-badge">⭐ Сегодня</span>' : ''}
+                <h1>🥗 План питания на неделю</h1>
+                <div class="subtitle">~1600 ккал/день</div>
+            `;
+
+            DAY_ORDER.forEach(dayKey => {
+                const day = data[dayKey];
+                if (!day) return;
+                const isToday = dayKey === todayKey;
+                const meals = getFilteredMeals(day);
+                const total = getDayTotal(day);
+
+                html += `
+                    <div class="day-card${isToday ? ' today' : ''}">
+                        <div class="day-title">
+                            <span>${day.name || DAY_NAMES[dayKey]}${isToday ? ' <span class="badge">⭐ Сегодня</span>' : ''}</span>
+                            <span class="total">${total} ккал</span>
                         </div>
-                        <div class="day-total">🔥 ${total} ккал</div>
-                    </div>
-                    <div class="header-right">
-                        <div class="header-time">${currentTime}</div>
-                    </div>
-                </div>
-            `;
-
-            if (meals.length === 0) {
-                html += `
-                    <div style="text-align:center;padding:30px;color:#8a9a88;">
-                        <div style="font-size:48px;margin-bottom:12px;">🍽️</div>
-                        Нет приёмов пищи
-                    </div>
-                    <div class="day-nav">
-                        <button class="day-nav-btn" onclick="changeDay(-1)">‹</button>
-                        <span class="day-label">${DAY_NAMES[dayKey]}</span>
-                        <button class="day-nav-btn" onclick="changeDay(1)">›</button>
-                    </div>
                 `;
-                container.innerHTML = html;
-                currentDayIndex = index;
-                return;
-            }
 
-            html += `
-                <div class="slider-container" id="sliderContainer">
-                    <div class="slider-track" id="sliderTrack">
-            `;
+                meals.forEach(meal => {
+                    const isSnack = meal.label === 'Перекус' || meal.label === 'Полдник';
+                    const products = Array.isArray(meal.products) ? meal.products.join(', ') : '';
+                    const image = meal.image || '';
+                    const kcal = parseKcal(meal.kcal);
+                    const time = meal.time || '--:--';
 
-            meals.forEach((m, idx) => {
-                const img = m.image || '';
-                const lbl = m.label;
-                const t = getMealTime(lbl);
-                const isSn = lbl === 'Перекус' || lbl === 'Полдник';
-                const kc = parseKcal(m.kcal);
-                const br = m.bread || '';
-
-                const products = m.products && Array.isArray(m.products) ? m.products : [];
-
-                html += `
-                    <div class="slider-slide" data-index="${idx}">
-                        <div class="meal-card">
-                            ${img ? `<img src="${img}" class="meal-image" alt="${lbl}" onerror="this.className='meal-image empty';this.alt='🖼️'">` : `<div class="meal-image empty">🖼️</div>`}
-                            <div class="meal-body">
+                    html += `
+                        <div class="meal-row">
+                            ${image ? 
+                                `<img src="${image}" class="meal-image" alt="${meal.label}" onerror="this.className='meal-image empty';this.textContent='🖼️'">` :
+                                `<div class="meal-image empty">🖼️</div>`
+                            }
+                            <div class="meal-content">
                                 <div class="meal-header">
-                                    <span class="meal-label${isSn ? ' snack' : ''}">${lbl}</span>
+                                    <span class="meal-time">⏰ ${time}</span>
+                                    <span class="meal-label${isSnack ? ' snack' : ''}">${meal.label}</span>
+                                    <span class="meal-kcal">${kcal} ккал</span>
                                 </div>
-                                ${products.length > 0 ? `
-                                    <div class="meal-products">
-                                        ${products.map(p => `<span class="product-tag">${p}</span>`).join('')}
-                                    </div>
-                                ` : ''}
-                                <div class="meal-text">${m.text}</div>
-                                <div class="meal-bottom">
-                                    <span class="meal-kcal">🔥 ${kc} ккал</span>
-                                    ${br ? `<span class="meal-bread">${br}</span>` : ''}
-                                </div>
+                                <div class="meal-text">${meal.text}</div>
+                                ${products ? `<div class="meal-products">📦 ${products}</div>` : ''}
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                });
+
+                html += `</div>`;
             });
 
             html += `
-                    </div>
-                </div>
-
-                <!-- ПРОДУКТЫ НА ЗАВТРА - НАД ТОЧКАМИ (ПОДНЯТЫ НА 100px) -->
-                ${tomorrowProducts.length > 0 ? `
-                    <div class="tomorrow-products" id="tomorrowProducts">
-                        <span class="label">🛒 завтра</span>
-                        ${tomorrowProducts.slice(0, 6).map(p => `<span class="product-chip">${p}</span>`).join('')}
-                        ${tomorrowProducts.length > 6 ? `<span class="product-chip">+${tomorrowProducts.length - 6} ещё</span>` : ''}
-                    </div>
-                ` : ''}
-
-                <div class="slider-dots" id="sliderDots">
-            `;
-
-            meals.forEach((_, idx) => {
-                html += `<button class="slider-dot${idx === currentMealIndex ? ' active' : ''}" data-index="${idx}"></button>`;
-            });
-
-            html += `
-                </div>
-
-                <div class="day-nav">
-                    <button class="day-nav-btn" onclick="changeDay(-1)">‹</button>
-                    <span class="day-label">
-                        ${DAY_NAMES[dayKey]}
-                    </span>
-                    <button class="day-nav-btn" onclick="changeDay(1)">›</button>
-                </div>
+                <div class="footer">🍽️ Приятного аппетита!</div>
             `;
 
             container.innerHTML = html;
-            currentDayIndex = index;
-
-            initSlider(meals.length);
         }
 
-        // ===== SLIDER =====
-        function initSlider(totalSlides) {
-            const track = document.getElementById('sliderTrack');
-            const dots = document.querySelectorAll('.slider-dot');
-
-            if (!track || totalSlides <= 1) {
-                if (track) track.style.transform = 'translateX(0)';
-                return;
-            }
-
-            dots.forEach(dot => {
-                dot.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    goToSlide(index);
-                });
-            });
-
-            let startX = 0;
-            let isDragging = false;
-            let currentTranslate = 0;
-            let startTranslate = 0;
-
-            const getTranslate = () => {
-                const style = window.getComputedStyle(track);
-                const matrix = style.transform;
-                if (matrix === 'none') return 0;
-                const values = matrix.match(/matrix.*\((.+)\)/);
-                if (values) {
-                    const nums = values[1].split(', ');
-                    return parseFloat(nums[4]) || 0;
-                }
-                return 0;
-            };
-
-            const setTranslate = (x) => {
-                const maxTranslate = 0;
-                const minTranslate = -(totalSlides - 1) * 100;
-                const clamped = Math.max(minTranslate, Math.min(maxTranslate, x));
-                track.style.transform = `translateX(${clamped}%)`;
-                currentTranslate = clamped;
-            };
-
-            const snapToSlide = () => {
-                const slideWidth = 100;
-                const ratio = Math.round(-currentTranslate / slideWidth);
-                const targetIndex = Math.max(0, Math.min(totalSlides - 1, ratio));
-                goToSlide(targetIndex);
-            };
-
-            track.addEventListener('mousedown', function(e) {
-                isDragging = true;
-                startX = e.clientX;
-                startTranslate = currentTranslate || getTranslate();
-                track.style.cursor = 'grabbing';
-                track.style.transition = 'none';
-                e.preventDefault();
-            });
-
-            document.addEventListener('mousemove', function(e) {
-                if (!isDragging) return;
-                const deltaX = ((e.clientX - startX) / track.offsetWidth) * 100;
-                setTranslate(startTranslate + deltaX);
-                e.preventDefault();
-            });
-
-            document.addEventListener('mouseup', function() {
-                if (isDragging) {
-                    isDragging = false;
-                    track.style.cursor = 'grab';
-                    track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    snapToSlide();
-                }
-            });
-
-            let touchStartX = 0;
-            let touchStartTranslate = 0;
-
-            track.addEventListener('touchstart', function(e) {
-                const touch = e.touches[0];
-                touchStartX = touch.clientX;
-                touchStartTranslate = currentTranslate || getTranslate();
-                track.style.transition = 'none';
-            }, { passive: true });
-
-            track.addEventListener('touchmove', function(e) {
-                const touch = e.touches[0];
-                const deltaX = ((touch.clientX - touchStartX) / track.offsetWidth) * 100;
-                setTranslate(touchStartTranslate + deltaX);
-            }, { passive: true });
-
-            track.addEventListener('touchend', function() {
-                track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                snapToSlide();
-            }, { passive: true });
-
-            window.addEventListener('resize', function() {
-                goToSlide(currentMealIndex, false);
-            });
-
-            setTimeout(() => {
-                goToSlide(currentMealIndex, false);
-            }, 50);
-        }
-
-        function goToSlide(index, animate = true) {
-            const track = document.getElementById('sliderTrack');
-            const dots = document.querySelectorAll('.slider-dot');
-
-            if (!track) return;
-
-            const totalSlides = dots.length;
-            if (totalSlides === 0) return;
-
-            const clampedIndex = Math.max(0, Math.min(totalSlides - 1, index));
-            currentMealIndex = clampedIndex;
-
-            if (!animate) {
-                track.style.transition = 'none';
-            } else {
-                track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            }
-
-            const translateX = -clampedIndex * 100;
-            track.style.transform = `translateX(${translateX}%)`;
-            currentTranslate = translateX;
-
-            dots.forEach((dot, idx) => {
-                dot.classList.toggle('active', idx === clampedIndex);
-            });
-
-            // Обновляем время в шапке
-            const meals = getFilteredMeals(menuData[getDayKey(currentDayIndex)]);
-            if (meals && meals[clampedIndex]) {
-                const timeStr = getMealTime(meals[clampedIndex].label);
-                const headerTime = document.querySelector('.header .header-time');
-                if (headerTime) {
-                    headerTime.textContent = timeStr;
-                }
-            }
-
-            if (!animate) {
-                setTimeout(() => {
-                    track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                }, 50);
-            }
-        }
-
-        // ===== NAVIGATION =====
-        function changeDay(delta) {
-            const newIndex = (currentDayIndex + delta + 7) % 7;
-            currentMealIndex = 0;
-            renderDay(newIndex);
-        }
-
-        // ===== LOAD MENU =====
+        // ===== LOAD =====
         function loadMenu() {
             const container = document.getElementById('content');
-            container.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <div>Загрузка меню...</div>
-                </div>
-            `;
+            container.innerHTML = '<div class="loading">Загрузка меню...</div>';
 
+            // Сначала пробуем загрузить из localStorage (если есть)
+            try {
+                const saved = localStorage.getItem('userMenuData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    renderMenu(data);
+                    return;
+                }
+            } catch (e) {}
+
+            // Затем пробуем загрузить из файла
             fetch('menu_week.json')
                 .then(res => {
                     if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     return res.json();
                 })
                 .then(data => {
-                    menuData = data;
-                    currentDayIndex = getTodayIndex();
-                    currentMealIndex = 0;
-                    renderDay(currentDayIndex);
+                    renderMenu(data);
                 })
-                .catch((err) => {
-                    console.error('Error:', err);
+                .catch(() => {
                     container.innerHTML = `
                         <div class="error">
                             <span class="icon">📂</span>
-                            Не удалось загрузить файл <strong>menu_week.json</strong><br>
+                            Не найден файл <strong>menu_week.json</strong><br>
                             <small style="color:#6b7a6a;display:block;margin-top:8px;">
-                                Ошибка: ${err.message}
+                                Проверьте, что файл находится в той же папке
                             </small>
-                            <br>
-                            <button onclick="loadMenu()" style="padding:6px 20px;border:none;border-radius:30px;background:#1f4a1e;color:#fff;cursor:pointer;font-size:15px;margin-top:8px;">🔄 Попробовать снова</button>
                         </div>
                     `;
                 });
         }
-
-        // ===== KEYBOARD =====
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
-                const dots = document.querySelectorAll('.slider-dot');
-                if (dots.length > 1) {
-                    const newIndex = Math.max(0, currentMealIndex - 1);
-                    goToSlide(newIndex);
-                } else {
-                    changeDay(-1);
-                }
-            } else if (e.key === 'ArrowRight') {
-                const dots = document.querySelectorAll('.slider-dot');
-                if (dots.length > 1) {
-                    const newIndex = Math.min(dots.length - 1, currentMealIndex + 1);
-                    goToSlide(newIndex);
-                } else {
-                    changeDay(1);
-                }
-            }
-        });
 
         // ===== INIT =====
         loadMenu();
