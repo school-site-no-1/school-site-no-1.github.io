@@ -44,18 +44,21 @@
       border-bottom: 1px solid #2f2a26;
       flex-shrink: 0;
       z-index: 5;
+      position: relative;
     }
     .reels-header .brand {
       font-weight: 600;
       font-size: 18px;
       letter-spacing: 0.3px;
       color: #f5efe8;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
     }
     .reels-header .brand span {
       color: #c7a88c;
     }
     .reels-header .badge {
-      background: #2f2a26;
+      background: rgba(47, 42, 38, 0.85);
+      backdrop-filter: blur(4px);
       padding: 4px 14px;
       border-radius: 40px;
       font-size: 13px;
@@ -69,14 +72,13 @@
       touch-action: none;
     }
 
-    /* каждый слайд — это день */
     .reels-slide {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      padding: 12px 16px 16px 16px;
+      padding: 10px 12px 12px 12px;
       overflow: hidden;
       opacity: 0;
       transform: translateX(40px);
@@ -91,29 +93,30 @@
       pointer-events: auto;
     }
 
-    /* день */
     .day-label {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
       color: #f5efe8;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #2f2a26;
-      margin-bottom: 10px;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+      z-index: 2;
+      position: relative;
     }
     .day-label .day-cal {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 400;
       color: #c7a88c;
-      background: #2f2a26;
+      background: rgba(47, 42, 38, 0.8);
+      backdrop-filter: blur(4px);
       padding: 2px 14px;
       border-radius: 40px;
     }
 
-    /* контейнер для блюд внутри дня */
     .day-slides-track {
       flex: 1;
       position: relative;
@@ -128,110 +131,109 @@
       left: 0;
       width: 100%;
       height: 100%;
-      padding: 4px 0;
-      overflow-y: auto;
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: scale(0.96);
+      transition: opacity 0.35s ease, transform 0.35s ease;
       pointer-events: none;
-      scrollbar-width: thin;
-      scrollbar-color: #3d3530 transparent;
+      border-radius: 20px;
+      overflow: hidden;
     }
     .dish-slide.active {
       opacity: 1;
-      transform: translateY(0);
+      transform: scale(1);
       pointer-events: auto;
     }
-    .dish-slide::-webkit-scrollbar {
-      width: 3px;
-    }
-    .dish-slide::-webkit-scrollbar-thumb {
-      background: #3d3530;
+
+    .dish-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
       border-radius: 20px;
+      overflow: hidden;
+      background: #1a1715;
     }
 
-    /* карточка блюда */
-    .dish-card {
-      background: #24201d;
-      border-radius: 24px;
-      padding: 16px 16px 14px;
-      border: 1px solid #33302c;
-      margin-bottom: 2px;
-    }
-    .dish-card .dish-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .dish-card .dish-photo {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
+    /* фото на весь блок */
+    .dish-card .dish-photo-full {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      border: 2px solid #3d3530;
-      background: #2f2a26;
-      flex-shrink: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 20px;
     }
     .dish-card .dish-photo-placeholder {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: #2f2a26;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #2a2622, #1a1715);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 48px;
+      color: #4a3f38;
+      border-radius: 20px;
+    }
+
+    /* оверлей с информацией поверх фото */
+    .dish-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 18px 18px 18px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+      border-radius: 0 0 20px 20px;
+    }
+    .dish-overlay .dish-name {
       font-size: 22px;
-      color: #6a5f56;
-      border: 2px solid #3d3530;
-      flex-shrink: 0;
-    }
-    .dish-card .dish-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .dish-card .dish-info .dish-name {
-      font-size: 18px;
-      font-weight: 600;
-      color: #f5efe8;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
       line-height: 1.2;
     }
-    .dish-card .dish-info .meal-label {
-      font-size: 13px;
-      color: #b8a69a;
-    }
-    .dish-card .dish-cal {
-      font-size: 13px;
+    .dish-overlay .meal-label {
+      font-size: 14px;
       color: #c7a88c;
-      background: #2f2a26;
-      padding: 2px 14px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      margin-top: 2px;
+    }
+    .dish-overlay .dish-cal {
+      font-size: 14px;
+      color: #f5efe8;
+      background: rgba(199, 168, 140, 0.25);
+      backdrop-filter: blur(4px);
+      padding: 2px 16px;
       border-radius: 40px;
       display: inline-block;
       margin-top: 6px;
+      border: 1px solid rgba(255,255,255,0.08);
     }
-    .dish-card .product-list {
+    .dish-overlay .product-list {
       display: flex;
       flex-wrap: wrap;
       gap: 4px 10px;
-      margin-top: 8px;
+      margin-top: 10px;
       padding-top: 10px;
-      border-top: 1px solid #2f2a26;
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
-    .dish-card .product-list .p-item {
-      font-size: 14px;
-      color: #cfc3b8;
-      background: #2a2622;
-      padding: 2px 12px;
+    .dish-overlay .product-list .p-item {
+      font-size: 13px;
+      color: #e0d6cc;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      padding: 2px 14px;
       border-radius: 40px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
-    .dish-card .product-list .p-item .p-detail {
-      color: #a08f81;
+    .dish-overlay .product-list .p-item .p-detail {
+      color: #b8a69a;
       font-size: 12px;
     }
 
-    /* индикаторы дней (внизу) */
     .slide-indicator {
       display: flex;
       justify-content: center;
@@ -240,6 +242,7 @@
       flex-shrink: 0;
       background: #1a1715;
       flex-wrap: wrap;
+      z-index: 2;
     }
     .slide-dot {
       width: 8px;
@@ -254,21 +257,25 @@
       width: 26px;
     }
 
-    /* индикатор блюд внутри дня (маленькие точки) */
     .dish-dots {
       display: flex;
       justify-content: center;
       gap: 6px;
-      padding: 4px 0 2px 0;
+      padding: 2px 0 4px 0;
       flex-shrink: 0;
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      z-index: 10;
     }
     .dish-dot {
       width: 6px;
       height: 6px;
       border-radius: 20px;
-      background: #3d3530;
+      background: rgba(255,255,255,0.3);
       transition: 0.25s;
       cursor: pointer;
+      backdrop-filter: blur(2px);
     }
     .dish-dot.active {
       background: #c7a88c;
@@ -288,9 +295,9 @@
     }
     .nav-arrows button {
       pointer-events: auto;
-      background: rgba(26, 23, 21, 0.7);
+      background: rgba(26, 23, 21, 0.6);
       backdrop-filter: blur(8px);
-      border: 1px solid #3d3530;
+      border: 1px solid rgba(255,255,255,0.1);
       color: #f5efe8;
       width: 40px;
       height: 40px;
@@ -321,11 +328,8 @@
       .nav-arrows {
         display: block;
       }
-      .dish-card {
-        padding: 20px 18px 16px;
-      }
-      .dish-card .dish-info .dish-name {
-        font-size: 20px;
+      .dish-overlay .dish-name {
+        font-size: 26px;
       }
     }
     @media (max-width: 480px) {
@@ -336,6 +340,12 @@
       }
       .reels-header .brand {
         font-size: 16px;
+      }
+      .dish-overlay .dish-name {
+        font-size: 20px;
+      }
+      .dish-overlay {
+        padding: 16px 14px 14px 14px;
       }
     }
 
@@ -455,7 +465,7 @@
     let currentDayIndex = 0;
     let currentDishIndex = 0;
     let totalDays = 7;
-    let dayDishes = []; // массив массивов блюд по дням
+    let dayDishes = [];
 
     const track = document.getElementById('reelsTrack');
     const indicator = document.getElementById('slideIndicator');
@@ -464,11 +474,7 @@
     const nextBtn = document.getElementById('nextSlideBtn');
     const toastEl = document.getElementById('toast');
 
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-    let isSwipingDay = false;
+    let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
 
     function showToast(msg) {
       toastEl.textContent = msg;
@@ -479,13 +485,10 @@
 
     function roundNum(v) { return Math.round(v || 0); }
 
-    // --- подготовка данных: dayDishes[день] = [блюдо1, блюдо2, ...] ---
     function prepareData(menuData) {
       const rows = menuData.rows || [];
       const dishesByDay = [];
-      for (let d = 0; d < 7; d++) {
-        dishesByDay[d] = [];
-      }
+      for (let d = 0; d < 7; d++) dishesByDay[d] = [];
       rows.forEach((row) => {
         const mealLabel = row.label || '';
         row.cells.forEach((cell, dayIdx) => {
@@ -499,7 +502,6 @@
           });
         });
       });
-      // сортируем блюда внутри дня по приёму (завтрак, обед, ужин)
       const order = { 'Завтрак': 1, 'Обед': 2, 'Ужин': 3 };
       for (let d = 0; d < 7; d++) {
         dishesByDay[d].sort((a, b) => (order[a.meal] || 9) - (order[b.meal] || 9));
@@ -507,7 +509,6 @@
       return dishesByDay;
     }
 
-    // --- рендер одного блюда (карточка) ---
     function renderDishCard(dishData) {
       const photo = dishData.photo || '';
       const dishName = dishData.dish || 'Блюдо';
@@ -517,7 +518,7 @@
 
       let photoHtml = '';
       if (photo && photo.length > 50) {
-        photoHtml = `<img class="dish-photo" src="${photo}" alt="${dishName}" />`;
+        photoHtml = `<img class="dish-photo-full" src="${photo}" alt="${dishName}" />`;
       } else {
         photoHtml = `<div class="dish-photo-placeholder">📷</div>`;
       }
@@ -541,25 +542,22 @@
         });
         productsHtml += `</div>`;
       } else {
-        productsHtml = `<div style="color:#6a5f56;font-size:14px;padding:4px 0;">нет продуктов</div>`;
+        productsHtml = `<div style="color:#b8a69a;font-size:13px;padding:2px 0;">нет продуктов</div>`;
       }
 
       return `
         <div class="dish-card">
-          <div class="dish-header">
-            ${photoHtml}
-            <div class="dish-info">
-              <div class="dish-name">${dishName}</div>
-              <div class="meal-label">${mealLabel}</div>
-            </div>
+          ${photoHtml}
+          <div class="dish-overlay">
+            <div class="dish-name">${dishName}</div>
+            <div class="meal-label">${mealLabel}</div>
+            <div class="dish-cal">🔥 ${totalCal} ккал</div>
+            ${productsHtml}
           </div>
-          <div class="dish-cal">🔥 ${totalCal} ккал</div>
-          ${productsHtml}
         </div>
       `;
     }
 
-    // --- построить слайды дней ---
     function buildSlides() {
       const placeholder = document.getElementById('loadingPlaceholder');
       if (placeholder) placeholder.remove();
@@ -583,7 +581,6 @@
         daySlide.className = 'reels-slide' + (d === currentDayIndex ? ' active' : '');
         daySlide.dataset.day = d;
 
-        // заголовок дня
         const dayLabel = document.createElement('div');
         dayLabel.className = 'day-label';
         const totalDayCal = dayDishes[d].reduce((sum, dish) => {
@@ -595,7 +592,6 @@
         `;
         daySlide.appendChild(dayLabel);
 
-        // контейнер для блюд
         const dishesTrack = document.createElement('div');
         dishesTrack.className = 'day-slides-track';
         dishesTrack.dataset.day = d;
@@ -609,7 +605,6 @@
           dishesTrack.appendChild(dishDiv);
         });
 
-        // точки для блюд
         const dishDots = document.createElement('div');
         dishDots.className = 'dish-dots';
         dishes.forEach((_, idx) => {
@@ -618,9 +613,7 @@
           dot.dataset.dishIndex = idx;
           dot.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (d === currentDayIndex) {
-              goToDish(idx);
-            }
+            if (d === currentDayIndex) goToDish(idx);
           });
           dishDots.appendChild(dot);
         });
@@ -628,9 +621,7 @@
         daySlide.appendChild(dishesTrack);
         daySlide.appendChild(dishDots);
 
-        // обработка свайпов для блюд внутри дня
-        let dishTouchStartY = 0;
-        let dishTouchEndY = 0;
+        let dishTouchStartY = 0, dishTouchEndY = 0;
         dishesTrack.addEventListener('touchstart', (e) => {
           dishTouchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
@@ -643,7 +634,6 @@
           }
         }, { passive: true });
 
-        // колесо для блюд
         dishesTrack.addEventListener('wheel', (e) => {
           if (d === currentDayIndex && Math.abs(e.deltaY) > 15) {
             e.preventDefault();
@@ -661,7 +651,6 @@
       updateDishDots();
     }
 
-    // --- навигация по дням ---
     function goToDay(index) {
       if (index < 0) index = 0;
       if (index >= totalDays) index = totalDays - 1;
@@ -678,7 +667,6 @@
       updateCounter();
       updateDishDots();
 
-      // активируем первое блюдо в новом дне
       const activeSlide = track.querySelector('.reels-slide.active');
       if (activeSlide) {
         const dishSlides = activeSlide.querySelectorAll('.dish-slide');
@@ -704,7 +692,6 @@
       else showToast('📅 Это первый день');
     }
 
-    // --- навигация по блюдам внутри дня ---
     function goToDish(index) {
       const activeSlide = track.querySelector('.reels-slide.active');
       if (!activeSlide) return;
@@ -746,7 +733,6 @@
       }
     }
 
-    // --- индикаторы ---
     function updateIndicators() {
       indicator.innerHTML = '';
       for (let i = 0; i < totalDays; i++) {
@@ -771,7 +757,6 @@
       });
     }
 
-    // --- загрузка данных ---
     function loadDataFromJson() {
       fetch('data.json')
         .then(res => {
@@ -797,7 +782,6 @@
         });
     }
 
-    // --- инициализация ---
     function init() {
       const placeholder = document.createElement('div');
       placeholder.className = 'loading-placeholder';
@@ -807,7 +791,6 @@
 
       loadDataFromJson();
 
-      // свайпы по дням (горизонтальные)
       track.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
@@ -824,7 +807,6 @@
         }
       }, { passive: true });
 
-      // колесо для дней (горизонтальное/вертикальное)
       track.addEventListener('wheel', (e) => {
         if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 15) {
           e.preventDefault();
