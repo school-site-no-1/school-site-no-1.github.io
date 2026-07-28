@@ -52,7 +52,7 @@
         "text": "Завтрак",
         "products": [],
         "kcal": "0",
-        "image": ""
+        "image": "[image (1).jpeg]"
       },
       {
         "label": "Перекус",
@@ -60,7 +60,7 @@
         "text": "Яблоко + горсть орехов (20г)",
         "products": [],
         "kcal": "150",
-        "image": ""
+        "image": "[image (2).jpeg]"
       },
       {
         "label": "Новый приём",
@@ -68,15 +68,7 @@
         "text": "",
         "products": [],
         "kcal": "0",
-        "image": ""
-      },
-      {
-        "label": "Обед",
-        "time": "14:00",
-        "text": "Рыба (120г) + рис (70г) + салат (морковь, капуста)",
-        "products": [],
-        "kcal": "570",
-        "image": ""
+        "image": "[image (3).jpeg]"
       },
       {
         "label": "Ужин",
@@ -84,7 +76,7 @@
         "text": "Омлет (1 яйцо + 2 белка)",
         "products": [],
         "kcal": "370",
-        "image": ""
+        "image": "[image.jpeg]"
       }
     ]
   },
