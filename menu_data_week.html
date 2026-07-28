@@ -175,6 +175,8 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .meal-card .meal-kcal {
@@ -524,19 +526,51 @@
                 color: #ffd700;
             }
 
+            .meal-card .meal-text {
+                color: #fff;
+                font-size: 24px !important;
+                font-weight: 500;
+                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
+                line-height: 1.4;
+                display: block !important;
+                margin-top: 2px;
+                text-align: center;
+            }
+
+            .meal-card .meal-bottom {
+                margin-top: 10px;
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .meal-card .meal-kcal {
+                color: #ffd700;
+                font-size: 18px !important;
+                font-weight: 700;
+                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
+                flex-shrink: 0;
+            }
+
+            .meal-card .meal-bread {
+                color: #ffd700;
+                font-size: 16px !important;
+                font-weight: 500;
+                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
+                flex-shrink: 0;
+            }
+
+            /* ПРОДУКТЫ — СПРАВА ПОД КАЛОРИЯМИ */
             .meal-card .meal-products {
-                margin: 0 auto 12px;
-                padding: 14px 18px;
-                background: rgba(255,255,255,0.06);
-                border-radius: 14px;
-                border: 1px solid rgba(255,255,255,0.08);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
                 display: flex;
                 flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-                max-width: 92%;
+                justify-content: flex-end;
+                gap: 6px;
+                margin-top: 6px;
+                width: 100%;
             }
 
             .meal-card .meal-products .product-tag {
@@ -552,43 +586,6 @@
                 white-space: nowrap;
             }
 
-            .meal-card .meal-text {
-                color: #fff;
-                font-size: 24px !important;
-                font-weight: 500;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-                line-height: 1.4;
-                display: block !important;
-                margin-top: 2px;
-                text-align: center;
-            }
-
-            .meal-card .meal-bottom {
-                margin-top: 10px;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .meal-card .meal-kcal {
-                color: #ffd700;
-                font-size: 18px !important;
-                font-weight: 700;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-            }
-
-            .meal-card .meal-bread {
-                color: #ffd700;
-                font-size: 16px !important;
-                font-weight: 500;
-                text-shadow: 0 4px 16px rgba(0,0,0,0.9);
-            }
-
-            /* ============================================ */
-            /*   ПРОДУКТЫ НА ЗАВТРА - СКРЫТЫ НА МОБИЛЬНЫХ   */
-            /* ============================================ */
             .tomorrow-products {
                 display: none !important;
             }
@@ -891,16 +888,16 @@
                                 <div class="meal-header">
                                     <span class="meal-label${isSn ? ' snack' : ''}">${lbl}</span>
                                 </div>
-                                ${products.length > 0 ? `
-                                    <div class="meal-products">
-                                        ${products.map(p => `<span class="product-tag">${p}</span>`).join('')}
-                                    </div>
-                                ` : ''}
                                 <div class="meal-text">${m.text}</div>
                                 <div class="meal-bottom">
                                     <span class="meal-kcal">🔥 ${kc} ккал</span>
                                     ${br ? `<span class="meal-bread">${br}</span>` : ''}
                                 </div>
+                                ${products.length > 0 ? `
+                                    <div class="meal-products">
+                                        ${products.map(p => `<span class="product-tag">${p}</span>`).join('')}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
