@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🍽️ Reels — Меню и покупки</title>
+  <title>🍽️ Reels — Дни и блюда</title>
   <style>
     * {
       margin: 0;
@@ -35,12 +35,11 @@
       flex-direction: column;
     }
 
-    /* шапка Reels */
     .reels-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 20px 10px 20px;
+      padding: 14px 20px 10px 20px;
       background: #1a1715;
       border-bottom: 1px solid #2f2a26;
       flex-shrink: 0;
@@ -63,64 +62,50 @@
       color: #b8a69a;
     }
 
-    /* область карточки */
     .reels-track {
       flex: 1;
       position: relative;
       overflow: hidden;
-      touch-action: pan-y;
+      touch-action: none;
     }
 
+    /* каждый слайд — это день */
     .reels-slide {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      padding: 16px 18px 20px 18px;
-      overflow-y: auto;
+      padding: 12px 16px 16px 16px;
+      overflow: hidden;
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.35s ease, transform 0.35s ease;
+      transform: translateX(40px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
       pointer-events: none;
-      scrollbar-width: thin;
-      scrollbar-color: #3d3530 #1a1715;
+      display: flex;
+      flex-direction: column;
     }
     .reels-slide.active {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateX(0);
       pointer-events: auto;
     }
-    .reels-slide::-webkit-scrollbar {
-      width: 4px;
-    }
-    .reels-slide::-webkit-scrollbar-track {
-      background: #1a1715;
-    }
-    .reels-slide::-webkit-scrollbar-thumb {
-      background: #3d3530;
-      border-radius: 20px;
-    }
 
-    /* карточка дня */
-    .day-card {
-      background: #24201d;
-      border-radius: 28px;
-      padding: 18px 16px 16px;
-      margin-bottom: 14px;
-      border: 1px solid #33302c;
-    }
-    .day-card .day-title {
-      font-size: 22px;
+    /* день */
+    .day-label {
+      font-size: 20px;
       font-weight: 600;
-      margin-bottom: 6px;
       color: #f5efe8;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2f2a26;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
-    .day-card .day-title .cal-total {
-      font-size: 15px;
+    .day-label .day-cal {
+      font-size: 14px;
       font-weight: 400;
       color: #c7a88c;
       background: #2f2a26;
@@ -128,63 +113,110 @@
       border-radius: 40px;
     }
 
-    .meal-block {
-      margin-top: 12px;
-      background: #1f1b18;
+    /* контейнер для блюд внутри дня */
+    .day-slides-track {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
       border-radius: 20px;
-      padding: 14px 14px 12px;
-      border-left: 3px solid #c7a88c;
     }
-    .meal-block .meal-label {
-      font-size: 14px;
-      font-weight: 500;
-      color: #b8a69a;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+
+    .dish-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 4px 0;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      scrollbar-width: thin;
+      scrollbar-color: #3d3530 transparent;
     }
-    .meal-block .dish-row {
+    .dish-slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .dish-slide::-webkit-scrollbar {
+      width: 3px;
+    }
+    .dish-slide::-webkit-scrollbar-thumb {
+      background: #3d3530;
+      border-radius: 20px;
+    }
+
+    /* карточка блюда */
+    .dish-card {
+      background: #24201d;
+      border-radius: 24px;
+      padding: 16px 16px 14px;
+      border: 1px solid #33302c;
+      margin-bottom: 2px;
+    }
+    .dish-card .dish-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 8px;
     }
-    .meal-block .dish-row .dish-photo {
-      width: 48px;
-      height: 48px;
+    .dish-card .dish-photo {
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid #3d3530;
       background: #2f2a26;
       flex-shrink: 0;
     }
-    .meal-block .dish-row .dish-photo-placeholder {
-      width: 48px;
-      height: 48px;
+    .dish-card .dish-photo-placeholder {
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       background: #2f2a26;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 22px;
       color: #6a5f56;
       border: 2px solid #3d3530;
       flex-shrink: 0;
     }
-    .meal-block .dish-row .dish-name {
-      font-size: 18px;
-      font-weight: 500;
-      color: #f5efe8;
+    .dish-card .dish-info {
+      flex: 1;
+      min-width: 0;
     }
-
-    .product-list-compact {
+    .dish-card .dish-info .dish-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f5efe8;
+      line-height: 1.2;
+    }
+    .dish-card .dish-info .meal-label {
+      font-size: 13px;
+      color: #b8a69a;
+    }
+    .dish-card .dish-cal {
+      font-size: 13px;
+      color: #c7a88c;
+      background: #2f2a26;
+      padding: 2px 14px;
+      border-radius: 40px;
+      display: inline-block;
+      margin-top: 6px;
+    }
+    .dish-card .product-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 12px;
-      margin-top: 6px;
-      padding-left: 4px;
+      gap: 4px 10px;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid #2f2a26;
     }
-    .product-list-compact .p-item {
+    .dish-card .product-list .p-item {
       font-size: 14px;
       color: #cfc3b8;
       background: #2a2622;
@@ -194,19 +226,20 @@
       align-items: center;
       gap: 6px;
     }
-    .product-list-compact .p-item .p-gram {
+    .dish-card .product-list .p-item .p-detail {
       color: #a08f81;
       font-size: 12px;
     }
 
-    /* индикатор слайдов */
+    /* индикаторы дней (внизу) */
     .slide-indicator {
       display: flex;
       justify-content: center;
       gap: 8px;
-      padding: 12px 0 16px 0;
+      padding: 10px 0 14px 0;
       flex-shrink: 0;
       background: #1a1715;
+      flex-wrap: wrap;
     }
     .slide-dot {
       width: 8px;
@@ -221,7 +254,27 @@
       width: 26px;
     }
 
-    /* кнопки навигации (десктоп) */
+    /* индикатор блюд внутри дня (маленькие точки) */
+    .dish-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 4px 0 2px 0;
+      flex-shrink: 0;
+    }
+    .dish-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 20px;
+      background: #3d3530;
+      transition: 0.25s;
+      cursor: pointer;
+    }
+    .dish-dot.active {
+      background: #c7a88c;
+      width: 16px;
+    }
+
     .nav-arrows {
       display: none;
       position: absolute;
@@ -239,10 +292,10 @@
       backdrop-filter: blur(8px);
       border: 1px solid #3d3530;
       color: #f5efe8;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      font-size: 22px;
+      font-size: 20px;
       cursor: pointer;
       transition: 0.15s;
       display: flex;
@@ -259,7 +312,6 @@
       float: right;
     }
 
-    /* десктопная версия — показываем стрелки и делаем шире */
     @media (min-width: 600px) {
       .reels-container {
         max-width: 520px;
@@ -269,14 +321,13 @@
       .nav-arrows {
         display: block;
       }
-      .reels-slide {
-        padding: 20px 24px 24px 24px;
+      .dish-card {
+        padding: 20px 18px 16px;
       }
-      .day-card {
-        padding: 22px 20px 18px;
+      .dish-card .dish-info .dish-name {
+        font-size: 20px;
       }
     }
-
     @media (max-width: 480px) {
       .reels-container {
         height: 95vh;
@@ -286,15 +337,8 @@
       .reels-header .brand {
         font-size: 16px;
       }
-      .day-card .day-title {
-        font-size: 20px;
-      }
-      .meal-block .dish-row .dish-name {
-        font-size: 16px;
-      }
     }
 
-    /* загрузка */
     .loading-placeholder {
       display: flex;
       align-items: center;
@@ -315,7 +359,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* тосты */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -339,30 +382,23 @@
 </head>
 <body>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Контейнер Reels -->
 <div class="reels-container" id="reelsContainer">
-  <!-- Шапка -->
   <div class="reels-header">
     <div class="brand">🍽️ <span>Reels</span> меню</div>
     <div class="badge" id="slideCounter">1 / 7</div>
   </div>
 
-  <!-- Трек слайдов -->
   <div class="reels-track" id="reelsTrack">
-    <!-- сюда будет вставлен JS -->
     <div class="loading-placeholder" id="loadingPlaceholder">
       <div class="spinner"></div>
-      <span>Загрузка меню...</span>
+      <span>Загрузка...</span>
     </div>
   </div>
 
-  <!-- Индикаторы -->
   <div class="slide-indicator" id="slideIndicator"></div>
 
-  <!-- Стрелки (десктоп) -->
   <div class="nav-arrows" id="navArrows">
     <button class="arrow-left" id="prevSlideBtn">‹</button>
     <button class="arrow-right" id="nextSlideBtn">›</button>
@@ -371,7 +407,6 @@
 
 <script>
   (function() {
-    // --- данные по умолчанию (встроены, если JSON не загрузится) ---
     const DEFAULT_DATA = {
       menu: {
         rows: [
@@ -416,11 +451,12 @@
     };
 
     const DAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-    let slidesData = [];
-    let currentIndex = 0;
-    let totalSlides = 7;
+    let appData = null;
+    let currentDayIndex = 0;
+    let currentDishIndex = 0;
+    let totalDays = 7;
+    let dayDishes = []; // массив массивов блюд по дням
 
-    // DOM
     const track = document.getElementById('reelsTrack');
     const indicator = document.getElementById('slideIndicator');
     const counter = document.getElementById('slideCounter');
@@ -428,10 +464,12 @@
     const nextBtn = document.getElementById('nextSlideBtn');
     const toastEl = document.getElementById('toast');
 
+    let touchStartX = 0;
     let touchStartY = 0;
+    let touchEndX = 0;
     let touchEndY = 0;
+    let isSwipingDay = false;
 
-    // --- вспомогательные ---
     function showToast(msg) {
       toastEl.textContent = msg;
       toastEl.classList.add('show');
@@ -441,223 +479,376 @@
 
     function roundNum(v) { return Math.round(v || 0); }
 
-    // --- рендер одного слайда ---
-    function renderSlide(dayIndex) {
-      const dayName = DAYS[dayIndex];
-      let totalCal = 0;
-
-      // собираем данные по всем приёмам для этого дня
-      let mealsHtml = '';
-      const rows = slidesData.rows || [];
+    // --- подготовка данных: dayDishes[день] = [блюдо1, блюдо2, ...] ---
+    function prepareData(menuData) {
+      const rows = menuData.rows || [];
+      const dishesByDay = [];
+      for (let d = 0; d < 7; d++) {
+        dishesByDay[d] = [];
+      }
       rows.forEach((row) => {
-        const cell = row.cells[dayIndex];
-        if (!cell) return;
-        const dish = cell.dish || 'Блюдо';
-        const photo = cell.photo || '';
-        const products = cell.products || [];
-        let dayCal = 0;
-        products.forEach(p => { dayCal += roundNum(p.cal); });
-        totalCal += dayCal;
-
-        // фото
-        let photoHtml = '';
-        if (photo && photo.length > 50) {
-          photoHtml = `<img class="dish-photo" src="${photo}" alt="${dish}" />`;
-        } else {
-          photoHtml = `<div class="dish-photo-placeholder">📷</div>`;
-        }
-
-        // продукты
-        let productsHtml = '';
-        if (products.length) {
-          productsHtml = `<div class="product-list-compact">`;
-          products.forEach(p => {
-            const name = p.name || '';
-            const gram = roundNum(p.gram);
-            const cal = roundNum(p.cal);
-            productsHtml += `<span class="p-item">${name} <span class="p-gram">${gram > 0 ? gram+'г' : ''} ${cal > 0 ? cal+'ккал' : ''}</span></span>`;
+        const mealLabel = row.label || '';
+        row.cells.forEach((cell, dayIdx) => {
+          if (!cell || !cell.dish) return;
+          dishesByDay[dayIdx].push({
+            day: DAYS[dayIdx],
+            meal: mealLabel,
+            dish: cell.dish || 'Блюдо',
+            photo: cell.photo || '',
+            products: cell.products || []
           });
-          productsHtml += `</div>`;
-        } else {
-          productsHtml = `<div style="color:#6a5f56;font-size:14px;padding:4px 0;">нет продуктов</div>`;
-        }
-
-        mealsHtml += `
-          <div class="meal-block">
-            <div class="meal-label">${row.label}</div>
-            <div class="dish-row">
-              ${photoHtml}
-              <span class="dish-name">${dish}</span>
-            </div>
-            ${productsHtml}
-          </div>
-        `;
+        });
       });
+      // сортируем блюда внутри дня по приёму (завтрак, обед, ужин)
+      const order = { 'Завтрак': 1, 'Обед': 2, 'Ужин': 3 };
+      for (let d = 0; d < 7; d++) {
+        dishesByDay[d].sort((a, b) => (order[a.meal] || 9) - (order[b.meal] || 9));
+      }
+      return dishesByDay;
+    }
+
+    // --- рендер одного блюда (карточка) ---
+    function renderDishCard(dishData) {
+      const photo = dishData.photo || '';
+      const dishName = dishData.dish || 'Блюдо';
+      const mealLabel = dishData.meal || '';
+      let totalCal = 0;
+      dishData.products.forEach(p => { totalCal += roundNum(p.cal); });
+
+      let photoHtml = '';
+      if (photo && photo.length > 50) {
+        photoHtml = `<img class="dish-photo" src="${photo}" alt="${dishName}" />`;
+      } else {
+        photoHtml = `<div class="dish-photo-placeholder">📷</div>`;
+      }
+
+      let productsHtml = '';
+      if (dishData.products && dishData.products.length) {
+        productsHtml = `<div class="product-list">`;
+        dishData.products.forEach(p => {
+          const name = p.name || '';
+          const gram = roundNum(p.gram);
+          const cal = roundNum(p.cal);
+          let detail = '';
+          if (gram > 0) detail += gram + 'г';
+          if (cal > 0) detail += (detail ? ' · ' : '') + cal + 'ккал';
+          productsHtml += `
+            <span class="p-item">
+              ${name}
+              <span class="p-detail">${detail}</span>
+            </span>
+          `;
+        });
+        productsHtml += `</div>`;
+      } else {
+        productsHtml = `<div style="color:#6a5f56;font-size:14px;padding:4px 0;">нет продуктов</div>`;
+      }
 
       return `
-        <div class="day-card">
-          <div class="day-title">
-            <span>${dayName}</span>
-            <span class="cal-total">🔥 ${totalCal} ккал</span>
+        <div class="dish-card">
+          <div class="dish-header">
+            ${photoHtml}
+            <div class="dish-info">
+              <div class="dish-name">${dishName}</div>
+              <div class="meal-label">${mealLabel}</div>
+            </div>
           </div>
-          ${mealsHtml}
+          <div class="dish-cal">🔥 ${totalCal} ккал</div>
+          ${productsHtml}
         </div>
       `;
     }
 
-    // --- обновить все слайды ---
+    // --- построить слайды дней ---
     function buildSlides() {
-      // очищаем трек, кроме плейсхолдера
       const placeholder = document.getElementById('loadingPlaceholder');
       if (placeholder) placeholder.remove();
 
-      // удаляем старые слайды
       track.querySelectorAll('.reels-slide').forEach(el => el.remove());
 
-      for (let i = 0; i < totalSlides; i++) {
-        const div = document.createElement('div');
-        div.className = 'reels-slide' + (i === currentIndex ? ' active' : '');
-        div.dataset.index = i;
-        div.innerHTML = renderSlide(i);
-        track.appendChild(div);
+      if (!dayDishes || dayDishes.length === 0 || dayDishes.every(d => d.length === 0)) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'loading-placeholder';
+        emptyMsg.innerHTML = `<span>😕 Нет данных</span>`;
+        track.appendChild(emptyMsg);
+        totalDays = 0;
+        updateIndicators();
+        updateCounter();
+        return;
+      }
+
+      totalDays = dayDishes.length;
+      for (let d = 0; d < totalDays; d++) {
+        const daySlide = document.createElement('div');
+        daySlide.className = 'reels-slide' + (d === currentDayIndex ? ' active' : '');
+        daySlide.dataset.day = d;
+
+        // заголовок дня
+        const dayLabel = document.createElement('div');
+        dayLabel.className = 'day-label';
+        const totalDayCal = dayDishes[d].reduce((sum, dish) => {
+          return sum + dish.products.reduce((s, p) => s + roundNum(p.cal), 0);
+        }, 0);
+        dayLabel.innerHTML = `
+          <span>${DAYS[d]}</span>
+          <span class="day-cal">🔥 ${totalDayCal} ккал</span>
+        `;
+        daySlide.appendChild(dayLabel);
+
+        // контейнер для блюд
+        const dishesTrack = document.createElement('div');
+        dishesTrack.className = 'day-slides-track';
+        dishesTrack.dataset.day = d;
+
+        const dishes = dayDishes[d] || [];
+        dishes.forEach((dish, idx) => {
+          const dishDiv = document.createElement('div');
+          dishDiv.className = 'dish-slide' + (idx === currentDishIndex && d === currentDayIndex ? ' active' : '');
+          dishDiv.dataset.dishIndex = idx;
+          dishDiv.innerHTML = renderDishCard(dish);
+          dishesTrack.appendChild(dishDiv);
+        });
+
+        // точки для блюд
+        const dishDots = document.createElement('div');
+        dishDots.className = 'dish-dots';
+        dishes.forEach((_, idx) => {
+          const dot = document.createElement('span');
+          dot.className = 'dish-dot' + (idx === currentDishIndex && d === currentDayIndex ? ' active' : '');
+          dot.dataset.dishIndex = idx;
+          dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (d === currentDayIndex) {
+              goToDish(idx);
+            }
+          });
+          dishDots.appendChild(dot);
+        });
+
+        daySlide.appendChild(dishesTrack);
+        daySlide.appendChild(dishDots);
+
+        // обработка свайпов для блюд внутри дня
+        let dishTouchStartY = 0;
+        let dishTouchEndY = 0;
+        dishesTrack.addEventListener('touchstart', (e) => {
+          dishTouchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        dishesTrack.addEventListener('touchend', (e) => {
+          dishTouchEndY = e.changedTouches[0].screenY;
+          const diff = dishTouchStartY - dishTouchEndY;
+          if (Math.abs(diff) > 30 && d === currentDayIndex) {
+            if (diff > 0) nextDish();
+            else prevDish();
+          }
+        }, { passive: true });
+
+        // колесо для блюд
+        dishesTrack.addEventListener('wheel', (e) => {
+          if (d === currentDayIndex && Math.abs(e.deltaY) > 15) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.deltaY > 0) nextDish();
+            else prevDish();
+          }
+        }, { passive: false });
+
+        track.appendChild(daySlide);
       }
 
       updateIndicators();
       updateCounter();
+      updateDishDots();
     }
 
-    // --- индикаторы ---
-    function updateIndicators() {
-      indicator.innerHTML = '';
-      for (let i = 0; i < totalSlides; i++) {
-        const dot = document.createElement('span');
-        dot.className = 'slide-dot' + (i === currentIndex ? ' active' : '');
-        dot.dataset.index = i;
-        dot.addEventListener('click', () => goToSlide(i));
-        indicator.appendChild(dot);
-      }
-    }
-
-    function updateCounter() {
-      counter.textContent = `${currentIndex + 1} / ${totalSlides}`;
-    }
-
-    // --- переключение ---
-    function goToSlide(index) {
+    // --- навигация по дням ---
+    function goToDay(index) {
       if (index < 0) index = 0;
-      if (index >= totalSlides) index = totalSlides - 1;
-      if (index === currentIndex) return;
+      if (index >= totalDays) index = totalDays - 1;
+      if (index === currentDayIndex) return;
 
       const slides = track.querySelectorAll('.reels-slide');
       slides.forEach((el, i) => {
         el.classList.toggle('active', i === index);
       });
 
-      currentIndex = index;
+      currentDayIndex = index;
+      currentDishIndex = 0;
       updateIndicators();
       updateCounter();
-      // скроллим вверх
+      updateDishDots();
+
+      // активируем первое блюдо в новом дне
       const activeSlide = track.querySelector('.reels-slide.active');
-      if (activeSlide) activeSlide.scrollTop = 0;
+      if (activeSlide) {
+        const dishSlides = activeSlide.querySelectorAll('.dish-slide');
+        dishSlides.forEach((el, i) => {
+          el.classList.toggle('active', i === 0);
+        });
+        const dots = activeSlide.querySelectorAll('.dish-dot');
+        dots.forEach((el, i) => {
+          el.classList.toggle('active', i === 0);
+        });
+      }
     }
 
-    function nextSlide() {
-      if (currentIndex < totalSlides - 1) goToSlide(currentIndex + 1);
+    function nextDay() {
+      if (totalDays === 0) return;
+      if (currentDayIndex < totalDays - 1) goToDay(currentDayIndex + 1);
       else showToast('📅 Это последний день');
     }
 
-    function prevSlide() {
-      if (currentIndex > 0) goToSlide(currentIndex - 1);
+    function prevDay() {
+      if (totalDays === 0) return;
+      if (currentDayIndex > 0) goToDay(currentDayIndex - 1);
       else showToast('📅 Это первый день');
     }
 
-    // --- загрузка данных из JSON ---
+    // --- навигация по блюдам внутри дня ---
+    function goToDish(index) {
+      const activeSlide = track.querySelector('.reels-slide.active');
+      if (!activeSlide) return;
+      const dishSlides = activeSlide.querySelectorAll('.dish-slide');
+      if (index < 0) index = 0;
+      if (index >= dishSlides.length) index = dishSlides.length - 1;
+      if (index === currentDishIndex) return;
+
+      dishSlides.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+      currentDishIndex = index;
+      updateDishDots();
+
+      const dots = activeSlide.querySelectorAll('.dish-dot');
+      dots.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+    }
+
+    function nextDish() {
+      const activeSlide = track.querySelector('.reels-slide.active');
+      if (!activeSlide) return;
+      const dishSlides = activeSlide.querySelectorAll('.dish-slide');
+      if (currentDishIndex < dishSlides.length - 1) {
+        goToDish(currentDishIndex + 1);
+      } else {
+        showToast('🍽️ Это последнее блюдо в дне');
+      }
+    }
+
+    function prevDish() {
+      const activeSlide = track.querySelector('.reels-slide.active');
+      if (!activeSlide) return;
+      if (currentDishIndex > 0) {
+        goToDish(currentDishIndex - 1);
+      } else {
+        showToast('🍽️ Это первое блюдо в дне');
+      }
+    }
+
+    // --- индикаторы ---
+    function updateIndicators() {
+      indicator.innerHTML = '';
+      for (let i = 0; i < totalDays; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'slide-dot' + (i === currentDayIndex ? ' active' : '');
+        dot.dataset.index = i;
+        dot.addEventListener('click', () => goToDay(i));
+        indicator.appendChild(dot);
+      }
+    }
+
+    function updateCounter() {
+      counter.textContent = totalDays > 0 ? `${currentDayIndex + 1} / ${totalDays}` : '0 / 0';
+    }
+
+    function updateDishDots() {
+      const activeSlide = track.querySelector('.reels-slide.active');
+      if (!activeSlide) return;
+      const dots = activeSlide.querySelectorAll('.dish-dot');
+      dots.forEach((el, i) => {
+        el.classList.toggle('active', i === currentDishIndex);
+      });
+    }
+
+    // --- загрузка данных ---
     function loadDataFromJson() {
-      // пробуем загрузить из файла data.json (или можно подставить любой URL)
       fetch('data.json')
         .then(res => {
           if (!res.ok) throw new Error('HTTP ' + res.status);
           return res.json();
         })
         .then(data => {
-          // поддержка обёртки { menu: ... } или просто { rows: ... }
           let menuData = data;
-          if (data.menu && data.menu.rows) {
-            menuData = data.menu;
-          } else if (data.rows) {
-            menuData = data;
-          } else {
-            throw new Error('Неверная структура JSON');
-          }
-          slidesData = menuData;
+          if (data.menu && data.menu.rows) menuData = data.menu;
+          else if (data.rows) menuData = data;
+          else throw new Error('Неверная структура JSON');
+          appData = menuData;
+          dayDishes = prepareData(appData);
           buildSlides();
           showToast('✅ Данные загружены');
         })
         .catch(err => {
           console.warn('Ошибка загрузки JSON, используем встроенные данные:', err);
-          // fallback на встроенные
-          slidesData = DEFAULT_DATA.menu;
+          appData = DEFAULT_DATA.menu;
+          dayDishes = prepareData(appData);
           buildSlides();
-          showToast('📦 Используются встроенные данные');
+          showToast('📦 Встроенные данные');
         });
     }
 
     // --- инициализация ---
     function init() {
-      // сначала показываем плейсхолдер
       const placeholder = document.createElement('div');
       placeholder.className = 'loading-placeholder';
       placeholder.id = 'loadingPlaceholder';
-      placeholder.innerHTML = `<div class="spinner"></div><span>Загрузка меню...</span>`;
+      placeholder.innerHTML = `<div class="spinner"></div><span>Загрузка...</span>`;
       track.appendChild(placeholder);
 
-      // загружаем данные
       loadDataFromJson();
 
-      // свайп
+      // свайпы по дням (горизонтальные)
       track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
       }, { passive: true });
 
       track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
         touchEndY = e.changedTouches[0].screenY;
-        const diff = touchStartY - touchEndY;
-        if (Math.abs(diff) > 40) {
-          if (diff > 0) nextSlide();
-          else prevSlide();
+        const dx = touchStartX - touchEndX;
+        const dy = touchStartY - touchEndY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+          if (dx > 0) nextDay();
+          else prevDay();
         }
       }, { passive: true });
 
-      // колесо мыши (для десктопа)
+      // колесо для дней (горизонтальное/вертикальное)
       track.addEventListener('wheel', (e) => {
-        if (Math.abs(e.deltaY) > 20) {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 15) {
           e.preventDefault();
-          if (e.deltaY > 0) nextSlide();
-          else prevSlide();
+          if (e.deltaX > 0) nextDay();
+          else prevDay();
         }
       }, { passive: false });
 
-      // кнопки
-      prevBtn.addEventListener('click', prevSlide);
-      nextBtn.addEventListener('click', nextSlide);
+      prevBtn.addEventListener('click', prevDay);
+      nextBtn.addEventListener('click', nextDay);
 
-      // клавиши
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextSlide();
-        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextDay();
+        else if (e.key === 'ArrowLeft') prevDay();
+        else if (e.key === 'ArrowDown') nextDish();
+        else if (e.key === 'ArrowUp') prevDish();
       });
-
-      // ресайз для корректного отображения
-      window.addEventListener('resize', () => {});
     }
 
-    // запуск
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
     } else {
       init();
     }
-
   })();
 </script>
 
