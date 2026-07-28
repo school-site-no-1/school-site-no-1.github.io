@@ -960,172 +960,141 @@
 
             // --- для дней (горизонтальный drag) ---
             let dayStartX = 0;
-            let dayCurrentX = 0;
             let dayIsDragging = false;
             let dayStartTranslate = 0;
+            let dayLastTranslate = 0;
 
-            function onDayStart(clientX) {
-                if (isDayAnimating) return;
-                dayStartX = clientX;
-                dayIsDragging = true;
+            function getDayTranslate() {
                 const track = document.getElementById('daySliderTrack');
-                if (track) {
-                    const style = window.getComputedStyle(track);
-                    const matrix = style.transform;
-                    if (matrix !== 'none') {
-                        const values = matrix.match(/matrix.*\((.+)\)/);
-                        if (values) {
-                            const nums = values[1].split(', ');
-                            dayStartTranslate = parseFloat(nums[4]) || 0;
-                        } else {
-                            dayStartTranslate = 0;
-                        }
-                    } else {
-                        dayStartTranslate = 0;
-                    }
+                if (!track) return 0;
+                const style = window.getComputedStyle(track);
+                const matrix = style.transform;
+                if (matrix === 'none') return 0;
+                const values = matrix.match(/matrix.*\((.+)\)/);
+                if (values) {
+                    const nums = values[1].split(', ');
+                    return parseFloat(nums[4]) || 0;
+                }
+                return 0;
+            }
+
+            function setDayTranslate(value, animate = false) {
+                const track = document.getElementById('daySliderTrack');
+                if (!track) return;
+                if (animate) {
+                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                } else {
                     track.style.transition = 'none';
                 }
-            }
-
-            function onDayMove(clientX) {
-                if (!dayIsDragging) return;
-                dayCurrentX = clientX;
-                const deltaX = dayCurrentX - dayStartX;
-                const track = document.getElementById('daySliderTrack');
-                if (track) {
-                    const containerWidth = track.parentElement.offsetWidth || window.innerWidth;
-                    const percent = (deltaX / containerWidth) * 100;
-                    const newTranslate = dayStartTranslate + percent;
-                    const maxTranslate = 0;
-                    const minTranslate = -(dayDishes.length - 1) * 100;
-                    const clamped = Math.max(minTranslate, Math.min(maxTranslate, newTranslate));
-                    track.style.transform = `translateX(${clamped}%)`;
-                }
-            }
-
-            function onDayEnd() {
-                if (!dayIsDragging) return;
-                dayIsDragging = false;
-                const track = document.getElementById('daySliderTrack');
-                if (track) {
-                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    const style = window.getComputedStyle(track);
-                    const matrix = style.transform;
-                    let currentTranslate = 0;
-                    if (matrix !== 'none') {
-                        const values = matrix.match(/matrix.*\((.+)\)/);
-                        if (values) {
-                            const nums = values[1].split(', ');
-                            currentTranslate = parseFloat(nums[4]) || 0;
-                        }
-                    }
-                    const slideWidth = 100;
-                    const ratio = Math.round(-currentTranslate / slideWidth);
-                    const targetIndex = Math.max(0, Math.min(dayDishes.length - 1, ratio));
-                    if (targetIndex !== currentDayIndex) {
-                        goToDay(targetIndex);
-                    } else {
-                        track.style.transform = `translateX(-${currentDayIndex * 100}%)`;
-                    }
-                }
+                const maxTranslate = 0;
+                const minTranslate = -(dayDishes.length - 1) * 100;
+                const clamped = Math.max(minTranslate, Math.min(maxTranslate, value));
+                track.style.transform = `translateX(${clamped}%)`;
+                dayLastTranslate = clamped;
             }
 
             // --- для блюд (вертикальный drag) ---
             let dishStartY = 0;
-            let dishCurrentY = 0;
             let dishIsDragging = false;
             let dishStartTranslate = 0;
+            let dishLastTranslate = 0;
 
             function getDishTrack() {
                 return document.getElementById(`dishSliderTrack_${currentDayIndex}`);
             }
 
-            function onDishStart(clientY) {
-                if (isDishAnimating) return;
+            function getDishTranslate() {
+                const track = getDishTrack();
+                if (!track) return 0;
+                const style = window.getComputedStyle(track);
+                const matrix = style.transform;
+                if (matrix === 'none') return 0;
+                const values = matrix.match(/matrix.*\((.+)\)/);
+                if (values) {
+                    const nums = values[1].split(', ');
+                    return parseFloat(nums[5]) || 0;
+                }
+                return 0;
+            }
+
+            function setDishTranslate(value, animate = false) {
+                const track = getDishTrack();
+                if (!track) return;
                 const dishes = dayDishes[currentDayIndex] || [];
                 if (dishes.length <= 1) return;
-                dishStartY = clientY;
-                dishIsDragging = true;
-                const track = getDishTrack();
-                if (track) {
-                    const style = window.getComputedStyle(track);
-                    const matrix = style.transform;
-                    if (matrix !== 'none') {
-                        const values = matrix.match(/matrix.*\((.+)\)/);
-                        if (values) {
-                            const nums = values[1].split(', ');
-                            dishStartTranslate = parseFloat(nums[5]) || 0;
-                        } else {
-                            dishStartTranslate = 0;
-                        }
-                    } else {
-                        dishStartTranslate = 0;
-                    }
+                if (animate) {
+                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                } else {
                     track.style.transition = 'none';
                 }
-            }
-
-            function onDishMove(clientY) {
-                if (!dishIsDragging) return;
-                dishCurrentY = clientY;
-                const deltaY = dishCurrentY - dishStartY;
-                const track = getDishTrack();
-                if (track) {
-                    const containerHeight = track.parentElement.offsetHeight || window.innerHeight;
-                    const percent = (deltaY / containerHeight) * 100;
-                    const newTranslate = dishStartTranslate + percent;
-                    const dishes = dayDishes[currentDayIndex] || [];
-                    const maxTranslate = 0;
-                    const minTranslate = -(dishes.length - 1) * 100;
-                    const clamped = Math.max(minTranslate, Math.min(maxTranslate, newTranslate));
-                    track.style.transform = `translateY(${clamped}%)`;
-                }
-            }
-
-            function onDishEnd() {
-                if (!dishIsDragging) return;
-                dishIsDragging = false;
-                const track = getDishTrack();
-                if (track) {
-                    track.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    const style = window.getComputedStyle(track);
-                    const matrix = style.transform;
-                    let currentTranslate = 0;
-                    if (matrix !== 'none') {
-                        const values = matrix.match(/matrix.*\((.+)\)/);
-                        if (values) {
-                            const nums = values[1].split(', ');
-                            currentTranslate = parseFloat(nums[5]) || 0;
-                        }
-                    }
-                    const dishes = dayDishes[currentDayIndex] || [];
-                    const slideHeight = 100;
-                    const ratio = Math.round(-currentTranslate / slideHeight);
-                    const targetIndex = Math.max(0, Math.min(dishes.length - 1, ratio));
-                    if (targetIndex !== currentDishIndex) {
-                        goToDish(targetIndex);
-                    } else {
-                        track.style.transform = `translateY(-${currentDishIndex * 100}%)`;
-                    }
-                }
+                const maxTranslate = 0;
+                const minTranslate = -(dishes.length - 1) * 100;
+                const clamped = Math.max(minTranslate, Math.min(maxTranslate, value));
+                track.style.transform = `translateY(${clamped}%)`;
+                dishLastTranslate = clamped;
             }
 
             // --- Mouse events ---
             dayContainer.addEventListener('mousedown', function(e) {
                 const target = e.target;
                 if (target.closest('.dish-dot') || target.closest('.day-dot') || target.closest('.day-nav-btn')) return;
-                onDayStart(e.clientX);
-                onDishStart(e.clientY);
+                dayStartX = e.clientX;
+                dayIsDragging = true;
+                dayStartTranslate = getDayTranslate();
+                setDayTranslate(dayStartTranslate, false);
+
+                dishStartY = e.clientY;
+                const dishes = dayDishes[currentDayIndex] || [];
+                if (dishes.length > 1) {
+                    dishIsDragging = true;
+                    dishStartTranslate = getDishTranslate();
+                    setDishTranslate(dishStartTranslate, false);
+                }
             });
 
             document.addEventListener('mousemove', function(e) {
-                onDayMove(e.clientX);
-                onDishMove(e.clientY);
+                if (dayIsDragging) {
+                    const deltaX = e.clientX - dayStartX;
+                    const containerWidth = dayContainer.offsetWidth || window.innerWidth;
+                    const percent = (deltaX / containerWidth) * 100;
+                    setDayTranslate(dayStartTranslate + percent, false);
+                }
+                if (dishIsDragging) {
+                    const deltaY = e.clientY - dishStartY;
+                    const containerHeight = dayContainer.offsetHeight || window.innerHeight;
+                    const percent = (deltaY / containerHeight) * 100;
+                    setDishTranslate(dishStartTranslate + percent, false);
+                }
             });
 
             document.addEventListener('mouseup', function() {
-                onDayEnd();
-                onDishEnd();
+                if (dayIsDragging) {
+                    dayIsDragging = false;
+                    const currentTranslate = getDayTranslate();
+                    const slideWidth = 100;
+                    const ratio = Math.round(-currentTranslate / slideWidth);
+                    const targetIndex = Math.max(0, Math.min(dayDishes.length - 1, ratio));
+                    if (targetIndex !== currentDayIndex) {
+                        goToDay(targetIndex);
+                    } else {
+                        setDayTranslate(-currentDayIndex * 100, true);
+                    }
+                }
+                if (dishIsDragging) {
+                    dishIsDragging = false;
+                    const dishes = dayDishes[currentDayIndex] || [];
+                    if (dishes.length > 1) {
+                        const currentTranslate = getDishTranslate();
+                        const slideHeight = 100;
+                        const ratio = Math.round(-currentTranslate / slideHeight);
+                        const targetIndex = Math.max(0, Math.min(dishes.length - 1, ratio));
+                        if (targetIndex !== currentDishIndex) {
+                            goToDish(targetIndex);
+                        } else {
+                            setDishTranslate(-currentDishIndex * 100, true);
+                        }
+                    }
+                }
             });
 
             // --- Touch events ---
@@ -1133,19 +1102,64 @@
                 const touch = e.touches[0];
                 const target = e.target;
                 if (target.closest('.dish-dot') || target.closest('.day-dot') || target.closest('.day-nav-btn')) return;
-                onDayStart(touch.clientX);
-                onDishStart(touch.clientY);
+                dayStartX = touch.clientX;
+                dayIsDragging = true;
+                dayStartTranslate = getDayTranslate();
+                setDayTranslate(dayStartTranslate, false);
+
+                dishStartY = touch.clientY;
+                const dishes = dayDishes[currentDayIndex] || [];
+                if (dishes.length > 1) {
+                    dishIsDragging = true;
+                    dishStartTranslate = getDishTranslate();
+                    setDishTranslate(dishStartTranslate, false);
+                }
             }, { passive: true });
 
             dayContainer.addEventListener('touchmove', function(e) {
                 const touch = e.touches[0];
-                onDayMove(touch.clientX);
-                onDishMove(touch.clientY);
+                if (dayIsDragging) {
+                    const deltaX = touch.clientX - dayStartX;
+                    const containerWidth = dayContainer.offsetWidth || window.innerWidth;
+                    const percent = (deltaX / containerWidth) * 100;
+                    setDayTranslate(dayStartTranslate + percent, false);
+                }
+                if (dishIsDragging) {
+                    const deltaY = touch.clientY - dishStartY;
+                    const containerHeight = dayContainer.offsetHeight || window.innerHeight;
+                    const percent = (deltaY / containerHeight) * 100;
+                    setDishTranslate(dishStartTranslate + percent, false);
+                }
             }, { passive: true });
 
             dayContainer.addEventListener('touchend', function() {
-                onDayEnd();
-                onDishEnd();
+                if (dayIsDragging) {
+                    dayIsDragging = false;
+                    const currentTranslate = getDayTranslate();
+                    const slideWidth = 100;
+                    const ratio = Math.round(-currentTranslate / slideWidth);
+                    const targetIndex = Math.max(0, Math.min(dayDishes.length - 1, ratio));
+                    if (targetIndex !== currentDayIndex) {
+                        goToDay(targetIndex);
+                    } else {
+                        setDayTranslate(-currentDayIndex * 100, true);
+                    }
+                }
+                if (dishIsDragging) {
+                    dishIsDragging = false;
+                    const dishes = dayDishes[currentDayIndex] || [];
+                    if (dishes.length > 1) {
+                        const currentTranslate = getDishTranslate();
+                        const slideHeight = 100;
+                        const ratio = Math.round(-currentTranslate / slideHeight);
+                        const targetIndex = Math.max(0, Math.min(dishes.length - 1, ratio));
+                        if (targetIndex !== currentDishIndex) {
+                            goToDish(targetIndex);
+                        } else {
+                            setDishTranslate(-currentDishIndex * 100, true);
+                        }
+                    }
+                }
             }, { passive: true });
 
             // --- wheel ---
