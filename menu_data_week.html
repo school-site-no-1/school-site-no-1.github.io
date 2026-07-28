@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🍽️ Reels — Меню и покупки</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0b0a09;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
+      color: #f5efe8;
+    }
+
+    .reels-container {
+      max-width: 420px;
+      width: 100%;
+      height: 90vh;
+      max-height: 800px;
+      background: #1a1715;
+      border-radius: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* шапка Reels */
+    .reels-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px 10px 20px;
+      background: #1a1715;
+      border-bottom: 1px solid #2f2a26;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+    .reels-header .brand {
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+      color: #f5efe8;
+    }
+    .reels-header .brand span {
+      color: #c7a88c;
+    }
+    .reels-header .badge {
+      background: #2f2a26;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 13px;
+      color: #b8a69a;
+    }
+
+    /* область карточки */
+    .reels-track {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    .reels-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 16px 18px 20px 18px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+      scrollbar-width: thin;
+      scrollbar-color: #3d3530 #1a1715;
+    }
+    .reels-slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .reels-slide::-webkit-scrollbar {
+      width: 4px;
+    }
+    .reels-slide::-webkit-scrollbar-track {
+      background: #1a1715;
+    }
+    .reels-slide::-webkit-scrollbar-thumb {
+      background: #3d3530;
+      border-radius: 20px;
+    }
+
+    /* карточка дня */
+    .day-card {
+      background: #24201d;
+      border-radius: 28px;
+      padding: 18px 16px 16px;
+      margin-bottom: 14px;
+      border: 1px solid #33302c;
+    }
+    .day-card .day-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #f5efe8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .day-card .day-title .cal-total {
+      font-size: 15px;
+      font-weight: 400;
+      color: #c7a88c;
+      background: #2f2a26;
+      padding: 2px 14px;
+      border-radius: 40px;
+    }
+
+    .meal-block {
+      margin-top: 12px;
+      background: #1f1b18;
+      border-radius: 20px;
+      padding: 14px 14px 12px;
+      border-left: 3px solid #c7a88c;
+    }
+    .meal-block .meal-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #b8a69a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .meal-block .dish-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .meal-block .dish-row .dish-photo {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #3d3530;
+      background: #2f2a26;
+      flex-shrink: 0;
+    }
+    .meal-block .dish-row .dish-photo-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #2f2a26;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #6a5f56;
+      border: 2px solid #3d3530;
+      flex-shrink: 0;
+    }
+    .meal-block .dish-row .dish-name {
+      font-size: 18px;
+      font-weight: 500;
+      color: #f5efe8;
+    }
+
+    .product-list-compact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      margin-top: 6px;
+      padding-left: 4px;
+    }
+    .product-list-compact .p-item {
+      font-size: 14px;
+      color: #cfc3b8;
+      background: #2a2622;
+      padding: 2px 12px;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .product-list-compact .p-item .p-gram {
+      color: #a08f81;
+      font-size: 12px;
+    }
+
+    /* индикатор слайдов */
+    .slide-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 0 16px 0;
+      flex-shrink: 0;
+      background: #1a1715;
+    }
+    .slide-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 20px;
+      background: #3d3530;
+      transition: 0.25s;
+      cursor: pointer;
+    }
+    .slide-dot.active {
+      background: #c7a88c;
+      width: 26px;
+    }
+
+    /* кнопки навигации (десктоп) */
+    .nav-arrows {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      pointer-events: none;
+      padding: 0 10px;
+      z-index: 10;
+    }
+    .nav-arrows button {
+      pointer-events: auto;
+      background: rgba(26, 23, 21, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #3d3530;
+      color: #f5efe8;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 22px;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-arrows button:hover {
+      background: #3d3530;
+    }
+    .nav-arrows .arrow-left {
+      float: left;
+    }
+    .nav-arrows .arrow-right {
+      float: right;
+    }
+
+    /* десктопная версия — показываем стрелки и делаем шире */
+    @media (min-width: 600px) {
+      .reels-container {
+        max-width: 520px;
+        max-height: 780px;
+        border-radius: 48px;
+      }
+      .nav-arrows {
+        display: block;
+      }
+      .reels-slide {
+        padding: 20px 24px 24px 24px;
+      }
+      .day-card {
+        padding: 22px 20px 18px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .reels-container {
+        height: 95vh;
+        max-height: 700px;
+        border-radius: 28px;
+      }
+      .reels-header .brand {
+        font-size: 16px;
+      }
+      .day-card .day-title {
+        font-size: 20px;
+      }
+      .meal-block .dish-row .dish-name {
+        font-size: 16px;
+      }
+    }
+
+    /* загрузка */
+    .loading-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #6a5f56;
+      font-size: 16px;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .loading-placeholder .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #2f2a26;
+      border-top-color: #c7a88c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* тосты */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2f2a26;
+      color: #f5efe8;
+      padding: 10px 24px;
+      border-radius: 60px;
+      font-size: 14px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      opacity: 0;
+      transition: 0.3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Контейнер Reels -->
+<div class="reels-container" id="reelsContainer">
+  <!-- Шапка -->
+  <div class="reels-header">
+    <div class="brand">🍽️ <span>Reels</span> меню</div>
+    <div class="badge" id="slideCounter">1 / 7</div>
+  </div>
+
+  <!-- Трек слайдов -->
+  <div class="reels-track" id="reelsTrack">
+    <!-- сюда будет вставлен JS -->
+    <div class="loading-placeholder" id="loadingPlaceholder">
+      <div class="spinner"></div>
+      <span>Загрузка меню...</span>
+    </div>
+  </div>
+
+  <!-- Индикаторы -->
+  <div class="slide-indicator" id="slideIndicator"></div>
+
+  <!-- Стрелки (десктоп) -->
+  <div class="nav-arrows" id="navArrows">
+    <button class="arrow-left" id="prevSlideBtn">‹</button>
+    <button class="arrow-right" id="nextSlideBtn">›</button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // --- данные по умолчанию (встроены, если JSON не загрузится) ---
+    const DEFAULT_DATA = {
+      menu: {
+        rows: [
+          {
+            label: 'Завтрак',
+            cells: [
+              { dish: 'Овсянка', photo: '', products: [{ name: 'Овсянка', gram: 50, cal: 180 }, { name: 'Яблоко', gram: 1, cal: 70 }, { name: 'Творог 5%', gram: 100, cal: 120 }] },
+              { dish: 'Сырники', photo: '', products: [{ name: 'Сырники', gram: 150, cal: 280 }, { name: 'Сметана 15%', gram: 20, cal: 40 }, { name: 'Банан', gram: 1, cal: 105 }] },
+              { dish: 'Омлет', photo: '', products: [{ name: 'Омлет', gram: 2, cal: 140 }, { name: 'Хлеб ржаной', gram: 40, cal: 90 }, { name: 'Помидор', gram: 60, cal: 15 }] },
+              { dish: 'Яичница с зеленью', photo: '', products: [{ name: 'Яичница', gram: 2, cal: 140 }, { name: 'Хлеб ц.зерн.', gram: 45, cal: 110 }, { name: 'Мандарин', gram: 1, cal: 40 }] },
+              { dish: 'Запеч. бутерброд', photo: '', products: [{ name: 'Бутерброд', gram: 1, cal: 150 }, { name: 'Сыр нежирный', gram: 20, cal: 60 }, { name: 'Яйцо', gram: 1, cal: 70 }, { name: 'Яблоко', gram: 1, cal: 70 }] },
+              { dish: 'Гречка', photo: '', products: [{ name: 'Гречка', gram: 60, cal: 210 }, { name: 'Кефир 1%', gram: 200, cal: 90 }, { name: 'Ягоды', gram: 50, cal: 30 }] },
+              { dish: 'Сырники', photo: '', products: [{ name: 'Сырники', gram: 120, cal: 220 }, { name: 'Сгущенка', gram: 20, cal: 60 }, { name: 'Персик', gram: 1, cal: 60 }] }
+            ]
+          },
+          {
+            label: 'Обед',
+            cells: [
+              { dish: 'Куриная грудка', photo: '', products: [{ name: 'Куриная грудка', gram: 100, cal: 165 }, { name: 'Рис белый', gram: 80, cal: 280 }, { name: 'Овощи', gram: 120, cal: 50 }] },
+              { dish: 'Говядина', photo: '', products: [{ name: 'Говядина', gram: 90, cal: 180 }, { name: 'Гречка', gram: 70, cal: 245 }, { name: 'Морковь', gram: 40, cal: 16 }] },
+              { dish: 'Тушеная печень', photo: '', products: [{ name: 'Печень', gram: 100, cal: 130 }, { name: 'Макароны тв.', gram: 90, cal: 315 }, { name: 'Лук', gram: 20, cal: 8 }] },
+              { dish: 'Птица запеч.', photo: '', products: [{ name: 'Птица', gram: 80, cal: 130 }, { name: 'Булгар', gram: 40, cal: 140 }, { name: 'Перец', gram: 30, cal: 10 }, { name: 'Огурцы', gram: 50, cal: 8 }] },
+              { dish: 'Индейка', photo: '', products: [{ name: 'Индейка', gram: 110, cal: 130 }, { name: 'Рис', gram: 60, cal: 210 }, { name: 'Кабачок', gram: 50, cal: 12 }] },
+              { dish: 'Рыба (хек)', photo: '', products: [{ name: 'Хек', gram: 120, cal: 100 }, { name: 'Сметана 15%', gram: 30, cal: 60 }, { name: 'Картофель', gram: 100, cal: 80 }] },
+              { dish: 'Куриная голень', photo: '', products: [{ name: 'Голень', gram: 130, cal: 200 }, { name: 'Макароны', gram: 90, cal: 315 }, { name: 'Арахис', gram: 5, cal: 28 }] }
+            ]
+          },
+          {
+            label: 'Ужин',
+            cells: [
+              { dish: 'Творог', photo: '', products: [{ name: 'Творог 5%', gram: 150, cal: 180 }, { name: 'Кефир 1%', gram: 200, cal: 90 }, { name: 'Яблоко', gram: 1, cal: 70 }] },
+              { dish: 'Овощное рагу', photo: '', products: [{ name: 'Рагу', gram: 180, cal: 120 }, { name: 'Куриное филе', gram: 80, cal: 132 }, { name: 'Сыр', gram: 20, cal: 70 }] },
+              { dish: 'Рыба на пару', photo: '', products: [{ name: 'Рыба', gram: 100, cal: 90 }, { name: 'Овощи', gram: 100, cal: 40 }, { name: 'Рис', gram: 40, cal: 140 }] },
+              { dish: 'Тефтели', photo: '', products: [{ name: 'Тефтели', gram: 80, cal: 160 }, { name: 'Гречка', gram: 50, cal: 175 }, { name: 'Ряженка', gram: 150, cal: 90 }] },
+              { dish: 'Мафины из птицы', photo: '', products: [{ name: 'Мафины', gram: 60, cal: 140 }, { name: 'Грибы', gram: 30, cal: 8 }, { name: 'Йогурт 3%', gram: 40, cal: 30 }, { name: 'Мандарин', gram: 1, cal: 40 }] },
+              { dish: 'Омлет с зеленью', photo: '', products: [{ name: 'Омлет', gram: 2, cal: 140 }, { name: 'Хлеб ржаной', gram: 30, cal: 70 }, { name: 'Кефир', gram: 150, cal: 68 }] },
+              { dish: 'Птица тушеная', photo: '', products: [{ name: 'Птица', gram: 90, cal: 140 }, { name: 'Цв. капуста', gram: 50, cal: 12 }, { name: 'Морковь', gram: 30, cal: 12 }, { name: 'Виноград', gram: 50, cal: 35 }] }
+            ]
+          }
+        ]
+      }
+    };
+
+    const DAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+    let slidesData = [];
+    let currentIndex = 0;
+    let totalSlides = 7;
+
+    // DOM
+    const track = document.getElementById('reelsTrack');
+    const indicator = document.getElementById('slideIndicator');
+    const counter = document.getElementById('slideCounter');
+    const prevBtn = document.getElementById('prevSlideBtn');
+    const nextBtn = document.getElementById('nextSlideBtn');
+    const toastEl = document.getElementById('toast');
+
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    // --- вспомогательные ---
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastEl._hide);
+      toastEl._hide = setTimeout(() => toastEl.classList.remove('show'), 2000);
+    }
+
+    function roundNum(v) { return Math.round(v || 0); }
+
+    // --- рендер одного слайда ---
+    function renderSlide(dayIndex) {
+      const dayName = DAYS[dayIndex];
+      let totalCal = 0;
+
+      // собираем данные по всем приёмам для этого дня
+      let mealsHtml = '';
+      const rows = slidesData.rows || [];
+      rows.forEach((row) => {
+        const cell = row.cells[dayIndex];
+        if (!cell) return;
+        const dish = cell.dish || 'Блюдо';
+        const photo = cell.photo || '';
+        const products = cell.products || [];
+        let dayCal = 0;
+        products.forEach(p => { dayCal += roundNum(p.cal); });
+        totalCal += dayCal;
+
+        // фото
+        let photoHtml = '';
+        if (photo && photo.length > 50) {
+          photoHtml = `<img class="dish-photo" src="${photo}" alt="${dish}" />`;
+        } else {
+          photoHtml = `<div class="dish-photo-placeholder">📷</div>`;
+        }
+
+        // продукты
+        let productsHtml = '';
+        if (products.length) {
+          productsHtml = `<div class="product-list-compact">`;
+          products.forEach(p => {
+            const name = p.name || '';
+            const gram = roundNum(p.gram);
+            const cal = roundNum(p.cal);
+            productsHtml += `<span class="p-item">${name} <span class="p-gram">${gram > 0 ? gram+'г' : ''} ${cal > 0 ? cal+'ккал' : ''}</span></span>`;
+          });
+          productsHtml += `</div>`;
+        } else {
+          productsHtml = `<div style="color:#6a5f56;font-size:14px;padding:4px 0;">нет продуктов</div>`;
+        }
+
+        mealsHtml += `
+          <div class="meal-block">
+            <div class="meal-label">${row.label}</div>
+            <div class="dish-row">
+              ${photoHtml}
+              <span class="dish-name">${dish}</span>
+            </div>
+            ${productsHtml}
+          </div>
+        `;
+      });
+
+      return `
+        <div class="day-card">
+          <div class="day-title">
+            <span>${dayName}</span>
+            <span class="cal-total">🔥 ${totalCal} ккал</span>
+          </div>
+          ${mealsHtml}
+        </div>
+      `;
+    }
+
+    // --- обновить все слайды ---
+    function buildSlides() {
+      // очищаем трек, кроме плейсхолдера
+      const placeholder = document.getElementById('loadingPlaceholder');
+      if (placeholder) placeholder.remove();
+
+      // удаляем старые слайды
+      track.querySelectorAll('.reels-slide').forEach(el => el.remove());
+
+      for (let i = 0; i < totalSlides; i++) {
+        const div = document.createElement('div');
+        div.className = 'reels-slide' + (i === currentIndex ? ' active' : '');
+        div.dataset.index = i;
+        div.innerHTML = renderSlide(i);
+        track.appendChild(div);
+      }
+
+      updateIndicators();
+      updateCounter();
+    }
+
+    // --- индикаторы ---
+    function updateIndicators() {
+      indicator.innerHTML = '';
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'slide-dot' + (i === currentIndex ? ' active' : '');
+        dot.dataset.index = i;
+        dot.addEventListener('click', () => goToSlide(i));
+        indicator.appendChild(dot);
+      }
+    }
+
+    function updateCounter() {
+      counter.textContent = `${currentIndex + 1} / ${totalSlides}`;
+    }
+
+    // --- переключение ---
+    function goToSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+      if (index === currentIndex) return;
+
+      const slides = track.querySelectorAll('.reels-slide');
+      slides.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+
+      currentIndex = index;
+      updateIndicators();
+      updateCounter();
+      // скроллим вверх
+      const activeSlide = track.querySelector('.reels-slide.active');
+      if (activeSlide) activeSlide.scrollTop = 0;
+    }
+
+    function nextSlide() {
+      if (currentIndex < totalSlides - 1) goToSlide(currentIndex + 1);
+      else showToast('📅 Это последний день');
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) goToSlide(currentIndex - 1);
+      else showToast('📅 Это первый день');
+    }
+
+    // --- загрузка данных из JSON ---
+    function loadDataFromJson() {
+      // пробуем загрузить из файла data.json (или можно подставить любой URL)
+      fetch('data.json')
+        .then(res => {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(data => {
+          // поддержка обёртки { menu: ... } или просто { rows: ... }
+          let menuData = data;
+          if (data.menu && data.menu.rows) {
+            menuData = data.menu;
+          } else if (data.rows) {
+            menuData = data;
+          } else {
+            throw new Error('Неверная структура JSON');
+          }
+          slidesData = menuData;
+          buildSlides();
+          showToast('✅ Данные загружены');
+        })
+        .catch(err => {
+          console.warn('Ошибка загрузки JSON, используем встроенные данные:', err);
+          // fallback на встроенные
+          slidesData = DEFAULT_DATA.menu;
+          buildSlides();
+          showToast('📦 Используются встроенные данные');
+        });
+    }
+
+    // --- инициализация ---
+    function init() {
+      // сначала показываем плейсхолдер
+      const placeholder = document.createElement('div');
+      placeholder.className = 'loading-placeholder';
+      placeholder.id = 'loadingPlaceholder';
+      placeholder.innerHTML = `<div class="spinner"></div><span>Загрузка меню...</span>`;
+      track.appendChild(placeholder);
+
+      // загружаем данные
+      loadDataFromJson();
+
+      // свайп
+      track.addEventListener('touchstart', (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      track.addEventListener('touchend', (e) => {
+        touchEndY = e.changedTouches[0].screenY;
+        const diff = touchStartY - touchEndY;
+        if (Math.abs(diff) > 40) {
+          if (diff > 0) nextSlide();
+          else prevSlide();
+        }
+      }, { passive: true });
+
+      // колесо мыши (для десктопа)
+      track.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) > 20) {
+          e.preventDefault();
+          if (e.deltaY > 0) nextSlide();
+          else prevSlide();
+        }
+      }, { passive: false });
+
+      // кнопки
+      prevBtn.addEventListener('click', prevSlide);
+      nextBtn.addEventListener('click', nextSlide);
+
+      // клавиши
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextSlide();
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prevSlide();
+      });
+
+      // ресайз для корректного отображения
+      window.addEventListener('resize', () => {});
+    }
+
+    // запуск
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+  })();
+</script>
+
+</body>
+</html>
