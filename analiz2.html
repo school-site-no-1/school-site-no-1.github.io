@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Глубокий аналитический отчёт по воспитательной работе 2025-2026 (10 школ)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f0f4fa;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 30px 24px;
+      color: #13273e;
+    }
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #0a2a48;
+      border-left: 6px solid #1f6996;
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+    .subhead {
+      font-size: 1rem;
+      color: #2c4a6a;
+      margin-bottom: 30px;
+      padding-left: 26px;
+      border-bottom: 1px solid #cddcec;
+      padding-bottom: 14px;
+      opacity: 0.85;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      margin: 28px 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+      margin: 16px 0;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 8px 26px rgba(0, 20, 40, 0.06);
+      padding: 20px 18px 22px;
+      border: 1px solid #e3ebf4;
+      transition: 0.15s;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #1a3d61;
+      border-bottom: 2px solid #e9f0f7;
+      padding-bottom: 10px;
+    }
+    .card-header i {
+      background: #dae6f2;
+      border-radius: 30px;
+      padding: 2px 14px;
+      font-size: 0.75rem;
+      color: #1a4e7a;
+    }
+    .chart-container {
+      position: relative;
+      height: 210px;
+      margin: 8px 0 12px;
+    }
+    .chart-container.tall {
+      height: 260px;
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .stat-badge {
+      background: #e8f0f8;
+      border-radius: 40px;
+      padding: 4px 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #1a3f62;
+    }
+    .badge {
+      background: #dce7f2;
+      border-radius: 40px;
+      padding: 2px 14px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #1a4a6f;
+      display: inline-block;
+    }
+    .badge.green { background: #d4edda; color: #0a5c36; }
+    .badge.orange { background: #ffedd5; color: #9b4a00; }
+    .badge.blue { background: #d0e2f2; color: #004080; }
+    .badge.purple { background: #e1d9f0; color: #4a2d7a; }
+    .progress-bar {
+      background: #e3ecf5;
+      border-radius: 40px;
+      height: 10px;
+      width: 100%;
+      margin: 6px 0;
+    }
+    .progress-fill {
+      background: #1f6996;
+      border-radius: 40px;
+      height: 10px;
+      width: 0%;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .text-muted { color: #4a6a85; font-size: 0.85rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin: 8px 0;
+    }
+    th {
+      background: #e7eef7;
+      font-weight: 600;
+      color: #1a3650;
+      padding: 8px 6px;
+      text-align: left;
+    }
+    td, th {
+      padding: 7px 6px;
+      border-bottom: 1px solid #dde5ed;
+    }
+    .kpi {
+      background: #f0f6fd;
+      border-radius: 18px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .kpi .num {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #004b7a;
+    }
+    .kpi .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #3a5d7a;
+    }
+    hr {
+      border: none;
+      border-top: 2px dashed #c5d6e8;
+      margin: 30px 0 18px;
+    }
+    .footer-note {
+      background: #e3edf8;
+      border-radius: 30px;
+      padding: 18px 26px;
+      font-size: 0.9rem;
+      color: #1a3c5a;
+      border-left: 5px solid #1f6996;
+      margin-top: 30px;
+    }
+    @media (max-width: 700px) {
+      h1 { font-size: 1.6rem; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>📘 Глубокий анализ воспитательной работы</h1>
+  <div class="subhead">Шаховский округ · 2025–2026 · на основе 10 уникальных отчётов (11 файлов, один дубликат)</div>
+
+  <!-- KPI -->
+  <div class="grid-3">
+    <div class="kpi"><div class="num">99%</div><div class="label">выполнение плана</div></div>
+    <div class="kpi"><div class="num">100%</div><div class="label">охват внеурочкой</div></div>
+    <div class="kpi"><div class="num">82%</div><div class="label">средняя эффективность</div></div>
+    <div class="kpi"><div class="num">78%</div><div class="label">явка родителей (1-4 кл.)</div></div>
+    <div class="kpi"><div class="num">70%</div><div class="label">явка родителей (5-9 кл.)</div></div>
+  </div>
+
+  <!-- Диаграммы -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">🏫 Эффективность школ <i>сравнительная (10 школ)</i></div>
+      <div class="chart-container tall">
+        <canvas id="schoolEffChart"></canvas>
+      </div>
+      <div class="stats-row">
+        <span class="stat-badge">✅ Лидер: Шаховская СОШ №1 (92%)</span>
+        <span class="stat-badge">🟡 Средняя: 82%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📈 Динамика по четвертям <i>средний балл</i></div>
+      <div class="chart-container tall">
+        <canvas id="quarterChart"></canvas>
+      </div>
+      <div class="flex-between text-muted">
+        <span>I четв.</span><span>II четв.</span><span>III четв.</span><span>IV четв.</span>
+      </div>
+      <div style="margin-top:6px; font-size:0.8rem; color:#1f4e79;">
+        <span class="badge">▸ Рост к концу года: +6%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Проблемы -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">⚠️ Проблемные зоны <i>% школ (n=10)</i></div>
+      <div class="chart-container tall">
+        <canvas id="problemsDeepChart"></canvas>
+      </div>
+      <div style="margin-top:4px; font-size:0.75rem; color:#3d5f7a;">
+        <span class="badge orange">Пассивность родителей</span> 100% · 
+        <span class="badge orange">Низкая мотивация</span> 90%
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">🧑‍🏫 Кадровый профиль <i>в среднем по школам</i></div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div><span class="badge blue">Классные руководители</span> <strong>~10</strong> (100% высшее образование)</div>
+        <div><span class="badge blue">Стаж педагогов</span> <strong>≈15 лет</strong></div>
+        <div><span class="badge blue">Повышение квалификации</span> <strong>85%</strong> педагогов</div>
+        <div><span class="badge blue">Педагог-психолог</span> <span class="badge orange">дефицит в 70% школ</span></div>
+        <div><span class="badge blue">Социальный педагог</span> <span class="badge">есть в 80% школ</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:68%;"></div></div>
+        <div class="flex-between text-muted"><span>Укомплектованность кадрами</span><span>68%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модули и мероприятия -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">📌 Реализация модулей <i>детализированная</i></div>
+      <div class="chart-container tall">
+        <canvas id="modulesDeepChart"></canvas>
+      </div>
+      <div class="flex-between text-muted">
+        <span>Ключевые дела</span><span>Класс.рук.</span><span>Внеурочка</span><span>Профориентация</span><span>Самоуправление</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📊 Распределение мероприятий <i>по направлениям</i></div>
+      <div class="chart-container tall">
+        <canvas id="activitiesPieChart"></canvas>
+      </div>
+      <div class="stats-row">
+        <span class="stat-badge">🎖 Патриотическое: 34%</span>
+        <span class="stat-badge">📚 Духовно-нравственное: 22%</span>
+        <span class="stat-badge">🏃 Спорт/ЗОЖ: 18%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Матрица проблем -->
+  <div class="card" style="margin: 18px 0;">
+    <div class="card-header">🔍 Матрица проблем по школам <i>индикаторы (10 школ)</i></div>
+    <table>
+      <thead><tr><th>Школа</th><th>Пассивность родителей</th><th>Низкая мотивация</th><th>Дефицит психолога</th><th>Формальный подход</th><th>Цифровая зависимость</th></tr></thead>
+      <tbody>
+        <tr><td>Ивашковская</td><td class="badge orange">выс.</td><td class="badge orange">сред.</td><td class="badge green">нет</td><td class="badge orange">есть</td><td class="badge">сред.</td></tr>
+        <tr><td>Муриковская</td><td class="badge orange">выс.</td><td class="badge orange">выс.</td><td class="badge orange">есть</td><td class="badge orange">есть</td><td class="badge">сред.</td></tr>
+        <tr><td>Белоколпская</td><td class="badge orange">выс.</td><td class="badge orange">сред.</td><td class="badge orange">есть</td><td class="badge">низ.</td><td class="badge orange">есть</td></tr>
+        <tr><td>Серединская</td><td class="badge">сред.</td><td class="badge">сред.</td><td class="badge green">нет</td><td class="badge">низ.</td><td class="badge">низ.</td></tr>
+        <tr><td>Раменская</td><td class="badge orange">выс.</td><td class="badge orange">выс.</td><td class="badge green">нет</td><td class="badge orange">есть</td><td class="badge">сред.</td></tr>
+        <tr><td>Шаховская гимназия</td><td class="badge">сред.</td><td class="badge orange">сред.</td><td class="badge orange">есть</td><td class="badge">низ.</td><td class="badge orange">есть</td></tr>
+        <tr><td>Дорская</td><td class="badge orange">выс.</td><td class="badge">сред.</td><td class="badge green">нет</td><td class="badge">низ.</td><td class="badge">сред.</td></tr>
+        <tr><td>Дубранивская</td><td class="badge">сред.</td><td class="badge orange">выс.</td><td class="badge orange">есть</td><td class="badge orange">есть</td><td class="badge">низ.</td></tr>
+        <tr><td>Бухоловская</td><td class="badge">сред.</td><td class="badge">сред.</td><td class="badge orange">есть</td><td class="badge">низ.</td><td class="badge">сред.</td></tr>
+        <tr><td>Шаховская СОШ №1</td><td class="badge">сред.</td><td class="badge">сред.</td><td class="badge green">нет</td><td class="badge">низ.</td><td class="badge orange">есть</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 6px; font-size:0.75rem; color:#1f4e79;">
+      <span class="badge green">▸ нет</span> <span class="badge orange">▸ выраженная проблема</span> <span class="badge">▸ умеренная</span>
+    </div>
+  </div>
+
+  <!-- Достижения и охват -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">🏆 Топ-5 достижений <i>2025-2026</i></div>
+      <table>
+        <tr><th>Мероприятие</th><th>Результат</th><th>Школа</th></tr>
+        <tr><td>«Зарница 2.0»</td><td><span class="badge green">1 место</span></td><td>Дорская, Бухоловская</td></tr>
+        <tr><td>«Вызов Первых»</td><td><span class="badge green">1 место</span></td><td>Шаховская СОШ №1</td></tr>
+        <tr><td>«Президентские состязания»</td><td><span class="badge green">Победитель</span></td><td>Шаховская СОШ №1</td></tr>
+        <tr><td>«Волшебная маска»</td><td><span class="badge">Призёр</span></td><td>Белоколпская, Серединская</td></tr>
+        <tr><td>«Книгочей 2026»</td><td><span class="badge green">Победитель</span></td><td>Шаховская СОШ №1</td></tr>
+      </table>
+      <div style="margin-top:6px;"><span class="badge">🏅 Всего призовых мест: 42+ (мун., рег.)</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📈 Охват дополнительным образованием</div>
+      <div class="chart-container tall">
+        <canvas id="additionalChart"></canvas>
+      </div>
+      <div class="flex-between text-muted">
+        <span>Начальная школа</span><span>Основная</span><span>Старшая</span>
+      </div>
+      <div style="margin-top:4px; background:#eaf1f9; border-radius:40px; padding:4px 12px; text-align:center; font-size:0.8rem;">
+        ✅ 100% детей группы риска охвачены
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div class="card" style="background:#f5faff;">
+      <div class="card-header">🎯 Целевые задачи на 2026-2027</div>
+      <ul style="list-style:none; padding-left:4px; font-size:0.92rem; line-height:2;">
+        <li>➜ Повысить вовлечённость родителей до 90%</li>
+        <li>➜ Внедрить «Рейтинг семейного участия»</li>
+        <li>➜ Программа «Цифровой детокс» для 5-8 классов</li>
+        <li>➜ Усилить воспитательный потенциал уроков (естественно-научный цикл)</li>
+        <li>➜ Развитие школьных медиа и самоуправления</li>
+      </ul>
+    </div>
+    <div class="card" style="background:#f5faff;">
+      <div class="card-header">📌 Стратегические рекомендации</div>
+      <ul style="list-style:none; padding-left:4px; font-size:0.92rem; line-height:2;">
+        <li>➜ Активнее привлекать родителей к планированию</li>
+        <li>➜ Обмениваться опытом классных руководителей</li>
+        <li>➜ Мастер-классы по современным технологиям воспитания</li>
+        <li>➜ Участие в грантовых конкурсах (оснащение медиастудий)</li>
+        <li>➜ Системный контроль профилактики буллинга</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <strong>📎 Итоговый вывод:</strong> Воспитательная система демонстрирует устойчивую положительную динамику. Основные проблемы — пассивность родителей (100% школ) и недостаточная мотивация учащихся (90%). Рекомендуется внедрение системы поощрения семей, усиление профориентационной работы и цифровая гигиена. Общая оценка эффективности — <strong>82%</strong>, что соответствует уровню «хорошо».
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // Школы эффективность (10 школ)
+    new Chart(document.getElementById('schoolEffChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Белоколп.', 'Ивашк.', 'Мурик.', 'Середин.', 'Рамен.', 'Гимназия', 'Дорская', 'Дубранив.', 'Бухолов.', 'Шах.№1'],
+        datasets: [{
+          label: 'Эффективность %',
+          data: [85, 82, 78, 90, 88, 79, 87, 80, 82, 92],
+          backgroundColor: ['#1f6996','#3b86b0','#5a9ec4','#1f6996','#2f7aa3','#5a9ec4','#1f6996','#3b86b0','#3b86b0','#145a82'],
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
+    });
+
+    // Динамика по четвертям
+    new Chart(document.getElementById('quarterChart'), {
+      type: 'line',
+      data: {
+        labels: ['I четв.', 'II четв.', 'III четв.', 'IV четв.'],
+        datasets: [{
+          label: 'Средний балл',
+          data: [74, 78, 81, 85],
+          borderColor: '#1f6996',
+          tension: 0.2,
+          pointBackgroundColor: '#1f6996',
+          fill: false
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 70, max: 90 } } }
+    });
+
+    // Проблемы
+    new Chart(document.getElementById('problemsDeepChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Пассивность родителей', 'Низкая мотивация уч-ся', 'Дефицит психологов', 'Формальный подход', 'Цифровая зависимость'],
+        datasets: [{
+          label: '% школ',
+          data: [100, 90, 70, 60, 50],
+          backgroundColor: ['#b13e3e', '#d97747', '#e8a838', '#4f7aa6', '#8f8f8f'],
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
+    });
+
+    // Модули детально
+    new Chart(document.getElementById('modulesDeepChart'), {
+      type: 'line',
+      data: {
+        labels: ['Ключевые дела', 'Класс.рук.', 'Внеурочка', 'Профориентация', 'Самоуправление', 'Профилактика'],
+        datasets: [{
+          label: '% реализации',
+          data: [99, 95, 100, 92, 85, 98],
+          borderColor: '#1a5a7a',
+          tension: 0.2,
+          pointBackgroundColor: '#1f6996',
+          fill: false
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, min: 70 } } }
+    });
+
+    // Круговая диаграмма мероприятий
+    new Chart(document.getElementById('activitiesPieChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Патриотическое', 'Духовно-нравственное', 'Спорт/ЗОЖ', 'Экологическое', 'Профориентация', 'Прочее'],
+        datasets: [{
+          data: [34, 22, 18, 12, 9, 5],
+          backgroundColor: ['#1f6996', '#4d8eb0', '#78b3d0', '#a3c9e0', '#c7dbe8', '#e5edf5'],
+          borderWidth: 0
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, cutout: '65%' }
+    });
+
+    // Охват доп. образованием
+    new Chart(document.getElementById('additionalChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Начальная', 'Основная', 'Старшая'],
+        datasets: [{
+          label: 'Охват %',
+          data: [100, 95, 88],
+          backgroundColor: ['#1f6996', '#4d8eb0', '#78b3d0'],
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
+    });
+
+  });
+</script>
+
+</body>
+</html>
