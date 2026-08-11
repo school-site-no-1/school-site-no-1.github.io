@@ -126,7 +126,25 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 20px 0; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 16px 0; }
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 16px 0; }
-    .card { background: #f8faff; border-radius: 22px; padding: 20px 22px; border: 1px solid #e3ebf4; }
+    .card {
+      background: #f8faff;
+      border-radius: 22px;
+      padding: 20px 22px;
+      border: 1px solid #e3ebf4;
+    }
+    /* Увеличенные карточки для 4-х блоков */
+    .card-xl {
+      background: #f8faff;
+      border-radius: 28px;
+      padding: 32px 36px;
+      border: 1px solid #dce5ef;
+      box-shadow: 0 4px 12px rgba(0,20,40,0.04);
+    }
+    .card-xl .badge { font-size: 1rem; padding: 6px 20px; }
+    .card-xl ul { font-size: 1.1rem; line-height: 2.2; }
+    .card-xl .stat .num { font-size: 2.4rem; }
+    .card-xl .stat .label { font-size: 0.85rem; }
+
     .card-grey { background: #f2f6fc; }
     .chart-container { height: 220px; margin: 10px 0; }
     .chart-container.tall { height: 260px; }
@@ -218,11 +236,15 @@
       .matrix-cell.school { font-size: 0.7rem; padding-left: 6px; }
       .matrix-cell .dot { width: 12px; height: 12px; margin-right: 3px; }
       .slide-header h2 { font-size: 1.3rem; }
+      .card-xl { padding: 20px; }
+      .card-xl ul { font-size: 0.95rem; }
     }
     @media (max-width: 600px) {
       .matrix-grid { grid-template-columns: 70px repeat(5,1fr); font-size: 0.55rem; }
       .matrix-cell { padding: 4px 2px; min-height: 32px; }
       .matrix-cell .dot { width: 8px; height: 8px; margin-right: 2px; }
+      .card-xl { padding: 16px; }
+      .card-xl ul { font-size: 0.85rem; line-height: 1.8; }
     }
   </style>
 </head>
@@ -477,23 +499,25 @@
       </div>
     </div>
 
-    <!-- ========== СЛАЙД 7 ========== -->
+    <!-- ========== СЛАЙД 7: ПРОФОРИЕНТАЦИЯ (увеличенный) ========== -->
     <div class="slide" data-slide="6">
       <div class="slide-header">
         <h2>🧭 Профориентация</h2>
         <span class="page-indicator">7 / 10</span>
       </div>
       <div class="grid-2">
-        <div class="card">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">Ключевые показатели</div>
-          <div><span class="badge blue">Охват «Россия – мои горизонты»</span> 100% (6-11 кл.)</div>
-          <div><span class="badge blue">Участие в «Билет в будущее»</span> 100%</div>
-          <div><span class="badge blue">Профессиональные пробы</span> 27–186 чел.</div>
-          <div><span class="badge blue">Экскурсии на предприятия</span> 2–4 в год</div>
+        <div class="card-xl">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">📊 Ключевые показатели</div>
+          <div style="font-size:1.1rem; line-height:2.2;">
+            <div><span class="badge blue" style="font-size:1rem;">Охват «Россия – мои горизонты»</span> <strong>100%</strong> (6-11 кл.)</div>
+            <div><span class="badge blue" style="font-size:1rem;">Участие в «Билет в будущее»</span> <strong>100%</strong></div>
+            <div><span class="badge blue" style="font-size:1rem;">Профессиональные пробы</span> <strong>27–186</strong> чел.</div>
+            <div><span class="badge blue" style="font-size:1rem;">Экскурсии на предприятия</span> <strong>2–4</strong> в год</div>
+          </div>
         </div>
-        <div class="card">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">Посещённые предприятия</div>
-          <ul style="font-size:0.85rem; list-style:none; padding-left:0; line-height:1.8;">
+        <div class="card-xl">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">🏭 Посещённые предприятия</div>
+          <ul style="font-size:1.1rem; list-style:none; padding-left:0; line-height:2.2;">
             <li>• ООО «ЭлектроПро»</li>
             <li>• ООО «Десятое королевство»</li>
             <li>• Шаховской филиал Красногорского колледжа</li>
@@ -504,24 +528,26 @@
       </div>
     </div>
 
-    <!-- ========== СЛАЙД 8 ========== -->
+    <!-- ========== СЛАЙД 8: ПРОФИЛАКТИКА И БЕЗОПАСНОСТЬ (увеличенный) ========== -->
     <div class="slide" data-slide="7">
       <div class="slide-header">
         <h2>🛡️ Профилактика и безопасность</h2>
         <span class="page-indicator">8 / 10</span>
       </div>
       <div class="grid-2">
-        <div class="card">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">Результаты</div>
-          <div><span class="badge green">Правонарушения учащихся</span> 0</div>
-          <div><span class="badge green">Дети на учёте в ПДН</span> 0</div>
-          <div><span class="badge green">ДТП с участием детей</span> 0</div>
-          <div><span class="badge">Дети на ВШУ (среднее)</span> 1–2</div>
-          <div><span class="badge blue">Родители, получившие памятки</span> 100%</div>
+        <div class="card-xl">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">✅ Результаты</div>
+          <div style="font-size:1.1rem; line-height:2.4;">
+            <div><span class="badge green" style="font-size:1rem;">Правонарушения учащихся</span> <strong>0</strong></div>
+            <div><span class="badge green" style="font-size:1rem;">Дети на учёте в ПДН</span> <strong>0</strong></div>
+            <div><span class="badge green" style="font-size:1rem;">ДТП с участием детей</span> <strong>0</strong></div>
+            <div><span class="badge blue" style="font-size:1rem;">Дети на ВШУ (среднее)</span> <strong>1–2</strong></div>
+            <div><span class="badge blue" style="font-size:1rem;">Родители, получившие памятки</span> <strong>100%</strong></div>
+          </div>
         </div>
-        <div class="card">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">Направления работы</div>
-          <ul style="font-size:0.85rem; list-style:none; padding-left:0; line-height:1.8;">
+        <div class="card-xl">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">📌 Направления работы</div>
+          <ul style="font-size:1.1rem; list-style:none; padding-left:0; line-height:2.4;">
             <li>• Совет профилактики</li>
             <li>• ЮИД (отряды во всех школах)</li>
             <li>• Встречи с ГИБДД, МЧС, ОМВД</li>
@@ -532,40 +558,44 @@
       </div>
     </div>
 
-    <!-- ========== СЛАЙД 9 ========== -->
+    <!-- ========== СЛАЙД 9: ДЕТСКИЕ ОБЩЕСТВЕННЫЕ ОБЪЕДИНЕНИЯ (увеличенный) ========== -->
     <div class="slide" data-slide="8">
       <div class="slide-header">
         <h2>🌟 Детские общественные объединения</h2>
         <span class="page-indicator">9 / 10</span>
       </div>
       <div class="grid-2">
-        <div class="card">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">«Движение Первых»</div>
-          <div><span class="badge blue">Активистов</span> 15–216 чел.</div>
-          <div><span class="badge blue">Наставников</span> 4–42 чел.</div>
-          <div><span class="badge blue">Дней единых действий</span> 18</div>
-          <div><span class="badge blue">Охват акциями</span> 51–100%</div>
+        <div class="card-xl">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">«Движение Первых»</div>
+          <div style="font-size:1.1rem; line-height:2.4;">
+            <div><span class="badge blue" style="font-size:1rem;">Активистов</span> <strong>15–216</strong> чел.</div>
+            <div><span class="badge blue" style="font-size:1rem;">Наставников</span> <strong>4–42</strong> чел.</div>
+            <div><span class="badge blue" style="font-size:1rem;">Дней единых действий</span> <strong>18</strong></div>
+            <div><span class="badge blue" style="font-size:1rem;">Охват акциями</span> <strong>51–100%</strong></div>
+          </div>
         </div>
-        <div class="card">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">«Орлята России»</div>
-          <div><span class="badge blue">Охват начальной школы</span> 100%</div>
-          <div><span class="badge blue">Треков выполнено</span> 7 из 7</div>
-          <div><span class="badge blue">Юнармия</span> 10–15 чел./школа</div>
-          <div><span class="badge blue">Волонтёры</span> 10–30 чел./школа</div>
+        <div class="card-xl">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">«Орлята России»</div>
+          <div style="font-size:1.1rem; line-height:2.4;">
+            <div><span class="badge blue" style="font-size:1rem;">Охват начальной школы</span> <strong>100%</strong></div>
+            <div><span class="badge blue" style="font-size:1rem;">Треков выполнено</span> <strong>7 из 7</strong></div>
+            <div><span class="badge blue" style="font-size:1rem;">Юнармия</span> <strong>10–15</strong> чел./школа</div>
+            <div><span class="badge blue" style="font-size:1rem;">Волонтёры</span> <strong>10–30</strong> чел./школа</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ========== СЛАЙД 10 ========== -->
+    <!-- ========== СЛАЙД 10: ЗАДАЧИ (увеличенный) ========== -->
     <div class="slide" data-slide="9">
       <div class="slide-header">
         <h2>🎯 Задачи и рекомендации на 2026-2027</h2>
         <span class="page-indicator">10 / 10</span>
       </div>
       <div class="grid-2">
-        <div class="card card-grey">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">Целевые задачи</div>
-          <ul style="font-size:0.9rem; list-style:none; padding-left:0; line-height:2;">
+        <div class="card-xl card-grey">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">📋 Целевые задачи</div>
+          <ul style="font-size:1.1rem; list-style:none; padding-left:0; line-height:2.4;">
             <li>➜ Повысить вовлечённость родителей до 90%</li>
             <li>➜ Внедрить «Рейтинг семейного участия»</li>
             <li>➜ Программа «Цифровой детокс» для 5-8 классов</li>
@@ -573,9 +603,9 @@
             <li>➜ Развитие школьных медиа и самоуправления</li>
           </ul>
         </div>
-        <div class="card card-grey">
-          <div style="font-weight:600; font-size:1rem; margin-bottom:6px;">Стратегические рекомендации</div>
-          <ul style="font-size:0.9rem; list-style:none; padding-left:0; line-height:2;">
+        <div class="card-xl card-grey">
+          <div style="font-weight:700; font-size:1.3rem; margin-bottom:10px;">💡 Стратегические рекомендации</div>
+          <ul style="font-size:1.1rem; list-style:none; padding-left:0; line-height:2.4;">
             <li>➜ Активнее привлекать родителей к планированию</li>
             <li>➜ Обмениваться опытом классных руководителей</li>
             <li>➜ Мастер-классы по современным технологиям</li>
@@ -584,7 +614,7 @@
           </ul>
         </div>
       </div>
-      <div style="margin-top:16px; background:#e3edf8; border-radius:20px; padding:16px 22px; border-left:4px solid #1f6996; font-size:0.95rem;">
+      <div style="margin-top:18px; background:#e3edf8; border-radius:24px; padding:18px 28px; border-left:5px solid #1f6996; font-size:1.05rem;">
         <strong>📎 Итоговый вывод:</strong> Воспитательная система демонстрирует устойчивую положительную динамику. Общая оценка эффективности — <strong>82%</strong> (уровень «хорошо»).
       </div>
     </div>
@@ -613,7 +643,6 @@
     let current = 0;
     const total = slides.length;
 
-    // кнопки-индикаторы
     for (let i = 0; i < total; i++) {
       const btn = document.createElement('button');
       btn.classList.add('nav-btn');
@@ -642,9 +671,7 @@
 
     goTo(0);
 
-    // ====== CHART.JS диаграммы ======
-
-    // Эффективность школ
+    // ====== CHART.JS ======
     new Chart(document.getElementById('effChart'), {
       type: 'bar',
       data: {
@@ -658,7 +685,6 @@
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
     });
 
-    // Четверти
     new Chart(document.getElementById('quarterChart'), {
       type: 'line',
       data: {
@@ -674,7 +700,6 @@
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 70, max: 90 } } }
     });
 
-    // Проблемы
     new Chart(document.getElementById('problemsChart'), {
       type: 'bar',
       data: {
@@ -688,7 +713,6 @@
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
     });
 
-    // Модули
     new Chart(document.getElementById('modulesChart'), {
       type: 'line',
       data: {
@@ -704,7 +728,6 @@
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, min: 70 } } }
     });
 
-    // Круговая
     new Chart(document.getElementById('activitiesPieChart'), {
       type: 'doughnut',
       data: {
@@ -718,7 +741,6 @@
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }, cutout: '65%' }
     });
 
-    // Доп. образование
     new Chart(document.getElementById('additionalChart'), {
       type: 'bar',
       data: {
@@ -732,7 +754,6 @@
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { max: 100, beginAtZero: true } } }
     });
 
-    // Мини-диаграмма проблем для матрицы
     new Chart(document.getElementById('problemsChartMini'), {
       type: 'bar',
       data: {
