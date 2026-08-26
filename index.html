@@ -1041,6 +1041,132 @@
             }
         }
 
+        /* ============================
+           КОРИДОРНОЕ ТАБЛО 21:9
+           ============================ */
+        @media (min-width: 2560px) and (min-aspect-ratio: 21/10) {
+            html, body {
+                background: #e8eef5;
+            }
+            body {
+                padding: 16px 24px;
+            }
+            .container {
+                width: 100%;
+                max-width: none;
+                height: calc(100vh - 32px);
+                padding: 14px 22px;
+                border-radius: 20px;
+            }
+            .header {
+                min-height: 70px;
+                gap: 16px;
+                padding-bottom: 8px;
+                border-bottom-width: 3px;
+            }
+            .header-left {
+                flex: 1 1 54%;
+            }
+            .header-banner {
+                width: 100%;
+                max-width: none;
+                height: 64px;
+                min-height: 64px;
+                max-height: 64px;
+                padding: 0 10px;
+            }
+            .header-center {
+                gap: 12px;
+            }
+            .header-center .day-indicator {
+                font-size: clamp(26px, 2.5vh, 38px);
+                padding: 5px 26px;
+                border-radius: 28px;
+            }
+            .header-center .divider {
+                font-size: clamp(22px, 2vh, 30px);
+            }
+            .period {
+                font-size: clamp(16px, 1.6vh, 22px);
+            }
+            .period .line2 {
+                font-size: 0.9em;
+            }
+            .header-right {
+                gap: 4px;
+            }
+            .clock-wrapper {
+                gap: 12px;
+            }
+            .clock-wrapper svg {
+                width: 68px;
+                height: 68px;
+            }
+            .clock-text .day {
+                font-size: 0.8em;
+            }
+            .clock-text .date {
+                font-size: 0.95em;
+            }
+            .clock-text .digital-time {
+                font-size: 1.25em;
+            }
+            .header-right .schedule-updated {
+                font-size: 14px;
+                padding: 2px 10px;
+            }
+            .main-layout {
+                margin-top: 8px;
+            }
+            .table-wrapper {
+                overflow: hidden;
+            }
+            thead th:first-child {
+                width: 3.6% !important;
+                min-width: 68px !important;
+            }
+            thead th:not(:first-child) {
+                width: 5.355% !important;
+            }
+            thead th {
+                font-size: clamp(18px, 1.7vh, 24px) !important;
+                height: auto !important;
+                min-height: 44px !important;
+                max-height: none !important;
+                padding: 5px 8px !important;
+                border-bottom-width: 3px;
+            }
+            tbody td,
+            tbody th {
+                font-size: clamp(19px, 2.0vh, 28px) !important;
+                height: auto !important;
+                min-height: 84px !important;
+                max-height: none !important;
+                padding: 6px 8px !important;
+                border-bottom-width: 2px;
+            }
+            .lesson-num {
+                font-size: 0.9em !important;
+            }
+            .subject {
+                font-size: 0.95em !important;
+                line-height: 1.2 !important;
+            }
+            .cabinet {
+                font-size: 0.82em !important;
+                line-height: 1.15 !important;
+            }
+            .empty-cell {
+                font-size: 1em !important;
+            }
+            .footer {
+                font-size: 17px;
+                padding-top: 6px;
+                margin-top: 5px;
+                border-top-width: 2px;
+            }
+        }
+
         @media print {
             .no-print { display: none !important; }
             .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
