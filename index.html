@@ -215,10 +215,10 @@
             border-collapse: collapse;
             table-layout: fixed;
         }
-        thead th, tbody td {
+        thead th, tbody td, tbody th {
             border-right: 1.5px solid #d0d7e0;
         }
-        thead th:last-child, tbody td:last-child {
+        thead th:last-child, tbody td:last-child, tbody th:last-child {
             border-right: none;
         }
         thead th {
@@ -244,7 +244,7 @@
         thead th:not(:first-child) {
             width: 5.4%;
         }
-        tbody td {
+        tbody td, tbody th {
             color: #2d3748;
             border-bottom: 1px solid #e2e8f0;
             vertical-align: middle;
@@ -269,7 +269,7 @@
         tbody tr.current-lesson {
             background: #bee3f8 !important;
         }
-        tbody tr.current-lesson td {
+        tbody tr.current-lesson td, tbody tr.current-lesson th {
             color: #1a365d;
             font-weight: 600;
         }
@@ -675,6 +675,130 @@
             .mobile-lesson-card .lesson-time { font-size: 7px !important; }
         }
 
+        /* ============================
+           ДОСТУПНОСТЬ И ЧИТАЕМЫЕ РЕЖИМЫ
+           ============================ */
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .skip-link {
+            position: fixed;
+            z-index: 1000;
+            top: 8px;
+            left: 8px;
+            padding: 10px 14px;
+            background: #1a365d;
+            color: #ffffff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            transform: translateY(-160%);
+            transition: transform 0.2s ease;
+        }
+        .skip-link:focus {
+            transform: translateY(0);
+            outline: 3px solid #f6ad55;
+            outline-offset: 2px;
+        }
+        .mobile-class-header {
+            margin: 0;
+        }
+        .desktop-table caption {
+            caption-side: top;
+        }
+        tbody th {
+            color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1.5px solid #d0d7e0;
+            vertical-align: middle;
+            text-align: center;
+            font-weight: 700;
+            line-height: 1.1 !important;
+            padding: 2px 4px !important;
+        }
+        tbody tr.current-lesson th {
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+
+        /* На обычных мониторах карточки читаемее, чем 18 сжатых столбцов. */
+        @media (min-width: 769px) and (max-width: 1599px) {
+            .desktop-table { display: none !important; }
+            .mobile-view { display: flex !important; }
+            .mobile-class-header {
+                min-height: 30px !important;
+                height: auto !important;
+                padding: 6px 14px !important;
+                font-size: 16px !important;
+            }
+            .mobile-lesson-card {
+                min-height: 42px !important;
+                height: auto !important;
+                padding: 7px 12px !important;
+                gap: 10px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                min-width: 28px !important;
+                font-size: 14px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 14px !important;
+                line-height: 1.25 !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 12px !important;
+                line-height: 1.2 !important;
+            }
+        }
+
+        /* Полная таблица остаётся для широких табло, но с читаемым минимумом. */
+        @media (min-width: 1600px) {
+            thead th:first-child {
+                width: 3.7% !important;
+                min-width: 56px !important;
+            }
+            thead th:not(:first-child) {
+                width: 5.35% !important;
+            }
+            thead th {
+                font-size: clamp(12px, 0.9vw, 18px) !important;
+                height: auto !important;
+                min-height: 28px !important;
+                max-height: none !important;
+                padding: 4px 5px !important;
+            }
+            tbody td,
+            tbody th {
+                font-size: clamp(12px, 0.9vw, 18px) !important;
+                height: auto !important;
+                min-height: 44px !important;
+                max-height: none !important;
+                padding: 4px 5px !important;
+            }
+            .subject {
+                font-size: 1em !important;
+                line-height: 1.2 !important;
+            }
+            .cabinet {
+                font-size: max(11px, 0.8em) !important;
+                line-height: 1.15 !important;
+                color: #9c3d00;
+            }
+            .empty-cell {
+                font-size: 1em !important;
+                color: #667085;
+            }
+        }
+
         @media print {
             .no-print { display: none !important; }
             .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
@@ -686,27 +810,29 @@
     </style>
 </head>
 <body>
-
+    <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
     <div class="container">
+        <header class="header">
+            <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
         <!-- ===== ШАПКА ===== -->
         <div class="header">
             <div class="header-left">
                 <div class="header-banner" id="headerBanner">
-                    <img id="bannerImage" src="banner.png" alt="Баннер">
+                    <img id="bannerImage" src="banner.png" alt="Баннер школьного расписания">
                 </div>
             </div>
 
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
                 <span class="divider">|</span>
-                <span class="period" id="currentPeriod">Загрузка...</span>
+                <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
             </div>
 
             <div class="header-right">
                 <div id="clockContainer"></div>
                 <div class="schedule-updated" id="scheduleUpdated">📅 загрузка...</div>
             </div>
-        </div>
+        </header>
 
         <!-- ===== PWA ===== -->
         <div id="pwaNotification">
@@ -715,39 +841,42 @@
         </div>
 
         <!-- ===== ОСНОВНАЯ ЧАСТЬ ===== -->
-        <div class="main-layout">
+        <main class="main-layout" id="mainContent" tabindex="-1">
+            <p id="scheduleStatus" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">Загружаем расписание…</p>
             <div class="table-wrapper" id="tableWrapper">
-                <table class="desktop-table" id="scheduleTable">
+                <table class="desktop-table" id="scheduleTable" aria-describedby="scheduleStatus">
+                    <caption id="scheduleCaption" class="visually-hidden">Расписание уроков</caption>
                     <thead id="tableHead">
-                        <tr><th></th></tr>
+                        <tr><th scope="col">Урок</th></tr>
                     </thead>
                     <tbody id="scheduleBody">
                         <tr>
                             <td colspan="20" class="loading-overlay">
                                 ⏳ Загрузка...
-                                <span class="sub" id="loadStatus"></span>
+                                <span class="sub" aria-hidden="true"></span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
-                <div class="mobile-view" id="mobileView">
+                <h2 id="mobileScheduleHeading" class="visually-hidden">Расписание по классам</h2>
+                <div class="mobile-view" id="mobileView" role="region" aria-labelledby="mobileScheduleHeading" aria-describedby="scheduleStatus">
                     <div class="loading-overlay" style="height: auto; padding: 20px 0;">
                         ⏳ Загрузка...
-                        <span class="sub" id="loadStatusMobile"></span>
+                        <span class="sub" aria-hidden="true"></span>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
 
         <!-- ===== ПОДВАЛ ===== -->
-        <div class="footer no-print">
+        <footer class="footer no-print">
             <span class="version">🏷️ v<span id="appVersion">4.1.0</span></span>
-        </div>
+        </footer>
     </div>
 
     <!-- ===== УВЕДОМЛЕНИЕ ===== -->
-    <div id="notification" class="notification">
+    <div id="notification" class="notification" role="status" aria-live="polite" aria-atomic="true">
         <span id="notificationMessage"></span>
     </div>
 
@@ -1107,10 +1236,9 @@
         // ================================================================
 
         function loadData() {
-            var statusEl = document.getElementById('loadStatus');
-            var statusMobile = document.getElementById('loadStatusMobile');
-            if (statusEl) statusEl.textContent = 'Загрузка schedule.primary.json...';
-            if (statusMobile) statusMobile.textContent = 'Загрузка schedule.primary.json...';
+            var statusEl = document.getElementById('scheduleStatus');
+            var statusMobile = null;
+            if (statusEl) statusEl.textContent = 'Загружаем расписание…';
 
             // Кеш-бастер для обхода кеша браузера (обновляется каждый час)
             var cacheBuster = Math.floor(Date.now() / 3600000);
@@ -1192,13 +1320,13 @@
                         DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
                     }
 
-                    if (statusEl) statusEl.textContent = '✅ schedule.primary.json загружен';
+                    if (statusEl) statusEl.textContent = 'Расписание обновлено.';
                     if (statusMobile) statusMobile.textContent = '✅ schedule.primary.json загружен';
                     processLoadedData();
                 })
                 .catch(function(err) {
                     console.warn('Ошибка загрузки schedule.primary.json:', err.message);
-                    if (statusEl) statusEl.textContent = '❌ ' + err.message;
+                    if (statusEl) statusEl.textContent = 'Не удалось обновить расписание. Проверьте соединение и попробуйте снова.';
                     if (statusMobile) statusMobile.textContent = '❌ ' + err.message;
                     DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
                     document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
@@ -1231,6 +1359,15 @@
             dataLoaded = true;
             renderTable();
             renderMobile();
+        }
+
+        function escapeHTML(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         function sortClasses(classes) {
@@ -1267,6 +1404,7 @@
 
             document.getElementById('dayIndicator').textContent = displayDay.full;
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            document.getElementById('scheduleCaption').textContent = 'Расписание уроков на ' + displayDay.full;
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
@@ -1278,8 +1416,8 @@
             if (classes.length === 0) classes = PRIMARY_CLASSES;
             classes = sortClasses(classes);
 
-            var headerHTML = '<tr><th></th>';
-            classes.forEach(function(cls) { headerHTML += '<th>' + cls + '</th>'; });
+            var headerHTML = '<tr><th scope="col">Урок</th>';
+            classes.forEach(function(cls) { headerHTML += '<th scope="col">' + escapeHTML(cls) + '</th>'; });
             headerHTML += '</tr>';
             document.getElementById('tableHead').innerHTML = headerHTML;
 
@@ -1287,8 +1425,8 @@
             for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
                 var idx = lessonNum - 1;
                 var isCurrent = (lessonNum === currentLesson && currentLesson >= 1 && currentLesson <= MAX_LESSONS);
-                bodyHTML += '<tr class="' + (isCurrent ? 'current-lesson' : '') + '">';
-                bodyHTML += '<td><span class="lesson-num">' + lessonNum + '</span></td>';
+                bodyHTML += '<tr class="' + (isCurrent ? 'current-lesson' : '') + '"' + (isCurrent ? ' aria-label="Текущий урок"' : '') + '>';
+                bodyHTML += '<th scope="row"><span class="lesson-num">' + lessonNum + '</span></th>';
 
                 classes.forEach(function(cls) {
                     var lessons = dayData[cls] || [];
@@ -1296,7 +1434,7 @@
                     var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
                     var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
                     if (subject && subject.trim() !== '') {
-                        bodyHTML += '<td><span class="subject">' + subject + '</span><span class="cabinet">' + cabinet + '</span></td>';
+                        bodyHTML += '<td><span class="subject">' + escapeHTML(subject) + '</span><span class="cabinet">' + escapeHTML(cabinet) + '</span></td>';
                     } else {
                         bodyHTML += '<td class="empty-cell">—</td>';
                     }
@@ -1335,8 +1473,8 @@
             classes.forEach(function(className) {
                 var lessons = dayData[className] || [];
 
-                html += '<div class="mobile-class-card">';
-                html += '<div class="mobile-class-header"><span class="class-name">' + className + '</span></div>';
+                html += '<section class="mobile-class-card" aria-label="Расписание класса ' + escapeHTML(className) + '">';
+                html += '<h3 class="mobile-class-header"><span class="class-name">' + escapeHTML(className) + '</span></h3>';
 
                 for (var i = 0; i < MAX_LESSONS; i++) {
                     var lesson = lessons[i] || ['', ''];
@@ -1350,9 +1488,9 @@
 
                     if (hasContent) {
                         html += '<div class="lesson-info">';
-                        html += '<span class="subject-name">' + subject + '</span>';
+                        html += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
                         if (cabinet && cabinet.trim() !== '') {
-                            html += '<span class="room-name">' + cabinet + '</span>';
+                            html += '<span class="room-name">' + escapeHTML(cabinet) + '</span>';
                         }
                         html += '</div>';
                         html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
@@ -1364,7 +1502,7 @@
                     }
                     html += '</div>';
                 }
-                html += '</div>';
+                html += '</section>';
             });
 
             document.getElementById('mobileView').innerHTML = html;
