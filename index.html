@@ -799,6 +799,248 @@
             }
         }
 
+        /* ============================
+           МОБИЛЬНАЯ УДОБНОЧИТАЕМОСТЬ
+           ============================ */
+        .mobile-controls {
+            display: none;
+        }
+
+        /* Фильтр сокращает длинную прокрутку, но «Все классы» остаётся доступным. */
+        @media (max-width: 1599px) {
+            .mobile-controls {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                padding: 8px 10px;
+                margin: 0 0 6px;
+                border: 1px solid #d0d7e0;
+                border-radius: 8px;
+                background: #ffffff;
+                color: #1a365d;
+                font-size: 14px;
+                font-weight: 700;
+            }
+            .mobile-controls label {
+                min-width: 0;
+            }
+            .mobile-controls select {
+                flex: 1 1 auto;
+                min-width: 0;
+                min-height: 38px;
+                padding: 6px 9px;
+                border: 1px solid #2b6cb0;
+                border-radius: 6px;
+                background: #ffffff;
+                color: #1a365d;
+                font: inherit;
+            }
+            .mobile-controls select:focus-visible {
+                outline: 3px solid #f6ad55;
+                outline-offset: 2px;
+            }
+        }
+
+        /* Ширина до 768 px: вместо сжатия обеспечиваем читаемость и безопасную прокрутку. */
+        @media (max-width: 768px) {
+            html, body {
+                height: auto;
+                min-height: 100dvh;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            body {
+                min-height: 100dvh;
+                align-items: stretch;
+                padding: 4px;
+            }
+            .container {
+                height: calc(100vh - 8px);
+                min-height: calc(100vh - 8px);
+                height: calc(100dvh - 8px);
+                min-height: calc(100dvh - 8px);
+                padding: 6px;
+                border-radius: 10px;
+            }
+            .header {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-areas:
+                    "banner"
+                    "center"
+                    "status";
+                gap: 8px;
+                min-width: 0;
+                padding-bottom: 8px;
+            }
+            .header-left {
+                grid-area: banner;
+                display: block;
+                width: 100%;
+                min-width: 0;
+                flex: none;
+            }
+            .header-banner {
+                width: 100%;
+                max-width: none;
+                min-width: 0;
+                height: 36px;
+                min-height: 36px;
+                max-height: 36px;
+                flex: none;
+            }
+            .header-banner img {
+                object-fit: contain;
+            }
+            .header-center {
+                grid-area: center;
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                flex-direction: column;
+                gap: 4px;
+                justify-content: center;
+                align-items: center;
+            }
+            .header-center .day-indicator {
+                font-size: 18px;
+                line-height: 1.2;
+                padding: 4px 16px;
+            }
+            .header-center .divider {
+                display: none;
+            }
+            .period,
+            .period .line1 {
+                min-height: 0;
+                font-size: 14px;
+                line-height: 1.25;
+                text-align: center;
+            }
+            .period .line2 {
+                font-size: 13px;
+                line-height: 1.25;
+            }
+            .header-right {
+                grid-area: status;
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+                gap: 6px 12px;
+                margin: 0;
+                text-align: center;
+            }
+            .clock-wrapper {
+                gap: 6px;
+            }
+            .clock-wrapper svg {
+                width: 36px;
+                height: 36px;
+            }
+            .clock-text .day {
+                font-size: 0.65em;
+            }
+            .clock-text .date {
+                font-size: 0.75em;
+            }
+            .clock-text .digital-time {
+                font-size: 0.95em;
+            }
+            .header-right .schedule-updated {
+                font-size: 12px;
+                line-height: 1.2;
+                order: unset;
+            }
+            .main-layout {
+                margin-top: 6px;
+            }
+            .mobile-controls {
+                flex-wrap: wrap;
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            .mobile-controls label,
+            .mobile-controls select {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+            .mobile-class-header {
+                height: auto !important;
+                min-height: 34px !important;
+                padding: 8px 12px !important;
+                font-size: 16px !important;
+                line-height: 1.2 !important;
+            }
+            .mobile-lesson-card {
+                height: auto !important;
+                min-height: 48px !important;
+                padding: 8px 10px !important;
+                gap: 10px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                min-width: 26px !important;
+                font-size: 12px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 14px !important;
+                line-height: 1.25 !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 12px !important;
+                line-height: 1.2 !important;
+            }
+            .mobile-view {
+                padding-bottom: 4px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 4px;
+                border-radius: 8px;
+            }
+            .header-banner {
+                height: 32px;
+                min-height: 32px;
+                max-height: 32px;
+            }
+            .header-center .day-indicator {
+                font-size: 17px;
+            }
+            .period,
+            .period .line1 {
+                font-size: 13px;
+            }
+            .period .line2 {
+                font-size: 12px;
+            }
+            .mobile-controls {
+                padding: 7px 8px;
+            }
+            .mobile-class-header {
+                min-height: 32px !important;
+                font-size: 15px !important;
+            }
+            .mobile-lesson-card {
+                min-height: 46px !important;
+                padding: 7px 8px !important;
+                gap: 8px;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 14px !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 12px !important;
+            }
+        }
+
         @media print {
             .no-print { display: none !important; }
             .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
@@ -860,6 +1102,30 @@
                 </table>
 
                 <h2 id="mobileScheduleHeading" class="visually-hidden">Расписание по классам</h2>
+                <div class="mobile-controls" role="group" aria-labelledby="mobileFilterLabel">
+                    <label id="mobileFilterLabel" for="mobileClassFilter">Показать класс</label>
+                    <select id="mobileClassFilter" aria-controls="mobileView">
+                        <option value="all">Все классы</option>
+                        <option value="5А">5А</option>
+                        <option value="5Б">5Б</option>
+                        <option value="6А">6А</option>
+                        <option value="6Б">6Б</option>
+                        <option value="6В">6В</option>
+                        <option value="7А">7А</option>
+                        <option value="7Б">7Б</option>
+                        <option value="7В">7В</option>
+                        <option value="8А">8А</option>
+                        <option value="8Б">8Б</option>
+                        <option value="8В">8В</option>
+                        <option value="9А">9А</option>
+                        <option value="9Б">9Б</option>
+                        <option value="9В">9В</option>
+                        <option value="10А">10А</option>
+                        <option value="10Б">10Б</option>
+                        <option value="11А">11А</option>
+                        <option value="11Б">11Б</option>
+                    </select>
+                </div>
                 <div class="mobile-view" id="mobileView" role="region" aria-labelledby="mobileScheduleHeading" aria-describedby="scheduleStatus">
                     <div class="loading-overlay" style="height: auto; padding: 20px 0;">
                         ⏳ Загрузка...
@@ -1468,6 +1734,11 @@
             var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
             if (classes.length === 0) classes = PRIMARY_CLASSES;
             classes = sortClasses(classes);
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            var selectedMobileClass = mobileClassFilter ? mobileClassFilter.value : 'all';
+            if (selectedMobileClass !== 'all' && classes.indexOf(selectedMobileClass) !== -1) {
+                classes = [selectedMobileClass];
+            }
 
             var html = '';
             classes.forEach(function(className) {
@@ -1531,6 +1802,16 @@
                 var pwaNotification = document.getElementById('pwaNotification');
                 if (pwaNotification) pwaNotification.style.display = 'block';
             });
+
+            // Фильтр класса для мобильного и компактного режима
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            if (mobileClassFilter) {
+                mobileClassFilter.addEventListener('change', function() {
+                    renderMobile();
+                    var mobileView = document.getElementById('mobileView');
+                    if (mobileView) mobileView.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
 
             // Загрузка данных
             loadData();
