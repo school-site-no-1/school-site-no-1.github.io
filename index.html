@@ -730,7 +730,7 @@
         }
 
         /* На обычных мониторах карточки читаемее, чем 18 сжатых столбцов. */
-        @media (min-width: 769px) and (max-width: 1599px) {
+        @media (min-width: 769px) and (max-width: 1919px) {
             .desktop-table { display: none !important; }
             .mobile-view { display: flex !important; }
             .mobile-class-header {
@@ -761,7 +761,7 @@
         }
 
         /* Полная таблица остаётся для широких табло, но с читаемым минимумом. */
-        @media (min-width: 1600px) {
+        @media (min-width: 1920px) {
             thead th:first-child {
                 width: 3.7% !important;
                 min-width: 56px !important;
@@ -807,7 +807,7 @@
         }
 
         /* Фильтр сокращает длинную прокрутку, но «Все классы» остаётся доступным. */
-        @media (max-width: 1599px) {
+        @media (max-width: 1919px) {
             .mobile-controls {
                 display: flex;
                 align-items: center;
