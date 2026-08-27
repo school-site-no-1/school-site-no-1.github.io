@@ -1080,14 +1080,16 @@
                 background: #e8eef5;
             }
             body {
-                padding: 16px 24px;
+                padding: 0;
             }
             .container {
                 width: 100%;
                 max-width: none;
-                height: calc(100vh - 32px);
-                padding: 14px 22px;
-                border-radius: 20px;
+                height: 100vh;
+                padding: 8px 10px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
             }
             .header {
                 min-height: 70px;
@@ -1763,7 +1765,7 @@
                     if (statusMobile) statusMobile.textContent = '✅ schedule.primary.json загружен';
                     processLoadedData();
                     lastBoardRenderKey = getBoardRenderKey();
-                    setBoardSync('online', 'Данные актуальны · проверка каждые 30 с');
+                    setBoardSync('online', 'Данные актуальны');
                 })
                 .catch(function(err) {
                     console.warn('Ошибка загрузки schedule.primary.json:', err.message);
