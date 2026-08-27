@@ -1164,27 +1164,27 @@
                 overflow: hidden;
             }
             thead th:first-child {
-                width: 3.6% !important;
-                min-width: 68px !important;
+                width: 46px !important;
+                min-width: 46px !important;
             }
             thead th:not(:first-child) {
-                width: 5.355% !important;
+                width: auto !important;
             }
             thead th {
-                font-size: clamp(18px, 1.7vh, 24px) !important;
+                font-size: clamp(16px, 1.5vh, 21px) !important;
                 height: auto !important;
-                min-height: 44px !important;
+                min-height: 36px !important;
                 max-height: none !important;
-                padding: 5px 8px !important;
+                padding: 4px 6px !important;
                 border-bottom-width: 3px;
             }
             tbody td,
             tbody th {
-                font-size: clamp(19px, 2.0vh, 28px) !important;
+                font-size: clamp(17px, 1.75vh, 23px) !important;
                 height: auto !important;
-                min-height: 84px !important;
+                min-height: 68px !important;
                 max-height: none !important;
-                padding: 6px 8px !important;
+                padding: 5px 6px !important;
                 border-bottom-width: 2px;
             }
             .lesson-num {
@@ -1195,8 +1195,8 @@
                 line-height: 1.2 !important;
             }
             .cabinet {
-                font-size: 0.82em !important;
-                line-height: 1.15 !important;
+                font-size: 0.78em !important;
+                line-height: 1.1 !important;
             }
             .empty-cell {
                 font-size: 1em !important;
@@ -1258,7 +1258,7 @@
                 <table class="desktop-table" id="scheduleTable" aria-describedby="scheduleStatus">
                     <caption id="scheduleCaption" class="visually-hidden">Расписание уроков</caption>
                     <thead id="tableHead">
-                        <tr><th scope="col">Урок</th></tr>
+                        <tr><th scope="col" aria-label="Номер урока"><span class="visually-hidden">Номер урока</span></th></tr>
                     </thead>
                     <tbody id="scheduleBody">
                         <tr>
@@ -1864,7 +1864,7 @@
             if (classes.length === 0) classes = PRIMARY_CLASSES;
             classes = sortClasses(classes);
 
-            var headerHTML = '<tr><th scope="col">Урок</th>';
+            var headerHTML = '<tr><th scope="col" aria-label="Номер урока"><span class="visually-hidden">Номер урока</span></th>';
             classes.forEach(function(cls) { headerHTML += '<th scope="col">' + escapeHTML(cls) + '</th>'; });
             headerHTML += '</tr>';
             document.getElementById('tableHead').innerHTML = headerHTML;
