@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#163d6a">
+  <title>Диагностика экрана для табло</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #163d6a;
+      --blue: #2877b9;
+      --sky: #eaf5ff;
+      --ink: #182b40;
+      --muted: #58687a;
+      --line: #cbd8e6;
+      --surface: #ffffff;
+      --bg: #edf3f8;
+      --success: #17643d;
+      --success-bg: #eaf8ef;
+      --warning: #915a00;
+      --warning-bg: #fff7e6;
+      --shadow: 0 18px 42px rgba(31, 67, 105, .12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-width: 0;
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--ink);
+      background: linear-gradient(135deg, #e8f2fa, #f7fbfe 42%, #e6f1f9);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(22px, 4vw, 56px) 0 36px;
+    }
+    .hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: clamp(22px, 4vw, 42px);
+      color: #fff;
+      background: linear-gradient(135deg, #12365f, #1f6fae);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+    .eyebrow {
+      margin: 0 0 9px;
+      color: #bfe2ff;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      line-height: 1.08;
+    }
+    .hero p:last-child {
+      max-width: 700px;
+      margin: 15px 0 0;
+      color: #ddebfa;
+      font-size: clamp(1rem, 1.7vw, 1.15rem);
+      line-height: 1.55;
+    }
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      margin-top: 3px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 999px;
+      color: #fff;
+      font-weight: 700;
+      white-space: nowrap;
+      background: rgba(255,255,255,.13);
+    }
+    .live-dot::before {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #73eca5;
+      box-shadow: 0 0 0 4px rgba(115, 236, 165, .18);
+      content: "";
+    }
+
+    .recommendation {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: center;
+      margin: 24px 0;
+      padding: 20px 22px;
+      border: 1px solid #b8d8f1;
+      border-radius: 17px;
+      background: var(--sky);
+    }
+    .recommendation-icon {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1.65rem;
+      font-weight: 800;
+      background: var(--blue);
+    }
+    .recommendation h2 { margin: 0; color: var(--navy); font-size: 1.2rem; }
+    .recommendation p { margin: 6px 0 0; color: #38536e; line-height: 1.45; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    section {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--surface);
+      box-shadow: 0 6px 18px rgba(28, 66, 105, .05);
+    }
+    section h2 {
+      margin: 0;
+      padding: 15px 19px;
+      border-bottom: 1px solid var(--line);
+      color: var(--navy);
+      font-size: 1rem;
+    }
+    dl { margin: 0; }
+    .metric {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 55px;
+      padding: 11px 19px;
+      border-bottom: 1px solid #e7edf3;
+    }
+    .metric:last-child { border-bottom: 0; }
+    dt { color: var(--muted); font-size: .9rem; }
+    dd {
+      margin: 0;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(.9rem, 2vw, 1rem);
+      font-weight: 800;
+      text-align: right;
+    }
+    .wide { grid-column: 1 / -1; }
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 16px 19px 19px;
+    }
+    .status-card {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fafcfe;
+    }
+    .status-card .label { color: var(--muted); font-size: .78rem; }
+    .status-card strong { display: block; margin-top: 5px; font-size: .95rem; line-height: 1.25; }
+    .pass { color: var(--success); background: var(--success-bg); border-color: #b5dfc6; }
+    .warn { color: var(--warning); background: var(--warning-bg); border-color: #efcc88; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-top: 22px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.72);
+    }
+    .actions p { max-width: 690px; margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+    button {
+      min-height: 44px;
+      padding: 10px 17px;
+      border: 1px solid #13588f;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      background: #1f6fae;
+    }
+    button:hover, button:focus-visible { background: #155b94; }
+    button:focus-visible { outline: 3px solid #ffbf47; outline-offset: 3px; }
+    .note {
+      margin: 20px 2px 0;
+      color: #667789;
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      main { width: min(100% - 22px, 1120px); padding-top: 12px; }
+      .hero { flex-direction: column; border-radius: 17px; }
+      .grid { grid-template-columns: 1fr; gap: 14px; }
+      .wide { grid-column: auto; }
+      .status-row { grid-template-columns: 1fr; }
+      .actions { align-items: stretch; }
+      .actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Диагностика коридорного табло</p>
+        <h1>Параметры этого экрана</h1>
+        <p>Страница автоматически обновляет данные при изменении окна, масштаба или ориентации экрана.</p>
+      </div>
+      <span class="live-dot" aria-hidden="true">Измеряется</span>
+    </header>
+
+    <section class="recommendation" aria-labelledby="recommendationTitle">
+      <div class="recommendation-icon" id="recommendationIcon" aria-hidden="true">21:9</div>
+      <div>
+        <h2 id="recommendationTitle">Определяем оптимальный режим…</h2>
+        <p id="recommendationText">Получаем параметры браузера и экрана.</p>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section aria-labelledby="viewportTitle">
+        <h2 id="viewportTitle">Видимая область браузера</h2>
+        <dl>
+          <div class="metric"><dt>Viewport</dt><dd id="viewport">—</dd></div>
+          <div class="metric"><dt>Visual viewport</dt><dd id="visualViewport">—</dd></div>
+          <div class="metric"><dt>Масштаб visual viewport</dt><dd id="visualScale">—</dd></div>
+          <div class="metric"><dt>Ориентация</dt><dd id="orientation">—</dd></div>
+        </dl>
+      </section>
+
+      <section aria-labelledby="screenTitle">
+        <h2 id="screenTitle">Данные, сообщаемые экраном</h2>
+        <dl>
+          <div class="metric"><dt>Разрешение экрана (CSS px)</dt><dd id="screenSize">—</dd></div>
+          <div class="metric"><dt>Доступная область</dt><dd id="availableSize">—</dd></div>
+          <div class="metric"><dt>Плотность пикселей (DPR)</dt><dd id="dpr">—</dd></div>
+          <div class="metric"><dt>Оценка аппаратного разрешения</dt><dd id="physicalEstimate">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="wide" aria-labelledby="analysisTitle">
+        <h2 id="analysisTitle">Соотношение viewport и режим страницы</h2>
+        <div class="status-row">
+          <div class="status-card" id="ratioCard"><span class="label">Соотношение сторон</span><strong id="ratio">—</strong></div>
+          <div class="status-card" id="modeCard"><span class="label">Рекомендуемый режим</span><strong id="mode">—</strong></div>
+          <div class="status-card" id="fitCard"><span class="label">Проверка для табло</span><strong id="fit">—</strong></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="actions" aria-label="Действия">
+      <p><strong>Совет:</strong> для проверки коридорного табло откройте страницу в полноэкранном режиме браузера (F11) и установите масштаб 100%.</p>
+      <button id="copyButton" type="button">Скопировать параметры</button>
+    </section>
+    <p id="status" class="sr-only" role="status" aria-live="polite"></p>
+    <p class="note">Рекомендация рассчитывается по viewport, потому что он определяет режим вёрстки страницы. Браузер сообщает размеры `screen` в CSS-пикселях; оценка аппаратного разрешения вычисляется как CSS-размер экрана × devicePixelRatio и может отличаться от паспортного разрешения из-за системного масштабирования.</p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      function gcd(a, b) {
+        a = Math.round(Math.abs(a));
+        b = Math.round(Math.abs(b));
+        while (b) { var remainder = a % b; a = b; b = remainder; }
+        return a || 1;
+      }
+
+      function dimensions(width, height) {
+        return Math.round(width) + ' × ' + Math.round(height) + ' px';
+      }
+
+      function closeTo(value, target, tolerance) {
+        return Math.abs(value - target) <= tolerance;
+      }
+
+      function ratioName(width, height) {
+        var ratio = width / height;
+        if (closeTo(ratio, 21 / 9, 0.1)) return '21:9 (ультраширокий)';
+        if (closeTo(ratio, 32 / 9, 0.12)) return '32:9 (сверхширокий)';
+        if (closeTo(ratio, 16 / 9, 0.08)) return '16:9 (широкоэкранный)';
+        if (closeTo(ratio, 16 / 10, 0.07)) return '16:10';
+        if (closeTo(ratio, 4 / 3, 0.07)) return '4:3';
+        if (closeTo(ratio, 9 / 16, 0.07)) return '9:16 (портретный)';
+        var divisor = gcd(width, height);
+        return Math.round(width / divisor) + ':' + Math.round(height / divisor);
+      }
+
+      function getRecommendation(width, height) {
+        var ratio = width / height;
+        var isUltraWide = ratio >= 2.2 && ratio <= 2.5;
+        var isCorridor = isUltraWide && width >= 2560;
+
+        if (isCorridor) {
+          return {
+            icon: '21:9',
+            title: 'Режим коридорного табло 21:9',
+            text: 'Показывайте полную таблицу 5А–11Б. Используйте широкую рабочую область без внешних полей и крупный текст для чтения с расстояния.',
+            mode: 'Полная таблица 21:9',
+            fit: 'Подходит для коридорного табло',
+            tone: 'pass'
+          };
+        }
+        if (width >= 1920) {
+          return {
+            icon: '16:9',
+            title: 'Режим полной desktop-таблицы',
+            text: 'Ширины достаточно для единой таблицы. Для стандартного широкого экрана сохраните читаемые размеры колонок и строк.',
+            mode: 'Полная таблица',
+            fit: 'Подходит для Full HD и выше',
+            tone: 'pass'
+          };
+        }
+        if (width >= 769) {
+          return {
+            icon: '↔',
+            title: 'Компактный режим с карточками',
+            text: 'Не выводите все классы в одной таблице: используйте карточки и фильтр «Показать класс», чтобы сохранить читаемость.',
+            mode: 'Карточки + фильтр классов',
+            fit: 'Полная таблица будет слишком плотной',
+            tone: 'warn'
+          };
+        }
+        return {
+          icon: '▯',
+          title: 'Мобильный режим',
+          text: 'Используйте одну колонку карточек, вертикальную прокрутку и минимальный размер текста: 14 px для предмета, 12 px для времени и кабинета.',
+          mode: 'Мобильные карточки',
+          fit: 'Нужна адаптивная компоновка',
+          tone: 'warn'
+        };
+      }
+
+      function setText(id, value) {
+        document.getElementById(id).textContent = value;
+      }
+
+      function update() {
+        var viewportWidth = window.innerWidth;
+        var viewportHeight = window.innerHeight;
+        var vv = window.visualViewport;
+        var visualWidth = vv ? vv.width : viewportWidth;
+        var visualHeight = vv ? vv.height : viewportHeight;
+        var visualScale = vv ? vv.scale : 1;
+        var screenWidth = window.screen.width;
+        var screenHeight = window.screen.height;
+        var dpr = window.devicePixelRatio || 1;
+        var orientation = screen.orientation && screen.orientation.type
+          ? screen.orientation.type.replace('-', ' ')
+          : (viewportWidth >= viewportHeight ? 'альбомная' : 'портретная');
+        // Режим страницы зависит от viewport: именно эти размеры используются CSS media queries.
+        var recommendation = getRecommendation(viewportWidth, viewportHeight);
+        var ratio = ratioName(viewportWidth, viewportHeight);
+
+        setText('viewport', dimensions(viewportWidth, viewportHeight));
+        setText('visualViewport', dimensions(visualWidth, visualHeight));
+        setText('visualScale', visualScale.toFixed(2) + '×');
+        setText('orientation', orientation);
+        setText('screenSize', dimensions(screenWidth, screenHeight));
+        setText('availableSize', dimensions(screen.availWidth, screen.availHeight));
+        setText('dpr', dpr.toFixed(2) + '×');
+        setText('physicalEstimate', dimensions(screenWidth * dpr, screenHeight * dpr));
+        setText('ratio', ratio + ' (' + (viewportWidth / viewportHeight).toFixed(3) + ':1)');
+        setText('mode', recommendation.mode);
+        setText('fit', recommendation.fit);
+        setText('recommendationTitle', recommendation.title);
+        setText('recommendationText', recommendation.text);
+        setText('recommendationIcon', recommendation.icon);
+
+        ['ratioCard', 'modeCard', 'fitCard'].forEach(function (id) {
+          document.getElementById(id).className = 'status-card ' + recommendation.tone;
+        });
+      }
+
+      function copyParameters() {
+        var lines = [
+          'Экран: ' + document.getElementById('screenSize').textContent,
+          'Viewport: ' + document.getElementById('viewport').textContent,
+          'Соотношение: ' + document.getElementById('ratio').textContent,
+          'DPR: ' + document.getElementById('dpr').textContent,
+          'Рекомендуемый режим: ' + document.getElementById('mode').textContent
+        ];
+        var text = lines.join('\n');
+        var status = document.getElementById('status');
+        navigator.clipboard.writeText(text).then(function () {
+          status.textContent = 'Параметры экрана скопированы.';
+          document.getElementById('copyButton').textContent = 'Скопировано';
+          setTimeout(function () { document.getElementById('copyButton').textContent = 'Скопировать параметры'; }, 1800);
+        }).catch(function () {
+          status.textContent = 'Не удалось скопировать автоматически. Выделите параметры вручную.';
+        });
+      }
+
+      window.addEventListener('resize', update, { passive: true });
+      window.addEventListener('orientationchange', update, { passive: true });
+      if (window.visualViewport) window.visualViewport.addEventListener('resize', update, { passive: true });
+      document.getElementById('copyButton').addEventListener('click', copyParameters);
+      update();
+    }());
+  </script>
+</body>
+</html>
