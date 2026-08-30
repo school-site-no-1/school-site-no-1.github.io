@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="ru" data-version="v4.1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание 5-11</title>
+    
+    <!-- PWA Мета-теги -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2b6cb0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    
+    <style>
+        /* ============================
+           БАЗОВЫЕ СТИЛИ
+           ============================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px;
+        }
+
+        .container {
+            width: 100%;
+            height: 99vh;
+            max-width: 1900px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 8px 12px;
+            border: 1px solid #d0d7e0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ============================
+           ШАПКА
+           ============================ */
+        .header {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 4px;
+            min-height: 44px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .header-banner {
+            height: 40px;
+            max-height: 40px;
+            min-height: 40px;
+            max-width: 800px;
+            min-width: 60px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f7fafc;
+            overflow: hidden;
+            flex-shrink: 1;
+            padding: 0 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0;
+        }
+        .header-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            justify-content: center;
+        }
+        .header-center .day-indicator {
+            color: #fff;
+            font-weight: 600;
+            background: #2b6cb0;
+            padding: 1px 12px;
+            border-radius: 16px;
+            flex-shrink: 0;
+        }
+        .header-center .divider {
+            color: #e2e8f0;
+            font-weight: 300;
+        }
+
+        .header-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1px;
+            flex-shrink: 0;
+        }
+        .header-right .schedule-updated {
+            color: #718096;
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-top: 1px;
+        }
+        .header-right .schedule-updated.error {
+            color: #e53e3e;
+            background: #fff5f5;
+        }
+        .board-sync {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #276749;
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 12px;
+            padding: 1px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+        .board-sync::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        .board-sync.loading {
+            color: #975a16;
+            background: #fffaf0;
+            border-color: #fbd38d;
+        }
+        .board-sync.offline {
+            color: #c53030;
+            background: #fff5f5;
+            border-color: #feb2b2;
+        }
+
+        /* ============================
+           ЧАСЫ (циферблат поворачивается на −45° в режиме табло)
+           ============================ */
+        .clock-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .clock-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            white-space: nowrap;
+        }
+        .clock-text .day {
+            font-size: 0.7em;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        .clock-text .date {
+            font-size: 0.85em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        .clock-text .digital-time {
+            font-size: 0.73em;
+            color: #2b6cb0;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .clock-text .countdown {
+            font-size: 0.62em;
+            color: #2f855a;
+            font-weight: 600;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ============================
+           ПЕРИОД (динамический)
+           ============================ */
+        .period {
+            color: #e65100;
+            font-weight: 600;
+            min-height: 1.8em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.2;
+        }
+        .period .line1 {
+            display: block;
+        }
+        .period .line2 {
+            display: block;
+            font-weight: 500;
+            color: #d45c00;
+        }
+
+        /* ============================
+           ОСНОВНАЯ ЧАСТЬ
+           ============================ */
+        .main-layout {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            min-height: 0;
+            margin-top: 2px;
+        }
+        .table-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* ============================
+           ТАБЛИЦА (десктоп) — УМЕНЬШЕННАЯ ВЫСОТА
+           ============================ */
+        table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        thead th, tbody td, tbody th {
+            border-right: 1.5px solid #d0d7e0;
+        }
+        thead th:last-child, tbody td:last-child, tbody th:last-child {
+            border-right: none;
+        }
+        thead th {
+            background: #edf2f7;
+            color: #1a365d;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 2px solid #2b6cb0;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 2px 4px !important;
+            line-height: 1.1 !important;
+            height: 22px !important;
+            min-height: 22px !important;
+            max-height: 22px !important;
+        }
+        thead th:first-child {
+            width: 2%;
+            min-width: 30px;
+        }
+        thead th:not(:first-child) {
+            width: 5.4%;
+        }
+        tbody td, tbody th {
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+            text-align: center;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            hyphens: auto !important;
+            line-height: 1.1 !important;
+            padding: 2px 4px !important;
+            height: 26px !important;
+            min-height: 26px !important;
+            max-height: 26px !important;
+        }
+        tbody tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+        tbody tr.current-lesson {
+            background: #bee3f8 !important;
+        }
+        tbody tr.current-lesson td, tbody tr.current-lesson th {
+            color: #1a365d;
+            font-weight: 600;
+        }
+        tbody tr.current-lesson .lesson-num {
+            color: #2b6cb0;
+        }
+
+        .lesson-num {
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 0.85em !important;
+        }
+        .subject {
+            display: block;
+            font-weight: 500;
+            line-height: 1.1 !important;
+            color: #2d3748;
+            word-wrap: break-word !important;
+            word-break: break-word !important;
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            hyphens: auto !important;
+            font-size: 0.85em !important;
+        }
+        .cabinet {
+            color: #e65100;
+            display: block;
+            font-weight: 700;
+            margin-top: 0px !important;
+            font-size: 0.75em !important;
+            line-height: 1 !important;
+        }
+        .empty-cell {
+            color: #cbd5e0;
+            font-size: 0.8em !important;
+        }
+
+        /* ============================
+           МОБИЛЬНАЯ ВЕРСИЯ — УМЕНЬШЕННАЯ ВЫСОТА
+           ============================ */
+        .mobile-view {
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+            padding: 2px 0;
+            overflow-y: auto;
+            height: 100%;
+        }
+        .mobile-class-card {
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .mobile-class-header {
+            background: #edf2f7;
+            font-weight: 700;
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 10px !important;
+            font-size: 14px !important;
+            min-height: 22px !important;
+            height: 22px !important;
+        }
+        .mobile-lesson-card {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-bottom: 1px solid #f0f4f8;
+            padding: 3px 8px !important;
+            min-height: 20px !important;
+            height: 20px !important;
+            transition: all 0.2s;
+        }
+        .mobile-lesson-card:last-child {
+            border-bottom: none;
+        }
+        .mobile-lesson-card.current {
+            background: #bee3f8;
+        }
+        .mobile-lesson-card .lesson-num-mobile {
+            font-weight: 700;
+            color: #4a5568;
+            text-align: center;
+            flex-shrink: 0;
+            font-size: 12px !important;
+            min-width: 22px !important;
+        }
+        .mobile-lesson-card.current .lesson-num-mobile {
+            color: #2b6cb0;
+        }
+        .mobile-lesson-card .lesson-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0px !important;
+            min-width: 0;
+        }
+        .mobile-lesson-card .lesson-info .subject-name {
+            font-weight: 500;
+            color: #2d3748;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            font-size: 12px !important;
+            line-height: 1.1 !important;
+        }
+        .mobile-lesson-card .lesson-info .subject-name.empty {
+            color: #a0aec0;
+            font-style: italic;
+        }
+        .mobile-lesson-card .lesson-info .room-name {
+            font-weight: 700;
+            color: #e65100;
+            font-size: 10px !important;
+            line-height: 1 !important;
+        }
+        .mobile-lesson-card .lesson-time {
+            color: #718096;
+            white-space: nowrap;
+            text-align: right;
+            flex-shrink: 0;
+            font-size: 10px !important;
+        }
+        .mobile-lesson-card.current .lesson-time {
+            color: #2b6cb0;
+            font-weight: 600;
+        }
+
+        /* ============================
+           ПОДВАЛ
+           ============================ */
+        .footer {
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: #a0aec0;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 2px;
+            font-size: 0.7rem;
+        }
+        .footer .version {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        /* ============================
+           ЗАГРУЗКА
+           ============================ */
+        .loading-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #4a5568;
+            font-weight: 300;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .loading-overlay .sub {
+            font-size: 0.6em;
+            color: #a0aec0;
+        }
+
+        /* ============================
+           УВЕДОМЛЕНИЕ
+           ============================ */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(450px);
+            transition: transform 0.3s;
+            z-index: 3000;
+            color: #2d3748;
+            max-width: 400px;
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
+        .notification.success {
+            border-left: 4px solid #38a169;
+        }
+        .notification.error {
+            border-left: 4px solid #e53e3e;
+        }
+        .notification.info {
+            border-left: 4px solid #2b6cb0;
+        }
+        .notification.warning {
+            border-left: 4px solid #d69e2e;
+        }
+
+        /* ============================
+           PWA
+           ============================ */
+        #pwaNotification {
+            display: none;
+            background: #ebf8ff;
+            border: 1px solid #2b6cb0;
+            border-radius: 8px;
+            padding: 8px 14px;
+            margin: 4px 0;
+            text-align: center;
+        }
+        #pwaNotification p {
+            margin: 0;
+            color: #2b6cb0;
+            font-size: 0.85rem;
+        }
+        #pwaNotification .small {
+            font-size: 0.75rem;
+        }
+
+        /* ============================
+           АДАПТИВНОСТЬ
+           ============================ */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .header-banner { height: 36px; max-height: 36px; min-height: 36px; }
+            .header-center .day-indicator { font-size: clamp(14px, 1.6vh, 19px); padding: 2px 12px; }
+            .header-center .divider { font-size: clamp(14px, 1.6vh, 19px); }
+            table { font-size: clamp(9px, 0.9vh, 12px); }
+            thead th { font-size: clamp(7px, 0.7vh, 10px); padding: 1px 3px !important; height: 18px !important; min-height: 18px !important; max-height: 18px !important; }
+            thead th:first-child { min-width: 20px; }
+            tbody td { font-size: clamp(7px, 0.8vh, 10px) !important; padding: 1px 3px !important; height: 20px !important; min-height: 20px !important; max-height: 20px !important; }
+            .lesson-num { font-size: 0.75em !important; }
+            .subject { font-size: 0.75em !important; }
+            .cabinet { font-size: 0.65em !important; }
+            .footer { font-size: clamp(7px, 0.7vh, 10px); }
+            .clock-wrapper svg { width: 50px; height: 50px; }
+            .clock-text .day { font-size: 0.6em; }
+            .clock-text .date { font-size: 0.7em; }
+            .clock-text .digital-time { font-size: 0.9em; }
+            .mobile-class-header { padding: 3px 8px !important; font-size: 12px !important; min-height: 18px !important; height: 18px !important; }
+            .mobile-lesson-card { padding: 2px 6px !important; min-height: 16px !important; height: 16px !important; gap: 3px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 10px !important; min-width: 18px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 10px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 8px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 8px !important; }
+        }
+
+        @media (min-width: 1025px) and (max-width: 1600px) {
+            .header-banner { height: 32px; max-height: 32px; min-height: 32px; }
+            .header-center .day-indicator { font-size: clamp(13px, 1.4vh, 17px); padding: 1px 10px; }
+            .header-center .divider { font-size: clamp(13px, 1.4vh, 17px); }
+            table { font-size: clamp(9px, 0.9vh, 11px); }
+            thead th { font-size: clamp(7px, 0.7vh, 10px); padding: 1px 3px !important; height: 18px !important; min-height: 18px !important; max-height: 18px !important; }
+            thead th:first-child { min-width: 22px; }
+            tbody td { font-size: clamp(7px, 0.8vh, 10px) !important; padding: 1px 3px !important; height: 20px !important; min-height: 20px !important; max-height: 20px !important; }
+            .lesson-num { font-size: 0.75em !important; }
+            .subject { font-size: 0.75em !important; }
+            .cabinet { font-size: 0.65em !important; }
+            .footer { font-size: clamp(7px, 0.7vh, 10px); }
+            .clock-wrapper svg { width: 45px; height: 45px; }
+            .clock-text .day { font-size: 0.55em; }
+            .clock-text .date { font-size: 0.65em; }
+            .clock-text .digital-time { font-size: 0.85em; }
+            .mobile-class-header { padding: 3px 8px !important; font-size: 12px !important; min-height: 18px !important; height: 18px !important; }
+            .mobile-lesson-card { padding: 2px 6px !important; min-height: 16px !important; height: 16px !important; gap: 3px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 10px !important; min-width: 18px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 10px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 8px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 8px !important; }
+        }
+
+        @media (min-width: 1601px) and (max-width: 1919px) {
+            .container { padding: 10px 16px; }
+            .header-banner { height: 44px; max-height: 44px; min-height: 44px; }
+            .header-center .day-indicator { font-size: clamp(17px, 1.8vh, 24px); padding: 2px 16px; border-radius: 20px; }
+            .header-center .divider { font-size: clamp(17px, 1.8vh, 24px); }
+            table { font-size: clamp(11px, 1.1vh, 15px); }
+            thead th { font-size: clamp(9px, 0.9vh, 12px); padding: 2px 5px !important; height: 20px !important; min-height: 20px !important; max-height: 20px !important; border-bottom: 2.5px solid #2b6cb0; }
+            thead th:first-child { min-width: 28px; }
+            tbody td { font-size: clamp(9px, 1.0vh, 13px) !important; padding: 2px 4px !important; height: 22px !important; min-height: 22px !important; max-height: 22px !important; border-bottom: 1.5px solid #e2e8f0; }
+            .lesson-num { font-size: 0.85em !important; }
+            .subject { font-size: 0.85em !important; }
+            .cabinet { font-size: 0.7em !important; }
+            .footer { font-size: clamp(9px, 0.9vh, 13px); padding-top: 3px; margin-top: 3px; }
+            .main-layout { gap: 10px; margin-top: 3px; }
+            .clock-wrapper svg { width: 55px; height: 55px; }
+            .clock-text .day { font-size: 0.65em; }
+            .clock-text .date { font-size: 0.75em; }
+            .clock-text .digital-time { font-size: 1.0em; }
+            .mobile-class-header { padding: 4px 10px !important; font-size: 13px !important; min-height: 20px !important; height: 20px !important; }
+            .mobile-lesson-card { padding: 3px 8px !important; min-height: 18px !important; height: 18px !important; gap: 4px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 11px !important; min-width: 20px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 11px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 9px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 9px !important; }
+        }
+
+        @media (min-width: 1920px) and (max-width: 2560px) {
+            .container { padding: 17px 25px; border-radius: 25px; }
+            .header { min-height: 64px; gap: 7px; padding-bottom: 7px; border-bottom-width: 2.8px; }
+            .header-banner { height: 64px; max-height: 64px; min-height: 64px; max-width: 990px; }
+            .header-center .day-indicator { font-size: clamp(23.5px, 2.55vh, 37.5px); padding: 4.5px 23px; border-radius: 27px; }
+            .header-center .divider { font-size: clamp(23.5px, 2.55vh, 37.5px); }
+            table { font-size: clamp(14px, 1.5vh, 22px); }
+            thead th { font-size: clamp(11px, 1.2vh, 17px); padding: 3px 7px !important; height: 26px !important; min-height: 26px !important; max-height: 26px !important; border-bottom: 2.8px solid #2b6cb0; }
+            thead th:first-child { min-width: 35px; }
+            tbody td { font-size: clamp(12px, 1.3vh, 19px) !important; padding: 3px 7px !important; height: 28px !important; min-height: 28px !important; max-height: 28px !important; border-bottom: 1.8px solid #e2e8f0; }
+            .lesson-num { font-size: 0.85em !important; }
+            .subject { font-size: 0.85em !important; }
+            .cabinet { font-size: 0.7em !important; }
+            .footer { font-size: clamp(11.5px, 1.15vh, 17.5px); padding-top: 5px; margin-top: 5px; border-top-width: 1.8px; }
+            .main-layout { gap: 13px; margin-top: 5px; }
+            .clock-wrapper svg { width: 65px; height: 65px; }
+            .clock-text .day { font-size: 0.7em; }
+            .clock-text .date { font-size: 0.85em; }
+            .clock-text .digital-time { font-size: 1.1em; }
+            .mobile-class-header { padding: 5px 12px !important; font-size: 15px !important; min-height: 24px !important; height: 24px !important; }
+            .mobile-lesson-card { padding: 4px 10px !important; min-height: 22px !important; height: 22px !important; gap: 5px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 13px !important; min-width: 24px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 13px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 11px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 11px !important; }
+        }
+
+        @media (min-width: 2561px) {
+            .container { padding: 20px 32px; border-radius: 32px; }
+            .header { min-height: 72px; gap: 8px; padding-bottom: 8px; border-bottom-width: 3px; }
+            .header-banner { height: 72px; max-height: 72px; min-height: 72px; max-width: 1200px; }
+            .header-center .day-indicator { font-size: clamp(26px, 2.6vh, 40px); padding: 4px 28px; border-radius: 32px; }
+            .header-center .divider { font-size: clamp(26px, 2.6vh, 40px); }
+            table { font-size: clamp(15px, 1.5vh, 24px); }
+            thead th { font-size: clamp(12px, 1.2vh, 18px); padding: 4px 10px !important; height: 30px !important; min-height: 30px !important; max-height: 30px !important; border-bottom: 4px solid #2b6cb0; }
+            thead th:first-child { min-width: 40px; }
+            tbody td { font-size: clamp(13px, 1.4vh, 22px) !important; padding: 4px 10px !important; height: 32px !important; min-height: 32px !important; max-height: 32px !important; border-bottom: 2px solid #e2e8f0; }
+            .lesson-num { font-size: 0.85em !important; }
+            .subject { font-size: 0.85em !important; }
+            .cabinet { font-size: 0.7em !important; }
+            .footer { font-size: clamp(11px, 1.1vh, 18px); padding-top: 6px; margin-top: 6px; border-top-width: 2px; }
+            .main-layout { gap: 16px; margin-top: 6px; }
+            .clock-wrapper svg { width: 75px; height: 75px; }
+            .clock-text .day { font-size: 0.75em; }
+            .clock-text .date { font-size: 0.9em; }
+            .clock-text .digital-time { font-size: 1.2em; }
+            .mobile-class-header { padding: 6px 14px !important; font-size: 16px !important; min-height: 26px !important; height: 26px !important; }
+            .mobile-lesson-card { padding: 5px 12px !important; min-height: 24px !important; height: 24px !important; gap: 6px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 14px !important; min-width: 26px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 14px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 12px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 12px !important; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 5.5px 7.5px; border-radius: 11.5px; height: 99vh; }
+            .header { gap: 3.5px; padding-bottom: 3.5px; min-height: auto; flex-wrap: wrap; }
+            .header-left { flex: 0 0 100%; justify-content: center; order: 1; }
+            .header-banner { height: 31px; max-height: 31px; min-height: 31px; min-width: 39px; border: 1px solid #e2e8f0; flex: 0 0 100%; }
+            .header-center { order: 2; flex: 1; justify-content: center; gap: 7.5px; }
+            .header-center .day-indicator { font-size: 17.5px; padding: 4.5px 17px; border-radius: 21px; }
+            .header-center .divider { display: none; }
+            .header-right { order: 3; text-align: center; align-items: center; width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 3.5px 9px; margin-top: 3.5px; }
+            .header-right .schedule-updated { font-size: 11.5px; order: 1; margin-top: 2px; }
+            .period { font-size: 13.5px; min-height: 1.5em; flex-direction: column; align-items: center; text-align: center; order: 2; }
+            .period .line1 { font-size: 13.5px; }
+            .period .line2 { font-size: 12.5px; }
+            .desktop-table { display: none !important; }
+            .mobile-view { display: flex !important; }
+            .footer { font-size: 12.5px; padding-top: 3.5px; margin-top: 3.5px; }
+            .main-layout { gap: 0; margin-top: 3.5px; }
+            .clock-wrapper { flex-direction: row; align-items: center; gap: 8px; }
+            .clock-wrapper svg { width: 40px; height: 40px; }
+            .clock-text .day { font-size: 0.5em; }
+            .clock-text .date { font-size: 0.6em; }
+            .clock-text .digital-time { font-size: 0.53em; }
+            .clock-text .countdown { font-size: 0.48em; }
+            .mobile-class-header { padding: 3px 8px !important; font-size: 13px !important; min-height: 18px !important; height: 18px !important; }
+            .mobile-lesson-card { padding: 2px 6px !important; min-height: 16px !important; height: 16px !important; gap: 3px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 10px !important; min-width: 18px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 10px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 8px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 8px !important; }
+        }
+
+        @media (max-width: 400px) {
+            .container { padding: 3.5px 3.5px; }
+            .header-banner { height: 25px; max-height: 25px; min-height: 25px; min-width: 29px; }
+            .header-center .day-indicator { font-size: 15.5px; padding: 3.5px 13px; }
+            .period { font-size: 11.5px; min-height: 1.3em; }
+            .period .line1 { font-size: 11.5px; }
+            .period .line2 { font-size: 10.5px; }
+            .header-right .schedule-updated { font-size: 9.5px; }
+            .footer { font-size: 10.5px; }
+            .clock-wrapper svg { width: 32px; height: 32px; }
+            .clock-text .day { font-size: 0.4em; }
+            .clock-text .date { font-size: 0.5em; }
+            .clock-text .digital-time { font-size: 0.7em; }
+            .mobile-class-header { padding: 2px 6px !important; font-size: 11px !important; min-height: 15px !important; height: 15px !important; }
+            .mobile-lesson-card { padding: 2px 4px !important; min-height: 14px !important; height: 14px !important; gap: 2px; }
+            .mobile-lesson-card .lesson-num-mobile { font-size: 9px !important; min-width: 15px !important; }
+            .mobile-lesson-card .lesson-info .subject-name { font-size: 9px !important; }
+            .mobile-lesson-card .lesson-info .room-name { font-size: 7px !important; }
+            .mobile-lesson-card .lesson-time { font-size: 7px !important; }
+        }
+
+        /* ============================
+           ДОСТУПНОСТЬ И ЧИТАЕМЫЕ РЕЖИМЫ
+           ============================ */
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .skip-link {
+            position: fixed;
+            z-index: 1000;
+            top: 8px;
+            left: 8px;
+            padding: 10px 14px;
+            background: #1a365d;
+            color: #ffffff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            transform: translateY(-160%);
+            transition: transform 0.2s ease;
+        }
+        .skip-link:focus {
+            transform: translateY(0);
+            outline: 3px solid #f6ad55;
+            outline-offset: 2px;
+        }
+        .mobile-class-header {
+            margin: 0;
+        }
+        .desktop-table caption {
+            caption-side: top;
+        }
+        tbody th {
+            color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1.5px solid #d0d7e0;
+            vertical-align: middle;
+            text-align: center;
+            font-weight: 700;
+            line-height: 1.1 !important;
+            padding: 2px 4px !important;
+        }
+        tbody tr.current-lesson th {
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+
+        /* На обычных мониторах карточки читаемее, чем 18 сжатых столбцов. */
+        @media (min-width: 769px) and (max-width: 1919px) {
+            .desktop-table { display: none !important; }
+            .mobile-view { display: flex !important; }
+            .mobile-class-header {
+                min-height: 30px !important;
+                height: auto !important;
+                padding: 6px 14px !important;
+                font-size: 16px !important;
+            }
+            .mobile-lesson-card {
+                min-height: 42px !important;
+                height: auto !important;
+                padding: 7px 12px !important;
+                gap: 10px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                min-width: 28px !important;
+                font-size: 14px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 14px !important;
+                line-height: 1.25 !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 12px !important;
+                line-height: 1.2 !important;
+            }
+        }
+
+        /* Полная таблица остаётся для широких табло, но с читаемым минимумом. */
+        @media (min-width: 1920px) {
+            thead th:first-child {
+                width: 3.7% !important;
+                min-width: 56px !important;
+            }
+            thead th:not(:first-child) {
+                width: 5.35% !important;
+            }
+            thead th {
+                font-size: clamp(12px, 0.9vw, 18px) !important;
+                height: auto !important;
+                min-height: 28px !important;
+                max-height: none !important;
+                padding: 4px 5px !important;
+            }
+            tbody td,
+            tbody th {
+                font-size: clamp(12px, 0.9vw, 18px) !important;
+                height: auto !important;
+                min-height: 44px !important;
+                max-height: none !important;
+                padding: 4px 5px !important;
+            }
+            .subject {
+                font-size: 1em !important;
+                line-height: 1.2 !important;
+            }
+            .cabinet {
+                font-size: max(11px, 0.8em) !important;
+                line-height: 1.15 !important;
+                color: #9c3d00;
+            }
+            .empty-cell {
+                font-size: 1em !important;
+                color: #667085;
+            }
+        }
+
+        /* ============================
+           МОБИЛЬНАЯ УДОБНОЧИТАЕМОСТЬ
+           ============================ */
+        .mobile-controls {
+            display: none;
+        }
+
+        /* Фильтр сокращает длинную прокрутку, но «Все классы» остаётся доступным. */
+        @media (max-width: 1919px) {
+            .mobile-controls {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                padding: 8px 10px;
+                margin: 0 0 6px;
+                border: 1px solid #d0d7e0;
+                border-radius: 8px;
+                background: #ffffff;
+                color: #1a365d;
+                font-size: 14px;
+                font-weight: 700;
+            }
+            .mobile-controls label {
+                min-width: 0;
+            }
+            .mobile-controls select {
+                flex: 1 1 auto;
+                min-width: 0;
+                min-height: 38px;
+                padding: 6px 9px;
+                border: 1px solid #2b6cb0;
+                border-radius: 6px;
+                background: #ffffff;
+                color: #1a365d;
+                font: inherit;
+            }
+            .mobile-controls select:focus-visible {
+                outline: 3px solid #f6ad55;
+                outline-offset: 2px;
+            }
+        }
+
+        /* Коридорное табло 960×540: полная сетка 18 классов и 9 уроков. */
+        @media (min-width: 769px) and (max-width: 1199px) {
+            html, body {
+                width: 100%;
+                min-height: 100dvh;
+                overflow: hidden;
+            }
+            body {
+                padding: 0;
+                align-items: stretch;
+            }
+            .container {
+                width: 100%;
+                max-width: none;
+                height: 100dvh;
+                min-height: 100dvh;
+                padding: 5px 8px 4px;
+                border-radius: 0;
+                overflow: hidden;
+            }
+            .header {
+                min-height: 44px;
+                gap: 6px;
+                padding-bottom: 1px;
+                border-bottom: none !important;
+            }
+            .header-left {
+                display: none !important;
+            }
+            .header-banner {
+                height: 39px;
+                min-height: 39px;
+                max-height: 39px;
+                padding: 0 4px;
+            }
+            .header-center {
+                gap: 5px;
+                margin-left: 0;
+                flex: 1 1 auto;
+                justify-content: flex-start;
+            }
+            .header-center .day-indicator,
+            .header-center .divider {
+                display: none !important;
+            }
+            .period,
+            .period .line1 {
+                font-size: 10px;
+                line-height: 1.1;
+            }
+            .period .line2 {
+                font-size: 9px;
+            }
+            .header-right {
+                gap: 2px;
+                margin-left: auto;
+                align-items: flex-end;
+                text-align: right;
+            }
+            .clock-wrapper {
+                gap: 4px;
+            }
+            .clock-wrapper svg {
+                width: 38px;
+                height: 38px;
+                transform: rotate(0deg) !important;
+                transform-origin: center;
+            }
+            .clock-text .day { font-size: 0.55em; }
+            .clock-text .date { font-size: 0.62em; }
+            .clock-text .digital-time { font-size: 0.53em; }
+            .clock-text .countdown { font-size: 0.48em; }
+            .header-right .schedule-updated { font-size: 10px; padding: 1px 5px; }
+            .board-sync { font-size: 9px; padding: 1px 5px; }
+            .footer {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 16px;
+                font-size: 8px;
+                padding: 1px 0 0;
+                margin-top: 1px;
+                border-top: 1px solid #e2e8f0;
+            }
+            .footer-status {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                white-space: nowrap;
+            }
+            .footer-status .schedule-updated {
+                color: #475467 !important;
+                font-size: 8px;
+                padding: 0;
+                background: transparent;
+                border-radius: 0;
+            }
+            .footer-status .board-sync {
+                font-size: 8px;
+                padding: 0;
+                background: transparent;
+                border: 0;
+                border-radius: 0;
+            }
+            .footer-status .board-sync::before {
+                width: 5px;
+                height: 5px;
+            }
+            /* Для стабильного табло обновление не сопровождается анимацией. */
+            #scheduleTable.schedule-refresh,
+            #mobileView.schedule-refresh,
+            #scheduleTable.schedule-period-change,
+            #mobileView.schedule-period-change,
+            .current-lesson,
+            .mobile-lesson-card.current {
+                animation: none !important;
+                transition: none !important;
+            }
+            .main-layout {
+                min-height: 0;
+                margin-top: 4px;
+            }
+            .mobile-controls {
+                display: none !important;
+            }
+            .desktop-table {
+                display: table !important;
+                width: 100%;
+                table-layout: fixed;
+            }
+            .mobile-view {
+                display: none !important;
+            }
+            .table-wrapper {
+                display: block;
+                overflow: hidden;
+                width: 100%;
+            }
+            .mobile-controls select {
+                min-height: 27px;
+                padding: 2px 6px;
+            }
+            thead th:first-child {
+                width: 22px !important;
+                min-width: 22px !important;
+            }
+            thead th:not(:first-child) {
+                width: auto !important;
+            }
+            thead th {
+                min-height: 19px !important;
+                padding: 1px 1px !important;
+                font-size: clamp(6px, 0.75vw, 7px) !important;
+                line-height: 1 !important;
+            }
+            tbody td,
+            tbody th {
+                min-height: 32px !important;
+                height: auto !important;
+                padding: 1px 1px !important;
+                font-size: clamp(6px, 0.9vw, 9px) !important;
+                line-height: 1.05 !important;
+                overflow-wrap: anywhere;
+            }
+            tbody th { width: 22px !important; }
+            .subject {
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                font-size: clamp(6px, 0.7vw, 7px) !important;
+                line-height: 1.02 !important;
+            }
+            .cabinet {
+                display: block;
+                font-size: 0.72em !important;
+                line-height: 1 !important;
+                white-space: nowrap;
+                color: #9a3412 !important;
+            }
+            .empty-cell {
+                font-size: clamp(6px, 0.75vw, 8px) !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+                word-break: normal !important;
+            }
+            .empty-lesson {
+                white-space: normal;
+                overflow-wrap: break-word;
+                word-break: normal;
+                color: #667085 !important;
+            }
+            .mobile-view {
+                display: none !important;
+            }
+            .mobile-class-card {
+                margin-bottom: 4px;
+            }
+            .mobile-class-header {
+                min-height: 24px !important;
+                padding: 3px 8px !important;
+                font-size: 14px !important;
+            }
+            .mobile-lesson-card {
+                min-height: 33px !important;
+                padding: 4px 7px !important;
+                gap: 6px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                min-width: 21px !important;
+                font-size: 11px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 12px !important;
+                line-height: 1.15 !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 10px !important;
+                line-height: 1.1 !important;
+            }
+            .footer {
+                font-size: 10px;
+                padding-top: 2px;
+                margin-top: 2px;
+            }
+        }
+
+        /* Ширина до 768 px: вместо сжатия обеспечиваем читаемость и безопасную прокрутку. */
+        @media (max-width: 768px) {
+            html, body {
+                height: auto;
+                min-height: 100dvh;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+            body {
+                min-height: 100dvh;
+                align-items: stretch;
+                padding: 4px;
+            }
+            .container {
+                height: calc(100vh - 8px);
+                min-height: calc(100vh - 8px);
+                height: calc(100dvh - 8px);
+                min-height: calc(100dvh - 8px);
+                padding: 6px;
+                border-radius: 10px;
+            }
+            .header {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-areas:
+                    "banner"
+                    "center"
+                    "status";
+                gap: 8px;
+                min-width: 0;
+                padding-bottom: 8px;
+            }
+            .header-left {
+                grid-area: banner;
+                display: block;
+                width: 100%;
+                min-width: 0;
+                flex: none;
+            }
+            .header-banner {
+                width: 100%;
+                max-width: none;
+                min-width: 0;
+                height: 36px;
+                min-height: 36px;
+                max-height: 36px;
+                flex: none;
+            }
+            .header-banner img {
+                object-fit: contain;
+            }
+            .header-center {
+                grid-area: center;
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                flex-direction: column;
+                gap: 4px;
+                justify-content: center;
+                align-items: center;
+            }
+            .header-center .day-indicator {
+                font-size: 18px;
+                line-height: 1.2;
+                padding: 4px 16px;
+            }
+            .header-center .divider {
+                display: none;
+            }
+            .period,
+            .period .line1 {
+                min-height: 0;
+                font-size: 14px;
+                line-height: 1.25;
+                text-align: center;
+            }
+            .period .line2 {
+                font-size: 13px;
+                line-height: 1.25;
+            }
+            .header-right {
+                grid-area: status;
+                display: flex;
+                width: 100%;
+                min-width: 0;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: center;
+                gap: 6px 12px;
+                margin: 0;
+                text-align: center;
+            }
+            .clock-wrapper {
+                gap: 6px;
+            }
+            .clock-wrapper svg {
+                width: 36px;
+                height: 36px;
+            }
+            .clock-text .day {
+                font-size: 0.65em;
+            }
+            .clock-text .date {
+                font-size: 0.75em;
+            }
+            .clock-text .digital-time {
+                font-size: 0.95em;
+            }
+            .header-right .schedule-updated {
+                font-size: 12px;
+                line-height: 1.2;
+                order: unset;
+            }
+            .main-layout {
+                margin-top: 6px;
+            }
+            .mobile-controls {
+                flex-wrap: wrap;
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            .mobile-controls label,
+            .mobile-controls select {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+            .mobile-class-header {
+                height: auto !important;
+                min-height: 34px !important;
+                padding: 8px 12px !important;
+                font-size: 16px !important;
+                line-height: 1.2 !important;
+            }
+            .mobile-lesson-card {
+                height: auto !important;
+                min-height: 48px !important;
+                padding: 8px 10px !important;
+                gap: 10px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                min-width: 26px !important;
+                font-size: 12px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 14px !important;
+                line-height: 1.25 !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 12px !important;
+                line-height: 1.2 !important;
+            }
+            .mobile-view {
+                padding-bottom: 4px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 4px;
+                border-radius: 8px;
+            }
+            .header-banner {
+                height: 32px;
+                min-height: 32px;
+                max-height: 32px;
+            }
+            .header-center .day-indicator {
+                font-size: 17px;
+            }
+            .period,
+            .period .line1 {
+                font-size: 13px;
+            }
+            .period .line2 {
+                font-size: 12px;
+            }
+            .mobile-controls {
+                padding: 7px 8px;
+            }
+            .mobile-class-header {
+                min-height: 32px !important;
+                font-size: 15px !important;
+            }
+            .mobile-lesson-card {
+                min-height: 46px !important;
+                padding: 7px 8px !important;
+                gap: 8px;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 14px !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 12px !important;
+            }
+        }
+
+        /* ============================
+           КОРИДОРНОЕ ТАБЛО — СВЕРХШИРОКИЙ ФОРМАТ
+           ============================ */
+        @media (min-width: 2560px) and (min-aspect-ratio: 2/1) {
+            html, body {
+                background: #e8eef5;
+            }
+            body {
+                padding: 0;
+            }
+            .container {
+                width: 100%;
+                max-width: none;
+                height: 100vh;
+                padding: 8px 10px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            .header {
+                position: relative;
+                min-height: 70px;
+                gap: 16px;
+                padding-bottom: 8px;
+                border-bottom-width: 3px;
+            }
+            .header-left {
+                flex: 0 1 40%;
+            }
+            .header-banner {
+                width: 100%;
+                max-width: none;
+                height: 64px;
+                min-height: 64px;
+                max-height: 64px;
+                padding: 0 10px;
+            }
+            .header-center {
+                gap: 12px;
+                flex: 0 0 auto;
+            }
+            .header-center .day-indicator {
+                font-size: clamp(26px, 2.5vh, 38px);
+                padding: 5px 26px;
+                border-radius: 28px;
+            }
+            .header-center .divider {
+                font-size: clamp(22px, 2vh, 30px);
+            }
+            .period {
+                font-size: clamp(16px, 1.6vh, 22px);
+            }
+            .period .line2 {
+                font-size: 0.9em;
+            }
+            .header-right {
+                position: fixed;
+                top: 8px;
+                right: 12px;
+                z-index: 10;
+                gap: 4px;
+                margin-left: 0;
+                align-items: flex-end;
+                text-align: right;
+            }
+            .clock-wrapper {
+                gap: 12px;
+            }
+            .clock-wrapper svg {
+                width: 68px;
+                height: 68px;
+                transform: rotate(-45deg);
+                transform-origin: center;
+            }
+            .clock-text .day {
+                font-size: 0.8em;
+            }
+            .clock-text .date {
+                font-size: 0.95em;
+            }
+            .clock-text .digital-time {
+                font-size: 1.25em;
+            }
+            .header-right .schedule-updated {
+                font-size: 14px;
+                padding: 2px 10px;
+            }
+            .board-sync {
+                font-size: 14px;
+                padding: 3px 12px;
+                border-radius: 16px;
+            }
+            .board-sync::before {
+                width: 9px;
+                height: 9px;
+            }
+            .main-layout {
+                margin-top: 8px;
+            }
+            .table-wrapper {
+                overflow: hidden;
+            }
+            thead th:first-child {
+                width: 46px !important;
+                min-width: 46px !important;
+            }
+            thead th:not(:first-child) {
+                width: auto !important;
+            }
+            thead th {
+                font-size: clamp(16px, 1.5vh, 21px) !important;
+                height: auto !important;
+                min-height: 36px !important;
+                max-height: none !important;
+                padding: 4px 6px !important;
+                border-bottom-width: 3px;
+            }
+            tbody td,
+            tbody th {
+                font-size: clamp(17px, 1.75vh, 23px) !important;
+                height: auto !important;
+                min-height: 68px !important;
+                max-height: none !important;
+                padding: 5px 6px !important;
+                border-bottom-width: 2px;
+            }
+            .lesson-num {
+                font-size: 0.9em !important;
+            }
+            .subject {
+                font-size: 0.95em !important;
+                line-height: 1.2 !important;
+            }
+            .cabinet {
+                font-size: 0.78em !important;
+                line-height: 1.1 !important;
+            }
+            .empty-cell {
+                font-size: 1em !important;
+            }
+            .footer {
+                font-size: 17px;
+                padding-top: 6px;
+                margin-top: 5px;
+                border-top-width: 2px;
+            }
+        }
+
+        /* ============================
+           ПЛАВНОЕ ОБНОВЛЕНИЕ РАСПИСАНИЯ
+           ============================ */
+        @keyframes scheduleRefresh {
+            from { opacity: 0.72; transform: translateY(5px); filter: saturate(0.82); }
+            to { opacity: 1; transform: translateY(0); filter: saturate(1); }
+        }
+        @keyframes schedulePeriodChange {
+            0% { opacity: 0.82; transform: translateY(3px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes currentLessonReveal {
+            0% { background-color: #d8efff; box-shadow: inset 0 0 0 0 rgba(43, 108, 176, 0); }
+            55% { background-color: #90cdf4; box-shadow: inset 0 0 0 3px rgba(43, 108, 176, 0.28); }
+            100% { background-color: #bee3f8; box-shadow: inset 0 0 0 0 rgba(43, 108, 176, 0); }
+        }
+        #scheduleTable.schedule-refresh,
+        #mobileView.schedule-refresh {
+            animation: scheduleRefresh 480ms cubic-bezier(.2, .7, .25, 1) both;
+            will-change: opacity, transform;
+        }
+        #scheduleTable.schedule-period-change,
+        #mobileView.schedule-period-change {
+            animation: schedulePeriodChange 340ms ease-out both;
+            will-change: opacity, transform;
+        }
+        .current-lesson,
+        .mobile-lesson-card.current {
+            animation: currentLessonReveal 720ms ease-out both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #scheduleTable.schedule-refresh,
+            #mobileView.schedule-refresh,
+            #scheduleTable.schedule-period-change,
+            #mobileView.schedule-period-change,
+            .current-lesson,
+            .mobile-lesson-card.current {
+                animation: none !important;
+                transform: none !important;
+            }
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
+            body, html { background: white !important; overflow: visible !important; }
+            .container { border: none !important; box-shadow: none !important; }
+            .mobile-view { display: none !important; }
+            .desktop-table { display: table !important; }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
+    <div class="container">
+        <!-- ===== ШАПКА ===== -->
+        <header class="header">
+            <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
+            <div class="header-left">
+                <div class="header-banner" id="headerBanner">
+                    <img id="bannerImage" src="banner.png" alt="Баннер школьного расписания">
+                </div>
+            </div>
+
+            <div class="header-center">
+                <span class="day-indicator" id="dayIndicator">ПН</span>
+                <span class="divider">|</span>
+                <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
+            </div>
+
+            <div class="header-right">
+                <div id="clockContainer"></div>
+            </div>
+        </header>
+
+        <!-- ===== PWA ===== -->
+        <div id="pwaNotification">
+            <p>📱 <strong>Установите приложение</strong><br>
+            <span class="small">Нажмите "Добавить на главный экран" в браузере</span></p>
+        </div>
+
+        <!-- ===== ОСНОВНАЯ ЧАСТЬ ===== -->
+        <main class="main-layout" id="mainContent" tabindex="-1">
+            <p id="scheduleStatus" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">Загружаем расписание…</p>
+            <div class="table-wrapper" id="tableWrapper">
+                <table class="desktop-table" id="scheduleTable" aria-describedby="scheduleStatus">
+                    <caption id="scheduleCaption" class="visually-hidden">Расписание уроков</caption>
+                    <thead id="tableHead">
+                        <tr><th scope="col" aria-label="Номер урока"><span class="visually-hidden">Номер урока</span></th></tr>
+                    </thead>
+                    <tbody id="scheduleBody">
+                        <tr>
+                            <td colspan="20" class="loading-overlay">
+                                ⏳ Загрузка...
+                                <span class="sub" aria-hidden="true"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 id="mobileScheduleHeading" class="visually-hidden">Расписание по классам</h2>
+                <div class="mobile-controls" role="group" aria-labelledby="mobileFilterLabel">
+                    <label id="mobileFilterLabel" for="mobileClassFilter">Показать класс</label>
+                    <select id="mobileClassFilter" aria-controls="mobileView">
+                        <option value="all">Все классы</option>
+                        <option value="5А">5А</option>
+                        <option value="5Б">5Б</option>
+                        <option value="6А">6А</option>
+                        <option value="6Б">6Б</option>
+                        <option value="6В">6В</option>
+                        <option value="7А">7А</option>
+                        <option value="7Б">7Б</option>
+                        <option value="7В">7В</option>
+                        <option value="8А">8А</option>
+                        <option value="8Б">8Б</option>
+                        <option value="8В">8В</option>
+                        <option value="9А">9А</option>
+                        <option value="9Б">9Б</option>
+                        <option value="9В">9В</option>
+                        <option value="10А">10А</option>
+                        <option value="10Б">10Б</option>
+                        <option value="11А">11А</option>
+                        <option value="11Б">11Б</option>
+                    </select>
+                </div>
+                <div class="mobile-view" id="mobileView" role="region" aria-labelledby="mobileScheduleHeading" aria-describedby="scheduleStatus">
+                    <div class="loading-overlay" style="height: auto; padding: 20px 0;">
+                        ⏳ Загрузка...
+                        <span class="sub" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ===== ПОДВАЛ ===== -->
+        <footer class="footer no-print">
+            <div class="footer-status" aria-label="Состояние расписания">
+                <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
+                <span class="footer-status-separator" aria-hidden="true">·</span>
+                <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ===== УВЕДОМЛЕНИЕ ===== -->
+    <div id="notification" class="notification" role="status" aria-live="polite" aria-atomic="true">
+        <span id="notificationMessage"></span>
+    </div>
+
+    <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
+    <script type="text/javascript">
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(110291320, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110291320" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <script>
+        // ================================================================
+        // КОНФИГУРАЦИЯ
+        // ================================================================
+        var APP_VERSION = '4.1.0';
+        var LESSON_TIMES = [
+            { num: 1, start: "08:30", end: "09:10", break: "10" },
+            { num: 2, start: "09:20", end: "10:00", break: "10" },
+            { num: 3, start: "10:10", end: "10:50", break: "15" },
+            { num: 4, start: "11:05", end: "11:45", break: "15" },
+            { num: 5, start: "12:00", end: "12:40", break: "15" },
+            { num: 6, start: "12:55", end: "13:35", break: "10" },
+            { num: 7, start: "13:45", end: "14:25", break: "10" },
+            { num: 8, start: "14:35", end: "15:15", break: "10" },
+            { num: 9, start: "15:25", end: "16:05", break: "10" }
+        ];
+
+        var MAX_LESSONS = 9;
+        var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
+        var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
+        var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
+        var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+
+        var weekDays = {};
+        var classNames = [];
+        var dataLoaded = false;
+        var scheduleUpdatedDate = null;
+        var deferredPrompt = null;
+        var lastBoardRenderKey = '';
+        var dataRequestInFlight = false;
+        var compactDefaultClassApplied = false;
+        var DATA_REFRESH_INTERVAL_MS = 30000;
+
+        // ================================================================
+        // УВЕДОМЛЕНИЯ
+        // ================================================================
+        function showNotification(message, type) {
+            var el = document.getElementById('notification');
+            var msg = document.getElementById('notificationMessage');
+            if (!el || !msg) return;
+            el.className = 'notification show ' + (type || 'info');
+            msg.textContent = message;
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        // ================================================================
+        // ЧАСЫ (циферблат поворачивается на −45° в режиме табло)
+        // ================================================================
+        function initRotatedClock(containerId) {
+            var container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'clock-wrapper';
+
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 100 100');
+            svg.setAttribute('width', '60');
+            svg.setAttribute('height', '60');
+
+            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.setAttribute('transform', 'rotate(0, 50, 50)');
+
+            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '50');
+            circle.setAttribute('cy', '50');
+            circle.setAttribute('r', '45');
+            circle.setAttribute('fill', '#f7fafc');
+            circle.setAttribute('stroke', '#2b6cb0');
+            circle.setAttribute('stroke-width', '3');
+            g.appendChild(circle);
+
+            for (var i = 1; i <= 12; i++) {
+                var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
+                var x1 = 50 + 38 * Math.cos(angle);
+                var y1 = 50 + 38 * Math.sin(angle);
+                var x2 = 50 + 32 * Math.cos(angle);
+                var y2 = 50 + 32 * Math.sin(angle);
+                var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#2d3748');
+                line.setAttribute('stroke-width', i % 3 === 0 ? '3' : '1.5');
+                line.setAttribute('stroke-linecap', 'round');
+                g.appendChild(line);
+            }
+
+            svg.appendChild(g);
+
+            var hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            hourHand.setAttribute('x1', '50');
+            hourHand.setAttribute('y1', '50');
+            hourHand.setAttribute('x2', '50');
+            hourHand.setAttribute('y2', '28');
+            hourHand.setAttribute('stroke', '#2b6cb0');
+            hourHand.setAttribute('stroke-width', '4');
+            hourHand.setAttribute('stroke-linecap', 'round');
+            hourHand.setAttribute('id', 'hour-hand');
+            svg.appendChild(hourHand);
+
+            var minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            minHand.setAttribute('x1', '50');
+            minHand.setAttribute('y1', '50');
+            minHand.setAttribute('x2', '50');
+            minHand.setAttribute('y2', '18');
+            minHand.setAttribute('stroke', '#2b6cb0');
+            minHand.setAttribute('stroke-width', '3');
+            minHand.setAttribute('stroke-linecap', 'round');
+            minHand.setAttribute('id', 'min-hand');
+            svg.appendChild(minHand);
+
+            var center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            center.setAttribute('cx', '50');
+            center.setAttribute('cy', '50');
+            center.setAttribute('r', '4');
+            center.setAttribute('fill', '#2b6cb0');
+            svg.appendChild(center);
+
+            wrapper.appendChild(svg);
+
+            var textBlock = document.createElement('div');
+            textBlock.className = 'clock-text';
+
+            var daySpan = document.createElement('span');
+            daySpan.className = 'day';
+            var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+            daySpan.textContent = days[new Date().getDay()];
+            textBlock.appendChild(daySpan);
+
+            var dateSpan = document.createElement('span');
+            dateSpan.className = 'date';
+            dateSpan.textContent = new Date().toLocaleDateString('ru-RU', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+            textBlock.appendChild(dateSpan);
+
+            var digitalSpan = document.createElement('span');
+            digitalSpan.className = 'digital-time';
+            digitalSpan.id = 'digital-time';
+            digitalSpan.textContent = new Date().toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            textBlock.appendChild(digitalSpan);
+
+            var countdownSpan = document.createElement('span');
+            countdownSpan.className = 'countdown';
+            countdownSpan.id = 'lesson-countdown';
+            countdownSpan.setAttribute('aria-live', 'off');
+            countdownSpan.textContent = 'До начала урока осталось: —';
+            textBlock.appendChild(countdownSpan);
+
+            wrapper.appendChild(textBlock);
+            container.appendChild(wrapper);
+
+            function updateClock() {
+                var now = new Date();
+                var hours = now.getHours() % 12;
+                var minutes = now.getMinutes();
+                var seconds = now.getSeconds();
+
+                var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
+                var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
+
+                var hourHandEl = document.getElementById('hour-hand');
+                var minHandEl = document.getElementById('min-hand');
+
+                if (hourHandEl) {
+                    hourHandEl.setAttribute('transform', 'rotate(' + hourAngle + ', 50, 50)');
+                }
+                if (minHandEl) {
+                    minHandEl.setAttribute('transform', 'rotate(' + minAngle + ', 50, 50)');
+                }
+
+                var digitalEl = document.getElementById('digital-time');
+                if (digitalEl) {
+                    digitalEl.textContent = now.toLocaleTimeString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                }
+
+                var countdownEl = document.getElementById('lesson-countdown');
+                if (countdownEl) {
+                    countdownEl.textContent = getLessonCountdownText(now);
+                }
+
+                var dayEl = textBlock.querySelector('.day');
+                if (dayEl) {
+                    dayEl.textContent = days[now.getDay()];
+                }
+                var dateEl = textBlock.querySelector('.date');
+                if (dateEl) {
+                    dateEl.textContent = now.toLocaleDateString('ru-RU', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                }
+            }
+
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // ================================================================
+        // ОСНОВНАЯ ЛОГИКА
+        // ================================================================
+
+        function parseTime(timeStr) {
+            var parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function formatMinutes(minutes) {
+            if (!minutes || minutes <= 0) return '0 мин';
+            var rounded = Math.ceil(minutes);
+            if (rounded >= 60) {
+                var hours = Math.floor(rounded / 60);
+                var mins = rounded % 60;
+                return mins === 0 ? hours + ' ч' : hours + ' ч ' + mins + ' мин';
+            }
+            return rounded + ' мин';
+        }
+
+        function getLessonCountdownText(now) {
+            now = now || new Date();
+            var nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var startSeconds = parseTime(LESSON_TIMES[i].start) * 60;
+                if (nowSeconds < startSeconds) {
+                    var remaining = startSeconds - nowSeconds;
+                    var hours = Math.floor(remaining / 3600);
+                    var minutes = Math.floor((remaining % 3600) / 60);
+                    var seconds = remaining % 60;
+                    var value = hours > 0
+                        ? hours + ' ч ' + String(minutes).padStart(2, '0') + ' мин'
+                        : minutes + ' мин ' + String(seconds).padStart(2, '0') + ' с';
+                    return 'До начала урока осталось: ' + value;
+                }
+            }
+            return 'До начала урока осталось: —';
+        }
+
+        function getCurrentPeriodInfo() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                var endMin = parseTime(lesson.end);
+                if (totalMinutes >= startMin && totalMinutes < endMin) {
+                    return { type: 'lesson', num: lesson.num, start: lesson.start, end: lesson.end };
+                }
+            }
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                if (i > 0) {
+                    var prevEndMin = parseTime(LESSON_TIMES[i - 1].end);
+                    if (totalMinutes >= prevEndMin && totalMinutes < startMin) {
+                        return { type: 'break', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin - totalMinutes };
+                    }
+                }
+                if (i === 0 && totalMinutes < startMin) {
+                    return { type: 'before', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin - totalMinutes };
+                }
+            }
+
+            var lastEndMin = parseTime(LESSON_TIMES[LESSON_TIMES.length - 1].end);
+            if (totalMinutes >= lastEndMin) {
+                return { type: 'after' };
+            }
+            return { type: 'unknown' };
+        }
+
+        function getPeriodName() {
+            var info = getCurrentPeriodInfo();
+
+            if (info.type === 'lesson') {
+                return '📖 ' + info.num + '-й урок (' + info.start + '–' + info.end + ')';
+            }
+
+            if (info.type === 'break') {
+                if (info.remaining <= 0) {
+                    return '⏰ ' + info.nextLesson + '-й урок начинается';
+                }
+                return '⏳ До ' + info.nextLesson + '-го урока ' + formatMinutes(info.remaining);
+            }
+
+            if (info.type === 'before') {
+                if (info.remaining <= 0) {
+                    return '⏰ ' + info.nextLesson + '-й урок начинается';
+                }
+                return '⏳ До начала занятий ' + formatMinutes(info.remaining);
+            }
+
+            if (info.type === 'after') {
+                var today = new Date();
+                var dayNum = today.getDay();
+                var nextDayNum = dayNum + 1;
+                if (nextDayNum === 7) nextDayNum = 1;
+                if (nextDayNum === 0) nextDayNum = 1;
+                var nextDayFull = DAYS_FULL[nextDayNum] || 'Понедельник';
+                var dayGenitive = {
+                    'Понедельник': 'понедельник',
+                    'Вторник': 'вторник',
+                    'Среда': 'среду',
+                    'Четверг': 'четверг',
+                    'Пятница': 'пятницу',
+                    'Суббота': 'субботу',
+                    'Воскресенье': 'воскресенье'
+                };
+                var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
+            }
+
+            return '⏰ Загрузка...';
+        }
+
+        function getDisplayDay() {
+            var now = new Date();
+            var dayNum = now.getDay() === 0 ? 1 : now.getDay();
+            return { key: DAYS_SHORT[dayNum] || "ПН", full: DAYS_FULL[dayNum] || "Понедельник" };
+        }
+
+        function getTargetDay() {
+            var now = new Date();
+            var dayNum = now.getDay();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var shift = (totalMinutes >= 17 * 60) ? 1 : 0;
+            var targetDayNum = dayNum + shift;
+            if (targetDayNum === 0) targetDayNum = 1;
+            if (targetDayNum > 6) targetDayNum = 1;
+
+            var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+            var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                return { key: dayKey, full: dayFull };
+            }
+
+            for (var i = 0; i < DAYS_LIST.length; i++) {
+                var d = DAYS_LIST[i];
+                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                }
+            }
+            return { key: "ПН", full: "Понедельник" };
+        }
+
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return null;
+            var d = new Date(dateValue);
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА schedule.primary.json С ETag-КЕШИРОВАНИЕМ
+        // ================================================================
+
+        function loadData() {
+            if (dataRequestInFlight) return;
+            dataRequestInFlight = true;
+            var statusEl = document.getElementById('scheduleStatus');
+            var statusMobile = null;
+            if (statusEl) statusEl.textContent = 'Загружаем расписание…';
+            setBoardSync('loading', 'Обновляем данные…');
+
+            // Кеш-бастер для обхода кеша браузера (обновляется каждый час)
+            var cacheBuster = Math.floor(Date.now() / 3600000);
+            var url = 'schedule.primary.json?t=' + cacheBuster;
+
+            fetch(url, { cache: 'default' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('schedule.primary.json не найден (код ' + res.status + ')');
+                    
+                    // ⭐ ПОЛУЧАЕМ ETag ИЗ ЗАГОЛОВКА
+                    var etag = res.headers.get('ETag');
+                    
+                    if (etag) {
+                        // ⭐ СРАВНИВАЕМ С СОХРАНЁННЫМ ETag
+                        var cachedEtag = localStorage.getItem('schedule_etag');
+                        
+                        if (cachedEtag === etag) {
+                            // ✅ ETag СОВПАДАЕТ → файл НЕ ИЗМЕНИЛСЯ → используем кеш
+                            if (statusEl) statusEl.textContent = '✅ данные актуальны (ETag)';
+                            if (statusMobile) statusMobile.textContent = '✅ данные актуальны (ETag)';
+                            return res.json();
+                        }
+                        
+                        // ⭐ ETag ИЗМЕНИЛСЯ → сохраняем новый и загружаем данные
+                        localStorage.setItem('schedule_etag', etag);
+                        if (statusEl) statusEl.textContent = '🔄 данные обновлены (новый ETag)';
+                        if (statusMobile) statusMobile.textContent = '🔄 данные обновлены (новый ETag)';
+                    } else {
+                        // ⚠️ Сервер не отдаёт ETag → просто загружаем данные
+                        if (statusEl) statusEl.textContent = '⚠️ ETag не поддерживается';
+                        if (statusMobile) statusMobile.textContent = '⚠️ ETag не поддерживается';
+                    }
+                    
+                    return res.json();
+                })
+                .then(function(data) {
+                    var scheduleData = null;
+                    var updatedDate = data.updated || data.last_update || (data.meta && data.meta.updated) || null;
+
+                    if (updatedDate) {
+                        var formatted = formatDateForDisplay(updatedDate);
+                        if (formatted) {
+                            scheduleUpdatedDate = formatted;
+                            document.getElementById('scheduleUpdated').textContent = '📅 ' + formatted;
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated';
+                        } else {
+                            document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                        }
+                    } else {
+                        document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                        document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    }
+
+                    // Парсим schedule.primary.json
+                    if (data.schedule) {
+                        scheduleData = data.schedule.primary || data.schedule;
+                    } else if (data.primary) {
+                        scheduleData = data.primary;
+                    } else {
+                        scheduleData = data;
+                    }
+
+                    var hasDays = false;
+                    DAYS_LIST.forEach(function(day) {
+                        if (scheduleData && scheduleData[day]) {
+                            hasDays = true;
+                            var filtered = {};
+                            Object.keys(scheduleData[day]).forEach(function(cls) {
+                                if (PRIMARY_CLASSES.indexOf(cls) !== -1) {
+                                    filtered[cls] = scheduleData[day][cls];
+                                }
+                            });
+                            weekDays[day] = Object.keys(filtered).length > 0 ? filtered : {};
+                        }
+                    });
+
+                    if (!hasDays) {
+                        DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    }
+
+                    if (statusEl) statusEl.textContent = 'Расписание обновлено.';
+                    if (statusMobile) statusMobile.textContent = '✅ schedule.primary.json загружен';
+                    processLoadedData();
+                    lastBoardRenderKey = getBoardRenderKey();
+                    setBoardSync('online', 'Данные актуальны');
+                })
+                .catch(function(err) {
+                    console.warn('Ошибка загрузки schedule.primary.json:', err.message);
+                    if (statusEl) statusEl.textContent = 'Не удалось обновить расписание. Проверьте соединение и попробуйте снова.';
+                    if (statusMobile) statusMobile.textContent = '❌ ' + err.message;
+                    DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
+                    document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    setBoardSync('offline', 'Нет связи · показываем последние данные');
+                    processLoadedData();
+                })
+                .finally(function() {
+                    dataRequestInFlight = false;
+                });
+        }
+
+        function processLoadedData() {
+            classNames = PRIMARY_CLASSES;
+
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                classNames.forEach(function(cls) {
+                    if (!dayData[cls]) {
+                        dayData[cls] = [];
+                        for (var i = 0; i < MAX_LESSONS; i++) {
+                            dayData[cls].push(['', '']);
+                        }
+                    } else {
+                        var lessons = dayData[cls];
+                        while (lessons.length < MAX_LESSONS) {
+                            lessons.push(['', '']);
+                        }
+                    }
+                });
+                weekDays[day] = dayData;
+            });
+
+            dataLoaded = true;
+            renderTable();
+            renderMobile();
+            lastBoardRenderKey = getBoardRenderKey();
+            animateScheduleUpdate('data');
+        }
+
+        function escapeHTML(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function sortClasses(classes) {
+            var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+            return classes.sort(function(a, b) {
+                var numA = parseInt(a.match(/\d+/)?.[0] || 0);
+                var numB = parseInt(b.match(/\d+/)?.[0] || 0);
+                if (numA !== numB) return numA - numB;
+                var lA = a.match(/[А-Я]/)?.[0] || '';
+                var lB = b.match(/[А-Я]/)?.[0] || '';
+                return letters.indexOf(lA) - letters.indexOf(lB);
+            });
+        }
+
+        // ================================================================
+        // ОТРИСОВКА
+        // ================================================================
+
+        function renderTable() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+            var displayDay = getDisplayDay();
+
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            document.getElementById('dayIndicator').textContent = displayDay.full;
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            document.getElementById('scheduleCaption').textContent = 'Расписание уроков на ' + displayDay.full;
+
+            var dayData = weekDays[dayKey];
+            if (!dayData || Object.keys(dayData).length === 0) {
+                document.getElementById('scheduleBody').innerHTML = '<tr><td colspan="20" class="loading-overlay">📌 Нет расписания</td></tr>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+
+            var headerHTML = '<tr><th scope="col" aria-label="Номер урока"><span class="visually-hidden">Номер урока</span></th>';
+            classes.forEach(function(cls) { headerHTML += '<th scope="col">' + escapeHTML(cls) + '</th>'; });
+            headerHTML += '</tr>';
+            document.getElementById('tableHead').innerHTML = headerHTML;
+
+            var bodyHTML = '';
+            for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
+                var idx = lessonNum - 1;
+                var isCurrent = (lessonNum === currentLesson && currentLesson >= 1 && currentLesson <= MAX_LESSONS);
+                bodyHTML += '<tr class="' + (isCurrent ? 'current-lesson' : '') + '"' + (isCurrent ? ' aria-label="Текущий урок"' : '') + '>';
+                bodyHTML += '<th scope="row"><span class="lesson-num">' + lessonNum + '</span></th>';
+
+                classes.forEach(function(cls) {
+                    var lessons = dayData[cls] || [];
+                    var lesson = lessons[idx] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    if (subject && subject.trim() !== '') {
+                        bodyHTML += '<td><span class="subject">' + escapeHTML(subject) + '</span><span class="cabinet">' + escapeHTML(cabinet) + '</span></td>';
+                    } else {
+                        bodyHTML += '<td class="empty-cell"><span class="empty-lesson" aria-label="Нет урока">—</span></td>';
+                    }
+                });
+                bodyHTML += '</tr>';
+            }
+            document.getElementById('scheduleBody').innerHTML = bodyHTML;
+        }
+
+        function renderMobile() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            var dayData = weekDays[dayKey];
+            if (!dayData || Object.keys(dayData).length === 0) {
+                document.getElementById('mobileView').innerHTML = '<div style="text-align:center;padding:30px 0;color:#a0aec0;">📌 Нет расписания</div>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            var selectedMobileClass = mobileClassFilter ? mobileClassFilter.value : 'all';
+            if (window.innerWidth >= 769 && window.innerWidth <= 1199 && !compactDefaultClassApplied && selectedMobileClass === 'all') {
+                selectedMobileClass = classes[0] || PRIMARY_CLASSES[0];
+                if (mobileClassFilter) mobileClassFilter.value = selectedMobileClass;
+                compactDefaultClassApplied = true;
+            }
+            if (selectedMobileClass !== 'all' && classes.indexOf(selectedMobileClass) !== -1) {
+                classes = [selectedMobileClass];
+            }
+
+            var html = '';
+            classes.forEach(function(className) {
+                var lessons = dayData[className] || [];
+
+                html += '<section class="mobile-class-card" aria-label="Расписание класса ' + escapeHTML(className) + '">';
+                html += '<h3 class="mobile-class-header"><span class="class-name">' + escapeHTML(className) + '</span></h3>';
+
+                for (var i = 0; i < MAX_LESSONS; i++) {
+                    var lesson = lessons[i] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    var isCurrent = (i + 1 === currentLesson);
+                    var hasContent = subject && subject.trim() !== '';
+
+                    html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
+                    html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
+
+                    if (hasContent) {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
+                        if (cabinet && cabinet.trim() !== '') {
+                            html += '<span class="room-name">' + escapeHTML(cabinet) + '</span>';
+                        }
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
+                    } else {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name empty" aria-label="Нет урока">—</span>';
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
+                    }
+                    html += '</div>';
+                }
+                html += '</section>';
+            });
+
+            document.getElementById('mobileView').innerHTML = html;
+        }
+
+        function animateScheduleUpdate(kind) {
+            var animationClass = kind === 'data' ? 'schedule-refresh' : 'schedule-period-change';
+            ['scheduleTable', 'mobileView'].forEach(function(id) {
+                var element = document.getElementById(id);
+                if (!element) return;
+                element.classList.remove('schedule-refresh', 'schedule-period-change');
+                // Принудительный reflow перезапускает анимацию только в момент обновления.
+                void element.offsetWidth;
+                element.classList.add(animationClass);
+            });
+        }
+
+        function getBoardRenderKey() {
+            var targetDay = getTargetDay();
+            var info = getCurrentPeriodInfo();
+            var activeLesson = 0;
+            if (info.type === 'lesson') {
+                activeLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                activeLesson = Math.max(0, info.nextLesson - 1);
+            }
+            return targetDay.key + '|' + info.type + '|' + activeLesson;
+        }
+
+        function setBoardSync(state, message) {
+            var sync = document.getElementById('boardSync');
+            if (!sync) return;
+            sync.className = 'board-sync ' + state;
+            sync.textContent = message;
+        }
+
+        function refreshAll() {
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+            var renderKey = getBoardRenderKey();
+            if (renderKey !== lastBoardRenderKey) {
+                lastBoardRenderKey = renderKey;
+                renderTable();
+                renderMobile();
+                animateScheduleUpdate('period');
+            }
+        }
+
+        // ================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Часы
+            initRotatedClock('clockContainer');
+
+            // PWA
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                var pwaNotification = document.getElementById('pwaNotification');
+                if (pwaNotification) pwaNotification.style.display = 'block';
+            });
+
+            // Фильтр класса для мобильного и компактного режима
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            if (mobileClassFilter) {
+                mobileClassFilter.addEventListener('change', function() {
+                    renderMobile();
+                    var mobileView = document.getElementById('mobileView');
+                    if (mobileView) mobileView.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // Загрузка данных
+            loadData();
+
+            // Перерисовываем карточный режим при смене ориентации или размера окна.
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    renderMobile();
+                    refreshAll();
+                }, 120);
+            });
+
+            // Обновление каждую секунду
+            setInterval(refreshAll, 1000);
+
+            // Автоматическая проверка JSON каждые 30 секунд для коридорного табло
+            setInterval(loadData, DATA_REFRESH_INTERVAL_MS);
+
+            // После возврата вкладки или восстановления сети сразу сверяем расписание.
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) loadData();
+            });
+            window.addEventListener('online', loadData);
+
+            console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
+        });
+    </script>
+
+</body>
+</html>
