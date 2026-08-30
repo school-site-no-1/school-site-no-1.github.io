@@ -93,6 +93,14 @@
             height: 100%;
             object-fit: cover;
         }
+        .mobile-banner-text {
+            display: none;
+            color: #c05621;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
 
         .header-center {
             display: flex;
@@ -135,6 +143,19 @@
             color: #e53e3e;
             background: #fff5f5;
         }
+        .sound-toggle {
+            border: 1px solid #2b6cb0;
+            border-radius: 4px;
+            background: #ffffff;
+            color: #1a365d;
+            padding: 2px 6px;
+            font: inherit;
+            cursor: pointer;
+        }
+        .sound-toggle[aria-pressed="true"] {
+            background: #ebf8ff;
+            color: #1c64a5;
+        }
         .board-sync {
             display: inline-flex;
             align-items: center;
@@ -168,7 +189,7 @@
         }
 
         /* ============================
-           ЧАСЫ (встроенные, с поворотом 45°)
+           ЧАСЫ (циферблат поворачивается на −45° в режиме табло)
            ============================ */
         .clock-wrapper {
             display: flex;
@@ -192,9 +213,16 @@
             font-weight: 600;
         }
         .clock-text .digital-time {
-            font-size: 1.1em;
+            font-size: 0.73em;
             color: #2b6cb0;
             font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .clock-text .countdown {
+            font-size: 0.62em;
+            color: #2f855a;
+            font-weight: 600;
+            line-height: 1.1;
             font-variant-numeric: tabular-nums;
         }
 
@@ -655,15 +683,15 @@
             .mobile-lesson-card .lesson-time { font-size: 12px !important; }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 959px) {
             .container { padding: 5.5px 7.5px; border-radius: 11.5px; height: 99vh; }
-            .header { gap: 3.5px; padding-bottom: 3.5px; min-height: auto; flex-wrap: wrap; }
-            .header-left { flex: 0 0 100%; justify-content: center; order: 1; }
-            .header-banner { height: 31px; max-height: 31px; min-height: 31px; min-width: 39px; border: 1px solid #e2e8f0; flex: 0 0 100%; }
-            .header-center { order: 2; flex: 1; justify-content: center; gap: 7.5px; }
-            .header-center .day-indicator { font-size: 17.5px; padding: 4.5px 17px; border-radius: 21px; }
-            .header-center .divider { display: none; }
-            .header-right { order: 3; text-align: center; align-items: center; width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 3.5px 9px; margin-top: 3.5px; }
+            .header { gap: 3.5px; padding-bottom: 3.5px; min-height: auto; flex-wrap: nowrap; }
+            .header-left { flex: 0 1 46%; width: 46%; min-width: 0; justify-content: flex-start; order: 1; }
+            .header-banner { height: 31px; max-height: 31px; min-height: 31px; min-width: 0; width: 100%; border: 1px solid #e2e8f0; flex: 1 1 auto; justify-content: flex-start; }
+            .header-center { order: 2; flex: 1 1 auto; min-width: 0; justify-content: center; gap: 7.5px; }
+            .header-center .day-indicator,
+            .header-center .divider { display: none !important; }
+            .header-right { order: 3; text-align: right; align-items: flex-end; width: auto; flex: 0 0 auto; flex-direction: column; flex-wrap: nowrap; justify-content: flex-end; gap: 1px; margin-top: 0; }
             .header-right .schedule-updated { font-size: 11.5px; order: 1; margin-top: 2px; }
             .period { font-size: 13.5px; min-height: 1.5em; flex-direction: column; align-items: center; text-align: center; order: 2; }
             .period .line1 { font-size: 13.5px; }
@@ -674,9 +702,10 @@
             .main-layout { gap: 0; margin-top: 3.5px; }
             .clock-wrapper { flex-direction: row; align-items: center; gap: 8px; }
             .clock-wrapper svg { width: 40px; height: 40px; }
-            .clock-text .day { font-size: 0.5em; }
+            .clock-text .day { display: none !important; }
             .clock-text .date { font-size: 0.6em; }
-            .clock-text .digital-time { font-size: 0.8em; }
+            .clock-text .digital-time { font-size: 0.53em; }
+            .clock-text .countdown { font-size: 0.48em; }
             .mobile-class-header { padding: 3px 8px !important; font-size: 13px !important; min-height: 18px !important; height: 18px !important; }
             .mobile-lesson-card { padding: 2px 6px !important; min-height: 16px !important; height: 16px !important; gap: 3px; }
             .mobile-lesson-card .lesson-num-mobile { font-size: 10px !important; min-width: 18px !important; }
@@ -873,8 +902,242 @@
             }
         }
 
-        /* Ширина до 768 px: вместо сжатия обеспечиваем читаемость и безопасную прокрутку. */
-        @media (max-width: 768px) {
+        /* Коридорное табло 960×540: полная сетка 18 классов и 9 уроков. */
+        @media (min-width: 960px) and (max-width: 1199px) {
+            html, body {
+                width: 100%;
+                min-height: 100dvh;
+                overflow: hidden;
+            }
+            body {
+                padding: 0;
+                align-items: stretch;
+            }
+            .container {
+                width: 100%;
+                max-width: none;
+                height: 100dvh;
+                min-height: 100dvh;
+                padding: 5px 8px 4px;
+                border-radius: 0;
+                overflow: hidden;
+            }
+            .header {
+                min-height: 44px;
+                gap: 6px;
+                padding-bottom: 1px;
+                border-bottom: none !important;
+            }
+            .header-left {
+                display: none !important;
+            }
+            .header-banner {
+                height: 39px;
+                min-height: 39px;
+                max-height: 39px;
+                padding: 0 4px;
+            }
+            .header-center {
+                gap: 5px;
+                margin-left: 0;
+                flex: 1 1 auto;
+                justify-content: flex-start;
+            }
+            .header-center .day-indicator,
+            .header-center .divider {
+                display: none !important;
+            }
+            .period,
+            .period .line1 {
+                font-size: 10px;
+                line-height: 1.1;
+            }
+            .period .line2 {
+                font-size: 9px;
+            }
+            .header-right {
+                gap: 2px;
+                margin-left: auto;
+                align-items: flex-end;
+                text-align: right;
+            }
+            .clock-wrapper {
+                gap: 4px;
+            }
+            .clock-wrapper svg {
+                width: 19px;
+                height: 19px;
+                transform: rotate(0deg) !important;
+                transform-origin: center;
+            }
+            .clock-text .day { font-size: 0.37em; }
+            .clock-text .date { font-size: 0.41em; }
+            .clock-text .digital-time { font-size: 0.53em; }
+            .clock-text .countdown { font-size: 0.48em; }
+            .header-right .schedule-updated { font-size: 10px; padding: 1px 5px; }
+            .board-sync { font-size: 9px; padding: 1px 5px; }
+            .footer {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 16px;
+                font-size: 4px;
+                padding: 1px 0 0;
+                margin-top: 1px;
+                border-top: 1px solid #e2e8f0;
+            }
+            .footer-status {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                white-space: nowrap;
+            }
+            .footer-status .schedule-updated {
+                color: #475467 !important;
+                font-size: 4px;
+                padding: 0;
+                background: transparent;
+                border-radius: 0;
+            }
+            .footer-status .board-sync {
+                font-size: 4px;
+                padding: 0;
+                background: transparent;
+                border: 0;
+                border-radius: 0;
+            }
+            .footer-status .sound-toggle {
+                font-size: 4px;
+                padding: 0 2px;
+                border-width: 1px;
+            }
+            .footer-status .board-sync::before {
+                width: 5px;
+                height: 5px;
+            }
+            /* Для стабильного табло обновление не сопровождается анимацией. */
+            #scheduleTable.schedule-refresh,
+            #mobileView.schedule-refresh,
+            #scheduleTable.schedule-period-change,
+            #mobileView.schedule-period-change,
+            .current-lesson,
+            .mobile-lesson-card.current {
+                animation: none !important;
+                transition: none !important;
+            }
+            .main-layout {
+                min-height: 0;
+                margin-top: 4px;
+            }
+            .mobile-controls {
+                display: none !important;
+            }
+            .desktop-table {
+                display: table !important;
+                width: 100%;
+                table-layout: fixed;
+            }
+            .mobile-view {
+                display: none !important;
+            }
+            .table-wrapper {
+                display: block;
+                overflow: hidden;
+                width: 100%;
+            }
+            .mobile-controls select {
+                min-height: 27px;
+                padding: 2px 6px;
+            }
+            thead th:first-child {
+                width: 22px !important;
+                min-width: 22px !important;
+            }
+            thead th:not(:first-child) {
+                width: auto !important;
+            }
+            thead th {
+                min-height: 19px !important;
+                padding: 1px 1px !important;
+                font-size: clamp(6px, 0.75vw, 7px) !important;
+                line-height: 1 !important;
+            }
+            tbody td,
+            tbody th {
+                min-height: 32px !important;
+                height: auto !important;
+                padding: 1px 1px !important;
+                font-size: clamp(6px, 0.9vw, 9px) !important;
+                line-height: 1.05 !important;
+                overflow-wrap: anywhere;
+            }
+            tbody th { width: 22px !important; }
+            .subject {
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                font-size: clamp(6px, 0.7vw, 7px) !important;
+                line-height: 1.02 !important;
+            }
+            .cabinet {
+                display: block;
+                font-size: 0.72em !important;
+                line-height: 1 !important;
+                white-space: nowrap;
+                color: #9a3412 !important;
+            }
+            .empty-cell {
+                font-size: clamp(6px, 0.75vw, 8px) !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+                word-break: normal !important;
+            }
+            .empty-lesson {
+                white-space: normal;
+                overflow-wrap: break-word;
+                word-break: normal;
+                color: #667085 !important;
+            }
+            .mobile-view {
+                display: none !important;
+            }
+            .mobile-class-card {
+                margin-bottom: 4px;
+            }
+            .mobile-class-header {
+                min-height: 24px !important;
+                padding: 3px 8px !important;
+                font-size: 14px !important;
+            }
+            .mobile-lesson-card {
+                min-height: 33px !important;
+                padding: 4px 7px !important;
+                gap: 6px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                min-width: 21px !important;
+                font-size: 11px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 12px !important;
+                line-height: 1.15 !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name,
+            .mobile-lesson-card .lesson-time {
+                font-size: 10px !important;
+                line-height: 1.1 !important;
+            }
+            .footer {
+                font-size: 10px;
+                padding-top: 2px;
+                margin-top: 2px;
+            }
+        }
+
+        /* Ширина до 959 px: мобильная версия с читаемостью и безопасной прокруткой. */
+        @media (max-width: 959px) {
             html, body {
                 height: auto;
                 min-height: 100dvh;
@@ -1092,13 +1355,14 @@
                 border-right: none;
             }
             .header {
+                position: relative;
                 min-height: 70px;
                 gap: 16px;
                 padding-bottom: 8px;
                 border-bottom-width: 3px;
             }
             .header-left {
-                flex: 1 1 54%;
+                flex: 0 1 40%;
             }
             .header-banner {
                 width: 100%;
@@ -1110,6 +1374,7 @@
             }
             .header-center {
                 gap: 12px;
+                flex: 0 0 auto;
             }
             .header-center .day-indicator {
                 font-size: clamp(26px, 2.5vh, 38px);
@@ -1126,7 +1391,14 @@
                 font-size: 0.9em;
             }
             .header-right {
+                position: fixed;
+                top: 8px;
+                right: 12px;
+                z-index: 10;
                 gap: 4px;
+                margin-left: 0;
+                align-items: flex-end;
+                text-align: right;
             }
             .clock-wrapper {
                 gap: 12px;
@@ -1134,6 +1406,8 @@
             .clock-wrapper svg {
                 width: 68px;
                 height: 68px;
+                transform: rotate(-45deg);
+                transform-origin: center;
             }
             .clock-text .day {
                 font-size: 0.8em;
@@ -1209,6 +1483,99 @@
             }
         }
 
+        /* ============================
+           ПЛАВНОЕ ОБНОВЛЕНИЕ РАСПИСАНИЯ
+           ============================ */
+        @keyframes scheduleRefresh {
+            from { opacity: 0.72; transform: translateY(5px); filter: saturate(0.82); }
+            to { opacity: 1; transform: translateY(0); filter: saturate(1); }
+        }
+        @keyframes schedulePeriodChange {
+            0% { opacity: 0.82; transform: translateY(3px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes currentLessonReveal {
+            0% { background-color: #d8efff; box-shadow: inset 0 0 0 0 rgba(43, 108, 176, 0); }
+            55% { background-color: #90cdf4; box-shadow: inset 0 0 0 3px rgba(43, 108, 176, 0.28); }
+            100% { background-color: #bee3f8; box-shadow: inset 0 0 0 0 rgba(43, 108, 176, 0); }
+        }
+        #scheduleTable.schedule-refresh,
+        #mobileView.schedule-refresh {
+            animation: scheduleRefresh 480ms cubic-bezier(.2, .7, .25, 1) both;
+            will-change: opacity, transform;
+        }
+        #scheduleTable.schedule-period-change,
+        #mobileView.schedule-period-change {
+            animation: schedulePeriodChange 340ms ease-out both;
+            will-change: opacity, transform;
+        }
+        .current-lesson,
+        .mobile-lesson-card.current {
+            animation: currentLessonReveal 720ms ease-out both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #scheduleTable.schedule-refresh,
+            #mobileView.schedule-refresh,
+            #scheduleTable.schedule-period-change,
+            #mobileView.schedule-period-change,
+            .current-lesson,
+            .mobile-lesson-card.current {
+                animation: none !important;
+                transform: none !important;
+            }
+        }
+
+        /* Финальная мобильная раскладка шапки: применяется только до 959 px. */
+        @media (max-width: 959px) {
+            .header {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                grid-template-areas: "mobile-left mobile-right";
+                align-items: center;
+                column-gap: 6px;
+                flex-wrap: nowrap;
+                min-height: 38px;
+            }
+            .header-left {
+                grid-area: mobile-left;
+                display: flex !important;
+                width: auto !important;
+                max-width: 100%;
+                flex: 1 1 auto !important;
+                justify-content: flex-start !important;
+                order: initial !important;
+            }
+            .header-banner {
+                width: 100% !important;
+                max-width: 100% !important;
+                flex: 1 1 auto !important;
+                justify-content: flex-start !important;
+            }
+            .header-banner img {
+                display: none !important;
+            }
+            .mobile-banner-text {
+                display: block !important;
+            }
+            .header-center {
+                display: none !important;
+            }
+            .header-right {
+                grid-area: mobile-right;
+                display: flex !important;
+                width: auto !important;
+                flex: 0 0 auto !important;
+                margin: 0 !important;
+                align-items: flex-end !important;
+                justify-content: flex-end !important;
+                text-align: right !important;
+                order: initial !important;
+            }
+            .clock-text .day {
+                display: none !important;
+            }
+        }
+
         @media print {
             .no-print { display: none !important; }
             .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
@@ -1222,13 +1589,13 @@
 <body>
     <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
     <div class="container">
+        <!-- ===== ШАПКА ===== -->
         <header class="header">
             <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
-        <!-- ===== ШАПКА ===== -->
-        <div class="header">
             <div class="header-left">
                 <div class="header-banner" id="headerBanner">
                     <img id="bannerImage" src="banner.png" alt="Баннер школьного расписания">
+                    <span class="mobile-banner-text" id="mobileBannerText">Изменения на понедельник</span>
                 </div>
             </div>
 
@@ -1240,8 +1607,6 @@
 
             <div class="header-right">
                 <div id="clockContainer"></div>
-                <div class="schedule-updated" id="scheduleUpdated">📅 загрузка...</div>
-                <div class="board-sync loading" id="boardSync" role="status" aria-live="polite">Подключение…</div>
             </div>
         </header>
 
@@ -1306,8 +1671,14 @@
 
         <!-- ===== ПОДВАЛ ===== -->
         <footer class="footer no-print">
-            <span class="version">🏷️ v<span id="appVersion">4.1.0</span></span>
+            <div class="footer-status" aria-label="Состояние расписания">
+                <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
+                <span class="footer-status-separator" aria-hidden="true">·</span>
+                <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
+                <button type="button" id="soundToggle" class="sound-toggle" aria-pressed="false">Включить звук</button>
+            </div>
         </footer>
+        <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
     </div>
 
     <!-- ===== УВЕДОМЛЕНИЕ ===== -->
@@ -1362,7 +1733,10 @@
         var deferredPrompt = null;
         var lastBoardRenderKey = '';
         var dataRequestInFlight = false;
+        var compactDefaultClassApplied = false;
         var DATA_REFRESH_INTERVAL_MS = 30000;
+        var soundUnlocked = false;
+        var lastBreakKey = '';
 
         // ================================================================
         // УВЕДОМЛЕНИЯ
@@ -1378,7 +1752,7 @@
         }
 
         // ================================================================
-        // ЧАСЫ (встроенные, с поворотом 45°)
+        // ЧАСЫ (циферблат поворачивается на −45° в режиме табло)
         // ================================================================
         function initRotatedClock(containerId) {
             var container = document.getElementById(containerId);
@@ -1395,7 +1769,7 @@
             svg.setAttribute('height', '60');
 
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('transform', 'rotate(-45, 50, 50)');
+            g.setAttribute('transform', 'rotate(0, 50, 50)');
 
             var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             circle.setAttribute('cx', '50');
@@ -1484,6 +1858,13 @@
             });
             textBlock.appendChild(digitalSpan);
 
+            var countdownSpan = document.createElement('span');
+            countdownSpan.className = 'countdown';
+            countdownSpan.id = 'lesson-countdown';
+            countdownSpan.setAttribute('aria-live', 'off');
+            countdownSpan.textContent = 'До начала урока осталось: —';
+            textBlock.appendChild(countdownSpan);
+
             wrapper.appendChild(textBlock);
             container.appendChild(wrapper);
 
@@ -1513,6 +1894,11 @@
                         minute: '2-digit',
                         second: '2-digit'
                     });
+                }
+
+                var countdownEl = document.getElementById('lesson-countdown');
+                if (countdownEl) {
+                    countdownEl.textContent = getLessonCountdownText(now);
                 }
 
                 var dayEl = textBlock.querySelector('.day');
@@ -1551,6 +1937,64 @@
                 return mins === 0 ? hours + ' ч' : hours + ' ч ' + mins + ' мин';
             }
             return rounded + ' мин';
+        }
+
+        function getLessonCountdownText(now) {
+            now = now || new Date();
+            var nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var startSeconds = parseTime(LESSON_TIMES[i].start) * 60;
+                if (nowSeconds < startSeconds) {
+                    var remaining = startSeconds - nowSeconds;
+                    var hours = Math.floor(remaining / 3600);
+                    var minutes = Math.floor((remaining % 3600) / 60);
+                    var seconds = remaining % 60;
+                    var value = hours > 0
+                        ? hours + ' ч ' + String(minutes).padStart(2, '0') + ' мин'
+                        : minutes + ' мин ' + String(seconds).padStart(2, '0') + ' с';
+                    return 'До начала урока осталось: ' + value;
+                }
+            }
+            return 'До начала урока осталось: —';
+        }
+
+        function isMusicBoardWidth() {
+            return window.innerWidth === 960;
+        }
+
+        function updateBreakMusic() {
+            var audio = document.getElementById('breakMusic');
+            if (!audio) return;
+
+            if (!isMusicBoardWidth()) {
+                lastBreakKey = '';
+                if (!audio.paused) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+                return;
+            }
+
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'break') {
+                var today = new Date();
+                var breakKey = today.toISOString().slice(0, 10) + '-' + info.nextLesson;
+                if (breakKey !== lastBreakKey) {
+                    lastBreakKey = breakKey;
+                    if (soundUnlocked) {
+                        audio.currentTime = 0;
+                        audio.play().catch(function() {});
+                    }
+                } else if (soundUnlocked && audio.paused) {
+                    audio.play().catch(function() {});
+                }
+            } else {
+                lastBreakKey = '';
+                if (!audio.paused) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            }
         }
 
         function getCurrentPeriodInfo() {
@@ -1807,6 +2251,7 @@
             renderTable();
             renderMobile();
             lastBoardRenderKey = getBoardRenderKey();
+            animateScheduleUpdate('data');
         }
 
         function escapeHTML(value) {
@@ -1816,6 +2261,11 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+        }
+
+        function isEmptyLesson(value) {
+            var normalized = String(value == null ? '' : value).trim().toLowerCase();
+            return normalized === '' || normalized === 'нет урока' || normalized === 'нет' || normalized === '—' || normalized === '-';
         }
 
         function sortClasses(classes) {
@@ -1881,10 +2331,10 @@
                     var lesson = lessons[idx] || ['', ''];
                     var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
                     var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
-                    if (subject && subject.trim() !== '') {
+                    if (!isEmptyLesson(subject)) {
                         bodyHTML += '<td><span class="subject">' + escapeHTML(subject) + '</span><span class="cabinet">' + escapeHTML(cabinet) + '</span></td>';
                     } else {
-                        bodyHTML += '<td class="empty-cell">—</td>';
+                        bodyHTML += '<td class="empty-cell"><span class="empty-lesson" aria-label="Нет урока">—</span></td>';
                     }
                 });
                 bodyHTML += '</tr>';
@@ -1918,6 +2368,11 @@
             classes = sortClasses(classes);
             var mobileClassFilter = document.getElementById('mobileClassFilter');
             var selectedMobileClass = mobileClassFilter ? mobileClassFilter.value : 'all';
+            if (window.innerWidth >= 769 && window.innerWidth <= 1199 && !compactDefaultClassApplied && selectedMobileClass === 'all') {
+                selectedMobileClass = classes[0] || PRIMARY_CLASSES[0];
+                if (mobileClassFilter) mobileClassFilter.value = selectedMobileClass;
+                compactDefaultClassApplied = true;
+            }
             if (selectedMobileClass !== 'all' && classes.indexOf(selectedMobileClass) !== -1) {
                 classes = [selectedMobileClass];
             }
@@ -1934,7 +2389,7 @@
                     var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
                     var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
                     var isCurrent = (i + 1 === currentLesson);
-                    var hasContent = subject && subject.trim() !== '';
+                    var hasContent = !isEmptyLesson(subject);
 
                     html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
                     html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
@@ -1949,7 +2404,7 @@
                         html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
                     } else {
                         html += '<div class="lesson-info">';
-                        html += '<span class="subject-name empty">— нет урока —</span>';
+                        html += '<span class="subject-name empty" aria-label="Нет урока">—</span>';
                         html += '</div>';
                         html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
                     }
@@ -1959,6 +2414,18 @@
             });
 
             document.getElementById('mobileView').innerHTML = html;
+        }
+
+        function animateScheduleUpdate(kind) {
+            var animationClass = kind === 'data' ? 'schedule-refresh' : 'schedule-period-change';
+            ['scheduleTable', 'mobileView'].forEach(function(id) {
+                var element = document.getElementById(id);
+                if (!element) return;
+                element.classList.remove('schedule-refresh', 'schedule-period-change');
+                // Принудительный reflow перезапускает анимацию только в момент обновления.
+                void element.offsetWidth;
+                element.classList.add(animationClass);
+            });
         }
 
         function getBoardRenderKey() {
@@ -1982,12 +2449,14 @@
 
         function refreshAll() {
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            updateBreakMusic();
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
             var renderKey = getBoardRenderKey();
             if (renderKey !== lastBoardRenderKey) {
                 lastBoardRenderKey = renderKey;
                 renderTable();
                 renderMobile();
+                animateScheduleUpdate('period');
             }
         }
 
@@ -2019,6 +2488,43 @@
 
             // Загрузка данных
             loadData();
+
+            // Перерисовываем карточный режим при смене ориентации или размера окна.
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    renderMobile();
+                    refreshAll();
+                }, 120);
+            });
+
+            var soundToggle = document.getElementById('soundToggle');
+            var breakMusic = document.getElementById('breakMusic');
+            if (soundToggle && breakMusic) {
+                soundToggle.hidden = !isMusicBoardWidth();
+                soundToggle.addEventListener('click', function() {
+                    if (!isMusicBoardWidth()) return;
+                    soundUnlocked = true;
+                    soundToggle.setAttribute('aria-pressed', 'true');
+                    soundToggle.textContent = 'Звук включён';
+                    if (getCurrentPeriodInfo().type === 'break') {
+                        breakMusic.play().catch(function() {
+                            soundToggle.textContent = 'Не удалось включить';
+                        });
+                    }
+                });
+                breakMusic.addEventListener('error', function() {
+                    soundToggle.textContent = 'Файл музыки не найден';
+                    soundToggle.disabled = true;
+                });
+            }
+
+            window.addEventListener('resize', function() {
+                if (soundToggle) soundToggle.hidden = !isMusicBoardWidth();
+                if (!isMusicBoardWidth()) soundUnlocked = false;
+                updateBreakMusic();
+            });
 
             // Обновление каждую секунду
             setInterval(refreshAll, 1000);
