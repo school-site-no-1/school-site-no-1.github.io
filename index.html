@@ -1036,7 +1036,14 @@
             .desktop-table {
                 display: table !important;
                 width: 100%;
+                height: auto !important;
                 table-layout: fixed;
+                align-self: flex-start;
+            }
+            .desktop-table thead,
+            .desktop-table tbody,
+            .desktop-table tr {
+                height: auto !important;
             }
             .mobile-view {
                 display: none !important;
