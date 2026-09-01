@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.5">
+<html lang="ru" data-version="v4.3.6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +48,7 @@
         }
 
         /* ============================
-           ШАПКА (БЕЗ ДНЯ НЕДЕЛИ)
+           ШАПКА
            ============================ */
         .header {
             display: flex;
@@ -109,12 +109,11 @@
             display: flex !important;
             flex-direction: column;
             align-items: flex-end;
-            gap: 2px;
             flex-shrink: 0;
         }
 
         /* ============================
-           ЧАСЫ (аналоговые + цифровые на одной строке)
+           ЧАСЫ (дата над цифровыми, день недели после даты)
            ============================ */
         .clock-wrapper {
             display: flex;
@@ -140,12 +139,6 @@
         .clock-text .day {
             display: none !important;
         }
-        .clock-text .date {
-            font-size: 9px;
-            color: #2d3748;
-            font-weight: 600;
-            line-height: 1.2;
-        }
         .clock-text .digital-time {
             font-size: 18px;
             color: #2b6cb0;
@@ -155,6 +148,19 @@
         }
         .clock-text .countdown {
             display: none !important;
+        }
+
+        /* Дата + день недели (над цифровыми часами) */
+        .clock-date-row {
+            font-size: 9px;
+            color: #4a5568;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 1px;
+        }
+        .clock-date-row .day-name {
+            color: #2b6cb0;
+            font-weight: 700;
         }
 
         /* ============================
@@ -485,7 +491,7 @@
                 width: 28px;
                 height: 28px;
             }
-            .clock-text .date {
+            .clock-date-row {
                 font-size: 8px;
             }
             .clock-text .digital-time {
@@ -532,7 +538,7 @@
             .clock-text .digital-time {
                 font-size: 13px;
             }
-            .clock-text .date {
+            .clock-date-row {
                 font-size: 7px;
             }
             .clock-wrapper svg {
@@ -655,7 +661,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.5';
+        var APP_VERSION = '4.3.6';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -697,7 +703,7 @@
         }
 
         // ================================================================
-        // ЧАСЫ (аналоговые + цифровые на одной строке)
+        // ЧАСЫ (дата + день недели над цифровыми часами)
         // ================================================================
         function initRotatedClock(containerId) {
             var container = document.getElementById(containerId);
@@ -706,6 +712,13 @@
 
             var wrapper = document.createElement('div');
             wrapper.className = 'clock-wrapper';
+
+            // Строка с датой и днём недели (над цифровыми часами)
+            var dateRow = document.createElement('div');
+            dateRow.className = 'clock-date-row';
+            dateRow.id = 'clock-date-row';
+            dateRow.textContent = '09 сен 2026 · СР';
+            wrapper.appendChild(dateRow);
 
             // Верхняя строка: аналоговые часы + цифровое время
             var topRow = document.createElement('div');
@@ -794,17 +807,6 @@
             topRow.appendChild(textBlock);
             wrapper.appendChild(topRow);
 
-            // Нижняя строка: дата
-            var dateSpan = document.createElement('span');
-            dateSpan.className = 'date';
-            dateSpan.id = 'clock-date';
-            dateSpan.textContent = new Date().toLocaleDateString('ru-RU', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            });
-            wrapper.appendChild(dateSpan);
-
             container.appendChild(wrapper);
 
             function updateClock() {
@@ -835,13 +837,15 @@
                     });
                 }
 
-                var dateEl = document.getElementById('clock-date');
-                if (dateEl) {
-                    dateEl.textContent = now.toLocaleDateString('ru-RU', {
+                var dateRowEl = document.getElementById('clock-date-row');
+                if (dateRowEl) {
+                    var days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+                    var dayName = days[now.getDay()];
+                    dateRowEl.textContent = now.toLocaleDateString('ru-RU', {
                         day: '2-digit',
                         month: 'short',
                         year: 'numeric'
-                    });
+                    }) + ' · ' + dayName;
                 }
             }
 
