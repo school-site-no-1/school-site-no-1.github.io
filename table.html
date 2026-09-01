@@ -1588,6 +1588,12 @@
             .desktop-table { display: table !important; }
         }
         /* Отдельная широкоформатная версия: полная таблица на любом экране. */
+        .wide-table-page *,
+        .wide-table-page *::before,
+        .wide-table-page *::after {
+            animation: none !important;
+            transition: none !important;
+        }
         .wide-table-page .clock-text .day {
             display: none !important;
         }
@@ -1603,6 +1609,8 @@
         }
         .wide-table-page .table-wrapper {
             width: 100%;
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-x: auto !important;
             overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
@@ -1611,11 +1619,15 @@
             display: table !important;
             width: 100% !important;
             min-width: 960px;
-            height: auto !important;
+            height: 100% !important;
             table-layout: fixed;
         }
-        .wide-table-page .desktop-table thead,
-        .wide-table-page .desktop-table tbody,
+        .wide-table-page .desktop-table thead {
+            height: auto !important;
+        }
+        .wide-table-page .desktop-table tbody {
+            height: auto !important;
+        }
         .wide-table-page .desktop-table tr {
             height: auto !important;
         }
