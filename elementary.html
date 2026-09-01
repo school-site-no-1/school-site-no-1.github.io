@@ -61,22 +61,24 @@
         }
         .header-right {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
         }
         .header-right .version {
             color: #66bb6a;
-            font-size: 0.8em;
+            font-size: 0.7em;
             font-weight: 500;
             background: #e8f5e9;
-            padding: 4px 12px;
+            padding: 2px 12px;
             border-radius: 12px;
+            order: 3;
         }
         .header-right .current-date {
             color: #2e7d32;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 500;
+            order: 1;
         }
         .header-right .day-label {
             background: #2e7d32;
@@ -86,17 +88,28 @@
             font-size: 0.95em;
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
+            order: 0;
+        }
+        .header-right .change-label {
+            color: #e65100;
+            font-size: 0.8em;
+            font-weight: 600;
+            background: #fff3e0;
+            padding: 2px 14px;
+            border-radius: 12px;
+            border: 1px solid #ffcc80;
+            order: 2;
         }
 
         /* ===== СЕТКА РАСПИСАНИЯ ===== */
         .schedule-grid {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 24px;
         }
         .schedule-row {
             display: flex;
-            gap: 16px;
+            gap: 20px;
         }
         .schedule-block {
             flex: 1;
@@ -239,7 +252,7 @@
                 flex-wrap: wrap;
             }
             .schedule-block {
-                flex: 0 0 calc(50% - 8px);
+                flex: 0 0 calc(50% - 10px);
             }
         }
         @media (max-width: 768px) {
@@ -255,8 +268,7 @@
                 justify-content: center;
             }
             .header-right {
-                justify-content: center;
-                flex-wrap: wrap;
+                align-items: center;
             }
             .container {
                 padding: 16px;
@@ -268,6 +280,12 @@
             .header-right .day-label {
                 font-size: 0.85em;
                 padding: 4px 14px;
+            }
+            .schedule-row {
+                gap: 16px;
+            }
+            .schedule-grid {
+                gap: 18px;
             }
         }
         @media (max-width: 480px) {
@@ -299,6 +317,12 @@
                 font-size: 0.7em;
                 width: 40px;
             }
+            .schedule-row {
+                gap: 12px;
+            }
+            .schedule-grid {
+                gap: 14px;
+            }
         }
     </style>
 </head>
@@ -312,6 +336,7 @@
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
+                <span class="change-label" id="changeLabel">Изменения на завтра</span>
                 <span class="version" id="versionBadge">v1.3.0</span>
             </div>
         </div>
@@ -353,28 +378,52 @@
         var state = {
             data: null,
             currentDay: null,
-            loaded: false
+            displayDay: null,
+            loaded: false,
+            isNextDay: false
         };
 
         // ================================================================
-        // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ
+        // ОПРЕДЕЛЕНИЕ ТЕКУЩЕГО ДНЯ И ДНЯ ДЛЯ ПОКАЗА
         // ================================================================
         function getCurrentDay() {
             var now = new Date();
             var dayNum = now.getDay();
             if (dayNum === 0) dayNum = 7;
-            var dayKey = CONFIG.DAYS[dayNum - 1] || 'ПН';
+            return CONFIG.DAYS[dayNum - 1] || 'ПН';
+        }
 
-            if (state.data && state.data[dayKey]) {
+        function getNextDay(day) {
+            var index = CONFIG.DAYS.indexOf(day);
+            if (index === -1) return 'ПН';
+            var nextIndex = (index + 1) % CONFIG.DAYS.length;
+            return CONFIG.DAYS[nextIndex];
+        }
+
+        function getDisplayDay() {
+            var now = new Date();
+            var hours = now.getHours();
+            var dayKey = getCurrentDay();
+
+            // После 16:00 показываем следующий день
+            if (hours >= 16) {
+                var nextDay = getNextDay(dayKey);
+                // Проверяем, есть ли данные на следующий день
+                if (state.data && state.data[nextDay]) {
+                    state.isNextDay = true;
+                    return nextDay;
+                }
+                // Если данных на следующий день нет, показываем текущий
+                state.isNextDay = false;
                 return dayKey;
             }
 
-            for (var i = 0; i < CONFIG.DAYS.length; i++) {
-                if (state.data && state.data[CONFIG.DAYS[i]]) {
-                    return CONFIG.DAYS[i];
-                }
-            }
-            return 'ПН';
+            state.isNextDay = false;
+            return dayKey;
+        }
+
+        function getDisplayDayFull(dayKey) {
+            return CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] || dayKey;
         }
 
         // ================================================================
@@ -432,15 +481,12 @@
         // ИЗВЛЕЧЕНИЕ ДАННЫХ НАЧАЛЬНОЙ ШКОЛЫ ИЗ JSON
         // ================================================================
         function extractElementaryData(data) {
-            // Проверяем структуру schedule.elementary
             if (data.schedule && data.schedule.elementary) {
                 return data.schedule.elementary;
             }
-            // Проверяем прямой ключ elementary
             if (data.elementary) {
                 return data.elementary;
             }
-            // Если данные уже в формате {ПН: {...}, ВТ: {...}}
             var days = CONFIG.DAYS;
             for (var i = 0; i < days.length; i++) {
                 if (data[days[i]]) {
@@ -476,7 +522,6 @@
             gridEl.style.display = 'none';
             errorEl.style.display = 'none';
 
-            // Пытаемся загрузить data_elementary.json
             fetch('data_elementary.json')
                 .then(function(response) {
                     if (!response.ok) {
@@ -493,6 +538,8 @@
                     state.data = convertFullData(rawData);
                     state.loaded = true;
                     state.currentDay = getCurrentDay();
+                    state.displayDay = getDisplayDay();
+
                     loadingEl.style.display = 'none';
                     gridEl.style.display = 'block';
 
@@ -515,20 +562,33 @@
         }
 
         function renderHeader() {
-            var dayKey = state.currentDay;
-            var dayFull = CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] || dayKey;
-            document.getElementById('dayLabel').textContent = '📅 ' + dayFull + ' (' + dayKey + ')';
+            var dayKey = state.displayDay || state.currentDay;
+            var dayFull = getDisplayDayFull(dayKey);
+
+            // День недели
+            var dayLabelEl = document.getElementById('dayLabel');
+            dayLabelEl.textContent = '📅 ' + dayFull + ' (' + dayKey + ')';
+
+            // Изменения на следующий день
+            var changeLabelEl = document.getElementById('changeLabel');
+            if (state.isNextDay) {
+                var nextDayFull = getDisplayDayFull(dayKey);
+                changeLabelEl.textContent = '🔸 Изменения на ' + nextDayFull.toLowerCase();
+                changeLabelEl.style.display = 'inline-block';
+            } else {
+                changeLabelEl.style.display = 'none';
+            }
         }
 
         function renderSchedule() {
             var container = document.getElementById('scheduleGrid');
-            var dayKey = state.currentDay;
+            var dayKey = state.displayDay || state.currentDay;
             var dayData = state.data[dayKey];
 
             if (!dayData) {
                 container.innerHTML =
                     '<div style="text-align:center;padding:40px 0;color:#a5d6a7;font-size:1.1em;">🌱 Нет данных для ' +
-                    CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] + '</div>';
+                    getDisplayDayFull(dayKey) + '</div>';
                 return;
             }
 
@@ -572,12 +632,28 @@
         }
 
         // ================================================================
+        // ПРОВЕРКА СМЕНЫ ДНЯ (каждые 30 секунд)
+        // ================================================================
+        function checkDayChange() {
+            if (!state.data || !state.loaded) return;
+
+            var newDisplayDay = getDisplayDay();
+            if (newDisplayDay !== state.displayDay) {
+                state.displayDay = newDisplayDay;
+                renderAll();
+            }
+        }
+
+        // ================================================================
         // ИНИЦИАЛИЗАЦИЯ
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             updateDate();
             document.getElementById('versionBadge').textContent = 'v' + APP_VERSION;
             loadData();
+
+            // Проверяем смену дня каждые 30 секунд
+            setInterval(checkDayChange, 30000);
         });
     </script>
 
