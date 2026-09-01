@@ -1,25 +1,10 @@
 {
   "teachers": [
     {
-      "id": "abramenko_v_a",
-      "name": "Абраменко Валентина Александровна",
-      "scheduleFile": "abramenko_v_a.json"
-    },
-    {
-      "id": "lukyantseva_n_e",
-      "name": "Лукянцева Наталья Евгеньевна",
-      "scheduleFile": "lukyantseva_n_e.json"
-    },
-    {
-      "id": "zhigulina_s_a",
-      "name": "Жигулина Светлана Анатольевна",
-      "scheduleFile": "zhigulina_s_a.json"
-    },
-    {
-      "id": "zueva_l_n",
-      "name": "Зуева Любовь Николаевна",
-      "scheduleFile": "zueva_l_n.json"
+      "id": "mihalitsyn",
+      "name": "Михалицын",
+      "scheduleFile": "mihalitsyn.json"
     }
   ],
-  "last_update": "2026-09-01 10:14:56"
+  "last_update": "2026-09-01 12:21:31"
 }
