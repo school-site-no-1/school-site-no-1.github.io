@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.3">
+<html lang="ru" data-version="v4.3.4">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +48,7 @@
         }
 
         /* ============================
-           ШАПКА
+           ШАПКА (БЕЗ ДНЯ НЕДЕЛИ)
            ============================ */
         .header {
             display: flex;
@@ -74,18 +74,10 @@
         .header-center {
             display: flex !important;
             align-items: center;
-            gap: 8px;
             flex: 1 1 auto;
         }
         .header-center .day-indicator {
-            display: block !important;
-            color: #fff;
-            font-weight: 600;
-            background: #2b6cb0;
-            padding: 2px 14px;
-            border-radius: 16px;
-            font-size: 14px;
-            white-space: nowrap;
+            display: none !important;
         }
         .header-center .divider {
             display: none !important;
@@ -98,15 +90,15 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 13px;
+            font-size: 15px;
             line-height: 1.3;
         }
         .period .line1 {
-            font-size: 13px;
+            font-size: 15px;
             display: block;
         }
         .period .line2 {
-            font-size: 12px;
+            font-size: 13px;
             display: block;
             font-weight: 500;
             color: #d45c00;
@@ -120,21 +112,9 @@
             gap: 2px;
             flex-shrink: 0;
         }
-        .header-right .schedule-updated {
-            color: #718096;
-            font-weight: 500;
-            background: #edf2f7;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-        }
-        .header-right .schedule-updated.error {
-            color: #e53e3e;
-            background: #fff5f5;
-        }
 
         /* ============================
-           ЧАСЫ (цифровые на следующей строке)
+           ЧАСЫ (только цифровые, на отдельной строке)
            ============================ */
         .clock-wrapper {
             display: flex;
@@ -143,9 +123,7 @@
             gap: 0px;
         }
         .clock-wrapper svg {
-            width: 36px;
-            height: 36px;
-            display: none !important; /* скрываем аналоговые часы */
+            display: none !important;
         }
         .clock-text {
             display: flex;
@@ -163,7 +141,7 @@
             line-height: 1.2;
         }
         .clock-text .digital-time {
-            font-size: 18px;
+            font-size: 20px;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
@@ -488,15 +466,11 @@
                 padding: 4px;
                 border-radius: 8px;
             }
-            .header-center .day-indicator {
-                font-size: 12px;
-                padding: 2px 10px;
-            }
             .period {
-                font-size: 12px;
+                font-size: 13px;
             }
             .period .line1 {
-                font-size: 12px;
+                font-size: 13px;
             }
             .period .line2 {
                 font-size: 11px;
@@ -505,7 +479,7 @@
                 font-size: 8px;
             }
             .clock-text .digital-time {
-                font-size: 15px;
+                font-size: 17px;
             }
             .mobile-class-header {
                 font-size: 13px !important;
@@ -546,7 +520,7 @@
 
         @media (max-width: 350px) {
             .clock-text .digital-time {
-                font-size: 13px;
+                font-size: 15px;
             }
             .clock-text .date {
                 font-size: 7px;
@@ -667,7 +641,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.3';
+        var APP_VERSION = '4.3.4';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -1108,7 +1082,6 @@
 
             var targetDay = getTargetDay();
             var dayKey = targetDay.key;
-            var displayDay = getDisplayDay();
 
             var currentLesson = 0;
             var info = getCurrentPeriodInfo();
@@ -1119,9 +1092,6 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
-            // Убираем "Завтра, " из плашки
-            var dayDisplay = displayDay.full;
-            document.getElementById('dayIndicator').textContent = dayDisplay;
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
 
             var dayData = weekDays[dayKey];
