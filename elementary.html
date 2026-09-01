@@ -97,18 +97,11 @@
         .filter-container {
             display: none;
             margin-bottom: 20px;
-            padding: 12px 16px;
+            padding: 8px 12px;
             background: #f1f8e9;
             border-radius: 12px;
             border: 1px solid #c8e6c9;
             position: relative;
-        }
-        .filter-container label {
-            font-weight: 600;
-            color: #2e7d32;
-            font-size: 0.9em;
-            display: block;
-            margin-bottom: 8px;
         }
         .filter-select-wrapper {
             position: relative;
@@ -441,7 +434,7 @@
                 gap: 25px;
             }
             .filter-container {
-                padding: 10px 12px;
+                padding: 6px 10px;
             }
             .filter-select-wrapper select {
                 font-size: 0.85em;
@@ -468,10 +461,9 @@
 
         <!-- Фильтр для мобильных устройств (выпадающий список с отдельными классами) -->
         <div class="filter-container" id="filterContainer">
-            <label for="classFilter">📚 Фильтр по классам:</label>
             <div class="filter-select-wrapper">
                 <select id="classFilter">
-                    <option value="all">Все классы</option>
+                    <option value="all">📚 Все классы</option>
                     <option value="1А">1А</option>
                     <option value="1Б">1Б</option>
                     <option value="1В">1В</option>
@@ -503,7 +495,7 @@
         </div>
 
         <div class="footer">
-            <span class="version" id="versionBadge">v1.8.0</span>
+            <span class="version" id="versionBadge">v1.9.0</span>
         </div>
     </div>
 
@@ -511,7 +503,7 @@
         // ================================================================
         // ВЕРСИЯ
         // ================================================================
-        var APP_VERSION = '1.8.0';
+        var APP_VERSION = '1.9.0';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
