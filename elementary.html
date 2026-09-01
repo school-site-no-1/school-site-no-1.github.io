@@ -27,7 +27,7 @@
             background: #ffffff;
             border-radius: 20px;
             border: 1px solid #a5d6a7;
-            padding: 24px;
+            padding: 32px 24px;
             box-shadow: 0 8px 32px rgba(46, 125, 50, 0.12);
             display: flex;
             flex-direction: column;
@@ -38,24 +38,34 @@
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             flex-wrap: wrap;
             gap: 12px;
             padding-bottom: 16px;
             border-bottom: 3px solid #66bb6a;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
         }
         .header-left {
             display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 8px;
         }
         .header-left h1 {
             font-size: 1.9em;
             color: #1b5e20;
             font-weight: 700;
             letter-spacing: -0.5px;
+        }
+        .header-left .change-label {
+            color: #e65100;
+            font-size: 0.9em;
+            font-weight: 600;
+            background: #fff3e0;
+            padding: 4px 16px;
+            border-radius: 12px;
+            border: 1px solid #ffcc80;
+            display: inline-block;
+            width: fit-content;
         }
         .header-right {
             display: flex;
@@ -79,18 +89,6 @@
             box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
             order: 0;
         }
-        .header-right .change-label {
-            color: #e65100;
-            font-size: 0.8em;
-            font-weight: 600;
-            background: #fff3e0;
-            padding: 2px 14px;
-            border-radius: 12px;
-            border: 1px solid #ffcc80;
-            order: 2;
-            text-align: center;
-            width: 100%;
-        }
 
         /* ===== СЕТКА РАСПИСАНИЯ ===== */
         .schedule-grid {
@@ -98,6 +96,7 @@
             flex-direction: column;
             gap: 40px;
             flex: 1;
+            padding: 8px 0;
         }
         .schedule-row {
             display: flex;
@@ -164,23 +163,14 @@
 
         /* ===== ПОДВАЛ ===== */
         .footer {
-            margin-top: 24px;
+            margin-top: 28px;
             padding-top: 16px;
             border-top: 2px solid #e8f5e9;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
-        }
-        .footer .badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            border: 1px solid #81c784;
         }
         .footer .version {
             color: #66bb6a;
@@ -285,18 +275,21 @@
             }
             .header {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
                 text-align: center;
             }
             .header-left {
-                justify-content: center;
+                align-items: center;
+            }
+            .header-left .change-label {
+                width: 100%;
+                text-align: center;
             }
             .header-right {
                 align-items: center;
             }
             .container {
-                padding: 16px;
-                border-radius: 14px;
+                padding: 24px 16px;
             }
             .header-left h1 {
                 font-size: 1.4em;
@@ -312,10 +305,7 @@
                 gap: 30px;
             }
             .footer {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 8px;
+                justify-content: center;
             }
         }
         @media (max-width: 480px) {
@@ -323,7 +313,7 @@
                 padding: 10px;
             }
             .container {
-                padding: 12px;
+                padding: 20px 12px;
             }
             .schedule-block {
                 border-radius: 10px;
@@ -361,11 +351,11 @@
         <div class="header">
             <div class="header-left">
                 <h1>🌱 Расписание начальной школы</h1>
+                <span class="change-label" id="changeLabel">Изменения на среду</span>
             </div>
             <div class="header-right">
                 <span class="day-label" id="dayLabel">Загрузка...</span>
                 <span class="current-date" id="currentDate"></span>
-                <span class="change-label" id="changeLabel">Изменения на завтра</span>
             </div>
         </div>
 
@@ -384,8 +374,7 @@
         </div>
 
         <div class="footer">
-            <span class="badge">1-4 классы</span>
-            <span class="version" id="versionBadge">v1.4.0</span>
+            <span class="version" id="versionBadge">v1.5.0</span>
         </div>
     </div>
 
@@ -393,7 +382,7 @@
         // ================================================================
         // ВЕРСИЯ
         // ================================================================
-        var APP_VERSION = '1.4.0';
+        var APP_VERSION = '1.5.0';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
@@ -401,6 +390,7 @@
         var CONFIG = {
             DAYS: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'],
             DAYS_RU: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+            DAYS_RU_GENITIVE: ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу'],
             CLASSES: ['1А', '1Б', '1В', '2А', '2Б', '2В', '3А', '3Б', '3В', '4А', '4Б', '4В'],
             MAX_LESSONS: 6
         };
@@ -457,6 +447,12 @@
 
         function getDisplayDayFull(dayKey) {
             return CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] || dayKey;
+        }
+
+        function getDayGenitive(dayKey) {
+            var index = CONFIG.DAYS.indexOf(dayKey);
+            if (index === -1) return 'среду';
+            return CONFIG.DAYS_RU_GENITIVE[index] || 'среду';
         }
 
         // ================================================================
@@ -595,23 +591,25 @@
         }
 
         function renderHeader() {
-            var dayKey = state.displayDay || state.currentDay;
+            var dayKey = state.currentDay;
+            var displayDayKey = state.displayDay || state.currentDay;
             var dayFull = getDisplayDayFull(dayKey);
 
-            // День недели
+            // День недели (всегда текущий)
             var dayLabelEl = document.getElementById('dayLabel');
             dayLabelEl.textContent = '📅 ' + dayFull + ' (' + dayKey + ')';
 
-            // Изменения на следующий день (по центру)
+            // Изменения на следующий день (под заголовком)
             var changeLabelEl = document.getElementById('changeLabel');
             if (state.isNextDay) {
-                var nextDayFull = getDisplayDayFull(dayKey);
-                changeLabelEl.textContent = '🔸 Изменения на ' + nextDayFull.toLowerCase();
-                changeLabelEl.style.display = 'block';
-                changeLabelEl.style.textAlign = 'center';
-                changeLabelEl.style.width = '100%';
+                var nextDayGenitive = getDayGenitive(displayDayKey);
+                changeLabelEl.textContent = '🔸 Изменения на ' + nextDayGenitive;
+                changeLabelEl.style.display = 'inline-block';
             } else {
-                changeLabelEl.style.display = 'none';
+                // Показываем текущий день в родительном падеже
+                var todayGenitive = getDayGenitive(dayKey);
+                changeLabelEl.textContent = '📖 Расписание на ' + todayGenitive;
+                changeLabelEl.style.display = 'inline-block';
             }
         }
 
