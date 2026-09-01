@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.0">
+<html lang="ru" data-version="v4.3.2">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расписание 5-11 (Мобильная версия)</title>
+    <title>Расписание 5-11</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2b6cb0">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     <style>
         /* ============================
-           СТИЛИ МОБИЛЬНОЙ ВЕРСИИ (ИЗ ВАШЕГО ФАЙЛА)
+           БАЗОВЫЕ СТИЛИ
            ============================ */
         * {
             margin: 0;
@@ -38,8 +38,8 @@
             min-height: calc(100vh - 8px);
             height: calc(100dvh - 8px);
             min-height: calc(100dvh - 8px);
-            padding: 6px;
-            border-radius: 10px;
+            padding: 8px;
+            border-radius: 12px;
             background: #ffffff;
             display: flex;
             flex-direction: column;
@@ -48,104 +48,92 @@
         }
 
         /* ============================
-           ШАПКА (из мобильной версии)
+           ШАПКА (БЕЗ БАННЕРА)
            ============================ */
         .header {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            grid-template-areas: "mobile-left mobile-right";
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            column-gap: 6px;
-            flex-wrap: nowrap;
-            min-height: 38px;
             padding-bottom: 8px;
             border-bottom: 2px solid #e2e8f0;
+            flex-wrap: nowrap;
+            gap: 8px;
+            min-height: 44px;
         }
+        
+        /* Баннер полностью скрыт */
         .header-left {
-            grid-area: mobile-left;
-            display: flex !important;
-            width: auto !important;
-            max-width: 100%;
-            flex: 1 1 auto !important;
-            justify-content: flex-start !important;
+            display: none !important;
         }
         .header-banner {
-            width: 100% !important;
-            max-width: 100% !important;
-            flex: 1 1 auto !important;
-            justify-content: flex-start !important;
-            height: 36px;
-            min-height: 36px;
-            max-height: 36px;
-            border: 1px solid #e2e8f0;
-            border-radius: 0;
-            background: #f7fafc;
-            display: flex;
-            align-items: center;
-            padding: 0 6px;
-            overflow: hidden;
-        }
-        .header-banner img {
             display: none !important;
         }
         .mobile-banner-text {
-            display: block !important;
-            color: #c05621;
-            font-size: 0.8rem;
-            font-weight: 700;
-            line-height: 1.1;
-            white-space: nowrap;
-        }
-
-        .header-center {
             display: none !important;
         }
 
-        .header-right {
-            grid-area: mobile-right;
+        .header-center {
             display: flex !important;
-            width: auto !important;
-            flex: 0 0 auto !important;
-            margin: 0 !important;
-            align-items: flex-end !important;
-            justify-content: flex-end !important;
-            text-align: right !important;
-            flex-direction: column;
-            gap: 1px;
+            align-items: center;
+            gap: 8px;
+            flex: 1 1 auto;
         }
-        .header-right .schedule-updated {
-            color: #718096;
-            font-weight: 500;
-            background: #edf2f7;
-            padding: 0 8px;
-            border-radius: 10px;
-            font-size: 11.5px;
-            margin-top: 2px;
+        .header-center .day-indicator {
+            display: block !important;
+            color: #fff;
+            font-weight: 600;
+            background: #2b6cb0;
+            padding: 2px 14px;
+            border-radius: 16px;
+            font-size: 14px;
+            white-space: nowrap;
         }
-        .header-right .schedule-updated.error {
-            color: #e53e3e;
-            background: #fff5f5;
+        .header-center .divider {
+            color: #e2e8f0;
+            font-weight: 300;
+            display: none !important;
         }
 
         .period {
             color: #e65100;
             font-weight: 600;
-            min-height: 1.5em;
+            min-height: 1.6em;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-            font-size: 13.5px;
+            align-items: flex-start;
+            font-size: 13px;
+            line-height: 1.3;
         }
         .period .line1 {
-            font-size: 13.5px;
+            font-size: 13px;
             display: block;
         }
         .period .line2 {
-            font-size: 12.5px;
+            font-size: 12px;
             display: block;
             font-weight: 500;
             color: #d45c00;
+        }
+
+        .header-right {
+            text-align: right;
+            display: flex !important;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .header-right .schedule-updated {
+            color: #718096;
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+        }
+        .header-right .schedule-updated.error {
+            color: #e53e3e;
+            background: #fff5f5;
         }
 
         .clock-wrapper {
@@ -155,25 +143,26 @@
             gap: 8px;
         }
         .clock-wrapper svg {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
         }
         .clock-text .day {
             display: none !important;
         }
         .clock-text .date {
-            font-size: 0.6em;
+            font-size: 0.55em;
             color: #2d3748;
             font-weight: 600;
+            line-height: 1.2;
         }
         .clock-text .digital-time {
-            font-size: 0.53em;
+            font-size: 0.55em;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
+            line-height: 1.2;
         }
         .clock-text .countdown {
-            font-size: 0.48em;
             display: none !important;
         }
 
@@ -185,7 +174,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            padding: 8px 10px;
+            padding: 6px 12px;
             margin: 0 0 6px;
             border: 1px solid #d0d7e0;
             border-radius: 8px;
@@ -193,20 +182,23 @@
             color: #1a365d;
             font-size: 14px;
             font-weight: 700;
+            flex-shrink: 0;
         }
         .mobile-controls label {
             min-width: 0;
+            font-size: 14px;
         }
         .mobile-controls select {
             flex: 1 1 auto;
             min-width: 0;
-            min-height: 38px;
-            padding: 6px 9px;
+            min-height: 36px;
+            padding: 6px 10px;
             border: 1px solid #2b6cb0;
             border-radius: 6px;
             background: #ffffff;
             color: #1a365d;
             font: inherit;
+            font-size: 14px;
         }
         .mobile-controls select:focus-visible {
             outline: 3px solid #f6ad55;
@@ -219,14 +211,14 @@
         .mobile-view {
             display: flex !important;
             flex-direction: column;
-            gap: 3px;
+            gap: 4px;
             padding: 2px 0;
             overflow-y: auto;
             height: 100%;
         }
         .mobile-class-card {
             background: #ffffff;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
             flex-shrink: 0;
@@ -239,20 +231,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 4px 10px !important;
-            font-size: 14px !important;
-            min-height: 22px !important;
-            height: 22px !important;
+            padding: 6px 12px !important;
+            font-size: 15px !important;
+            min-height: 28px !important;
+            height: auto !important;
+            line-height: 1.4 !important;
         }
         .mobile-lesson-card {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
             border-bottom: 1px solid #f0f4f8;
-            padding: 3px 8px !important;
-            min-height: 20px !important;
-            height: 20px !important;
-            transition: all 0.2s;
+            padding: 6px 10px !important;
+            min-height: 32px !important;
+            height: auto !important;
         }
         .mobile-lesson-card:last-child {
             border-bottom: none;
@@ -265,8 +257,8 @@
             color: #4a5568;
             text-align: center;
             flex-shrink: 0;
-            font-size: 12px !important;
-            min-width: 22px !important;
+            font-size: 13px !important;
+            min-width: 24px !important;
         }
         .mobile-lesson-card.current .lesson-num-mobile {
             color: #2b6cb0;
@@ -275,7 +267,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 0px !important;
+            gap: 3px !important;
             min-width: 0;
         }
         .mobile-lesson-card .lesson-info .subject-name {
@@ -284,8 +276,8 @@
             word-wrap: break-word;
             word-break: break-word;
             white-space: normal;
-            font-size: 12px !important;
-            line-height: 1.1 !important;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
         }
         .mobile-lesson-card .lesson-info .subject-name.empty {
             color: #a0aec0;
@@ -294,8 +286,9 @@
         .mobile-lesson-card .lesson-info .room-name {
             font-weight: 700;
             color: #e65100;
-            font-size: 10px !important;
-            line-height: 1 !important;
+            font-size: 11px !important;
+            line-height: 1.3 !important;
+            margin-top: 1px !important;
         }
         .mobile-lesson-card .lesson-time {
             color: #718096;
@@ -303,6 +296,7 @@
             text-align: right;
             flex-shrink: 0;
             font-size: 10px !important;
+            line-height: 1.3 !important;
         }
         .mobile-lesson-card.current .lesson-time {
             color: #2b6cb0;
@@ -314,12 +308,12 @@
            ============================ */
         .footer {
             flex-shrink: 0;
-            margin-top: 2px;
+            margin-top: 4px;
             color: #a0aec0;
             text-align: center;
             border-top: 1px solid #e2e8f0;
-            padding-top: 2px;
-            font-size: 12.5px;
+            padding-top: 4px;
+            font-size: 12px;
         }
         .footer .version {
             font-weight: 600;
@@ -362,7 +356,7 @@
             border-radius: 4px;
             background: #ffffff;
             color: #1a365d;
-            padding: 2px 6px;
+            padding: 2px 8px;
             font: inherit;
             cursor: pointer;
             font-size: 10px;
@@ -480,105 +474,70 @@
         }
 
         /* ============================
-           АДАПТИВНОСТЬ (для очень маленьких экранов)
+           АДАПТИВНОСТЬ
            ============================ */
         @media (max-width: 400px) {
             .container {
                 padding: 4px;
                 border-radius: 8px;
             }
-            .header-banner {
-                height: 32px;
-                min-height: 32px;
-                max-height: 32px;
-            }
-            .mobile-banner-text {
-                font-size: 0.7rem;
-            }
-            .header-right .schedule-updated {
-                font-size: 9.5px;
+            .header-center .day-indicator {
+                font-size: 12px;
+                padding: 2px 10px;
             }
             .period {
-                font-size: 11.5px;
-                min-height: 1.3em;
+                font-size: 12px;
             }
             .period .line1 {
-                font-size: 11.5px;
+                font-size: 12px;
             }
             .period .line2 {
-                font-size: 10.5px;
-            }
-            .footer {
-                font-size: 10.5px;
+                font-size: 11px;
             }
             .clock-wrapper svg {
-                width: 32px;
-                height: 32px;
+                width: 34px;
+                height: 34px;
             }
             .clock-text .date {
                 font-size: 0.5em;
             }
             .clock-text .digital-time {
-                font-size: 0.7em;
+                font-size: 0.5em;
             }
             .mobile-class-header {
-                padding: 2px 6px !important;
-                font-size: 11px !important;
-                min-height: 15px !important;
-                height: 15px !important;
+                font-size: 13px !important;
+                padding: 4px 10px !important;
+                min-height: 24px !important;
             }
             .mobile-lesson-card {
-                padding: 2px 4px !important;
-                min-height: 14px !important;
-                height: 14px !important;
-                gap: 2px;
+                padding: 4px 8px !important;
+                min-height: 28px !important;
+                gap: 6px;
             }
             .mobile-lesson-card .lesson-num-mobile {
-                font-size: 9px !important;
-                min-width: 15px !important;
+                font-size: 11px !important;
+                min-width: 20px !important;
             }
             .mobile-lesson-card .lesson-info .subject-name {
-                font-size: 9px !important;
+                font-size: 11px !important;
             }
             .mobile-lesson-card .lesson-info .room-name {
-                font-size: 7px !important;
+                font-size: 9px !important;
             }
             .mobile-lesson-card .lesson-time {
-                font-size: 7px !important;
+                font-size: 8px !important;
             }
             .mobile-controls {
-                padding: 4px 6px;
-                font-size: 11px;
+                padding: 4px 8px;
+                font-size: 12px;
             }
             .mobile-controls select {
+                font-size: 12px;
                 min-height: 30px;
                 padding: 4px 6px;
-                font-size: 11px;
             }
-        }
-
-        @media (max-width: 350px) {
-            .mobile-banner-text {
-                font-size: 0.6rem;
-            }
-            .period .line1 {
+            .footer {
                 font-size: 10px;
-            }
-            .period .line2 {
-                font-size: 9px;
-            }
-            .header-right .schedule-updated {
-                font-size: 8px;
-            }
-            .clock-wrapper svg {
-                width: 28px;
-                height: 28px;
-            }
-            .clock-text .date {
-                font-size: 0.4em;
-            }
-            .clock-text .digital-time {
-                font-size: 0.6em;
             }
         }
 
@@ -587,7 +546,6 @@
            ============================ */
         @media print {
             .no-print { display: none !important; }
-            .header-banner { border: none !important; background: none !important; }
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
         }
@@ -596,19 +554,15 @@
 <body>
     <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
     <div class="container">
-        <!-- ===== ШАПКА ===== -->
+        <!-- ===== ШАПКА (БЕЗ БАННЕРА) ===== -->
         <header class="header">
             <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
-            <div class="header-left">
-                <div class="header-banner" id="headerBanner">
-                    <img id="bannerImage" src="banner.png?v=20260901-2" alt="Баннер школьного расписания">
-                    <span class="mobile-banner-text" id="mobileBannerText">Изменения на понедельник</span>
-                </div>
-            </div>
+            
+            <!-- Баннер скрыт -->
+            <div class="header-left" style="display:none !important;"></div>
 
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
-                <span class="divider">|</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
             </div>
 
@@ -702,7 +656,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.0';
+        var APP_VERSION = '4.3.2';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -756,8 +710,8 @@
 
             var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('viewBox', '0 0 100 100');
-            svg.setAttribute('width', '40');
-            svg.setAttribute('height', '40');
+            svg.setAttribute('width', '42');
+            svg.setAttribute('height', '42');
 
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.setAttribute('transform', 'rotate(0, 50, 50)');
@@ -1259,7 +1213,6 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
-            // Показываем день
             var dayDisplay = displayDay.full;
             if (displayDay.isTomorrow) {
                 dayDisplay = 'Завтра, ' + dayDisplay;
