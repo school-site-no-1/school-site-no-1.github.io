@@ -89,6 +89,9 @@
             box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);
             order: 0;
         }
+        .header-right .day-label .day-short {
+            display: none;
+        }
 
         /* ===== ФИЛЬТР (только для мобильных) ===== */
         .filter-container {
@@ -98,6 +101,7 @@
             background: #f1f8e9;
             border-radius: 12px;
             border: 1px solid #c8e6c9;
+            position: relative;
         }
         .filter-container label {
             font-weight: 600;
@@ -106,38 +110,41 @@
             display: block;
             margin-bottom: 8px;
         }
-        .filter-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .filter-select-wrapper {
+            position: relative;
         }
-        .filter-btn {
-            padding: 4px 12px;
-            border: 2px solid #a5d6a7;
-            border-radius: 20px;
-            background: #ffffff;
-            color: #2e7d32;
-            font-size: 0.8em;
+        .filter-select-wrapper select {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 0.95em;
             font-weight: 600;
+            color: #2e7d32;
+            background: #ffffff;
+            border: 2px solid #a5d6a7;
+            border-radius: 12px;
+            appearance: none;
+            -webkit-appearance: none;
             cursor: pointer;
             transition: all 0.2s ease;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
         }
-        .filter-btn:hover {
-            background: #e8f5e9;
-        }
-        .filter-btn.active {
-            background: #2e7d32;
-            color: #ffffff;
-            border-color: #2e7d32;
-        }
-        .filter-btn.all-btn {
+        .filter-select-wrapper select:hover {
             border-color: #66bb6a;
-            background: #e8f5e9;
         }
-        .filter-btn.all-btn.active {
-            background: #1b5e20;
-            border-color: #1b5e20;
-            color: #ffffff;
+        .filter-select-wrapper select:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+        }
+        .filter-select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2e7d32;
+            font-size: 0.7em;
+            pointer-events: none;
         }
 
         /* ===== СЕТКА РАСПИСАНИЯ ===== */
@@ -160,6 +167,10 @@
             min-width: 0;
             background: #ffffff;
             transition: box-shadow 0.2s ease;
+            margin-bottom: 10px;
+        }
+        .schedule-block:last-child {
+            margin-bottom: 0;
         }
         .schedule-block:hover {
             box-shadow: 0 4px 16px rgba(46, 125, 50, 0.10);
@@ -327,6 +338,7 @@
             }
             .schedule-block {
                 flex: 1;
+                margin-bottom: 10px;
             }
         }
 
@@ -374,6 +386,9 @@
                 font-size: 0.85em;
                 padding: 4px 14px;
             }
+            .header-right .day-label .day-short {
+                display: none;
+            }
             .schedule-row {
                 gap: 16px;
             }
@@ -383,6 +398,9 @@
             }
             .footer {
                 justify-content: center;
+            }
+            .schedule-block {
+                margin-bottom: 10px;
             }
         }
 
@@ -395,6 +413,7 @@
             }
             .schedule-block {
                 border-radius: 10px;
+                margin-bottom: 10px;
             }
             .class-header {
                 font-size: 0.85em;
@@ -424,9 +443,9 @@
             .filter-container {
                 padding: 10px 12px;
             }
-            .filter-btn {
-                font-size: 0.7em;
-                padding: 3px 10px;
+            .filter-select-wrapper select {
+                font-size: 0.85em;
+                padding: 8px 14px;
             }
         }
     </style>
@@ -439,20 +458,33 @@
                 <span class="change-label" id="changeLabel">Изменения на среду</span>
             </div>
             <div class="header-right">
-                <span class="day-label" id="dayLabel">Загрузка...</span>
+                <span class="day-label" id="dayLabel">
+                    <span class="day-full">Загрузка...</span>
+                    <span class="day-short"></span>
+                </span>
                 <span class="current-date" id="currentDate"></span>
             </div>
         </div>
 
-        <!-- Фильтр для мобильных устройств -->
+        <!-- Фильтр для мобильных устройств (выпадающий список с отдельными классами) -->
         <div class="filter-container" id="filterContainer">
-            <label>📚 Фильтр по классам:</label>
-            <div class="filter-buttons" id="filterButtons">
-                <button class="filter-btn all-btn active" data-class="all">Все</button>
-                <button class="filter-btn" data-class="1">1 классы</button>
-                <button class="filter-btn" data-class="2">2 классы</button>
-                <button class="filter-btn" data-class="3">3 классы</button>
-                <button class="filter-btn" data-class="4">4 классы</button>
+            <label for="classFilter">📚 Фильтр по классам:</label>
+            <div class="filter-select-wrapper">
+                <select id="classFilter">
+                    <option value="all">Все классы</option>
+                    <option value="1А">1А</option>
+                    <option value="1Б">1Б</option>
+                    <option value="1В">1В</option>
+                    <option value="2А">2А</option>
+                    <option value="2Б">2Б</option>
+                    <option value="2В">2В</option>
+                    <option value="3А">3А</option>
+                    <option value="3Б">3Б</option>
+                    <option value="3В">3В</option>
+                    <option value="4А">4А</option>
+                    <option value="4Б">4Б</option>
+                    <option value="4В">4В</option>
+                </select>
             </div>
         </div>
 
@@ -471,7 +503,7 @@
         </div>
 
         <div class="footer">
-            <span class="version" id="versionBadge">v1.6.0</span>
+            <span class="version" id="versionBadge">v1.8.0</span>
         </div>
     </div>
 
@@ -479,7 +511,7 @@
         // ================================================================
         // ВЕРСИЯ
         // ================================================================
-        var APP_VERSION = '1.6.0';
+        var APP_VERSION = '1.8.0';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
@@ -551,10 +583,6 @@
             var index = CONFIG.DAYS.indexOf(dayKey);
             if (index === -1) return 'среду';
             return CONFIG.DAYS_RU_GENITIVE[index] || 'среду';
-        }
-
-        function getClassNumber(className) {
-            return parseInt(className.charAt(0));
         }
 
         // ================================================================
@@ -690,7 +718,7 @@
             if (!state.data || !state.loaded) return;
             renderHeader();
             renderSchedule();
-            updateFilterButtons();
+            applyFilter();
         }
 
         function renderHeader() {
@@ -698,9 +726,12 @@
             var displayDayKey = state.displayDay || state.currentDay;
             var dayFull = getDisplayDayFull(dayKey);
 
-            // День недели (всегда текущий)
+            // День недели (всегда текущий) - без сокращения
             var dayLabelEl = document.getElementById('dayLabel');
-            dayLabelEl.textContent = '📅 ' + dayFull + ' (' + dayKey + ')';
+            var dayFullSpan = dayLabelEl.querySelector('.day-full');
+            var dayShortSpan = dayLabelEl.querySelector('.day-short');
+            dayFullSpan.textContent = '📅 ' + dayFull;
+            dayShortSpan.textContent = ''; // Убираем сокращение
 
             // Изменения на следующий день (под заголовком)
             var changeLabelEl = document.getElementById('changeLabel');
@@ -735,10 +766,8 @@
                 var rowHtml = '<div class="schedule-row">';
                 group.forEach(function(cls) {
                     var lessons = dayData[cls] || [];
-                    var classNum = getClassNumber(cls);
-                    var hidden = (state.filter !== 'all' && state.filter != classNum) ? ' hidden' : '';
                     
-                    var blockHtml = '<div class="schedule-block' + hidden + '" data-class="' + classNum + '">';
+                    var blockHtml = '<div class="schedule-block" data-class="' + cls + '">';
                     blockHtml += '<div class="class-header">' + cls + '</div>';
                     blockHtml += '<table class="lessons-table">';
                     for (var l = 1; l <= CONFIG.MAX_LESSONS; l++) {
@@ -762,6 +791,9 @@
                 html += rowHtml;
             }
             container.innerHTML = html;
+            
+            // Применяем фильтр после рендеринга
+            applyFilter();
         }
 
         function updateDate() {
@@ -771,35 +803,26 @@
         }
 
         // ================================================================
-        // ФИЛЬТР
+        // ФИЛЬТР (выпадающий список с отдельными классами)
         // ================================================================
-        function updateFilterButtons() {
-            var buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(function(btn) {
-                btn.classList.remove('active');
-                var classValue = btn.getAttribute('data-class');
-                if ((classValue === 'all' && state.filter === 'all') || 
-                    (classValue !== 'all' && state.filter == classValue)) {
-                    btn.classList.add('active');
-                }
-            });
-        }
-
-        function setFilter(filterValue) {
-            state.filter = filterValue;
-            
-            // Показываем/скрываем блоки
+        function applyFilter() {
             var blocks = document.querySelectorAll('.schedule-block');
+            var filterValue = state.filter;
+            
             blocks.forEach(function(block) {
-                var classNum = parseInt(block.getAttribute('data-class'));
-                if (filterValue === 'all' || classNum === filterValue) {
+                var className = block.getAttribute('data-class');
+                if (filterValue === 'all' || className === filterValue) {
                     block.classList.remove('hidden');
                 } else {
                     block.classList.add('hidden');
                 }
             });
             
-            updateFilterButtons();
+            // Обновляем выпадающий список
+            var select = document.getElementById('classFilter');
+            if (select) {
+                select.value = filterValue;
+            }
         }
 
         // ================================================================
@@ -812,12 +835,6 @@
             if (newDisplayDay !== state.displayDay) {
                 state.displayDay = newDisplayDay;
                 renderAll();
-                // Применяем фильтр заново после перерисовки
-                if (state.filter !== 'all') {
-                    setTimeout(function() {
-                        setFilter(state.filter);
-                    }, 50);
-                }
             }
         }
 
@@ -829,17 +846,11 @@
             document.getElementById('versionBadge').textContent = 'v' + APP_VERSION;
             loadData();
 
-            // Обработчики фильтра
-            document.getElementById('filterButtons').addEventListener('click', function(e) {
-                var btn = e.target.closest('.filter-btn');
-                if (!btn) return;
-                
-                var classValue = btn.getAttribute('data-class');
-                if (classValue === 'all') {
-                    setFilter('all');
-                } else {
-                    setFilter(parseInt(classValue));
-                }
+            // Обработчик выпадающего списка
+            var filterSelect = document.getElementById('classFilter');
+            filterSelect.addEventListener('change', function() {
+                state.filter = this.value;
+                applyFilter();
             });
 
             // Проверяем смену дня каждые 30 секунд
