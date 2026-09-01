@@ -219,11 +219,7 @@
             font-variant-numeric: tabular-nums;
         }
         .clock-text .countdown {
-            font-size: 0.62em;
-            color: #2f855a;
-            font-weight: 600;
-            line-height: 1.1;
-            font-variant-numeric: tabular-nums;
+            display: none !important;
         }
 
         /* ============================
@@ -683,7 +679,7 @@
             .mobile-lesson-card .lesson-time { font-size: 12px !important; }
         }
 
-        @media (max-width: 959px) {
+        @media (max-width: 948px) {
             .container { padding: 5.5px 7.5px; border-radius: 11.5px; height: 99vh; }
             .header { gap: 3.5px; padding-bottom: 3.5px; min-height: auto; flex-wrap: nowrap; }
             .header-left { flex: 0 1 46%; width: 46%; min-width: 0; justify-content: flex-start; order: 1; }
@@ -790,7 +786,7 @@
         }
 
         /* На обычных мониторах карточки читаемее, чем 18 сжатых столбцов. */
-        @media (min-width: 769px) and (max-width: 1919px) {
+        @media (min-width: 769px) and (max-width: 948px) {
             .desktop-table { display: none !important; }
             .mobile-view { display: flex !important; }
             .mobile-class-header {
@@ -903,7 +899,7 @@
         }
 
         /* Коридорное табло 960×540: полная сетка 18 классов и 9 уроков. */
-        @media (min-width: 960px) and (max-width: 1199px) {
+        @media (min-width: 949px) and (max-width: 1199px) {
             html, body {
                 width: 100%;
                 min-height: 100dvh;
@@ -1144,7 +1140,7 @@
         }
 
         /* Ширина до 959 px: мобильная версия с читаемостью и безопасной прокруткой. */
-        @media (max-width: 959px) {
+        @media (max-width: 948px) {
             html, body {
                 height: auto;
                 min-height: 100dvh;
@@ -1533,7 +1529,7 @@
         }
 
         /* Финальная мобильная раскладка шапки: применяется только до 959 px. */
-        @media (max-width: 959px) {
+        @media (max-width: 948px) {
             .header {
                 display: grid;
                 grid-template-columns: minmax(0, 1fr) auto;
