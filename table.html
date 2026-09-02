@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.7">
+<html lang="ru" data-version="v4.3.8">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,7 @@
             height: 100dvh;
             max-width: none;
             background: #ffffff;
-            padding: 5px 8px 4px;
+            padding: 4px 6px 3px;
             border-radius: 0;
             border: none;
             display: flex;
@@ -61,8 +61,8 @@
             border-bottom: none !important;
             padding-bottom: 2px;
             flex-wrap: nowrap;
-            gap: 6px;
-            min-height: 40px;
+            gap: 4px;
+            min-height: 36px;
         }
         .header-left {
             display: none !important;
@@ -86,19 +86,19 @@
         .period {
             color: #e65100;
             font-weight: 600;
-            min-height: 1.4em;
+            min-height: 1.3em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.2;
         }
         .period .line1 {
-            font-size: 14px;
+            font-size: 13px;
             display: block;
         }
         .period .line2 {
-            font-size: 12px;
+            font-size: 11px;
             display: block;
             font-weight: 500;
             color: #d45c00;
@@ -124,11 +124,11 @@
         .clock-top {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
         .clock-wrapper svg {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
         }
         .clock-text {
             display: flex;
@@ -137,7 +137,7 @@
             white-space: nowrap;
         }
         .clock-text .digital-time {
-            font-size: 16px;
+            font-size: 14px;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
@@ -148,7 +148,7 @@
         }
 
         .clock-date-row {
-            font-size: 8px;
+            font-size: 7px;
             color: #4a5568;
             font-weight: 600;
             line-height: 1.1;
@@ -160,7 +160,7 @@
         }
 
         /* ============================
-           ОСНОВНАЯ ЧАСТЬ (растягивается на всю высоту)
+           ОСНОВНАЯ ЧАСТЬ (растягивается)
            ============================ */
         .main-layout {
             flex: 1;
@@ -177,95 +177,125 @@
             min-height: 0;
             overflow: hidden;
             height: 100%;
+            width: 100%;
         }
 
         /* ============================
-           ТАБЛИЦА (растянута на всю высоту)
+           ТАБЛИЦА (равномерное распределение строк)
            ============================ */
         .desktop-table {
-            display: table !important;
+            display: flex !important;
+            flex-direction: column !important;
             width: 100% !important;
             height: 100% !important;
             border-collapse: collapse;
-            table-layout: fixed;
+            border-spacing: 0;
         }
-        thead {
-            display: table-header-group;
-            height: auto !important;
+        /* Заменяем table на flex-контейнер */
+        .desktop-table thead,
+        .desktop-table tbody,
+        .desktop-table tr {
+            display: flex !important;
+            width: 100% !important;
         }
-        tbody {
-            display: table-row-group;
+        .desktop-table thead {
+            flex-shrink: 0;
+            flex-direction: column;
+        }
+        .desktop-table tbody {
+            flex: 1 !important;
+            flex-direction: column;
             height: 100% !important;
+            min-height: 0 !important;
         }
-        thead th, tbody td, tbody th {
-            border-right: 1.5px solid #d0d7e0;
+        .desktop-table tr {
+            flex-shrink: 0;
+            flex: 1 !important;
+            min-height: 0 !important;
+            align-items: stretch;
         }
-        thead th:last-child, tbody td:last-child, tbody th:last-child {
-            border-right: none;
-        }
-        thead th {
-            background: #edf2f7;
-            color: #1a365d;
-            font-weight: 700;
-            text-align: center;
-            border-bottom: 2px solid #2b6cb0;
-            text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 2px 3px !important;
-            line-height: 1.1 !important;
-            font-size: clamp(8px, 0.7vw, 11px) !important;
-            height: auto !important;
+        .desktop-table thead tr {
+            flex-shrink: 0;
+            flex: 0 0 auto !important;
             min-height: 24px !important;
         }
-        thead th:first-child {
-            width: 28px !important;
-            min-width: 28px !important;
-            max-width: 28px !important;
-        }
-        thead th:not(:first-child) {
-            width: auto !important;
-        }
-        tbody td, tbody th {
-            color: #2d3748;
+        .desktop-table th,
+        .desktop-table td {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            padding: 1px 2px !important;
+            border-right: 1.5px solid #d0d7e0;
             border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
             text-align: center;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
+        }
+        .desktop-table th:last-child,
+        .desktop-table td:last-child {
+            border-right: none;
+        }
+        .desktop-table thead th {
+            background: #edf2f7;
+            color: #1a365d;
+            font-weight: 700;
+            border-bottom: 2px solid #2b6cb0;
+            text-transform: uppercase;
+            font-size: clamp(7px, 0.65vw, 10px) !important;
             line-height: 1.1 !important;
-            padding: 2px 3px !important;
-            font-size: clamp(8px, 0.8vw, 12px) !important;
-            height: auto !important;
-            min-height: 30px !important;
+            padding: 2px 2px !important;
+            min-height: 22px !important;
+            flex: 1;
         }
-        /* Растягиваем строки на всю высоту */
-        tbody tr {
-            height: auto !important;
+        .desktop-table thead th:first-child {
+            flex: 0 0 28px !important;
+            min-width: 28px !important;
+            max-width: 28px !important;
         }
-        tbody tr:last-child td,
-        tbody tr:last-child th {
-            border-bottom: none !important;
+        .desktop-table tbody th {
+            background: #f7fafc;
+            color: #4a5568;
+            font-weight: 700;
+            font-size: clamp(8px, 0.7vw, 11px) !important;
+            flex: 0 0 28px !important;
+            min-width: 28px !important;
+            max-width: 28px !important;
+            border-right: 1.5px solid #d0d7e0;
         }
-        tbody tr:nth-child(even) {
+        .desktop-table tbody td {
+            font-size: clamp(8px, 0.7vw, 11px) !important;
+            line-height: 1.1 !important;
+            padding: 1px 2px !important;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .desktop-table tbody tr:nth-child(even) {
             background: #f7fafc;
         }
-        tbody tr:nth-child(odd) {
+        .desktop-table tbody tr:nth-child(odd) {
             background: #ffffff;
         }
-        tbody tr.current-lesson {
+        .desktop-table tbody tr.current-lesson {
             background: #bee3f8 !important;
         }
-        tbody tr.current-lesson td, tbody tr.current-lesson th {
+        .desktop-table tbody tr.current-lesson td,
+        .desktop-table tbody tr.current-lesson th {
             color: #1a365d;
             font-weight: 600;
         }
-        tbody tr.current-lesson .lesson-num {
+        .desktop-table tbody tr.current-lesson .lesson-num {
             color: #2b6cb0;
+        }
+        .desktop-table tbody tr:last-child td,
+        .desktop-table tbody tr:last-child th {
+            border-bottom: none !important;
         }
 
         .lesson-num {
@@ -284,15 +314,18 @@
             overflow-wrap: break-word !important;
             hyphens: auto !important;
             font-size: 0.9em !important;
+            text-align: center;
+            width: 100%;
         }
         .cabinet {
             color: #9a3412 !important;
             display: block;
             font-weight: 700;
-            margin-top: 0px !important;
-            font-size: 0.7em !important;
+            font-size: 0.65em !important;
             line-height: 1 !important;
             white-space: nowrap;
+            text-align: center;
+            width: 100%;
         }
         .empty-cell {
             color: #cbd5e0;
@@ -313,13 +346,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 16px;
+            min-height: 14px;
             color: #a0aec0;
             text-align: center;
             border-top: 1px solid #e2e8f0;
             padding-top: 2px;
             margin-top: 2px;
-            font-size: 8px;
+            font-size: 7px;
         }
         .footer .version {
             font-weight: 600;
@@ -329,32 +362,32 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             white-space: nowrap;
             flex-wrap: wrap;
         }
         .footer-status .schedule-updated {
             color: #475467 !important;
-            font-size: 8px;
-            padding: 0 4px;
+            font-size: 7px;
+            padding: 0 3px;
             background: transparent;
             border-radius: 0;
         }
         .footer-status .board-sync {
-            font-size: 8px;
-            padding: 0 4px;
+            font-size: 7px;
+            padding: 0 3px;
             background: transparent;
             border: 0;
             border-radius: 0;
         }
         .footer-status .sound-toggle {
-            font-size: 8px;
-            padding: 0 4px;
+            font-size: 7px;
+            padding: 0 3px;
             border-width: 1px;
         }
         .footer-status .board-sync::before {
-            width: 5px;
-            height: 5px;
+            width: 4px;
+            height: 4px;
         }
 
         /* ============================
@@ -481,6 +514,16 @@
             .no-print { display: none !important; }
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
+            .desktop-table {
+                display: table !important;
+            }
+            .desktop-table thead,
+            .desktop-table tbody,
+            .desktop-table tr,
+            .desktop-table th,
+            .desktop-table td {
+                display: table-cell !important;
+            }
         }
 
         /* ============================
@@ -488,50 +531,54 @@
            ============================ */
         @media (max-width: 600px) {
             .container {
-                padding: 3px 4px;
+                padding: 2px 3px;
             }
             .period {
-                font-size: 12px;
+                font-size: 11px;
             }
             .period .line1 {
-                font-size: 12px;
+                font-size: 11px;
             }
             .period .line2 {
-                font-size: 10px;
+                font-size: 9px;
             }
             .clock-wrapper svg {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
             }
             .clock-text .digital-time {
-                font-size: 13px;
+                font-size: 12px;
             }
             .clock-date-row {
-                font-size: 7px;
+                font-size: 6px;
             }
-            thead th {
-                font-size: clamp(6px, 0.7vw, 9px) !important;
-                padding: 1px 2px !important;
+            .desktop-table thead th {
+                font-size: clamp(5px, 0.6vw, 8px) !important;
                 min-height: 18px !important;
             }
-            thead th:first-child {
-                width: 20px !important;
+            .desktop-table thead th:first-child {
+                flex: 0 0 20px !important;
                 min-width: 20px !important;
                 max-width: 20px !important;
             }
-            tbody td, tbody th {
-                font-size: clamp(6px, 0.7vw, 9px) !important;
-                padding: 1px 2px !important;
-                min-height: 20px !important;
+            .desktop-table tbody th {
+                flex: 0 0 20px !important;
+                min-width: 20px !important;
+                max-width: 20px !important;
+                font-size: clamp(6px, 0.6vw, 9px) !important;
+            }
+            .desktop-table tbody td {
+                font-size: clamp(6px, 0.6vw, 9px) !important;
             }
             .subject {
                 font-size: 0.8em !important;
             }
             .cabinet {
-                font-size: 0.6em !important;
+                font-size: 0.55em !important;
             }
             .footer {
                 font-size: 6px;
+                min-height: 12px;
             }
             .footer-status .schedule-updated,
             .footer-status .board-sync,
@@ -622,7 +669,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.7';
+        var APP_VERSION = '4.3.8';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -684,8 +731,8 @@
 
             var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('viewBox', '0 0 100 100');
-            svg.setAttribute('width', '32');
-            svg.setAttribute('height', '32');
+            svg.setAttribute('width', '28');
+            svg.setAttribute('height', '28');
 
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.setAttribute('transform', 'rotate(0, 50, 50)');
