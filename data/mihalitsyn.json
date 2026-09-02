@@ -83,7 +83,50 @@
       "room": "311/113"
     }
   ],
-  "ПТ": [],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "9Б",
+      "subject": "Англ/информатика",
+      "room": ""
+    },
+    {
+      "lesson": 2,
+      "class": "7Б",
+      "subject": "Англ/информатика",
+      "room": ""
+    },
+    {
+      "lesson": 3,
+      "class": "7В",
+      "subject": "Труд",
+      "room": ""
+    },
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "Труд",
+      "room": ""
+    },
+    {
+      "lesson": 5,
+      "class": "7А",
+      "subject": "Труд",
+      "room": ""
+    },
+    {
+      "lesson": 6,
+      "class": "7А",
+      "subject": "Труд",
+      "room": ""
+    },
+    {
+      "lesson": 7,
+      "class": "11Б",
+      "subject": "Информатика",
+      "room": ""
+    }
+  ],
   "СБ": [],
-  "last_update": "2026-09-02 18:34:14"
+  "last_update": "2026-09-02 19:04:44"
 }
