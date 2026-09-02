@@ -9,7 +9,12 @@
       "id": "inshakova_o",
       "name": "Иншакова О.А.",
       "scheduleFile": "inshakova_o.json"
+    },
+    {
+      "id": "abramenko_v",
+      "name": "Абраменко В.А.",
+      "scheduleFile": "abramenko_v.json"
     }
   ],
-  "last_update": "2026-09-02 18:31:26"
+  "last_update": "2026-09-02 18:34:12"
 }
