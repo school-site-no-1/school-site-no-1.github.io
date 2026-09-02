@@ -1,0 +1,59 @@
+{
+  "ПН": [],
+  "ВТ": [],
+  "СР": [
+    {
+      "lesson": 3,
+      "class": "10Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "10А",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "11Б",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "8В",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 2,
+      "class": "11Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "11А",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "8А",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
+  "ПТ": [],
+  "СБ": [],
+  "last_update": "2026-09-02 18:31:30"
+}
