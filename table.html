@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.2.2">
+<html lang="ru" data-version="v4.3.7">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,13 +29,16 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
             padding: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
         .container {
             width: 100%;
             height: 100vh;
+            height: 100dvh;
             max-width: none;
             background: #ffffff;
             padding: 5px 8px 4px;
@@ -48,7 +51,7 @@
         }
 
         /* ============================
-           ШАПКА
+           ШАПКА (компактная)
            ============================ */
         .header {
             flex-shrink: 0;
@@ -56,43 +59,22 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: none !important;
-            padding-bottom: 1px;
+            padding-bottom: 2px;
             flex-wrap: nowrap;
             gap: 6px;
-            min-height: 44px;
+            min-height: 40px;
         }
         .header-left {
             display: none !important;
         }
         .header-banner {
-            height: 39px;
-            min-height: 39px;
-            max-height: 39px;
-            padding: 0 4px;
-            flex: 1 1 auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 0;
-            background: #f7fafc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .header-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .mobile-banner-text {
-            display: none;
+            display: none !important;
         }
 
         .header-center {
-            display: flex;
+            display: flex !important;
             align-items: center;
-            gap: 5px;
-            flex-shrink: 0;
             flex: 1 1 auto;
-            justify-content: flex-start;
         }
         .header-center .day-indicator {
             display: none !important;
@@ -104,137 +86,89 @@
         .period {
             color: #e65100;
             font-weight: 600;
-            min-height: 1.8em;
+            min-height: 1.4em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            font-size: 14px;
             line-height: 1.2;
         }
         .period .line1 {
-            font-size: 10px;
-            line-height: 1.1;
+            font-size: 14px;
+            display: block;
         }
         .period .line2 {
-            font-size: 9px;
+            font-size: 12px;
+            display: block;
             font-weight: 500;
             color: #d45c00;
         }
 
         .header-right {
             text-align: right;
-            display: flex;
+            display: flex !important;
             flex-direction: column;
             align-items: flex-end;
-            gap: 2px;
             flex-shrink: 0;
-            margin-left: auto;
-        }
-        .header-right .schedule-updated {
-            color: #718096;
-            font-weight: 500;
-            background: #edf2f7;
-            padding: 0 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            margin-top: 1px;
-        }
-        .header-right .schedule-updated.error {
-            color: #e53e3e;
-            background: #fff5f5;
-        }
-        .sound-toggle {
-            border: 1px solid #2b6cb0;
-            border-radius: 4px;
-            background: #ffffff;
-            color: #1a365d;
-            padding: 2px 6px;
-            font: inherit;
-            cursor: pointer;
-            font-size: 9px;
-        }
-        .sound-toggle[aria-pressed="true"] {
-            background: #ebf8ff;
-            color: #1c64a5;
-        }
-        .board-sync {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            color: #276749;
-            background: #f0fff4;
-            border: 1px solid #9ae6b4;
-            border-radius: 12px;
-            padding: 1px 8px;
-            font-size: 9px;
-            font-weight: 700;
-            line-height: 1.25;
-        }
-        .board-sync::before {
-            content: '';
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-        .board-sync.loading {
-            color: #975a16;
-            background: #fffaf0;
-            border-color: #fbd38d;
-        }
-        .board-sync.offline {
-            color: #c53030;
-            background: #fff5f5;
-            border-color: #feb2b2;
         }
 
         /* ============================
-           ЧАСЫ
+           ЧАСЫ (компактные)
            ============================ */
         .clock-wrapper {
             display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0px;
+        }
+        .clock-top {
+            display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
         .clock-wrapper svg {
-            width: 19px;
-            height: 19px;
-            transform: rotate(0deg) !important;
-            transform-origin: center;
+            width: 32px;
+            height: 32px;
         }
         .clock-text {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: flex-end;
             white-space: nowrap;
         }
-        .clock-text .day {
-            display: none !important;
-        }
-        .clock-text .date {
-            font-size: 0.41em;
-            color: #2d3748;
-            font-weight: 600;
-        }
         .clock-text .digital-time {
-            font-size: 0.53em;
+            font-size: 16px;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
+            line-height: 1.1;
         }
         .clock-text .countdown {
             display: none !important;
         }
 
+        .clock-date-row {
+            font-size: 8px;
+            color: #4a5568;
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 1px;
+        }
+        .clock-date-row .day-name {
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+
         /* ============================
-           ОСНОВНАЯ ЧАСТЬ
+           ОСНОВНАЯ ЧАСТЬ (растягивается на всю высоту)
            ============================ */
         .main-layout {
             flex: 1;
             display: flex;
             gap: 0;
             min-height: 0;
-            margin-top: 4px;
+            margin-top: 2px;
+            height: 100%;
         }
         .table-wrapper {
             flex: 1;
@@ -242,10 +176,11 @@
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+            height: 100%;
         }
 
         /* ============================
-           ТАБЛИЦА
+           ТАБЛИЦА (растянута на всю высоту)
            ============================ */
         .desktop-table {
             display: table !important;
@@ -253,6 +188,14 @@
             height: 100% !important;
             border-collapse: collapse;
             table-layout: fixed;
+        }
+        thead {
+            display: table-header-group;
+            height: auto !important;
+        }
+        tbody {
+            display: table-row-group;
+            height: 100% !important;
         }
         thead th, tbody td, tbody th {
             border-right: 1.5px solid #d0d7e0;
@@ -270,15 +213,16 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding: 1px 1px !important;
-            line-height: 1 !important;
-            min-height: 19px !important;
+            padding: 2px 3px !important;
+            line-height: 1.1 !important;
+            font-size: clamp(8px, 0.7vw, 11px) !important;
             height: auto !important;
-            font-size: clamp(6px, 0.75vw, 7px) !important;
+            min-height: 24px !important;
         }
         thead th:first-child {
-            width: 22px !important;
-            min-width: 22px !important;
+            width: 28px !important;
+            min-width: 28px !important;
+            max-width: 28px !important;
         }
         thead th:not(:first-child) {
             width: auto !important;
@@ -293,12 +237,19 @@
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            line-height: 1.05 !important;
-            padding: 1px 1px !important;
-            min-height: 32px !important;
+            line-height: 1.1 !important;
+            padding: 2px 3px !important;
+            font-size: clamp(8px, 0.8vw, 12px) !important;
             height: auto !important;
-            font-size: clamp(6px, 0.9vw, 9px) !important;
-            overflow-wrap: anywhere;
+            min-height: 30px !important;
+        }
+        /* Растягиваем строки на всю высоту */
+        tbody tr {
+            height: auto !important;
+        }
+        tbody tr:last-child td,
+        tbody tr:last-child th {
+            border-bottom: none !important;
         }
         tbody tr:nth-child(even) {
             background: #f7fafc;
@@ -323,51 +274,35 @@
             font-size: 0.85em !important;
         }
         .subject {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            display: block;
             font-weight: 500;
-            line-height: 1.02 !important;
+            line-height: 1.1 !important;
             color: #2d3748;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            font-size: clamp(6px, 0.7vw, 7px) !important;
+            font-size: 0.9em !important;
         }
         .cabinet {
             color: #9a3412 !important;
             display: block;
             font-weight: 700;
             margin-top: 0px !important;
-            font-size: 0.72em !important;
+            font-size: 0.7em !important;
             line-height: 1 !important;
             white-space: nowrap;
         }
         .empty-cell {
             color: #cbd5e0;
-            font-size: clamp(6px, 0.75vw, 8px) !important;
-            white-space: normal !important;
-            overflow-wrap: break-word !important;
-            word-break: normal !important;
+            font-size: 0.9em !important;
         }
         .empty-lesson {
             white-space: normal;
             overflow-wrap: break-word;
             word-break: normal;
             color: #667085 !important;
-        }
-
-        /* ============================
-           МОБИЛЬНАЯ ВЕРСИЯ (скрыта)
-           ============================ */
-        .mobile-view {
-            display: none !important;
-        }
-        .mobile-controls {
-            display: none !important;
         }
 
         /* ============================
@@ -382,9 +317,9 @@
             color: #a0aec0;
             text-align: center;
             border-top: 1px solid #e2e8f0;
-            padding-top: 1px;
-            margin-top: 1px;
-            font-size: 4px;
+            padding-top: 2px;
+            margin-top: 2px;
+            font-size: 8px;
         }
         .footer .version {
             font-weight: 600;
@@ -394,31 +329,42 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 6px;
             white-space: nowrap;
+            flex-wrap: wrap;
         }
         .footer-status .schedule-updated {
             color: #475467 !important;
-            font-size: 4px;
-            padding: 0;
+            font-size: 8px;
+            padding: 0 4px;
             background: transparent;
             border-radius: 0;
         }
         .footer-status .board-sync {
-            font-size: 4px;
-            padding: 0;
+            font-size: 8px;
+            padding: 0 4px;
             background: transparent;
             border: 0;
             border-radius: 0;
         }
         .footer-status .sound-toggle {
-            font-size: 4px;
-            padding: 0 2px;
+            font-size: 8px;
+            padding: 0 4px;
             border-width: 1px;
         }
         .footer-status .board-sync::before {
             width: 5px;
             height: 5px;
+        }
+
+        /* ============================
+           МОБИЛЬНАЯ ВЕРСИЯ (скрыта)
+           ============================ */
+        .mobile-view {
+            display: none !important;
+        }
+        .mobile-controls {
+            display: none !important;
         }
 
         /* ============================
@@ -533,9 +479,65 @@
            ============================ */
         @media print {
             .no-print { display: none !important; }
-            .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
+        }
+
+        /* ============================
+           АДАПТИВНОСТЬ ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ
+           ============================ */
+        @media (max-width: 600px) {
+            .container {
+                padding: 3px 4px;
+            }
+            .period {
+                font-size: 12px;
+            }
+            .period .line1 {
+                font-size: 12px;
+            }
+            .period .line2 {
+                font-size: 10px;
+            }
+            .clock-wrapper svg {
+                width: 24px;
+                height: 24px;
+            }
+            .clock-text .digital-time {
+                font-size: 13px;
+            }
+            .clock-date-row {
+                font-size: 7px;
+            }
+            thead th {
+                font-size: clamp(6px, 0.7vw, 9px) !important;
+                padding: 1px 2px !important;
+                min-height: 18px !important;
+            }
+            thead th:first-child {
+                width: 20px !important;
+                min-width: 20px !important;
+                max-width: 20px !important;
+            }
+            tbody td, tbody th {
+                font-size: clamp(6px, 0.7vw, 9px) !important;
+                padding: 1px 2px !important;
+                min-height: 20px !important;
+            }
+            .subject {
+                font-size: 0.8em !important;
+            }
+            .cabinet {
+                font-size: 0.6em !important;
+            }
+            .footer {
+                font-size: 6px;
+            }
+            .footer-status .schedule-updated,
+            .footer-status .board-sync,
+            .footer-status .sound-toggle {
+                font-size: 6px;
+            }
         }
     </style>
 </head>
@@ -545,19 +547,11 @@
         <!-- ===== ШАПКА ===== -->
         <header class="header">
             <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
-            <div class="header-left">
-                <div class="header-banner" id="headerBanner">
-                    <img id="bannerImage" src="banner.png?v=20260901-2" alt="Баннер школьного расписания" onerror="this.style.display='none'; document.getElementById('mobileBannerText').style.display='block'">
-                    <span class="mobile-banner-text" id="mobileBannerText" style="display:none;">Изменения на понедельник</span>
-                </div>
-            </div>
-
+            <div class="header-left"></div>
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
-                <span class="divider">|</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
             </div>
-
             <div class="header-right">
                 <div id="clockContainer"></div>
             </div>
@@ -628,7 +622,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.2.2';
+        var APP_VERSION = '4.3.7';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -680,10 +674,18 @@
             var wrapper = document.createElement('div');
             wrapper.className = 'clock-wrapper';
 
+            var dateRow = document.createElement('div');
+            dateRow.className = 'clock-date-row';
+            dateRow.id = 'clock-date-row';
+            wrapper.appendChild(dateRow);
+
+            var topRow = document.createElement('div');
+            topRow.className = 'clock-top';
+
             var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('viewBox', '0 0 100 100');
-            svg.setAttribute('width', '19');
-            svg.setAttribute('height', '19');
+            svg.setAttribute('width', '32');
+            svg.setAttribute('height', '32');
 
             var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             g.setAttribute('transform', 'rotate(0, 50, 50)');
@@ -745,25 +747,10 @@
             center.setAttribute('fill', '#2b6cb0');
             svg.appendChild(center);
 
-            wrapper.appendChild(svg);
+            topRow.appendChild(svg);
 
             var textBlock = document.createElement('div');
             textBlock.className = 'clock-text';
-
-            var daySpan = document.createElement('span');
-            daySpan.className = 'day';
-            var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-            daySpan.textContent = days[new Date().getDay()];
-            textBlock.appendChild(daySpan);
-
-            var dateSpan = document.createElement('span');
-            dateSpan.className = 'date';
-            dateSpan.textContent = new Date().toLocaleDateString('ru-RU', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            });
-            textBlock.appendChild(dateSpan);
 
             var digitalSpan = document.createElement('span');
             digitalSpan.className = 'digital-time';
@@ -775,14 +762,9 @@
             });
             textBlock.appendChild(digitalSpan);
 
-            var countdownSpan = document.createElement('span');
-            countdownSpan.className = 'countdown';
-            countdownSpan.id = 'lesson-countdown';
-            countdownSpan.setAttribute('aria-live', 'off');
-            countdownSpan.textContent = 'До начала урока осталось: —';
-            textBlock.appendChild(countdownSpan);
+            topRow.appendChild(textBlock);
+            wrapper.appendChild(topRow);
 
-            wrapper.appendChild(textBlock);
             container.appendChild(wrapper);
 
             function updateClock() {
@@ -813,22 +795,15 @@
                     });
                 }
 
-                var countdownEl = document.getElementById('lesson-countdown');
-                if (countdownEl) {
-                    countdownEl.textContent = getLessonCountdownText(now);
-                }
-
-                var dayEl = textBlock.querySelector('.day');
-                if (dayEl) {
-                    dayEl.textContent = days[now.getDay()];
-                }
-                var dateEl = textBlock.querySelector('.date');
-                if (dateEl) {
-                    dateEl.textContent = now.toLocaleDateString('ru-RU', {
+                var dateRowEl = document.getElementById('clock-date-row');
+                if (dateRowEl) {
+                    var days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+                    var dayName = days[now.getDay()];
+                    dateRowEl.textContent = now.toLocaleDateString('ru-RU', {
                         day: '2-digit',
-                        month: 'long',
+                        month: 'short',
                         year: 'numeric'
-                    });
+                    }) + ' · ' + dayName;
                 }
             }
 
@@ -909,9 +884,6 @@
             return { type: 'unknown' };
         }
 
-        // ================================================================
-        // ⭐ ГЛАВНАЯ ФУНКЦИЯ — ОТОБРАЖЕНИЕ ПЕРИОДА
-        // ================================================================
         function getPeriodName() {
             var info = getCurrentPeriodInfo();
             var now = new Date();
@@ -952,7 +924,6 @@
                 };
                 var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
                 
-                // ⭐ После 16:00 показываем "Изменения на {день недели}"
                 if (totalMinutes >= 16 * 60) {
                     return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
                 }
@@ -967,7 +938,6 @@
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
             var dayNum = now.getDay() === 0 ? 1 : now.getDay();
             
-            // Если после 16:00 — показываем следующий день
             if (totalMinutes >= 16 * 60) {
                 var nextDayNum = dayNum + 1;
                 if (nextDayNum === 7) nextDayNum = 1;
@@ -991,7 +961,6 @@
             var dayNum = now.getDay();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
             
-            // ⭐ ПЕРЕКЛЮЧЕНИЕ В 16:00
             var shift = (totalMinutes >= 16 * 60) ? 1 : 0;
             var targetDayNum = dayNum + shift;
             
@@ -1172,7 +1141,7 @@
         }
 
         // ================================================================
-        // ОТРИСОВКА
+        // ОТРИСОВКА ТАБЛИЦЫ
         // ================================================================
 
         function renderTable() {
@@ -1191,14 +1160,7 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
-            // Показываем день с указанием "Завтра"
-            var dayDisplay = displayDay.full;
-            if (displayDay.isTomorrow) {
-                dayDisplay = 'Завтра, ' + dayDisplay;
-            }
-            document.getElementById('dayIndicator').textContent = dayDisplay;
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
-            document.getElementById('scheduleCaption').textContent = 'Расписание уроков на ' + dayDisplay;
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
@@ -1290,12 +1252,6 @@
                     refreshAll();
                 }, 120);
             });
-
-            var soundToggle = document.getElementById('soundToggle');
-            var breakMusic = document.getElementById('breakMusic');
-            if (soundToggle && breakMusic) {
-                soundToggle.hidden = true;
-            }
 
             setInterval(refreshAll, 1000);
             setInterval(loadData, DATA_REFRESH_INTERVAL_MS);
