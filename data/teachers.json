@@ -4,7 +4,12 @@
       "id": "mihalitsyn",
       "name": "Михалицын",
       "scheduleFile": "mihalitsyn.json"
+    },
+    {
+      "id": "inshakova_o",
+      "name": "Иншакова О.А.",
+      "scheduleFile": "inshakova_o.json"
     }
   ],
-  "last_update": "2026-09-02 17:59:05"
+  "last_update": "2026-09-02 18:31:26"
 }
