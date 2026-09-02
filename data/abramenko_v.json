@@ -55,12 +55,36 @@
   ],
   "ПТ": [
     {
+      "lesson": 1,
+      "class": "9В",
+      "subject": "Алгебра",
+      "room": ""
+    },
+    {
+      "lesson": 2,
+      "class": "9В",
+      "subject": "Вероятность и статист",
+      "room": ""
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Алгебра",
+      "room": ""
+    },
+    {
       "lesson": 4,
       "class": "6А",
       "subject": "Математика",
       "room": ""
+    },
+    {
+      "lesson": 5,
+      "class": "9Б",
+      "subject": "Алгебра",
+      "room": ""
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-02 18:34:17"
+  "last_update": "2026-09-02 19:04:47"
 }
