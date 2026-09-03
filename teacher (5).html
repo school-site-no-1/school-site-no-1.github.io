@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="pageTitle">Расписание уроков</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;padding:16px;color:#2d3748}
+        .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+        
+        /* Шапка */
+        .header{display:flex;flex-direction:column;border-bottom:2px solid #2b6cb0;padding-bottom:4px;margin-bottom:4px}
+        
+        /* Верхняя строка */
+        .header-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px}
+        .header-top-left{display:flex;flex-direction:column;align-items:flex-start;gap:0;flex:0 1 auto;min-width:160px}
+        .header-top-center{flex:1;text-align:center;min-width:80px}
+        .header-top-right{display:flex;align-items:center;gap:8px;min-width:70px;justify-content:flex-end}
+        
+        /* Стили для селекта */
+        .header-selector {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 6px;
+        }
+        .header-selector label {
+            font-weight: 600;
+            color: #2b6cb0;
+            font-size: 0.6em;
+            white-space: nowrap;
+        }
+        .header-selector select {
+            padding: 2px 6px;
+            border: 1px solid #2b6cb0;
+            border-radius: 4px;
+            font-size: 0.6em;
+            background: #fff;
+            color: #2d3748;
+            cursor: pointer;
+            min-width: 120px;
+            outline: none;
+        }
+        .header-selector select:hover {
+            border-color: #1a4f8b;
+        }
+        .header-selector select:focus {
+            box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.2);
+        }
+        .header-selector .refresh-btn {
+            padding: 1px 6px;
+            background: #2b6cb0;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.55em;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .header-selector .refresh-btn:hover {
+            background: #1a4f8b;
+        }
+        
+        /* День недели */
+        .header-day {
+            font-size: 1em;
+            font-weight: 700;
+            color: #1a365d;
+            padding-left: 8px;
+            margin-top: 1px;
+        }
+        
+        /* Блок с часами */
+        #clockContainer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            min-height: 32px;
+        }
+        #clockContainer .clock-wrapper {
+            display: flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+        }
+        #clockContainer svg {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        #clockContainer .clock-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            white-space: nowrap;
+        }
+        #clockContainer .clock-text .date {
+            font-size: 0.4em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        #clockContainer .clock-text .day {
+            font-size: 0.35em;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        #clockContainer .clock-text .digital-time {
+            font-size: 0.6em;
+            color: #2b6cb0;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Изменения */
+        .changes-text {
+            font-size: 0.7em;
+            font-weight: 700;
+            color: #c53030;
+            letter-spacing: .5px;
+            text-transform: lowercase;
+            line-height: 1.2;
+            text-align: center;
+        }
+        
+        .info{display:flex;justify-content:space-between;font-size:0.85em;color:#718096;padding:2px 6px;background:#ebf8ff;border:1px solid #bee3f8;margin-bottom:4px;border-radius:6px;flex-wrap:wrap;gap:2px}
+        .info .count{color:#2b6cb0;font-weight:600;font-size:0.8em}
+        .info .update{color:#a0aec0;font-size:0.65em}
+        
+        .table-wrap{overflow-x:auto}
+        
+        /* ТАБЛИЦА С ГРАНИЦАМИ СТОЛБЦОВ */
+        table{width:auto;border-collapse:collapse;font-size:1.4em;margin:0 auto}
+        thead th{
+            background:#2b6cb0;
+            color:#fff;
+            padding:4px 4px;
+            text-align:center;
+            font-weight:700;
+            font-size:0.6em;
+            white-space:nowrap;
+            letter-spacing:.3px;
+            text-transform:uppercase;
+            border-bottom:2px solid #1a4f8b;
+            border-right:1px solid #4a8bc2;
+        }
+        thead th:last-child{
+            border-right:none;
+        }
+        
+        tbody tr{border-bottom:1.5px solid #cbd5e0}
+        tbody tr:last-child{border-bottom:none}
+        
+        /* ГРАНИЦЫ СТОЛБЦОВ */
+        tbody td{
+            padding:13px 14px;
+            text-align:center;
+            font-size:0.7em;
+            vertical-align:middle;
+            border-right:1px solid #e2e8f0;
+        }
+        tbody td:last-child{
+            border-right:none;
+        }
+        
+        /* ПОДСВЕТКА ТЕКУЩЕГО УРОКА */
+        tbody tr.current {
+            background: #bee3f8 !important;
+            font-weight: 700;
+            border-left: 4px solid #2b6cb0;
+            border-right: 4px solid #2b6cb0;
+        }
+        tbody tr.current td {
+            color: #1a365d;
+            border-right-color: #93c5e4;
+        }
+        tbody tr.current td.num {
+            color: #1a4f8b;
+            font-weight: 800;
+        }
+        tbody tr.current td.period .time-start {
+            color: #1a4f8b;
+            font-weight: 800;
+        }
+        tbody tr.current td.period .time-end {
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+        
+        /* Узкие столбцы */
+        tbody td.num{font-weight:800;color:#1a365d;font-size:0.8em;text-align:center;vertical-align:middle;width:25px;min-width:20px;max-width:30px}
+        tbody td.period{padding:11px 12px;vertical-align:middle;text-align:center;white-space:nowrap;width:70px;min-width:55px;max-width:80px}
+        tbody td.period .time-start{font-weight:700;color:#2b6cb0;font-size:0.75em;line-height:1.1}
+        tbody td.period .time-end{color:#718096;font-size:0.65em;line-height:1.1;margin-top:0px}
+        tbody td.class{font-weight:700;color:#1a365d;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:50px;max-width:65px}
+        /* Предмет - 250px */
+        tbody td.subject{text-align:center;padding-left:12px;font-weight:600;font-size:0.9em;min-width:200px;width:250px;max-width:280px}
+        tbody td.room{font-weight:700;color:#e65100;font-size:0.75em;white-space:nowrap;line-height:1.1;min-width:30px;width:45px;max-width:60px}
+        
+        /* Строка перемены */
+        .break-row {
+            background: #fff8e1;
+            border-bottom: 1.5px solid #cbd5e0;
+        }
+        .break-row td {
+            padding: 6px 14px !important;
+            color: #e65100;
+            font-weight: 600;
+            font-size: 0.65em !important;
+            border-right-color: #e2e8f0;
+        }
+        .break-row td:last-child {
+            border-right: none;
+        }
+        .break-row td .break-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #e65100;
+        }
+        .break-row td .break-label .break-icon {
+            font-size: 1.3em;
+            display: inline-block;
+            transform: scaleX(-1);
+        }
+        
+        /* ПОДСВЕТКА ТЕКУЩЕЙ ПЕРЕМЕНЫ */
+        .break-row.current {
+            background: #fff3e0 !important;
+            border-left: 4px solid #ff6f00;
+            border-right: 4px solid #ff6f00;
+            font-weight: 700;
+        }
+        .break-row.current td {
+            color: #bf360c;
+            border-right-color: #ffe0b2;
+        }
+        .break-row.current td .break-label .break-until {
+            color: #d84315;
+            font-weight: 800;
+            font-size: 0.9em;
+            background: #fff3cd;
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid #ff6f00;
+            white-space: nowrap;
+        }
+        
+        .footer{text-align:center;color:#a0aec0;font-size:0.55em;border-top:1px solid #e2e8f0;padding-top:4px;margin-top:4px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+        .no-lessons-msg{text-align:center;padding:15px 0;color:#a0aec0;font-size:0.9em}
+        
+        @media(max-width:900px){body{padding:12px}.container{padding:16px;border-radius:16px}table{font-size:1.2em}thead th,td{padding:3px 3px}}
+        
+        @media(max-width:600px){
+            body{padding:8px}
+            .container{padding:12px;border-radius:12px}
+            .header-top{flex-wrap:wrap;gap:2px}
+            .header-top-left{min-width:auto;flex:1 1 100%;order:1}
+            .header-top-center{order:2;flex:0 1 auto;min-width:auto}
+            .header-top-right{order:3;flex:0 1 auto}
+            .header-selector select{min-width:80px;font-size:0.55em;padding:2px 4px}
+            .header-selector label{font-size:0.55em}
+            .header-selector .refresh-btn{font-size:0.5em;padding:1px 4px}
+            .header-day{font-size:0.85em;padding-left:4px}
+            .changes-text{font-size:0.6em}
+            
+            /* МОБИЛЬНАЯ ТАБЛИЦА */
+            table{font-size:1.2em;min-width:280px}
+            thead th{padding:4px 3px;font-size:0.65em;border-right:1px solid #4a8bc2}
+            tbody td{padding:10px 6px;font-size:0.75em;border-right:1px solid #e2e8f0}
+            tbody td:last-child{border-right:none}
+            
+            /* ВРЕМЯ - УВЕЛИЧЕННЫЙ ШРИФТ */
+            tbody td.period{padding:8px 6px;width:65px;min-width:50px;max-width:75px}
+            tbody td.period .time-start{font-size:1.0em;font-weight:700}
+            tbody td.period .time-end{font-size:0.85em}
+            
+            td.subject{padding-left:4px;text-align:center!important;min-width:100px;width:140px;max-width:160px;font-size:0.85em}
+            td.num{font-size:0.85em;width:20px;min-width:16px;max-width:24px}
+            td.class{font-size:0.7em;white-space:normal;min-width:25px;width:35px;max-width:50px}
+            td.room{font-size:0.7em;white-space:normal;min-width:25px;width:35px;max-width:50px}
+            
+            .info{font-size:0.5em;padding:2px 4px;border-radius:4px}
+            .footer{font-size:0.4em;gap:3px}
+            #clockContainer svg{width:22px;height:22px}
+            #clockContainer .clock-text .date{font-size:0.4em}
+            #clockContainer .clock-text .day{font-size:0.35em}
+            #clockContainer .clock-text .digital-time{font-size:0.55em}
+            
+            .break-row td {
+                padding: 4px 6px !important;
+                font-size: 0.55em !important;
+            }
+            .break-row td .break-label .break-icon {
+                font-size: 1em;
+            }
+            .break-row td .break-label {
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            .break-row.current td .break-label .break-until {
+                font-size: 0.75em;
+                padding: 1px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Шапка -->
+    <div class="header">
+        <!-- Верхняя строка -->
+        <div class="header-top">
+            <div class="header-top-left">
+                <!-- Выбор учителя -->
+                <div class="header-selector">
+                    <label for="teacherSelect">👨‍🏫</label>
+                    <select id="teacherSelect">
+                        <option value="">Загрузка...</option>
+                    </select>
+                    <button class="refresh-btn" onclick="refreshData()">🔄</button>
+                </div>
+                <!-- Только день недели -->
+                <span class="header-day" id="teacherDay">Суббота</span>
+            </div>
+            <div class="header-top-center">
+                <span class="changes-text" id="changesText">📌 Изменения<br>на сегодня</span>
+            </div>
+            <div class="header-top-right">
+                <div id="clockContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Инфо -->
+    <div class="info">
+        <span class="count" id="lessonCount">📚 0 уроков</span>
+        <span class="update" id="updateTime">🔄 обновлено: загрузка...</span>
+    </div>
+
+    <!-- Таблица -->
+    <div class="table-wrap">
+        <div id="scheduleTable">
+            <div class="no-lessons-msg">⏳ Загрузка расписания...</div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <div class="footer">
+        <span class="version">🏷️ v6.0.0</span>
+        <span class="gen-time" id="genTime">📅 загрузка...</span>
+    </div>
+</div>
+
+<!-- clock.js -->
+<script src="/clock.js"></script>
+
+<script>
+(function() {
+    'use strict';
+
+    // ===== КОНСТАНТЫ =====
+    const DAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+    const DAYS_RU = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+    const DAYS_PREP = ['понедельник', 'вторник', 'среду', 'четверг', 'пятницу', 'субботу'];
+    const LESSON_PERIODS = [
+        {start:'08:30',end:'09:10'},{start:'09:20',end:'10:00'},
+        {start:'10:10',end:'10:50'},{start:'11:05',end:'11:45'},
+        {start:'12:00',end:'12:40'},{start:'12:55',end:'13:35'},
+        {start:'13:45',end:'14:25'},{start:'14:35',end:'15:15'},
+        {start:'15:25',end:'16:05'}
+    ];
+    
+    // Время перемен (между уроками)
+    const BREAKS = [
+        {after: 1, start: '09:10', end: '09:20', duration: '10 мин'},
+        {after: 2, start: '10:00', end: '10:10', duration: '10 мин'},
+        {after: 3, start: '10:50', end: '11:05', duration: '15 мин'},
+        {after: 4, start: '11:45', end: '12:00', duration: '15 мин'},
+        {after: 5, start: '12:40', end: '12:55', duration: '15 мин'},
+        {after: 6, start: '13:35', end: '13:45', duration: '10 мин'},
+        {after: 7, start: '14:25', end: '14:35', duration: '10 мин'},
+        {after: 8, start: '15:15', end: '15:25', duration: '10 мин'}
+    ];
+
+    // ===== ПЕРЕМЕННЫЕ =====
+    let teachersList = [];
+    let currentTeacher = null;
+    let currentDay = '';
+    let currentScheduleData = {};
+    let breakTimer = null;
+
+    // ===== ПАРАМЕТРЫ URL =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherParam = urlParams.get('teacher') || urlParams.get('id') || '';
+    const dayParam = urlParams.get('day') || urlParams.get('d') || '';
+
+    // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+    function getLessonWord(num) {
+        const lastDigit = num % 10;
+        const lastTwoDigits = num % 100;
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 19) return 'уроков';
+        if (lastDigit === 1) return 'урок';
+        if (lastDigit >= 2 && lastDigit <= 4) return 'урока';
+        return 'уроков';
+    }
+
+    function parseTime(str) {
+        if (!str) return 0;
+        const parts = str.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+
+    function formatTime(minutes) {
+        if (minutes < 0) minutes = 0;
+        const mins = Math.floor(minutes);
+        const secs = Math.floor((minutes - mins) * 60);
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function getScheduleDay() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        const threshold = 16 * 60 + 40;
+
+        const targetDate = new Date(now);
+        if (totalMin >= threshold) {
+            targetDate.setDate(targetDate.getDate() + 1);
+        }
+
+        let dayNum = targetDate.getDay();
+        if (dayNum === 0) dayNum = 7;
+        
+        return {
+            targetDay: DAYS[dayNum - 1] || 'ПН',
+            targetDayFull: DAYS_RU[dayNum - 1] || 'Понедельник',
+            targetDayPrep: DAYS_PREP[dayNum - 1] || 'понедельник',
+            isTomorrow: totalMin >= threshold
+        };
+    }
+
+    function getCurrentLessonNum() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        for (let i = 0; i < LESSON_PERIODS.length; i++) {
+            const start = parseTime(LESSON_PERIODS[i].start);
+            const end = parseTime(LESSON_PERIODS[i].end);
+            if (totalMin >= start && totalMin < end) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+    
+    // Проверка, идет ли сейчас перемена
+    function getCurrentBreak() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        for (let i = 0; i < BREAKS.length; i++) {
+            const start = parseTime(BREAKS[i].start);
+            const end = parseTime(BREAKS[i].end);
+            if (totalMin >= start && totalMin < end) {
+                return BREAKS[i];
+            }
+        }
+        return null;
+    }
+
+    // Получение времени до конца перемены в минутах
+    function getBreakTimeLeft(breakInfo) {
+        if (!breakInfo) return 0;
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        const endMin = parseTime(breakInfo.end);
+        return Math.max(0, endMin - totalMin);
+    }
+
+    // ===== ОБНОВЛЕНИЕ ТАЙМЕРА ПЕРЕМЕНЫ =====
+    function updateBreakTimer() {
+        const breakInfo = getCurrentBreak();
+        if (breakInfo) {
+            const timeLeft = getBreakTimeLeft(breakInfo);
+            const breakElements = document.querySelectorAll('.break-row.current .break-until');
+            breakElements.forEach(el => {
+                if (timeLeft > 0) {
+                    el.textContent = `⏳ до конца ${formatTime(timeLeft)}`;
+                } else {
+                    el.textContent = '⏳ 00:00';
+                }
+            });
+        }
+    }
+
+    // ===== ОБНОВЛЕНИЕ TITLE =====
+    function updatePageTitle(teacherName, day) {
+        const titleEl = document.getElementById('pageTitle');
+        if (!titleEl) return;
+        
+        const nameParts = teacherName.split(' ');
+        let shortName = teacherName;
+        if (nameParts.length >= 2) {
+            const lastName = nameParts[0];
+            const firstName = nameParts[1] ? nameParts[1][0] + '.' : '';
+            const middleName = nameParts[2] ? nameParts[2][0] + '.' : '';
+            shortName = `${lastName} ${firstName}${middleName}`;
+        }
+        
+        const dayName = DAYS_RU[DAYS.indexOf(day)] || day;
+        titleEl.textContent = `${shortName} - ${dayName}`;
+    }
+
+    // ===== ЗАГРУЗКА СПИСКА УЧИТЕЛЕЙ =====
+    async function loadTeachersList() {
+        try {
+            const response = await fetch('/data/teachers.json?_=' + Date.now());
+            if (!response.ok) {
+                throw new Error('Не удалось загрузить список учителей');
+            }
+            const data = await response.json();
+            teachersList = data.teachers || [];
+            
+            const select = document.getElementById('teacherSelect');
+            select.innerHTML = '';
+            
+            if (teachersList.length === 0) {
+                select.innerHTML = '<option value="">Нет учителей</option>';
+                return;
+            }
+
+            teachersList.forEach((teacher, index) => {
+                const option = document.createElement('option');
+                option.value = teacher.id || teacher.name || index;
+                option.textContent = teacher.name || teacher.id || `Учитель ${index + 1}`;
+                if (teacher.id) {
+                    option.dataset.id = teacher.id;
+                }
+                if (teacher.scheduleFile) {
+                    option.dataset.scheduleFile = teacher.scheduleFile;
+                }
+                select.appendChild(option);
+            });
+
+            let selectedTeacher = null;
+            
+            if (teacherParam) {
+                selectedTeacher = teachersList.find(t => 
+                    t.name === teacherParam || 
+                    t.id === teacherParam ||
+                    t.fileName === teacherParam + '.html'
+                );
+                if (selectedTeacher) {
+                    select.value = selectedTeacher.id || selectedTeacher.name;
+                }
+            }
+
+            if (!selectedTeacher && teachersList.length > 0) {
+                select.value = teachersList[0].id || teachersList[0].name;
+                selectedTeacher = teachersList[0];
+            }
+
+            if (selectedTeacher) {
+                currentTeacher = selectedTeacher;
+                await loadTeacherSchedule(selectedTeacher);
+            }
+
+        } catch (error) {
+            console.error('Ошибка загрузки списка учителей:', error);
+            const select = document.getElementById('teacherSelect');
+            select.innerHTML = '<option value="">❌ Ошибка</option>';
+            showError('❌ Не удалось загрузить список учителей');
+        }
+    }
+
+    // ===== ЗАГРУЗКА РАСПИСАНИЯ УЧИТЕЛЯ =====
+    async function loadTeacherSchedule(teacher) {
+        try {
+            const dayInfo = getScheduleDay();
+            currentDay = dayParam && DAYS.includes(dayParam.toUpperCase()) 
+                ? dayParam.toUpperCase() 
+                : dayInfo.targetDay;
+
+            const scheduleFile = teacher.scheduleFile || 
+                                teacher.fileName?.replace('.html', '.json') || 
+                                `schedule_${teacher.id || 'default'}.json`;
+
+            const response = await fetch(`/data/${scheduleFile}?_=${Date.now()}`);
+            if (!response.ok) {
+                throw new Error(`Не удалось загрузить расписание: ${scheduleFile}`);
+            }
+            
+            currentScheduleData = await response.json();
+            updateUI(teacher, currentScheduleData, currentDay);
+
+        } catch (error) {
+            console.error('Ошибка загрузки расписания:', error);
+            showError('❌ ' + error.message);
+        }
+    }
+
+    // ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
+    function updateUI(teacher, scheduleData, day) {
+        document.getElementById('teacherDay').textContent = DAYS_RU[DAYS.indexOf(day)] || day;
+        
+        const dayPrep = DAYS_PREP[DAYS.indexOf(day)] || 'сегодня';
+        document.getElementById('changesText').innerHTML = 
+            `📌 Изменения<br>на ${dayPrep}`;
+
+        updatePageTitle(teacher.name, day);
+        renderSchedule(scheduleData, day);
+
+        if (scheduleData.last_update) {
+            document.getElementById('updateTime').textContent = 
+                '🔄 обновлено: ' + scheduleData.last_update;
+        }
+        document.getElementById('genTime').textContent = 
+            '📅 ' + new Date().toLocaleString('ru-RU');
+            
+        // Запускаем таймер для обновления времени перемены
+        startBreakTimer();
+    }
+
+    // ===== ЗАПУСК ТАЙМЕРА ПЕРЕМЕНЫ =====
+    function startBreakTimer() {
+        if (breakTimer) {
+            clearInterval(breakTimer);
+            breakTimer = null;
+        }
+        // Сразу обновляем
+        updateBreakTimer();
+        // Запускаем интервал каждую секунду
+        breakTimer = setInterval(updateBreakTimer, 1000);
+    }
+
+    // ===== РЕНДЕРИНГ РАСПИСАНИЯ =====
+    function renderSchedule(data, day) {
+        const container = document.getElementById('scheduleTable');
+        const lessons = data[day] || [];
+
+        if (!lessons || lessons.length === 0) {
+            container.innerHTML = `<div class="no-lessons-msg">📌 Уроков нет на ${DAYS_RU[DAYS.indexOf(day)] || day}</div>`;
+            document.getElementById('lessonCount').textContent = '📚 0 уроков';
+            return;
+        }
+
+        const grouped = {};
+        lessons.forEach(lesson => {
+            const num = lesson.lesson || lesson.num || 0;
+            if (num === 0) return;
+            
+            if (!grouped[num]) {
+                grouped[num] = { classes: [], subjects: [], rooms: [] };
+            }
+            
+            if (lesson.class && !grouped[num].classes.includes(lesson.class)) {
+                grouped[num].classes.push(lesson.class);
+            }
+            if (lesson.subject && !grouped[num].subjects.includes(lesson.subject)) {
+                grouped[num].subjects.push(lesson.subject);
+            }
+            if (lesson.room && !grouped[num].rooms.includes(lesson.room)) {
+                grouped[num].rooms.push(lesson.room);
+            }
+        });
+
+        const currentLessonNum = getCurrentLessonNum();
+        const currentBreak = getCurrentBreak();
+
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Время</th>
+                        <th>Класс</th>
+                        <th>Предмет</th>
+                        <th>Кабинет</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        let totalLessons = 0;
+        const maxLessons = 9;
+
+        for (let i = 1; i <= maxLessons; i++) {
+            const item = grouped[i];
+            const period = LESSON_PERIODS[i - 1] || {start:'--:--',end:'--:--'};
+            const isEmpty = !item || item.classes.length === 0;
+
+            if (!isEmpty) totalLessons++;
+
+            const isCurrent = (i === currentLessonNum && !isEmpty);
+            const rowClass = isCurrent ? ' class="current"' : '';
+
+            const classesDisplay = isEmpty ? '—' : item.classes.join(', ');
+            const subjectsDisplay = isEmpty ? '—' : item.subjects.join(', ');
+            const roomsDisplay = isEmpty ? '—' : item.rooms.join(', ');
+
+            html += `
+                <tr${rowClass}>
+                    <td class="num">${i}</td>
+                    <td class="period">
+                        <div class="time-start">${period.start}</div>
+                        <div class="time-end">${period.end}</div>
+                    </td>
+                    <td class="class">${classesDisplay}</td>
+                    <td class="subject">${subjectsDisplay}</td>
+                    <td class="room">${roomsDisplay}</td>
+                </tr>
+            `;
+            
+            // Добавляем строку перемены ПОСЛЕ каждого урока (кроме последнего)
+            if (i < maxLessons) {
+                const breakInfo = BREAKS.find(b => b.after === i);
+                if (breakInfo) {
+                    const isBreakNow = currentBreak && currentBreak.after === i;
+                    const breakRowClass = isBreakNow ? ' class="break-row current"' : ' class="break-row"';
+                    const timeLeft = isBreakNow ? getBreakTimeLeft(breakInfo) : 0;
+                    const untilText = isBreakNow ? `⏳ до конца ${formatTime(timeLeft)}` : '';
+                    
+                    html += `
+                        <tr${breakRowClass}>
+                            <td colspan="5">
+                                <div class="break-label">
+                                    <span class="break-icon">🏃</span>
+                                    <span>Перемена</span>
+                                    ${isBreakNow ? ` <span class="break-until">${untilText}</span>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        const lessonWord = getLessonWord(totalLessons);
+        document.getElementById('lessonCount').textContent = 
+            `📚 ${totalLessons} ${lessonWord}`;
+    }
+
+    function showError(message) {
+        document.getElementById('scheduleTable').innerHTML = 
+            `<div class="no-lessons-msg">${message}</div>`;
+        document.getElementById('pageTitle').textContent = 'Ошибка - Расписание';
+    }
+
+    // ===== ОБРАБОТЧИК СМЕНЫ УЧИТЕЛЯ =====
+    function onTeacherChange() {
+        const select = document.getElementById('teacherSelect');
+        const selectedValue = select.value;
+        
+        if (!selectedValue) {
+            document.getElementById('scheduleTable').innerHTML = 
+                '<div class="no-lessons-msg">👨‍🏫 Выберите учителя</div>';
+            document.getElementById('pageTitle').textContent = 'Выбор учителя - Расписание';
+            return;
+        }
+
+        const teacher = teachersList.find(t => 
+            (t.id && t.id === selectedValue) || 
+            (t.name && t.name === selectedValue)
+        );
+
+        if (teacher) {
+            currentTeacher = teacher;
+            loadTeacherSchedule(teacher);
+            
+            const url = new URL(window.location);
+            url.searchParams.set('teacher', teacher.name);
+            window.history.pushState({}, '', url);
+        }
+    }
+
+    // ===== ОБНОВЛЕНИЕ ДАННЫХ =====
+    window.refreshData = function() {
+        if (currentTeacher) {
+            loadTeacherSchedule(currentTeacher);
+        } else {
+            loadTeachersList();
+        }
+    };
+
+    // ===== АВТООБНОВЛЕНИЕ =====
+    function startAutoRefresh() {
+        setInterval(() => {
+            if (currentTeacher) {
+                loadTeacherSchedule(currentTeacher);
+            } else {
+                loadTeachersList();
+            }
+        }, 240000);
+    }
+
+    // ===== ЗАПУСК =====
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initClock === 'function') {
+            initClock('clockContainer');
+        } else {
+            console.warn('clock.js не загружен');
+        }
+
+        loadTeachersList();
+        document.getElementById('teacherSelect').addEventListener('change', onTeacherChange);
+        startAutoRefresh();
+
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                if (currentTeacher) {
+                    loadTeacherSchedule(currentTeacher);
+                } else {
+                    loadTeachersList();
+                }
+            }
+        });
+    });
+
+})();
+</script>
+
+</body>
+</html>
