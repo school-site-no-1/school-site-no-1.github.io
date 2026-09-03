@@ -58,27 +58,27 @@
       "lesson": 3,
       "class": "10Б",
       "subject": "Химия",
-      "room": ""
+      "room": "212"
     },
     {
       "lesson": 4,
       "class": "9Б",
       "subject": "Химия",
-      "room": ""
+      "room": "212"
     },
     {
       "lesson": 5,
       "class": "9В",
       "subject": "Химия",
-      "room": ""
+      "room": "212"
     },
     {
       "lesson": 6,
       "class": "9А",
       "subject": "Химия",
-      "room": ""
+      "room": "212"
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-02 19:04:45"
+  "last_update": "2026-09-03 12:31:20"
 }
