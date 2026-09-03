@@ -14,7 +14,17 @@
       "id": "abramenko_v",
       "name": "Абраменко В.А.",
       "scheduleFile": "abramenko_v.json"
+    },
+    {
+      "id": "komarova_e",
+      "name": "Комарова Е.А.",
+      "scheduleFile": "komarova_e.json"
+    },
+    {
+      "id": "zhigulina_s",
+      "name": "Жигулина С.А.",
+      "scheduleFile": "zhigulina_s.json"
     }
   ],
-  "last_update": "2026-09-02 19:04:42"
+  "last_update": "2026-09-03 12:31:15"
 }
