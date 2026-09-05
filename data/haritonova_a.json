@@ -1,0 +1,61 @@
+{
+  "ПН": [],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 7,
+      "class": "7Б",
+      "subject": "ИЗО",
+      "room": "208"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "5Б",
+      "subject": "ИЗО",
+      "room": "208"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "6А",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 6,
+      "class": "5А",
+      "subject": "ИЗО",
+      "room": "208"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "7А",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 2,
+      "class": "7В",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 6,
+      "class": "6Б",
+      "subject": "ИЗО",
+      "room": "208"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:53:02"
+}
