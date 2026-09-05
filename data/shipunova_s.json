@@ -1,0 +1,139 @@
+{
+  "ПН": [
+    {
+      "lesson": 2,
+      "class": "10Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 3,
+      "class": "6В",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 4,
+      "class": "11Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 5,
+      "class": "6А",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 6,
+      "class": "10А",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 7,
+      "class": "6Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 8,
+      "class": "6А",
+      "subject": "Вн.по биологии",
+      "room": "207"
+    },
+    {
+      "lesson": 8,
+      "class": "6Б",
+      "subject": "Вн.по биологии",
+      "room": ""
+    },
+    {
+      "lesson": 8,
+      "class": "6В",
+      "subject": "Вн.по биологии",
+      "room": ""
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 7,
+      "class": "11Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 8,
+      "class": "11Б",
+      "subject": "Вн.по биологии",
+      "room": "207"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "8Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 2,
+      "class": "8А",
+      "subject": "Биология",
+      "room": "204"
+    },
+    {
+      "lesson": 4,
+      "class": "8В",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 6,
+      "class": "10Б",
+      "subject": "Биология",
+      "room": "207"
+    }
+  ],
+  "ЧТ": [],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "11А",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 2,
+      "class": "11Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 3,
+      "class": "8В",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 4,
+      "class": "8Б",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 5,
+      "class": "8А",
+      "subject": "Биология",
+      "room": "207"
+    },
+    {
+      "lesson": 7,
+      "class": "10Б",
+      "subject": "Биология",
+      "room": "207"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:35"
+}
