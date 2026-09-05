@@ -1,9 +1,158 @@
 {
-  "ПН": [],
-  "ВТ": [],
-  "СР": [],
-  "ЧТ": [],
-  "ПТ": [],
+  "ПН": [
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 4,
+      "class": "6А",
+      "subject": "Математика",
+      "room": "205"
+    },
+    {
+      "lesson": 5,
+      "class": "9В",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 6,
+      "class": "9Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 7,
+      "class": "9Б",
+      "subject": "Вероятность и статист",
+      "room": "205"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 2,
+      "class": "6А",
+      "subject": "Математика",
+      "room": "205"
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Геометрия",
+      "room": "205"
+    },
+    {
+      "lesson": 4,
+      "class": "8Б",
+      "subject": "Вероятность и статист",
+      "room": "205"
+    },
+    {
+      "lesson": 5,
+      "class": "9В",
+      "subject": "Геометрия",
+      "room": "205"
+    },
+    {
+      "lesson": 6,
+      "class": "9Б",
+      "subject": "Геометрия",
+      "room": "205"
+    },
+    {
+      "lesson": 7,
+      "class": "9Б",
+      "subject": "Вн.по матем.",
+      "room": "205"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "9В",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 2,
+      "class": "8Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "Математика",
+      "room": "205"
+    },
+    {
+      "lesson": 5,
+      "class": "9Б",
+      "subject": "Алгебра",
+      "room": "205"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 2,
+      "class": "8Б",
+      "subject": "Геометрия",
+      "room": "205"
+    },
+    {
+      "lesson": 4,
+      "class": "9Б",
+      "subject": "Геометрия",
+      "room": "205"
+    },
+    {
+      "lesson": 5,
+      "class": "6А",
+      "subject": "Математика",
+      "room": "205"
+    },
+    {
+      "lesson": 6,
+      "class": "9В",
+      "subject": "Геометрия",
+      "room": "205"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "9В",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 2,
+      "class": "9В",
+      "subject": "Вероятность и статист",
+      "room": "205"
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Алгебра",
+      "room": "205"
+    },
+    {
+      "lesson": 4,
+      "class": "6А",
+      "subject": "Математика",
+      "room": "205"
+    },
+    {
+      "lesson": 5,
+      "class": "9Б",
+      "subject": "Алгебра",
+      "room": "205"
+    }
+  ],
   "СБ": [],
-  "last_update": "2026-09-05 10:49:05"
+  "last_update": "2026-09-05 10:57:37"
 }
