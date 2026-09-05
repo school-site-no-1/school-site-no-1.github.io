@@ -1,0 +1,152 @@
+{
+  "ПН": [
+    {
+      "lesson": 2,
+      "class": "8В",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 4,
+      "class": "11А",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 5,
+      "class": "9А",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 6,
+      "class": "9А",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 7,
+      "class": "11Б",
+      "subject": "Литература",
+      "room": "303"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 2,
+      "class": "9А",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 3,
+      "class": "11Б",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 4,
+      "class": "8В",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 5,
+      "class": "11А",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 6,
+      "class": "11А",
+      "subject": "Эл.по рус.яз",
+      "room": "303"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 4,
+      "class": "11А",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 5,
+      "class": "11Б",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 6,
+      "class": "9А",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 7,
+      "class": "9А",
+      "subject": "Вн. по рус.яз",
+      "room": "303"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 2,
+      "class": "9А",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 3,
+      "class": "11А",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 4,
+      "class": "8В",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 5,
+      "class": "8В",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 6,
+      "class": "11Б",
+      "subject": "Русский язык",
+      "room": "303"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 2,
+      "class": "11А",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 3,
+      "class": "11Б",
+      "subject": "Литература",
+      "room": "303"
+    },
+    {
+      "lesson": 5,
+      "class": "9А",
+      "subject": "Русский язык",
+      "room": "303"
+    },
+    {
+      "lesson": 6,
+      "class": "8В",
+      "subject": "Русский язык",
+      "room": "303"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:02"
+}
