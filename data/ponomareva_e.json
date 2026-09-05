@@ -1,0 +1,152 @@
+{
+  "ПН": [
+    {
+      "lesson": 1,
+      "class": "8Б",
+      "subject": "Разговор о важном",
+      "room": "306"
+    },
+    {
+      "lesson": 2,
+      "class": "8Б",
+      "subject": "Литература",
+      "room": "306"
+    },
+    {
+      "lesson": 3,
+      "class": "5Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 4,
+      "class": "5Б",
+      "subject": "Литература",
+      "room": "306"
+    },
+    {
+      "lesson": 6,
+      "class": "6А",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 7,
+      "class": "6А",
+      "subject": "Литература",
+      "room": "306"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "8Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 2,
+      "class": "5Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 4,
+      "class": "6А",
+      "subject": "Русский язык",
+      "room": "306"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 2,
+      "class": "5Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 3,
+      "class": "5Б",
+      "subject": "Литература",
+      "room": "306"
+    },
+    {
+      "lesson": 4,
+      "class": "6А",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 5,
+      "class": "6А",
+      "subject": "Литература",
+      "room": "306"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 2,
+      "class": "6А",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 3,
+      "class": "5Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 4,
+      "class": "8Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 5,
+      "class": "8Б",
+      "subject": "Литература",
+      "room": "306"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "8Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 2,
+      "class": "5Б",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "Русский язык",
+      "room": "306"
+    },
+    {
+      "lesson": 4,
+      "class": "5Б",
+      "subject": "Литература",
+      "room": "306"
+    },
+    {
+      "lesson": 5,
+      "class": "6А",
+      "subject": "Литература",
+      "room": "306"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:05"
+}
