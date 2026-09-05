@@ -1,0 +1,182 @@
+{
+  "ПН": [
+    {
+      "lesson": 2,
+      "class": "11Б",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 4,
+      "class": "10А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 5,
+      "class": "10А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 6,
+      "class": "11А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 7,
+      "class": "11А",
+      "subject": "История",
+      "room": "307"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 2,
+      "class": "10А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 5,
+      "class": "7В",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 6,
+      "class": "7Б",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 7,
+      "class": "7А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 8,
+      "class": "11А",
+      "subject": "Эл.по обществозн.",
+      "room": "307"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "7А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 2,
+      "class": "7Б",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 3,
+      "class": "11А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 4,
+      "class": "11Б",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 5,
+      "class": "7В",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 7,
+      "class": "11А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 8,
+      "class": "11Б",
+      "subject": "История",
+      "room": "208"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "11А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 2,
+      "class": "11А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 3,
+      "class": "11Б",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 4,
+      "class": "10А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 6,
+      "class": "7В",
+      "subject": "История",
+      "room": "307"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 2,
+      "class": "7А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 4,
+      "class": "11А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 5,
+      "class": "11А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 6,
+      "class": "10А",
+      "subject": "Обществознание",
+      "room": "307"
+    },
+    {
+      "lesson": 7,
+      "class": "10А",
+      "subject": "Обществознание",
+      "room": "307"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:21"
+}
