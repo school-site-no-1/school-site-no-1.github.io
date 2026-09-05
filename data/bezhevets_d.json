@@ -1,0 +1,78 @@
+{
+  "ПН": [],
+  "ВТ": [
+    {
+      "lesson": 2,
+      "class": "8А",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 5,
+      "class": "7Б",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 6,
+      "class": "8В",
+      "subject": "ДКП",
+      "room": "310"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "5А",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 2,
+      "class": "6Б",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 6,
+      "class": "6В",
+      "subject": "ДКП",
+      "room": "310"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "7В",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 4,
+      "class": "5Б",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 7,
+      "class": "7А",
+      "subject": "ДКП",
+      "room": "310"
+    }
+  ],
+  "ПТ": [],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:31"
+}
