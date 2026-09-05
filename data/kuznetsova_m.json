@@ -1,0 +1,152 @@
+{
+  "ПН": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "Разговор о важном",
+      "room": "301"
+    },
+    {
+      "lesson": 2,
+      "class": "8А",
+      "subject": "Литература",
+      "room": "301"
+    },
+    {
+      "lesson": 3,
+      "class": "5А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 4,
+      "class": "5А",
+      "subject": "Литература",
+      "room": "301"
+    },
+    {
+      "lesson": 5,
+      "class": "6В",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 6,
+      "class": "6В",
+      "subject": "Литература",
+      "room": "301"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "8А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 2,
+      "class": "5А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 3,
+      "class": "6В",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 4,
+      "class": "6В",
+      "subject": "Русский язык",
+      "room": "301"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 2,
+      "class": "5А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 3,
+      "class": "5А",
+      "subject": "Литература",
+      "room": "301"
+    },
+    {
+      "lesson": 5,
+      "class": "6В",
+      "subject": "Литература",
+      "room": "301"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 3,
+      "class": "5А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 4,
+      "class": "8А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 5,
+      "class": "8А",
+      "subject": "Литература",
+      "room": "301"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "5А",
+      "subject": "Литература",
+      "room": "301"
+    },
+    {
+      "lesson": 2,
+      "class": "5А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 3,
+      "class": "6В",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 4,
+      "class": "8А",
+      "subject": "Русский язык",
+      "room": "301"
+    },
+    {
+      "lesson": 5,
+      "class": "6В",
+      "subject": "Литература",
+      "room": "301"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:03"
+}
