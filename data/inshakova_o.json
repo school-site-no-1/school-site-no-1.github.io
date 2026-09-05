@@ -1,9 +1,134 @@
 {
-  "ПН": [],
-  "ВТ": [],
-  "СР": [],
-  "ЧТ": [],
-  "ПТ": [],
+  "ПН": [
+    {
+      "lesson": 3,
+      "class": "8А",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "8Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 5,
+      "class": "11Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "8В",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 3,
+      "class": "9А",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "9В",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 5,
+      "class": "9Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "10Б",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 3,
+      "class": "10Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "10А",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "11Б",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "8В",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 2,
+      "class": "11Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "11А",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "8А",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 3,
+      "class": "10Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 4,
+      "class": "9Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 5,
+      "class": "9В",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
+      "lesson": 6,
+      "class": "9А",
+      "subject": "Химия",
+      "room": "212"
+    }
+  ],
   "СБ": [],
-  "last_update": "2026-09-05 10:49:03"
+  "last_update": "2026-09-05 10:57:35"
 }
