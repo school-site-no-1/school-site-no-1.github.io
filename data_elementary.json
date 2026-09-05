@@ -1,6 +1,6 @@
 {
   "version": "2.0.0",
-  "updated": "2026-09-05T11:26:23.150Z",
+  "updated": "2026-09-05T18:53:21.147Z",
   "meta": {
     "school": "Школа №5",
     "city": "Москва",
@@ -1894,5 +1894,17 @@
       }
     }
   },
-  "teachers": {}
+  "teachers": {
+    "bezhevets_d": "ОПК",
+    "ivanova_o": "Англ. язык",
+    "shtukaturova_n": "Англ. язык",
+    "karimova_s": "Англ. язык",
+    "shishmintseva_m": "Англ. язык",
+    "sivolapov_d": "Физ-ра",
+    "semenov_v": "Физ-ра",
+    "galahov_v": "Физ-ра",
+    "brazhnikov_a": "Физ-ра",
+    "haritonova_a": "ИЗО",
+    "stepanova_o": "Музыка"
+  }
 }
