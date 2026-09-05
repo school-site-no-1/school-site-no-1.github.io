@@ -1,0 +1,128 @@
+{
+  "ПН": [
+    {
+      "lesson": 2,
+      "class": "7Б",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 3,
+      "class": "7Б",
+      "subject": "Литература",
+      "room": "305"
+    },
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 5,
+      "class": "7В",
+      "subject": "Литература",
+      "room": "305"
+    },
+    {
+      "lesson": 6,
+      "class": "9В",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 7,
+      "class": "9В",
+      "subject": "Литература",
+      "room": "305"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 3,
+      "class": "7Б",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 6,
+      "class": "9В",
+      "subject": "Литература",
+      "room": "305"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "Литература",
+      "room": "305"
+    },
+    {
+      "lesson": 5,
+      "class": "7Б",
+      "subject": "Литература",
+      "room": "305"
+    },
+    {
+      "lesson": 6,
+      "class": "9В",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 7,
+      "class": "9В",
+      "subject": "Вн. по рус.яз",
+      "room": "305"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 2,
+      "class": "9В",
+      "subject": "Литература",
+      "room": "305"
+    },
+    {
+      "lesson": 4,
+      "class": "7В",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 5,
+      "class": "7Б",
+      "subject": "Русский язык",
+      "room": "305"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 4,
+      "class": "7Б",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 6,
+      "class": "7В",
+      "subject": "Русский язык",
+      "room": "305"
+    },
+    {
+      "lesson": 7,
+      "class": "9В",
+      "subject": "Русский язык",
+      "room": "305"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:07"
+}
