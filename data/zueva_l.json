@@ -1,0 +1,182 @@
+{
+  "ПН": [
+    {
+      "lesson": 1,
+      "class": "10Б",
+      "subject": "Разговор о важном",
+      "room": "202"
+    },
+    {
+      "lesson": 2,
+      "class": "6Б",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 4,
+      "class": "6В",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 5,
+      "class": "10Б",
+      "subject": "Вероятность и статист",
+      "room": "202"
+    },
+    {
+      "lesson": 7,
+      "class": "10А",
+      "subject": "Вероятность и статист",
+      "room": "202"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "6Б",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 3,
+      "class": "10А",
+      "subject": "Геометрия",
+      "room": "202"
+    },
+    {
+      "lesson": 4,
+      "class": "10Б",
+      "subject": "Геометрия",
+      "room": "202"
+    },
+    {
+      "lesson": 5,
+      "class": "6В",
+      "subject": "Математика",
+      "room": "202"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "10Б",
+      "subject": "Алгебра",
+      "room": "202"
+    },
+    {
+      "lesson": 2,
+      "class": "10Б",
+      "subject": "Алгебра",
+      "room": "202"
+    },
+    {
+      "lesson": 3,
+      "class": "6В",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 4,
+      "class": "6Б",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 5,
+      "class": "10А",
+      "subject": "Алгебра",
+      "room": "202"
+    },
+    {
+      "lesson": 6,
+      "class": "10А",
+      "subject": "Алгебра",
+      "room": "202"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "10А",
+      "subject": "Геометрия",
+      "room": "202"
+    },
+    {
+      "lesson": 2,
+      "class": "10А",
+      "subject": "Геометрия",
+      "room": "202"
+    },
+    {
+      "lesson": 3,
+      "class": "6Б",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 4,
+      "class": "6В",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 5,
+      "class": "10Б",
+      "subject": "Геометрия",
+      "room": "202"
+    },
+    {
+      "lesson": 6,
+      "class": "10Б",
+      "subject": "Геометрия",
+      "room": "202"
+    },
+    {
+      "lesson": 7,
+      "class": "10Б",
+      "subject": "Вн.по матем.",
+      "room": "202"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 2,
+      "class": "10Б",
+      "subject": "Алгебра",
+      "room": "202"
+    },
+    {
+      "lesson": 3,
+      "class": "10А",
+      "subject": "Алгебра",
+      "room": "202"
+    },
+    {
+      "lesson": 4,
+      "class": "10А",
+      "subject": "Вероятность и статист",
+      "room": "202"
+    },
+    {
+      "lesson": 5,
+      "class": "6Б",
+      "subject": "Математика",
+      "room": "202"
+    },
+    {
+      "lesson": 6,
+      "class": "10Б",
+      "subject": "Вероятность и статист",
+      "room": "202"
+    }
+  ],
+  "СБ": [],
+  "last_update": "2026-09-05 18:52:11"
+}
