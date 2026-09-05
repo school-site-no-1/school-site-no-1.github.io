@@ -24,7 +24,177 @@
       "id": "zhigulina_s",
       "name": "Жигулина С.А.",
       "scheduleFile": "zhigulina_s.json"
+    },
+    {
+      "id": "prohorova_n",
+      "name": "Прохорова Н.С.",
+      "scheduleFile": "prohorova_n.json"
+    },
+    {
+      "id": "kuznetsova_m",
+      "name": "Кузнецова М.В.",
+      "scheduleFile": "kuznetsova_m.json"
+    },
+    {
+      "id": "ponomareva_e",
+      "name": "Пономарева Е.И.",
+      "scheduleFile": "ponomareva_e.json"
+    },
+    {
+      "id": "saksonova_n",
+      "name": "Саксонова Н.Г.",
+      "scheduleFile": "saksonova_n.json"
+    },
+    {
+      "id": "krotova_e",
+      "name": "Кротова Е.С.",
+      "scheduleFile": "krotova_e.json"
+    },
+    {
+      "id": "zueva_l",
+      "name": "Зуева Л.Н.",
+      "scheduleFile": "zueva_l.json"
+    },
+    {
+      "id": "lukyantseva_n",
+      "name": "Лукянцева Н.Е.",
+      "scheduleFile": "lukyantseva_n.json"
+    },
+    {
+      "id": "pashkevich_n",
+      "name": "Пашкевич Н.В.",
+      "scheduleFile": "pashkevich_n.json"
+    },
+    {
+      "id": "solomin_a",
+      "name": "Соломин А.Г.",
+      "scheduleFile": "solomin_a.json"
+    },
+    {
+      "id": "olьhovskaya_e",
+      "name": "Ольховская Е.В.",
+      "scheduleFile": "olьhovskaya_e.json"
+    },
+    {
+      "id": "shaporeva_l",
+      "name": "Шапорева Л.Д.",
+      "scheduleFile": "shaporeva_l.json"
+    },
+    {
+      "id": "vasilьeva_m",
+      "name": "Васильева М.В.",
+      "scheduleFile": "vasilьeva_m.json"
+    },
+    {
+      "id": "lukyantseva_s",
+      "name": "Лукянцева С.В.",
+      "scheduleFile": "lukyantseva_s.json"
+    },
+    {
+      "id": "bezhevets_d",
+      "name": "Бежевец Д.А.",
+      "scheduleFile": "bezhevets_d.json"
+    },
+    {
+      "id": "balьzamova_e",
+      "name": "Бальзамова Е.В.",
+      "scheduleFile": "balьzamova_e.json"
+    },
+    {
+      "id": "shipunova_s",
+      "name": "Шипунова С.В.",
+      "scheduleFile": "shipunova_s.json"
+    },
+    {
+      "id": "gorbachev_a",
+      "name": "Горбачев А.А.",
+      "scheduleFile": "gorbachev_a.json"
+    },
+    {
+      "id": "ivanova_e",
+      "name": "Иванова Е.В.",
+      "scheduleFile": "ivanova_e.json"
+    },
+    {
+      "id": "ivanova_o",
+      "name": "Иванова О.В.",
+      "scheduleFile": "ivanova_o.json"
+    },
+    {
+      "id": "shtukaturova_n",
+      "name": "Штукатурова Н.А.",
+      "scheduleFile": "shtukaturova_n.json"
+    },
+    {
+      "id": "karimova_s",
+      "name": "Каримова С.Х.",
+      "scheduleFile": "karimova_s.json"
+    },
+    {
+      "id": "krasnova_yu",
+      "name": "Краснова Ю.В.",
+      "scheduleFile": "krasnova_yu.json"
+    },
+    {
+      "id": "shishmintseva_m",
+      "name": "Шишминцева М.В.",
+      "scheduleFile": "shishmintseva_m.json"
+    },
+    {
+      "id": "danilina_o",
+      "name": "Данилина О.М.",
+      "scheduleFile": "danilina_o.json"
+    },
+    {
+      "id": "topal_s",
+      "name": "Топал С.А.",
+      "scheduleFile": "topal_s.json"
+    },
+    {
+      "id": "sivolapov_d",
+      "name": "Сиволапов Д.А.",
+      "scheduleFile": "sivolapov_d.json"
+    },
+    {
+      "id": "semenov_v",
+      "name": "Семенов В.С.",
+      "scheduleFile": "semenov_v.json"
+    },
+    {
+      "id": "galahov_v",
+      "name": "Галахов В.В.",
+      "scheduleFile": "galahov_v.json"
+    },
+    {
+      "id": "brazhnikov_a",
+      "name": "Бражников А.П.",
+      "scheduleFile": "brazhnikov_a.json"
+    },
+    {
+      "id": "haritonova_a",
+      "name": "Харитонова А.М.",
+      "scheduleFile": "haritonova_a.json"
+    },
+    {
+      "id": "stepanova_o",
+      "name": "Степанова О.С.",
+      "scheduleFile": "stepanova_o.json"
+    },
+    {
+      "id": "pyrkova_l",
+      "name": "Пыркова Л.С.",
+      "scheduleFile": "pyrkova_l.json"
+    },
+    {
+      "id": "klyueva_n",
+      "name": "Клюева Н.Н.",
+      "scheduleFile": "klyueva_n.json"
+    },
+    {
+      "id": "hikmatova_a",
+      "name": "Хикматова А.А.",
+      "scheduleFile": "hikmatova_a.json"
     }
   ],
-  "last_update": "2026-09-05 11:25:58"
+  "last_update": "2026-09-05 18:51:47"
 }
