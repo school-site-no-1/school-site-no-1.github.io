@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ru" data-version="v4.3.7">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание 5-11</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2b6cb0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <style>
+        /* ============================
+           БАЗОВЫЕ СТИЛИ
+           ============================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body {
+            min-height: 100dvh;
+            align-items: stretch;
+            padding: 4px;
+        }
+
+        .container {
+            height: calc(100vh - 8px);
+            min-height: calc(100vh - 8px);
+            height: calc(100dvh - 8px);
+            min-height: calc(100dvh - 8px);
+            padding: 8px;
+            border-radius: 12px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #d0d7e0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ============================
+           ШАПКА
+           ============================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: nowrap;
+            gap: 8px;
+            min-height: 44px;
+        }
+        
+        .header-left {
+            display: none !important;
+        }
+        .header-banner {
+            display: none !important;
+        }
+        .mobile-banner-text {
+            display: none !important;
+        }
+
+        .header-center {
+            display: flex !important;
+            align-items: center;
+            flex: 1 1 auto;
+        }
+        .header-center .day-indicator {
+            display: none !important;
+        }
+        .header-center .divider {
+            display: none !important;
+        }
+
+        .period {
+            color: #e65100;
+            font-weight: 600;
+            min-height: 1.6em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+        .period .line1 {
+            font-size: 15px;
+            display: block;
+        }
+        .period .line2 {
+            font-size: 13px;
+            display: block;
+            font-weight: 500;
+            color: #d45c00;
+        }
+
+        .header-right {
+            text-align: right;
+            display: flex !important;
+            flex-direction: column;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        /* ============================
+           ЧАСЫ (из clock.js) - ПОЛНАЯ ПЕРЕЗАПИСЬ СТИЛЕЙ
+           ============================ */
+        #clockContainer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 80px;
+        }
+        
+        /* ОБНУЛЯЕМ ВСЕ СТИЛИ И ЗАДАЕМ СВОИ */
+        #clockContainer * {
+            box-sizing: border-box;
+        }
+        
+        #clockContainer .clock-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            gap: 1px !important;
+        }
+        
+        #clockContainer .clock-top {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+        
+        #clockContainer svg {
+            width: 36px !important;
+            height: 36px !important;
+            display: block !important;
+        }
+        
+        #clockContainer .clock-text {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            white-space: nowrap !important;
+        }
+        
+        #clockContainer .clock-text .digital-time {
+            font-size: 18px !important;
+            color: #2b6cb0 !important;
+            font-weight: 700 !important;
+            font-variant-numeric: tabular-nums !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* ПОКАЗЫВАЕМ ДЕНЬ НЕДЕЛИ */
+        #clockContainer .clock-text .day,
+        #clockContainer .day,
+        #clockContainer .clock-text .day-name {
+            display: block !important;
+            font-size: 9px !important;
+            color: #4a5568 !important;
+            font-weight: 600 !important;
+            line-height: 1.2 !important;
+            text-align: right !important;
+        }
+        
+        #clockContainer .clock-text .day .day-name,
+        #clockContainer .day .day-name {
+            color: #2b6cb0 !important;
+            font-weight: 700 !important;
+        }
+        
+        /* Скрываем старые элементы */
+        #clockContainer .clock-date-row,
+        #clockContainer .clock-text .countdown {
+            display: none !important;
+        }
+
+        /* ============================
+           МОБИЛЬНЫЕ КОНТРОЛЫ
+           ============================ */
+        .mobile-controls {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 12px;
+            margin: 0 0 6px;
+            border: 1px solid #d0d7e0;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1a365d;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .mobile-controls label {
+            min-width: 0;
+            font-size: 14px;
+        }
+        .mobile-controls select {
+            flex: 1 1 auto;
+            min-width: 0;
+            min-height: 36px;
+            padding: 6px 10px;
+            border: 1px solid #2b6cb0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1a365d;
+            font: inherit;
+            font-size: 14px;
+        }
+        .mobile-controls select:focus-visible {
+            outline: 3px solid #f6ad55;
+            outline-offset: 2px;
+        }
+
+        /* ============================
+           МОБИЛЬНЫЕ КАРТОЧКИ
+           ============================ */
+        .mobile-view {
+            display: flex !important;
+            flex-direction: column;
+            gap: 4px;
+            padding: 2px 0;
+            overflow-y: auto;
+            height: 100%;
+        }
+        .mobile-class-card {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .mobile-class-header {
+            background: #edf2f7;
+            font-weight: 700;
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 6px 12px !important;
+            font-size: 15px !important;
+            min-height: 28px !important;
+            height: auto !important;
+            line-height: 1.4 !important;
+        }
+        .mobile-lesson-card {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #f0f4f8;
+            padding: 6px 10px !important;
+            min-height: 32px !important;
+            height: auto !important;
+        }
+        .mobile-lesson-card:last-child {
+            border-bottom: none;
+        }
+        .mobile-lesson-card.current {
+            background: #bee3f8;
+        }
+        .mobile-lesson-card .lesson-num-mobile {
+            font-weight: 700;
+            color: #4a5568;
+            text-align: center;
+            flex-shrink: 0;
+            font-size: 13px !important;
+            min-width: 24px !important;
+        }
+        .mobile-lesson-card.current .lesson-num-mobile {
+            color: #2b6cb0;
+        }
+        .mobile-lesson-card .lesson-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px !important;
+            min-width: 0;
+        }
+        .mobile-lesson-card .lesson-info .subject-name {
+            font-weight: 500;
+            color: #2d3748;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
+        }
+        .mobile-lesson-card .lesson-info .subject-name.empty {
+            color: #a0aec0;
+            font-style: italic;
+        }
+        .mobile-lesson-card .lesson-info .room-name {
+            font-weight: 700;
+            color: #e65100;
+            font-size: 11px !important;
+            line-height: 1.3 !important;
+            margin-top: 1px !important;
+        }
+        .mobile-lesson-card .lesson-time {
+            color: #718096;
+            white-space: nowrap;
+            text-align: right;
+            flex-shrink: 0;
+            font-size: 10px !important;
+            line-height: 1.3 !important;
+        }
+        .mobile-lesson-card.current .lesson-time {
+            color: #2b6cb0;
+            font-weight: 600;
+        }
+
+        /* ============================
+           ПОДВАЛ
+           ============================ */
+        .footer {
+            flex-shrink: 0;
+            margin-top: 4px;
+            color: #a0aec0;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 4px;
+            font-size: 12px;
+        }
+        .footer .version {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .board-sync {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #276749;
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 12px;
+            padding: 1px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+        .board-sync::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        .board-sync.loading {
+            color: #975a16;
+            background: #fffaf0;
+            border-color: #fbd38d;
+        }
+        .board-sync.offline {
+            color: #c53030;
+            background: #fff5f5;
+            border-color: #feb2b2;
+        }
+
+        /* ============================
+           ЗАГРУЗКА
+           ============================ */
+        .loading-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #4a5568;
+            font-weight: 300;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .loading-overlay .sub {
+            font-size: 0.6em;
+            color: #a0aec0;
+        }
+
+        /* ============================
+           УВЕДОМЛЕНИЕ
+           ============================ */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(450px);
+            transition: transform 0.3s;
+            z-index: 3000;
+            color: #2d3748;
+            max-width: 400px;
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
+        .notification.success {
+            border-left: 4px solid #38a169;
+        }
+        .notification.error {
+            border-left: 4px solid #e53e3e;
+        }
+        .notification.info {
+            border-left: 4px solid #2b6cb0;
+        }
+        .notification.warning {
+            border-left: 4px solid #d69e2e;
+        }
+
+        /* ============================
+           PWA
+           ============================ */
+        #pwaNotification {
+            display: none;
+            background: #ebf8ff;
+            border: 1px solid #2b6cb0;
+            border-radius: 8px;
+            padding: 8px 14px;
+            margin: 4px 0;
+            text-align: center;
+        }
+        #pwaNotification p {
+            margin: 0;
+            color: #2b6cb0;
+            font-size: 0.85rem;
+        }
+        #pwaNotification .small {
+            font-size: 0.75rem;
+        }
+
+        /* ============================
+           ДОСТУПНОСТЬ
+           ============================ */
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .skip-link {
+            position: fixed;
+            z-index: 1000;
+            top: 8px;
+            left: 8px;
+            padding: 10px 14px;
+            background: #1a365d;
+            color: #ffffff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            transform: translateY(-160%);
+            transition: transform 0.2s ease;
+        }
+        .skip-link:focus {
+            transform: translateY(0);
+            outline: 3px solid #f6ad55;
+            outline-offset: 2px;
+        }
+
+        /* ============================
+           АДАПТИВНОСТЬ
+           ============================ */
+        @media (max-width: 400px) {
+            .container {
+                padding: 4px;
+                border-radius: 8px;
+            }
+            .period {
+                font-size: 13px;
+            }
+            .period .line1 {
+                font-size: 13px;
+            }
+            .period .line2 {
+                font-size: 11px;
+            }
+            #clockContainer svg {
+                width: 28px !important;
+                height: 28px !important;
+            }
+            #clockContainer .clock-text .digital-time {
+                font-size: 15px !important;
+            }
+            #clockContainer .clock-text .day,
+            #clockContainer .day {
+                font-size: 8px !important;
+            }
+            .mobile-class-header {
+                font-size: 13px !important;
+                padding: 4px 10px !important;
+                min-height: 24px !important;
+            }
+            .mobile-lesson-card {
+                padding: 4px 8px !important;
+                min-height: 28px !important;
+                gap: 6px;
+            }
+            .mobile-lesson-card .lesson-num-mobile {
+                font-size: 11px !important;
+                min-width: 20px !important;
+            }
+            .mobile-lesson-card .lesson-info .subject-name {
+                font-size: 11px !important;
+            }
+            .mobile-lesson-card .lesson-info .room-name {
+                font-size: 9px !important;
+            }
+            .mobile-lesson-card .lesson-time {
+                font-size: 8px !important;
+            }
+            .mobile-controls {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            .mobile-controls select {
+                font-size: 12px;
+                min-height: 30px;
+                padding: 4px 6px;
+            }
+            .footer {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            #clockContainer .clock-text .digital-time {
+                font-size: 13px !important;
+            }
+            #clockContainer .clock-text .day,
+            #clockContainer .day {
+                font-size: 7px !important;
+            }
+            #clockContainer svg {
+                width: 24px !important;
+                height: 24px !important;
+            }
+        }
+
+        /* ============================
+           ПЕЧАТЬ
+           ============================ */
+        @media print {
+            .no-print { display: none !important; }
+            body, html { background: white !important; overflow: visible !important; }
+            .container { border: none !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
+    <div class="container">
+        <!-- ===== ШАПКА ===== -->
+        <header class="header">
+            <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
+            
+            <div class="header-left" style="display:none !important;"></div>
+
+            <div class="header-center">
+                <span class="day-indicator" id="dayIndicator">ПН</span>
+                <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
+            </div>
+
+            <div class="header-right">
+                <div id="clockContainer"></div>
+            </div>
+        </header>
+
+        <!-- ===== PWA ===== -->
+        <div id="pwaNotification">
+            <p>📱 <strong>Установите приложение</strong><br>
+            <span class="small">Нажмите "Добавить на главный экран" в браузере</span></p>
+        </div>
+
+        <!-- ===== ОСНОВНАЯ ЧАСТЬ ===== -->
+        <main class="main-layout" id="mainContent" tabindex="-1">
+            <p id="scheduleStatus" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">Загружаем расписание…</p>
+            
+            <div class="table-wrapper" id="tableWrapper">
+                <!-- Мобильные контролы -->
+                <div class="mobile-controls" role="group" aria-labelledby="mobileFilterLabel">
+                    <label id="mobileFilterLabel" for="mobileClassFilter">Показать класс</label>
+                    <select id="mobileClassFilter" aria-controls="mobileView">
+                        <option value="all">Все классы</option>
+                        <option value="5А">5А</option>
+                        <option value="5Б">5Б</option>
+                        <option value="6А">6А</option>
+                        <option value="6Б">6Б</option>
+                        <option value="6В">6В</option>
+                        <option value="7А">7А</option>
+                        <option value="7Б">7Б</option>
+                        <option value="7В">7В</option>
+                        <option value="8А">8А</option>
+                        <option value="8Б">8Б</option>
+                        <option value="8В">8В</option>
+                        <option value="9А">9А</option>
+                        <option value="9Б">9Б</option>
+                        <option value="9В">9В</option>
+                        <option value="10А">10А</option>
+                        <option value="10Б">10Б</option>
+                        <option value="11А">11А</option>
+                        <option value="11Б">11Б</option>
+                    </select>
+                </div>
+
+                <!-- Мобильное расписание (карточки) -->
+                <div class="mobile-view" id="mobileView" role="region" aria-labelledby="mobileScheduleHeading" aria-describedby="scheduleStatus">
+                    <div class="loading-overlay" style="height: auto; padding: 20px 0;">
+                        ⏳ Загрузка...
+                        <span class="sub" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ===== ПОДВАЛ ===== -->
+        <footer class="footer no-print">
+            <div class="footer-status" aria-label="Состояние расписания">
+                <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
+                <span class="footer-status-separator" aria-hidden="true">·</span>
+                <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ===== УВЕДОМЛЕНИЕ ===== -->
+    <div id="notification" class="notification" role="status" aria-live="polite" aria-atomic="true">
+        <span id="notificationMessage"></span>
+    </div>
+
+    <!-- ===== ПОДКЛЮЧЕНИЕ CLOCK.JS ===== -->
+    <script src="clock.js"></script>
+
+    <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
+    <script type="text/javascript">
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(110291320, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110291320" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <script>
+        // ================================================================
+        // КОНФИГУРАЦИЯ
+        // ================================================================
+        var APP_VERSION = '4.3.7';
+        var LESSON_TIMES = [
+            { num: 1, start: "08:30", end: "09:10", break: "10" },
+            { num: 2, start: "09:20", end: "10:00", break: "10" },
+            { num: 3, start: "10:10", end: "10:50", break: "15" },
+            { num: 4, start: "11:05", end: "11:45", break: "15" },
+            { num: 5, start: "12:00", end: "12:40", break: "15" },
+            { num: 6, start: "12:55", end: "13:35", break: "10" },
+            { num: 7, start: "13:45", end: "14:25", break: "10" },
+            { num: 8, start: "14:35", end: "15:15", break: "10" },
+            { num: 9, start: "15:25", end: "16:05", break: "10" }
+        ];
+
+        var MAX_LESSONS = 9;
+        var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
+        var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
+        var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
+        var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+
+        var weekDays = {};
+        var classNames = [];
+        var dataLoaded = false;
+        var scheduleUpdatedDate = null;
+        var deferredPrompt = null;
+        var lastBoardRenderKey = '';
+        var dataRequestInFlight = false;
+        var DATA_REFRESH_INTERVAL_MS = 2400000; // 40 минут
+
+        // ================================================================
+        // УВЕДОМЛЕНИЯ
+        // ================================================================
+        function showNotification(message, type) {
+            var el = document.getElementById('notification');
+            var msg = document.getElementById('notificationMessage');
+            if (!el || !msg) return;
+            el.className = 'notification show ' + (type || 'info');
+            msg.textContent = message;
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        // ================================================================
+        // ОСНОВНАЯ ЛОГИКА
+        // ================================================================
+
+        function parseTime(timeStr) {
+            var parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function formatMinutes(minutes) {
+            if (!minutes || minutes <= 0) return '0 мин';
+            var rounded = Math.ceil(minutes);
+            if (rounded >= 60) {
+                var hours = Math.floor(rounded / 60);
+                var mins = rounded % 60;
+                return mins === 0 ? hours + ' ч' : hours + ' ч ' + mins + ' мин';
+            }
+            return rounded + ' мин';
+        }
+
+        function getCurrentPeriodInfo() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var dayOfWeek = now.getDay();
+
+            // В воскресенье (0) всегда показываем "Изменения на понедельник"
+            if (dayOfWeek === 0) {
+                return { type: 'sunday' };
+            }
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                var endMin = parseTime(lesson.end);
+                if (totalMinutes >= startMin && totalMinutes < endMin) {
+                    return { type: 'lesson', num: lesson.num, start: lesson.start, end: lesson.end };
+                }
+            }
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                if (i > 0) {
+                    var prevEndMin = parseTime(LESSON_TIMES[i - 1].end);
+                    if (totalMinutes >= prevEndMin && totalMinutes < startMin) {
+                        return { type: 'break', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin - totalMinutes };
+                    }
+                }
+                if (i === 0 && totalMinutes < startMin) {
+                    return { type: 'before', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin - totalMinutes };
+                }
+            }
+
+            var lastEndMin = parseTime(LESSON_TIMES[LESSON_TIMES.length - 1].end);
+            if (totalMinutes >= lastEndMin) {
+                return { type: 'after' };
+            }
+            return { type: 'unknown' };
+        }
+
+        function getPeriodName() {
+            var info = getCurrentPeriodInfo();
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            // Воскресенье - показываем "Изменения на понедельник"
+            if (info.type === 'sunday') {
+                return '<span class="line1">📌 Изменения</span><span class="line2">на понедельник</span>';
+            }
+
+            if (info.type === 'lesson') {
+                return '<span class="line1">📖 ' + info.num + '-й урок</span><span class="line2">' + info.start + '–' + info.end + '</span>';
+            }
+
+            if (info.type === 'break') {
+                if (info.remaining <= 0) {
+                    return '<span class="line1">⏰ ' + info.nextLesson + '-й урок</span><span class="line2">начинается</span>';
+                }
+                return '<span class="line1">⏳ До ' + info.nextLesson + '-го урока</span><span class="line2">' + formatMinutes(info.remaining) + '</span>';
+            }
+
+            if (info.type === 'before') {
+                if (info.remaining <= 0) {
+                    return '<span class="line1">⏰ ' + info.nextLesson + '-й урок</span><span class="line2">начинается</span>';
+                }
+                return '<span class="line1">⏳ До начала занятий</span><span class="line2">' + formatMinutes(info.remaining) + '</span>';
+            }
+
+            if (info.type === 'after') {
+                var dayNum = now.getDay();
+                var nextDayNum = dayNum + 1;
+                if (nextDayNum === 7) nextDayNum = 1;
+                if (nextDayNum === 0) nextDayNum = 1;
+                var nextDayFull = DAYS_FULL[nextDayNum] || 'Понедельник';
+                var dayGenitive = {
+                    'Понедельник': 'понедельник',
+                    'Вторник': 'вторник',
+                    'Среда': 'среду',
+                    'Четверг': 'четверг',
+                    'Пятница': 'пятницу',
+                    'Суббота': 'субботу',
+                    'Воскресенье': 'воскресенье'
+                };
+                var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
+                
+                if (totalMinutes >= 16 * 60) {
+                    return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
+                }
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
+            }
+
+            return '<span class="line1">⏰ Загрузка...</span>';
+        }
+
+        function getDisplayDay() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var dayNum = now.getDay();
+            
+            // Если воскресенье или после 16:00 — показываем понедельник
+            if (dayNum === 0 || totalMinutes >= 16 * 60) {
+                var nextDayNum = 1; // всегда понедельник
+                return { 
+                    key: DAYS_SHORT[nextDayNum] || "ПН", 
+                    full: DAYS_FULL[nextDayNum] || "Понедельник",
+                    isTomorrow: true
+                };
+            }
+            
+            return { 
+                key: DAYS_SHORT[dayNum] || "ПН", 
+                full: DAYS_FULL[dayNum] || "Понедельник",
+                isTomorrow: false
+            };
+        }
+
+        function getTargetDay() {
+            var now = new Date();
+            var dayNum = now.getDay();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Если воскресенье или после 16:00 — показываем понедельник
+            if (dayNum === 0 || totalMinutes >= 16 * 60) {
+                var targetDayNum = 1; // всегда понедельник
+                var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+                var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+                if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                    return { key: dayKey, full: dayFull };
+                }
+
+                for (var i = 0; i < DAYS_LIST.length; i++) {
+                    var d = DAYS_LIST[i];
+                    if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                        return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                    }
+                }
+                return { key: "ПН", full: "Понедельник" };
+            }
+
+            var targetDayNum = dayNum;
+            var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+            var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                return { key: dayKey, full: dayFull };
+            }
+
+            for (var i = 0; i < DAYS_LIST.length; i++) {
+                var d = DAYS_LIST[i];
+                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                }
+            }
+            return { key: "ПН", full: "Понедельник" };
+        }
+
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return null;
+            var d = new Date(dateValue);
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА schedule.primary.json
+        // ================================================================
+
+        function loadData() {
+            if (dataRequestInFlight) return;
+            dataRequestInFlight = true;
+            var statusEl = document.getElementById('scheduleStatus');
+            if (statusEl) statusEl.textContent = 'Загружаем расписание…';
+            setBoardSync('loading', 'Обновляем данные…');
+
+            var cacheBuster = Math.floor(Date.now() / 3600000);
+            var url = 'schedule.primary.json?t=' + cacheBuster;
+
+            fetch(url, { cache: 'default' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('schedule.primary.json не найден (код ' + res.status + ')');
+                    
+                    var etag = res.headers.get('ETag');
+                    
+                    if (etag) {
+                        var cachedEtag = localStorage.getItem('schedule_etag');
+                        if (cachedEtag === etag) {
+                            if (statusEl) statusEl.textContent = '✅ данные актуальны (ETag)';
+                            return res.json();
+                        }
+                        localStorage.setItem('schedule_etag', etag);
+                        if (statusEl) statusEl.textContent = '🔄 данные обновлены (новый ETag)';
+                    } else {
+                        if (statusEl) statusEl.textContent = '⚠️ ETag не поддерживается';
+                    }
+                    
+                    return res.json();
+                })
+                .then(function(data) {
+                    var scheduleData = null;
+                    var updatedDate = data.updated || data.last_update || (data.meta && data.meta.updated) || null;
+
+                    if (updatedDate) {
+                        var formatted = formatDateForDisplay(updatedDate);
+                        if (formatted) {
+                            scheduleUpdatedDate = formatted;
+                            document.getElementById('scheduleUpdated').textContent = '📅 ' + formatted;
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated';
+                        } else {
+                            document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                        }
+                    } else {
+                        document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                        document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    }
+
+                    if (data.schedule) {
+                        scheduleData = data.schedule.primary || data.schedule;
+                    } else if (data.primary) {
+                        scheduleData = data.primary;
+                    } else {
+                        scheduleData = data;
+                    }
+
+                    var hasDays = false;
+                    DAYS_LIST.forEach(function(day) {
+                        if (scheduleData && scheduleData[day]) {
+                            hasDays = true;
+                            var filtered = {};
+                            Object.keys(scheduleData[day]).forEach(function(cls) {
+                                if (PRIMARY_CLASSES.indexOf(cls) !== -1) {
+                                    filtered[cls] = scheduleData[day][cls];
+                                }
+                            });
+                            weekDays[day] = Object.keys(filtered).length > 0 ? filtered : {};
+                        }
+                    });
+
+                    if (!hasDays) {
+                        DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    }
+
+                    if (statusEl) statusEl.textContent = 'Расписание обновлено.';
+                    processLoadedData();
+                    lastBoardRenderKey = getBoardRenderKey();
+                    setBoardSync('online', 'Данные актуальны');
+                })
+                .catch(function(err) {
+                    console.warn('Ошибка загрузки schedule.primary.json:', err.message);
+                    if (statusEl) statusEl.textContent = 'Не удалось обновить расписание. Проверьте соединение и попробуйте снова.';
+                    DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
+                    document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    setBoardSync('offline', 'Нет связи · показываем последние данные');
+                    processLoadedData();
+                })
+                .finally(function() {
+                    dataRequestInFlight = false;
+                });
+        }
+
+        function processLoadedData() {
+            classNames = PRIMARY_CLASSES;
+
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                classNames.forEach(function(cls) {
+                    if (!dayData[cls]) {
+                        dayData[cls] = [];
+                        for (var i = 0; i < MAX_LESSONS; i++) {
+                            dayData[cls].push(['', '']);
+                        }
+                    } else {
+                        var lessons = dayData[cls];
+                        while (lessons.length < MAX_LESSONS) {
+                            lessons.push(['', '']);
+                        }
+                    }
+                });
+                weekDays[day] = dayData;
+            });
+
+            dataLoaded = true;
+            renderMobile();
+            lastBoardRenderKey = getBoardRenderKey();
+        }
+
+        function escapeHTML(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function isEmptyLesson(value) {
+            var normalized = String(value == null ? '' : value).trim().toLowerCase();
+            return normalized === '' || normalized === 'нет урока' || normalized === 'нет' || normalized === '—' || normalized === '-';
+        }
+
+        function sortClasses(classes) {
+            var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+            return classes.sort(function(a, b) {
+                var numA = parseInt(a.match(/\d+/)?.[0] || 0);
+                var numB = parseInt(b.match(/\d+/)?.[0] || 0);
+                if (numA !== numB) return numA - numB;
+                var lA = a.match(/[А-Я]/)?.[0] || '';
+                var lB = b.match(/[А-Я]/)?.[0] || '';
+                return letters.indexOf(lA) - letters.indexOf(lB);
+            });
+        }
+
+        // ================================================================
+        // ОТРИСОВКА МОБИЛЬНОЙ ВЕРСИИ
+        // ================================================================
+
+        function renderMobile() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+
+            var dayData = weekDays[dayKey];
+            if (!dayData || Object.keys(dayData).length === 0) {
+                document.getElementById('mobileView').innerHTML = '<div style="text-align:center;padding:30px 0;color:#a0aec0;">📌 Нет расписания</div>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+            
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            var selectedMobileClass = mobileClassFilter ? mobileClassFilter.value : 'all';
+            if (selectedMobileClass !== 'all' && classes.indexOf(selectedMobileClass) !== -1) {
+                classes = [selectedMobileClass];
+            }
+
+            var html = '';
+            classes.forEach(function(className) {
+                var lessons = dayData[className] || [];
+
+                html += '<section class="mobile-class-card" aria-label="Расписание класса ' + escapeHTML(className) + '">';
+                html += '<h3 class="mobile-class-header"><span class="class-name">' + escapeHTML(className) + '</span></h3>';
+
+                for (var i = 0; i < MAX_LESSONS; i++) {
+                    var lesson = lessons[i] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    var isCurrent = (i + 1 === currentLesson);
+                    var hasContent = !isEmptyLesson(subject);
+
+                    html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
+                    html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
+
+                    if (hasContent) {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
+                        if (cabinet && cabinet.trim() !== '') {
+                            html += '<span class="room-name">' + escapeHTML(cabinet) + '</span>';
+                        }
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
+                    } else {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name empty" aria-label="Нет урока">—</span>';
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
+                    }
+                    html += '</div>';
+                }
+                html += '</section>';
+            });
+
+            document.getElementById('mobileView').innerHTML = html;
+        }
+
+        function getBoardRenderKey() {
+            var targetDay = getTargetDay();
+            var info = getCurrentPeriodInfo();
+            var activeLesson = 0;
+            if (info.type === 'lesson') {
+                activeLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                activeLesson = Math.max(0, info.nextLesson - 1);
+            }
+            return targetDay.key + '|' + info.type + '|' + activeLesson;
+        }
+
+        function setBoardSync(state, message) {
+            var sync = document.getElementById('boardSync');
+            if (!sync) return;
+            sync.className = 'board-sync ' + state;
+            sync.textContent = message;
+        }
+
+        function refreshAll() {
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+            var renderKey = getBoardRenderKey();
+            if (renderKey !== lastBoardRenderKey) {
+                lastBoardRenderKey = renderKey;
+                renderMobile();
+            }
+        }
+
+        // ================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем часы из clock.js
+            if (typeof initClock === 'function') {
+                initClock('clockContainer');
+                console.log('✅ Часы инициализированы через clock.js');
+                
+                // Выводим структуру часов для отладки
+                setTimeout(function() {
+                    var container = document.getElementById('clockContainer');
+                    console.log('Структура часов:', container.innerHTML);
+                }, 500);
+            } else {
+                console.warn('⚠️ clock.js не загружен или функция initClock не найдена');
+            }
+
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                var pwaNotification = document.getElementById('pwaNotification');
+                if (pwaNotification) pwaNotification.style.display = 'block';
+            });
+
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            if (mobileClassFilter) {
+                mobileClassFilter.addEventListener('change', function() {
+                    renderMobile();
+                    var mobileView = document.getElementById('mobileView');
+                    if (mobileView) mobileView.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            loadData();
+
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    renderMobile();
+                    refreshAll();
+                }, 120);
+            });
+
+            setInterval(refreshAll, 1000);
+            setInterval(loadData, DATA_REFRESH_INTERVAL_MS);
+
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) loadData();
+            });
+            window.addEventListener('online', loadData);
+
+            console.log('✅ Мобильное расписание v' + APP_VERSION + ' загружено!');
+        });
+    </script>
+</body>
+</html>
