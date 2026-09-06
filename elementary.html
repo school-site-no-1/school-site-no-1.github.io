@@ -525,7 +525,8 @@
             displayDay: null,
             loaded: false,
             isNextDay: false,
-            filter: 'all'
+            filter: 'all',
+            isWeekend: false
         };
 
         // ================================================================
@@ -533,8 +534,9 @@
         // ================================================================
         function getCurrentDay() {
             var now = new Date();
-            var dayNum = now.getDay();
-            if (dayNum === 0) dayNum = 7;
+            var dayNum = now.getDay(); // 0 = воскресенье, 6 = суббота
+            if (dayNum === 0) return 'ВС'; // воскресенье
+            if (dayNum === 6) return 'СБ'; // суббота
             return CONFIG.DAYS[dayNum - 1] || 'ПН';
         }
 
@@ -549,8 +551,24 @@
             var now = new Date();
             var hours = now.getHours();
             var dayKey = getCurrentDay();
+            
+            // Если сегодня воскресенье — показываем понедельник (начало недели)
+            if (dayKey === 'ВС') {
+                state.isWeekend = true;
+                state.isNextDay = true;
+                return 'ПН';
+            }
+            
+            // Если сегодня суббота — показываем понедельник (начало недели)
+            if (dayKey === 'СБ') {
+                state.isWeekend = true;
+                state.isNextDay = true;
+                return 'ПН';
+            }
 
-            // После 16:00 показываем следующий день
+            state.isWeekend = false;
+
+            // После 16:00 показываем следующий день (если он есть в данных)
             if (hours >= 16) {
                 var nextDay = getNextDay(dayKey);
                 // Проверяем, есть ли данные на следующий день
@@ -568,10 +586,14 @@
         }
 
         function getDisplayDayFull(dayKey) {
+            if (dayKey === 'ВС') return 'Воскресенье';
+            if (dayKey === 'СБ') return 'Суббота';
             return CONFIG.DAYS_RU[CONFIG.DAYS.indexOf(dayKey)] || dayKey;
         }
 
         function getDayGenitive(dayKey) {
+            if (dayKey === 'ВС') return 'воскресенье';
+            if (dayKey === 'СБ') return 'субботу';
             var index = CONFIG.DAYS.indexOf(dayKey);
             if (index === -1) return 'среду';
             return CONFIG.DAYS_RU_GENITIVE[index] || 'среду';
@@ -718,15 +740,27 @@
             var displayDayKey = state.displayDay || state.currentDay;
             var dayFull = getDisplayDayFull(dayKey);
 
-            // День недели (всегда текущий) - без сокращения
+            // День недели
             var dayLabelEl = document.getElementById('dayLabel');
             var dayFullSpan = dayLabelEl.querySelector('.day-full');
             var dayShortSpan = dayLabelEl.querySelector('.day-short');
-            dayFullSpan.textContent = '📅 ' + dayFull;
-            dayShortSpan.textContent = ''; // Убираем сокращение
+            
+            if (state.isWeekend && (dayKey === 'ВС' || dayKey === 'СБ')) {
+                dayFullSpan.textContent = '🌅 ' + dayFull + ' (выходной)';
+            } else {
+                dayFullSpan.textContent = '📅 ' + dayFull;
+            }
+            dayShortSpan.textContent = '';
 
             // Изменения / расписание на день
             var changeLabelEl = document.getElementById('changeLabel');
+            
+            if (state.isWeekend && (dayKey === 'ВС' || dayKey === 'СБ')) {
+                changeLabelEl.textContent = '🌅 Сегодня выходной! Расписание на понедельник';
+                changeLabelEl.style.display = 'inline-block';
+                return;
+            }
+
             if (state.isNextDay) {
                 var nextDayGenitive = getDayGenitive(displayDayKey);
                 changeLabelEl.textContent = '🔸 Изменения на ' + nextDayGenitive;
@@ -743,6 +777,23 @@
             var dayKey = state.displayDay || state.currentDay;
             var dayData = state.data[dayKey];
 
+            // Если сегодня выходной — показываем сообщение
+            if (state.isWeekend && (state.currentDay === 'ВС' || state.currentDay === 'СБ')) {
+                container.innerHTML = `
+                    <div style="text-align:center;padding:60px 20px;color:#2e7d32;">
+                        <div style="font-size:4em;margin-bottom:20px;">🌅</div>
+                        <div style="font-size:1.5em;font-weight:600;margin-bottom:12px;">Сегодня выходной!</div>
+                        <div style="font-size:1.1em;color:#66bb6a;">Расписание на понедельник загружено ниже</div>
+                    </div>
+                `;
+                // Показываем понедельник
+                var mondayData = state.data['ПН'];
+                if (mondayData) {
+                    container.innerHTML += renderDaySchedule(mondayData);
+                }
+                return;
+            }
+
             if (!dayData) {
                 container.innerHTML =
                     '<div style="text-align:center;padding:40px 0;color:#a5d6a7;font-size:1.1em;">🌱 Нет данных для ' +
@@ -750,6 +801,10 @@
                 return;
             }
 
+            container.innerHTML = renderDaySchedule(dayData);
+        }
+
+        function renderDaySchedule(dayData) {
             var classes = CONFIG.CLASSES;
             var html = '';
             for (var i = 0; i < classes.length; i += 4) {
@@ -781,10 +836,7 @@
                 rowHtml += '</div>';
                 html += rowHtml;
             }
-            container.innerHTML = html;
-            
-            // Применяем фильтр после рендеринга
-            applyFilter();
+            return html;
         }
 
         function updateDate() {
