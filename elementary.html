@@ -535,8 +535,8 @@
         function getCurrentDay() {
             var now = new Date();
             var dayNum = now.getDay(); // 0 = воскресенье, 6 = суббота
-            if (dayNum === 0) return 'ВС'; // воскресенье
-            if (dayNum === 6) return 'СБ'; // суббота
+            if (dayNum === 0) return 'ВС';
+            if (dayNum === 6) return 'СБ';
             return CONFIG.DAYS[dayNum - 1] || 'ПН';
         }
 
@@ -552,15 +552,8 @@
             var hours = now.getHours();
             var dayKey = getCurrentDay();
             
-            // Если сегодня воскресенье — показываем понедельник (начало недели)
-            if (dayKey === 'ВС') {
-                state.isWeekend = true;
-                state.isNextDay = true;
-                return 'ПН';
-            }
-            
-            // Если сегодня суббота — показываем понедельник (начало недели)
-            if (dayKey === 'СБ') {
+            // Если сегодня воскресенье или суббота — показываем понедельник
+            if (dayKey === 'ВС' || dayKey === 'СБ') {
                 state.isWeekend = true;
                 state.isNextDay = true;
                 return 'ПН';
@@ -571,12 +564,10 @@
             // После 16:00 показываем следующий день (если он есть в данных)
             if (hours >= 16) {
                 var nextDay = getNextDay(dayKey);
-                // Проверяем, есть ли данные на следующий день
                 if (state.data && state.data[nextDay]) {
                     state.isNextDay = true;
                     return nextDay;
                 }
-                // Если данных на следующий день нет, показываем текущий
                 state.isNextDay = false;
                 return dayKey;
             }
@@ -600,7 +591,7 @@
         }
 
         // ================================================================
-        // ПРЕОБРАЗОВАНИЕ ДАННЫХ (массив [предмет, кабинет] -> объект)
+        // ПРЕОБРАЗОВАНИЕ ДАННЫХ
         // ================================================================
         function convertLessons(lessonsArray) {
             if (!lessonsArray || !Array.isArray(lessonsArray)) {
@@ -740,23 +731,17 @@
             var displayDayKey = state.displayDay || state.currentDay;
             var dayFull = getDisplayDayFull(dayKey);
 
-            // День недели
             var dayLabelEl = document.getElementById('dayLabel');
             var dayFullSpan = dayLabelEl.querySelector('.day-full');
             var dayShortSpan = dayLabelEl.querySelector('.day-short');
             
-            if (state.isWeekend && (dayKey === 'ВС' || dayKey === 'СБ')) {
-                dayFullSpan.textContent = '🌅 ' + dayFull + ' (выходной)';
-            } else {
-                dayFullSpan.textContent = '📅 ' + dayFull;
-            }
+            dayFullSpan.textContent = '📅 ' + dayFull;
             dayShortSpan.textContent = '';
 
-            // Изменения / расписание на день
             var changeLabelEl = document.getElementById('changeLabel');
             
             if (state.isWeekend && (dayKey === 'ВС' || dayKey === 'СБ')) {
-                changeLabelEl.textContent = '🌅 Сегодня выходной! Расписание на понедельник';
+                changeLabelEl.textContent = 'Расписание на понедельник';
                 changeLabelEl.style.display = 'inline-block';
                 return;
             }
@@ -777,19 +762,14 @@
             var dayKey = state.displayDay || state.currentDay;
             var dayData = state.data[dayKey];
 
-            // Если сегодня выходной — показываем сообщение
+            // В выходные показываем понедельник без лишних сообщений
             if (state.isWeekend && (state.currentDay === 'ВС' || state.currentDay === 'СБ')) {
-                container.innerHTML = `
-                    <div style="text-align:center;padding:60px 20px;color:#2e7d32;">
-                        <div style="font-size:4em;margin-bottom:20px;">🌅</div>
-                        <div style="font-size:1.5em;font-weight:600;margin-bottom:12px;">Сегодня выходной!</div>
-                        <div style="font-size:1.1em;color:#66bb6a;">Расписание на понедельник загружено ниже</div>
-                    </div>
-                `;
-                // Показываем понедельник
                 var mondayData = state.data['ПН'];
                 if (mondayData) {
-                    container.innerHTML += renderDaySchedule(mondayData);
+                    container.innerHTML = renderDaySchedule(mondayData);
+                } else {
+                    container.innerHTML =
+                        '<div style="text-align:center;padding:40px 0;color:#a5d6a7;font-size:1.1em;">🌱 Нет данных для понедельника</div>';
                 }
                 return;
             }
@@ -846,7 +826,7 @@
         }
 
         // ================================================================
-        // ФИЛЬТР (выпадающий список с отдельными классами)
+        // ФИЛЬТР
         // ================================================================
         function applyFilter() {
             var blocks = document.querySelectorAll('.schedule-block');
@@ -861,7 +841,6 @@
                 }
             });
             
-            // Обновляем выпадающий список
             var select = document.getElementById('classFilter');
             if (select) {
                 select.value = filterValue;
@@ -869,7 +848,7 @@
         }
 
         // ================================================================
-        // ПРОВЕРКА СМЕНЫ ДНЯ (каждые 30 секунд)
+        // ПРОВЕРКА СМЕНЫ ДНЯ
         // ================================================================
         function checkDayChange() {
             if (!state.data || !state.loaded) return;
@@ -889,14 +868,12 @@
             document.getElementById('versionBadge').textContent = 'v' + APP_VERSION;
             loadData();
 
-            // Обработчик выпадающего списка
             var filterSelect = document.getElementById('classFilter');
             filterSelect.addEventListener('change', function() {
                 state.filter = this.value;
                 applyFilter();
             });
 
-            // Проверяем смену дня каждые 30 секунд
             setInterval(checkDayChange, 30000);
         });
     </script>
