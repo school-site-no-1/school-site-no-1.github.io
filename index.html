@@ -113,52 +113,49 @@
         }
 
         /* ============================
-           ЧАСЫ (дата над цифровыми, день недели после даты)
+           ЧАСЫ (из clock.js)
            ============================ */
-        .clock-wrapper {
+        #clockContainer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        #clockContainer .clock-wrapper {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             gap: 0px;
         }
-        .clock-top {
+        #clockContainer .clock-top {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .clock-wrapper svg {
+        #clockContainer svg {
             width: 36px;
             height: 36px;
         }
-        .clock-text {
+        #clockContainer .clock-text {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             white-space: nowrap;
         }
-        .clock-text .day {
-            display: none !important;
-        }
-        .clock-text .digital-time {
+        #clockContainer .clock-text .digital-time {
             font-size: 18px;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             line-height: 1.2;
         }
-        .clock-text .countdown {
-            display: none !important;
-        }
-
-        /* Дата + день недели (над цифровыми часами) */
-        .clock-date-row {
+        #clockContainer .clock-date-row {
             font-size: 9px;
             color: #4a5568;
             font-weight: 600;
             line-height: 1.2;
             margin-bottom: 1px;
         }
-        .clock-date-row .day-name {
+        #clockContainer .clock-date-row .day-name {
             color: #2b6cb0;
             font-weight: 700;
         }
@@ -473,14 +470,14 @@
             .period .line2 {
                 font-size: 11px;
             }
-            .clock-wrapper svg {
+            #clockContainer svg {
                 width: 28px;
                 height: 28px;
             }
-            .clock-date-row {
+            #clockContainer .clock-date-row {
                 font-size: 8px;
             }
-            .clock-text .digital-time {
+            #clockContainer .clock-text .digital-time {
                 font-size: 15px;
             }
             .mobile-class-header {
@@ -521,13 +518,13 @@
         }
 
         @media (max-width: 350px) {
-            .clock-text .digital-time {
+            #clockContainer .clock-text .digital-time {
                 font-size: 13px;
             }
-            .clock-date-row {
+            #clockContainer .clock-date-row {
                 font-size: 7px;
             }
-            .clock-wrapper svg {
+            #clockContainer svg {
                 width: 24px;
                 height: 24px;
             }
@@ -624,6 +621,9 @@
         <span id="notificationMessage"></span>
     </div>
 
+    <!-- ===== ПОДКЛЮЧЕНИЕ CLOCK.JS ===== -->
+    <script src="clock.js"></script>
+
     <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
     <script type="text/javascript">
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -687,157 +687,6 @@
         }
 
         // ================================================================
-        // ЧАСЫ (дата + день недели над цифровыми часами)
-        // ================================================================
-        function initRotatedClock(containerId) {
-            var container = document.getElementById(containerId);
-            if (!container) return;
-            container.innerHTML = '';
-
-            var wrapper = document.createElement('div');
-            wrapper.className = 'clock-wrapper';
-
-            // Строка с датой и днём недели (над цифровыми часами)
-            var dateRow = document.createElement('div');
-            dateRow.className = 'clock-date-row';
-            dateRow.id = 'clock-date-row';
-            dateRow.textContent = '09 сен 2026 · СР';
-            wrapper.appendChild(dateRow);
-
-            // Верхняя строка: аналоговые часы + цифровое время
-            var topRow = document.createElement('div');
-            topRow.className = 'clock-top';
-
-            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', '0 0 100 100');
-            svg.setAttribute('width', '36');
-            svg.setAttribute('height', '36');
-
-            var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            g.setAttribute('transform', 'rotate(0, 50, 50)');
-
-            var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('cx', '50');
-            circle.setAttribute('cy', '50');
-            circle.setAttribute('r', '45');
-            circle.setAttribute('fill', '#f7fafc');
-            circle.setAttribute('stroke', '#2b6cb0');
-            circle.setAttribute('stroke-width', '3');
-            g.appendChild(circle);
-
-            for (var i = 1; i <= 12; i++) {
-                var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
-                var x1 = 50 + 38 * Math.cos(angle);
-                var y1 = 50 + 38 * Math.sin(angle);
-                var x2 = 50 + 32 * Math.cos(angle);
-                var y2 = 50 + 32 * Math.sin(angle);
-                var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', x1);
-                line.setAttribute('y1', y1);
-                line.setAttribute('x2', x2);
-                line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#2d3748');
-                line.setAttribute('stroke-width', i % 3 === 0 ? '3' : '1.5');
-                line.setAttribute('stroke-linecap', 'round');
-                g.appendChild(line);
-            }
-
-            svg.appendChild(g);
-
-            var hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            hourHand.setAttribute('x1', '50');
-            hourHand.setAttribute('y1', '50');
-            hourHand.setAttribute('x2', '50');
-            hourHand.setAttribute('y2', '28');
-            hourHand.setAttribute('stroke', '#2b6cb0');
-            hourHand.setAttribute('stroke-width', '4');
-            hourHand.setAttribute('stroke-linecap', 'round');
-            hourHand.setAttribute('id', 'hour-hand');
-            svg.appendChild(hourHand);
-
-            var minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            minHand.setAttribute('x1', '50');
-            minHand.setAttribute('y1', '50');
-            minHand.setAttribute('x2', '50');
-            minHand.setAttribute('y2', '18');
-            minHand.setAttribute('stroke', '#2b6cb0');
-            minHand.setAttribute('stroke-width', '3');
-            minHand.setAttribute('stroke-linecap', 'round');
-            minHand.setAttribute('id', 'min-hand');
-            svg.appendChild(minHand);
-
-            var center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            center.setAttribute('cx', '50');
-            center.setAttribute('cy', '50');
-            center.setAttribute('r', '4');
-            center.setAttribute('fill', '#2b6cb0');
-            svg.appendChild(center);
-
-            topRow.appendChild(svg);
-
-            var textBlock = document.createElement('div');
-            textBlock.className = 'clock-text';
-
-            var digitalSpan = document.createElement('span');
-            digitalSpan.className = 'digital-time';
-            digitalSpan.id = 'digital-time';
-            digitalSpan.textContent = new Date().toLocaleTimeString('ru-RU', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            textBlock.appendChild(digitalSpan);
-
-            topRow.appendChild(textBlock);
-            wrapper.appendChild(topRow);
-
-            container.appendChild(wrapper);
-
-            function updateClock() {
-                var now = new Date();
-                var hours = now.getHours() % 12;
-                var minutes = now.getMinutes();
-                var seconds = now.getSeconds();
-
-                var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
-                var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
-
-                var hourHandEl = document.getElementById('hour-hand');
-                var minHandEl = document.getElementById('min-hand');
-
-                if (hourHandEl) {
-                    hourHandEl.setAttribute('transform', 'rotate(' + hourAngle + ', 50, 50)');
-                }
-                if (minHandEl) {
-                    minHandEl.setAttribute('transform', 'rotate(' + minAngle + ', 50, 50)');
-                }
-
-                var digitalEl = document.getElementById('digital-time');
-                if (digitalEl) {
-                    digitalEl.textContent = now.toLocaleTimeString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    });
-                }
-
-                var dateRowEl = document.getElementById('clock-date-row');
-                if (dateRowEl) {
-                    var days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
-                    var dayName = days[now.getDay()];
-                    dateRowEl.textContent = now.toLocaleDateString('ru-RU', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    }) + ' · ' + dayName;
-                }
-            }
-
-            updateClock();
-            setInterval(updateClock, 1000);
-        }
-
-        // ================================================================
         // ОСНОВНАЯ ЛОГИКА
         // ================================================================
 
@@ -855,25 +704,6 @@
                 return mins === 0 ? hours + ' ч' : hours + ' ч ' + mins + ' мин';
             }
             return rounded + ' мин';
-        }
-
-        function getLessonCountdownText(now) {
-            now = now || new Date();
-            var nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-            for (var i = 0; i < LESSON_TIMES.length; i++) {
-                var startSeconds = parseTime(LESSON_TIMES[i].start) * 60;
-                if (nowSeconds < startSeconds) {
-                    var remaining = startSeconds - nowSeconds;
-                    var hours = Math.floor(remaining / 3600);
-                    var minutes = Math.floor((remaining % 3600) / 60);
-                    var seconds = remaining % 60;
-                    var value = hours > 0
-                        ? hours + ' ч ' + String(minutes).padStart(2, '0') + ' мин'
-                        : minutes + ' мин ' + String(seconds).padStart(2, '0') + ' с';
-                    return 'До начала урока осталось: ' + value;
-                }
-            }
-            return 'До начала урока осталось: —';
         }
 
         function getCurrentPeriodInfo() {
@@ -1300,7 +1130,13 @@
         // ================================================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            initRotatedClock('clockContainer');
+            // Часы инициализируются из clock.js
+            // Проверяем, что функция initClock доступна
+            if (typeof initClock === 'function') {
+                initClock('clockContainer');
+            } else {
+                console.warn('clock.js не загружен или функция initClock не найдена');
+            }
 
             window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
