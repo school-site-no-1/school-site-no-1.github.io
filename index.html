@@ -980,10 +980,9 @@
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
             var dayNum = now.getDay() === 0 ? 1 : now.getDay();
             
-            if (totalMinutes >= 16 * 60) {
-                var nextDayNum = dayNum + 1;
-                if (nextDayNum === 7) nextDayNum = 1;
-                if (nextDayNum === 0) nextDayNum = 1;
+            // Если воскресенье (0) или после 16:00 — показываем понедельник
+            if (now.getDay() === 0 || totalMinutes >= 16 * 60) {
+                var nextDayNum = 1; // всегда понедельник
                 return { 
                     key: DAYS_SHORT[nextDayNum] || "ПН", 
                     full: DAYS_FULL[nextDayNum] || "Понедельник",
@@ -1003,12 +1002,26 @@
             var dayNum = now.getDay();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
             
-            var shift = (totalMinutes >= 16 * 60) ? 1 : 0;
-            var targetDayNum = dayNum + shift;
-            
-            if (targetDayNum === 0) targetDayNum = 1;
-            if (targetDayNum > 6) targetDayNum = 1;
+            // Если воскресенье (0) или после 16:00 — показываем понедельник
+            if (dayNum === 0 || totalMinutes >= 16 * 60) {
+                var targetDayNum = 1; // всегда понедельник
+                var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+                var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
 
+                if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                    return { key: dayKey, full: dayFull };
+                }
+
+                for (var i = 0; i < DAYS_LIST.length; i++) {
+                    var d = DAYS_LIST[i];
+                    if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                        return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                    }
+                }
+                return { key: "ПН", full: "Понедельник" };
+            }
+
+            var targetDayNum = dayNum;
             var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
             var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
 
