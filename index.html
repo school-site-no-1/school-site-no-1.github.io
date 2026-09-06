@@ -148,16 +148,21 @@
             font-variant-numeric: tabular-nums;
             line-height: 1.2;
         }
-        #clockContainer .clock-date-row {
+        /* Показываем день недели */
+        #clockContainer .clock-text .day {
+            display: block !important;
             font-size: 9px;
             color: #4a5568;
             font-weight: 600;
             line-height: 1.2;
-            margin-bottom: 1px;
         }
-        #clockContainer .clock-date-row .day-name {
+        #clockContainer .clock-text .day .day-name {
             color: #2b6cb0;
             font-weight: 700;
+        }
+        /* Скрываем старую строку с датой, если она есть */
+        #clockContainer .clock-date-row {
+            display: none !important;
         }
 
         /* ============================
@@ -474,11 +479,11 @@
                 width: 28px;
                 height: 28px;
             }
-            #clockContainer .clock-date-row {
-                font-size: 8px;
-            }
             #clockContainer .clock-text .digital-time {
                 font-size: 15px;
+            }
+            #clockContainer .clock-text .day {
+                font-size: 8px !important;
             }
             .mobile-class-header {
                 font-size: 13px !important;
@@ -521,8 +526,8 @@
             #clockContainer .clock-text .digital-time {
                 font-size: 13px;
             }
-            #clockContainer .clock-date-row {
-                font-size: 7px;
+            #clockContainer .clock-text .day {
+                font-size: 7px !important;
             }
             #clockContainer svg {
                 width: 24px;
@@ -1131,7 +1136,6 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             // Часы инициализируются из clock.js
-            // Проверяем, что функция initClock доступна
             if (typeof initClock === 'function') {
                 initClock('clockContainer');
             } else {
