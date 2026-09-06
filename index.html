@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.6">
+<html lang="ru" data-version="v4.3.7">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -348,20 +348,6 @@
             background: #fff5f5;
             border-color: #feb2b2;
         }
-        .sound-toggle {
-            border: 1px solid #2b6cb0;
-            border-radius: 4px;
-            background: #ffffff;
-            color: #1a365d;
-            padding: 2px 8px;
-            font: inherit;
-            cursor: pointer;
-            font-size: 10px;
-        }
-        .sound-toggle[aria-pressed="true"] {
-            background: #ebf8ff;
-            color: #1c64a5;
-        }
 
         /* ============================
            ЗАГРУЗКА
@@ -629,10 +615,8 @@
                 <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
                 <span class="footer-status-separator" aria-hidden="true">·</span>
                 <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
-                <button type="button" id="soundToggle" class="sound-toggle" aria-pressed="false">Включить звук</button>
             </div>
         </footer>
-        <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
     </div>
 
     <!-- ===== УВЕДОМЛЕНИЕ ===== -->
@@ -661,7 +645,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.6';
+        var APP_VERSION = '4.3.7';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -687,7 +671,7 @@
         var deferredPrompt = null;
         var lastBoardRenderKey = '';
         var dataRequestInFlight = false;
-        var DATA_REFRESH_INTERVAL_MS = 30000;
+        var DATA_REFRESH_INTERVAL_MS = 2400000; // 40 минут
 
         // ================================================================
         // УВЕДОМЛЕНИЯ
@@ -895,6 +879,12 @@
         function getCurrentPeriodInfo() {
             var now = new Date();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var dayOfWeek = now.getDay();
+
+            // В воскресенье (0) всегда показываем "Изменения на понедельник"
+            if (dayOfWeek === 0) {
+                return { type: 'sunday' };
+            }
 
             for (var i = 0; i < LESSON_TIMES.length; i++) {
                 var lesson = LESSON_TIMES[i];
@@ -930,6 +920,11 @@
             var info = getCurrentPeriodInfo();
             var now = new Date();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            // Воскресенье - показываем "Изменения на понедельник"
+            if (info.type === 'sunday') {
+                return '<span class="line1">📌 Изменения</span><span class="line2">на понедельник</span>';
+            }
 
             if (info.type === 'lesson') {
                 return '<span class="line1">📖 ' + info.num + '-й урок</span><span class="line2">' + info.start + '–' + info.end + '</span>';
@@ -978,10 +973,10 @@
         function getDisplayDay() {
             var now = new Date();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
-            var dayNum = now.getDay() === 0 ? 1 : now.getDay();
+            var dayNum = now.getDay();
             
-            // Если воскресенье (0) или после 16:00 — показываем понедельник
-            if (now.getDay() === 0 || totalMinutes >= 16 * 60) {
+            // Если воскресенье или после 16:00 — показываем понедельник
+            if (dayNum === 0 || totalMinutes >= 16 * 60) {
                 var nextDayNum = 1; // всегда понедельник
                 return { 
                     key: DAYS_SHORT[nextDayNum] || "ПН", 
@@ -1002,7 +997,7 @@
             var dayNum = now.getDay();
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
             
-            // Если воскресенье (0) или после 16:00 — показываем понедельник
+            // Если воскресенье или после 16:00 — показываем понедельник
             if (dayNum === 0 || totalMinutes >= 16 * 60) {
                 var targetDayNum = 1; // всегда понедельник
                 var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
