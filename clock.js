@@ -1,5 +1,4 @@
 // clock.js - Файл с часами для расписания учителей и админки
-// Версия: 1.0.18
 (function() {
     // Функция для создания и отображения часов
     window.initClock = function(containerId) {
@@ -18,7 +17,17 @@
         clockDiv.style.flexDirection = 'column';
         clockDiv.style.alignItems = 'flex-end';
         clockDiv.style.fontFamily = "'Segoe UI', Arial, sans-serif";
-        clockDiv.style.gap = '2px';
+        clockDiv.style.gap = '0px';
+        
+        // Верхняя строка с днём недели (убрал 📅, сделал синим и жирным)
+        var dayDiv = document.createElement('div');
+        dayDiv.style.fontSize = '0.7em';
+        dayDiv.style.color = '#2b6cb0';
+        dayDiv.style.fontWeight = '700';
+        dayDiv.style.lineHeight = '1.2';
+        dayDiv.style.marginBottom = '1px';
+        dayDiv.innerHTML = '<span id="clockTodayDay_' + containerId + '">Понедельник</span>';
+        clockDiv.appendChild(dayDiv);
         
         // Блок с циферблатом и временем
         var clockBlock = document.createElement('div');
@@ -26,7 +35,7 @@
         clockBlock.style.alignItems = 'center';
         clockBlock.style.gap = '8px';
         
-        // SVG циферблат (БЕЗ секундной стрелки)
+        // SVG циферблат
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('width', '50');
         svg.setAttribute('height', '50');
@@ -53,13 +62,16 @@
         timeDiv.style.display = 'flex';
         timeDiv.style.alignItems = 'center';
         timeDiv.style.gap = '0px';
-        timeDiv.innerHTML = 
-            '<span id="clockTimeDisplay_' + containerId + '" style="font-size:1.6em;font-weight:700;color:#2b6cb0;letter-spacing:1px;line-height:1.1;">00:00</span>' +
-            '<span id="clockSecondsDisplay_' + containerId + '" style="font-size:1.6em;font-weight:700;color:#2b6cb0;letter-spacing:1px;line-height:1.1;">:00</span>';
+        timeDiv.style.fontSize = '1.6em';
+        timeDiv.style.fontWeight = '700';
+        timeDiv.style.color = '#2b6cb0';
+        timeDiv.style.letterSpacing = '1px';
+        timeDiv.style.lineHeight = '1.1';
+        timeDiv.innerHTML = '<span id="clockTimeDisplay_' + containerId + '">00:00</span>';
         textBlock.appendChild(timeDiv);
         
         var dateDiv = document.createElement('div');
-        dateDiv.style.fontSize = '0.9em';
+        dateDiv.style.fontSize = '0.7em';
         dateDiv.style.color = '#718096';
         dateDiv.style.lineHeight = '1';
         dateDiv.innerHTML = '<span id="clockDateDisplay_' + containerId + '">00.00.0000</span>';
@@ -76,19 +88,11 @@
             var minutes = now.getMinutes();
             var seconds = now.getSeconds();
             
-            // Обновляем цифровое время (ЧЧ:ММ)
             var timeEl = document.getElementById('clockTimeDisplay_' + containerId);
             if (timeEl) {
                 timeEl.textContent = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
             }
             
-            // Обновляем секунды в цифровом формате (в том же стиле)
-            var secondsEl = document.getElementById('clockSecondsDisplay_' + containerId);
-            if (secondsEl) {
-                secondsEl.textContent = ':' + String(seconds).padStart(2, '0');
-            }
-            
-            // Обновляем дату
             var dateEl = document.getElementById('clockDateDisplay_' + containerId);
             if (dateEl) {
                 dateEl.textContent = String(now.getDate()).padStart(2, '0') + '.' + 
@@ -96,13 +100,17 @@
                     now.getFullYear();
             }
             
-            // Вычисляем углы для стрелок (только часовая и минутная, без секундной)
+            var daysFull = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+            var dayEl = document.getElementById('clockTodayDay_' + containerId);
+            if (dayEl) {
+                dayEl.textContent = daysFull[now.getDay()];
+            }
+            
             var hourAngle = (hours % 12) * 30 + minutes * 0.5;
-            var minuteAngle = minutes * 6 + seconds * 0.1; // Плавное движение минутной стрелки
+            var minuteAngle = minutes * 6;
             
             var hourHand = document.getElementById('clockHourHand_' + containerId);
             var minuteHand = document.getElementById('clockMinuteHand_' + containerId);
-            
             if (hourHand) {
                 hourHand.setAttribute('transform', 'rotate(' + hourAngle + ', 27.5, 27.5)');
             }
