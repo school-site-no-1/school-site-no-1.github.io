@@ -740,21 +740,9 @@
 
             var changeLabelEl = document.getElementById('changeLabel');
             
-            if (state.isWeekend && (dayKey === 'ВС' || dayKey === 'СБ')) {
-                changeLabelEl.textContent = 'Расписание на понедельник';
-                changeLabelEl.style.display = 'inline-block';
-                return;
-            }
-
-            if (state.isNextDay) {
-                var nextDayGenitive = getDayGenitive(displayDayKey);
-                changeLabelEl.textContent = '🔸 Изменения на ' + nextDayGenitive;
-                changeLabelEl.style.display = 'inline-block';
-            } else {
-                var todayGenitive = getDayGenitive(dayKey);
-                changeLabelEl.textContent = '📖 Расписание на ' + todayGenitive;
-                changeLabelEl.style.display = 'inline-block';
-            }
+            // ВСЕГДА показываем "Изменения в расписании уроков начальной школы"
+            changeLabelEl.textContent = '📋 Изменения в расписании уроков начальной школы';
+            changeLabelEl.style.display = 'inline-block';
         }
 
         function renderSchedule() {
@@ -762,7 +750,7 @@
             var dayKey = state.displayDay || state.currentDay;
             var dayData = state.data[dayKey];
 
-            // В выходные показываем понедельник без лишних сообщений
+            // В выходные показываем понедельник
             if (state.isWeekend && (state.currentDay === 'ВС' || state.currentDay === 'СБ')) {
                 var mondayData = state.data['ПН'];
                 if (mondayData) {
