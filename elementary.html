@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>📋 Расписание начальной школы</title>
+    <title>📋 Изменения в расписании уроков начальной школы</title>
     <style>
         * {
             margin: 0;
@@ -447,7 +447,7 @@
     <div class="container" id="app">
         <div class="header">
             <div class="header-left">
-                <h1>🌱 Расписание начальной школы</h1>
+                <h1>📋 Изменения в расписании уроков начальной школы</h1>
                 <span class="change-label" id="changeLabel">Загрузка...</span>
             </div>
             <div class="header-right">
@@ -740,9 +740,21 @@
 
             var changeLabelEl = document.getElementById('changeLabel');
             
-            // ВСЕГДА показываем "Изменения в расписании уроков начальной школы"
-            changeLabelEl.textContent = '📋 Изменения в расписании уроков начальной школы';
-            changeLabelEl.style.display = 'inline-block';
+            if (state.isWeekend && (dayKey === 'ВС' || dayKey === 'СБ')) {
+                changeLabelEl.textContent = '📖 Расписание на понедельник';
+                changeLabelEl.style.display = 'inline-block';
+                return;
+            }
+
+            if (state.isNextDay) {
+                var nextDayGenitive = getDayGenitive(displayDayKey);
+                changeLabelEl.textContent = '🔸 Изменения на ' + nextDayGenitive;
+                changeLabelEl.style.display = 'inline-block';
+            } else {
+                var todayGenitive = getDayGenitive(dayKey);
+                changeLabelEl.textContent = '📖 Расписание на ' + todayGenitive;
+                changeLabelEl.style.display = 'inline-block';
+            }
         }
 
         function renderSchedule() {
