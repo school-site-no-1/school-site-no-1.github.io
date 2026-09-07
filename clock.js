@@ -17,14 +17,16 @@
         clockDiv.style.flexDirection = 'column';
         clockDiv.style.alignItems = 'flex-end';
         clockDiv.style.fontFamily = "'Segoe UI', Arial, sans-serif";
-        clockDiv.style.gap = '2px';
+        clockDiv.style.gap = '0px';
         
         // Верхняя строка с днём недели
         var dayDiv = document.createElement('div');
-        dayDiv.style.fontSize = '0.65em';
-        dayDiv.style.color = '#4a5568';
-        dayDiv.style.fontWeight = '500';
-        dayDiv.innerHTML = '📅 <span id="clockTodayDay_' + containerId + '">Понедельник</span>';
+        dayDiv.style.fontSize = '0.7em';
+        dayDiv.style.color = '#2b6cb0';
+        dayDiv.style.fontWeight = '700';
+        dayDiv.style.lineHeight = '1.2';
+        dayDiv.style.marginBottom = '1px';
+        dayDiv.innerHTML = '<span id="clockTodayDay_' + containerId + '">Понедельник</span>';
         clockDiv.appendChild(dayDiv);
         
         // Блок с циферблатом и временем
@@ -33,10 +35,10 @@
         clockBlock.style.alignItems = 'center';
         clockBlock.style.gap = '8px';
         
-        // SVG циферблат
+        // SVG циферблат (без секундной стрелки)
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('width', '55');
-        svg.setAttribute('height', '55');
+        svg.setAttribute('width', '50');
+        svg.setAttribute('height', '50');
         svg.setAttribute('viewBox', '0 0 55 55');
         svg.style.flexShrink = '0';
         svg.innerHTML = 
@@ -57,16 +59,20 @@
         textBlock.style.alignItems = 'flex-start';
         
         var timeDiv = document.createElement('div');
+        timeDiv.style.display = 'flex';
+        timeDiv.style.alignItems = 'center';
+        timeDiv.style.gap = '0px';
         timeDiv.style.fontSize = '1.6em';
         timeDiv.style.fontWeight = '700';
         timeDiv.style.color = '#2b6cb0';
         timeDiv.style.letterSpacing = '1px';
         timeDiv.style.lineHeight = '1.1';
-        timeDiv.innerHTML = '<span id="clockTimeDisplay_' + containerId + '">00:00</span>';
+        // Показываем время в формате ЧЧ:ММ:СС (цифровые секунды остаются)
+        timeDiv.innerHTML = '<span id="clockTimeDisplay_' + containerId + '">00:00:00</span>';
         textBlock.appendChild(timeDiv);
         
         var dateDiv = document.createElement('div');
-        dateDiv.style.fontSize = '0.6em';
+        dateDiv.style.fontSize = '0.7em';
         dateDiv.style.color = '#718096';
         dateDiv.style.lineHeight = '1';
         dateDiv.innerHTML = '<span id="clockDateDisplay_' + containerId + '">00.00.0000</span>';
@@ -85,7 +91,10 @@
             
             var timeEl = document.getElementById('clockTimeDisplay_' + containerId);
             if (timeEl) {
-                timeEl.textContent = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+                // Цифровые секунды остаются
+                timeEl.textContent = String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
             }
             
             var dateEl = document.getElementById('clockDateDisplay_' + containerId);
@@ -101,11 +110,13 @@
                 dayEl.textContent = daysFull[now.getDay()];
             }
             
+            // Углы для стрелок (без учёта секунд)
             var hourAngle = (hours % 12) * 30 + minutes * 0.5;
             var minuteAngle = minutes * 6;
             
             var hourHand = document.getElementById('clockHourHand_' + containerId);
             var minuteHand = document.getElementById('clockMinuteHand_' + containerId);
+            
             if (hourHand) {
                 hourHand.setAttribute('transform', 'rotate(' + hourAngle + ', 27.5, 27.5)');
             }
