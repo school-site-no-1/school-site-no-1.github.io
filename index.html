@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.7">
+<html lang="ru" data-version="v4.3.9">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -650,7 +650,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.7';
+        var APP_VERSION = '4.3.9';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -805,67 +805,41 @@
             return '<span class="line1">⏰ Загрузка...</span>';
         }
 
-        function getDisplayDay() {
-            var now = new Date();
-            var totalMinutes = now.getHours() * 60 + now.getMinutes();
-            var dayNum = now.getDay();
-            
-            // Если воскресенье или после 16:00 — показываем понедельник
-            if (dayNum === 0 || totalMinutes >= 16 * 60) {
-                var nextDayNum = 1; // всегда понедельник
-                return { 
-                    key: DAYS_SHORT[nextDayNum] || "ПН", 
-                    full: DAYS_FULL[nextDayNum] || "Понедельник",
-                    isTomorrow: true
-                };
-            }
-            
-            return { 
-                key: DAYS_SHORT[dayNum] || "ПН", 
-                full: DAYS_FULL[dayNum] || "Понедельник",
-                isTomorrow: false
-            };
-        }
-
+        // ================================================================
+        // ⭐ ГЛАВНОЕ ИСПРАВЛЕНИЕ: функция getTargetDay
+        // Теперь правильно определяет следующий день после 16:00
+        // ================================================================
         function getTargetDay() {
             var now = new Date();
-            var dayNum = now.getDay();
+            var dayNum = now.getDay(); // 0=ВС, 1=ПН, ..., 6=СБ
             var totalMinutes = now.getHours() * 60 + now.getMinutes();
             
-            // Если воскресенье или после 16:00 — показываем понедельник
-            if (dayNum === 0 || totalMinutes >= 16 * 60) {
-                var targetDayNum = 1; // всегда понедельник
-                var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
-                var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
-
-                if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
-                    return { key: dayKey, full: dayFull };
-                }
-
-                for (var i = 0; i < DAYS_LIST.length; i++) {
-                    var d = DAYS_LIST[i];
-                    if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
-                        return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
-                    }
-                }
-                return { key: "ПН", full: "Понедельник" };
-            }
-
+            // Определяем, какой день показывать
             var targetDayNum = dayNum;
+            
+            // Если воскресенье (0) или время >= 16:00 — показываем следующий день
+            if (dayNum === 0 || totalMinutes >= 16 * 60) {
+                // Следующий день
+                targetDayNum = dayNum + 1;
+                if (targetDayNum > 6) targetDayNum = 1; // после субботы — понедельник
+            }
+            
             var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
             var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
 
+            // Проверяем, есть ли данные для этого дня
             if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
                 return { key: dayKey, full: dayFull };
             }
 
+            // Если данных нет — ищем любой доступный день
             for (var i = 0; i < DAYS_LIST.length; i++) {
                 var d = DAYS_LIST[i];
                 if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
                     return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
                 }
             }
-            return { key: "ПН", full: "Понедельник" };
+            return { key: dayKey, full: dayFull };
         }
 
         function formatDateForDisplay(dateValue) {
@@ -1048,7 +1022,7 @@
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
-                document.getElementById('mobileView').innerHTML = '<div style="text-align:center;padding:30px 0;color:#a0aec0;">📌 Нет расписания</div>';
+                document.getElementById('mobileView').innerHTML = '<div style="text-align:center;padding:30px 0;color:#a0aec0;">📌 Нет расписания на ' + targetDay.full + '</div>';
                 return;
             }
 
@@ -1067,7 +1041,7 @@
                 var lessons = dayData[className] || [];
 
                 html += '<section class="mobile-class-card" aria-label="Расписание класса ' + escapeHTML(className) + '">';
-                html += '<h3 class="mobile-class-header"><span class="class-name">' + escapeHTML(className) + '</span></h3>';
+                html += '<h3 class="mobile-class-header"><span class="class-name">' + escapeHTML(className) + ' · ' + targetDay.full + '</span></h3>';
 
                 for (var i = 0; i < MAX_LESSONS; i++) {
                     var lesson = lessons[i] || ['', ''];
