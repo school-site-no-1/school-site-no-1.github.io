@@ -1,11 +1,6 @@
 {
   "teachers": [
     {
-      "id": "mihalitsyn",
-      "name": "Михалицын",
-      "scheduleFile": "mihalitsyn.json"
-    },
-    {
       "id": "inshakova_o",
       "name": "Иншакова О.А.",
       "scheduleFile": "inshakova_o.json"
@@ -194,7 +189,12 @@
       "id": "hikmatova_a",
       "name": "Хикматова А.А.",
       "scheduleFile": "hikmatova_a.json"
+    },
+    {
+      "id": "mihalitsyn_a",
+      "name": "Михалицын А.В.",
+      "scheduleFile": "mihalitsyn_a.json"
     }
   ],
-  "last_update": "2026-09-07 09:05:42"
+  "last_update": "2026-09-07 12:31:32"
 }
