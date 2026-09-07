@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Технические работы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100dvh;
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .maintenance-container {
+            max-width: 600px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            border: 1px solid #d0d7e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Декоративная полоса сверху */
+        .maintenance-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2b6cb0, #f6ad55, #e65100);
+        }
+
+        .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            background: #ebf8ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #1a365d;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #e65100;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            color: #4a5568;
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .description strong {
+            color: #2b6cb0;
+        }
+
+        .time-block {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 20px 0 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .time-block .label {
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .time-block .time {
+            color: #1a365d;
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .time-block .time .highlight {
+            color: #e65100;
+        }
+
+        .progress-container {
+            margin: 24px 0;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2b6cb0, #f6ad55);
+            border-radius: 3px;
+            width: 65%;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0%, 100% { width: 65%; }
+            50% { width: 85%; }
+        }
+
+        .progress-text {
+            color: #718096;
+            font-size: 13px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .status-list {
+            text-align: left;
+            margin: 20px 0 24px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .status-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f4f8;
+            color: #4a5568;
+            font-size: 15px;
+        }
+
+        .status-list li:last-child {
+            border-bottom: none;
+        }
+
+        .status-list .icon {
+            flex-shrink: 0;
+            font-size: 20px;
+        }
+
+        .status-list .status-done {
+            color: #38a169;
+        }
+
+        .status-list .status-in-progress {
+            color: #d69e2e;
+            font-weight: 600;
+        }
+
+        .status-list .status-pending {
+            color: #a0aec0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            background: #2b6cb0;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #1a4f8a;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #2b6cb0;
+            border: 2px solid #2b6cb0;
+            margin-left: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #ebf8ff;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            color: #a0aec0;
+            font-size: 13px;
+        }
+
+        .footer-note a {
+            color: #2b6cb0;
+            text-decoration: none;
+        }
+
+        .footer-note a:hover {
+            text-decoration: underline;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .maintenance-container {
+                padding: 32px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .description {
+                font-size: 14px;
+            }
+
+            .icon-wrapper {
+                width: 80px;
+                height: 80px;
+                font-size: 38px;
+            }
+
+            .time-block .time {
+                font-size: 17px;
+            }
+
+            .status-list li {
+                font-size: 13px;
+                padding: 8px 0;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 14px;
+                width: 100%;
+                margin-bottom: 8px;
+            }
+
+            .btn-secondary {
+                margin-left: 0;
+            }
+
+            .buttons {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .maintenance-container {
+                padding: 24px 16px;
+            }
+
+            h1 {
+                font-size: 19px;
+            }
+
+            .icon-wrapper {
+                width: 64px;
+                height: 64px;
+                font-size: 30px;
+            }
+        }
+
+        /* Тёмная тема для тех, у кого включена */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a202c;
+            }
+
+            .maintenance-container {
+                background: #2d3748;
+                border-color: #4a5568;
+            }
+
+            .maintenance-container::before {
+                background: linear-gradient(90deg, #63b3ed, #f6ad55, #ed8936);
+            }
+
+            h1 {
+                color: #f7fafc;
+            }
+
+            .subtitle {
+                color: #f6ad55;
+            }
+
+            .description {
+                color: #e2e8f0;
+            }
+
+            .time-block {
+                background: #1a202c;
+                border-color: #4a5568;
+            }
+
+            .time-block .label {
+                color: #a0aec0;
+            }
+
+            .time-block .time {
+                color: #f7fafc;
+            }
+
+            .time-block .time .highlight {
+                color: #f6ad55;
+            }
+
+            .progress-bar-bg {
+                background: #4a5568;
+            }
+
+            .progress-text {
+                color: #a0aec0;
+            }
+
+            .status-list li {
+                color: #e2e8f0;
+                border-bottom-color: #4a5568;
+            }
+
+            .status-list .status-in-progress {
+                color: #f6ad55;
+            }
+
+            .status-list .status-done {
+                color: #68d391;
+            }
+
+            .status-list .status-pending {
+                color: #718096;
+            }
+
+            .btn {
+                background: #63b3ed;
+                color: #1a202c;
+            }
+
+            .btn:hover {
+                background: #90cdf4;
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: #63b3ed;
+                border-color: #63b3ed;
+            }
+
+            .btn-secondary:hover {
+                background: #2d3748;
+            }
+
+            .footer-note {
+                color: #718096;
+            }
+
+            .footer-note a {
+                color: #63b3ed;
+            }
+
+            .icon-wrapper {
+                background: #2d3748;
+            }
+        }
+
+        /* Анимация для иконки шестерёнки */
+        .gear-spin {
+            display: inline-block;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container" role="main" aria-labelledby="maintenance-title">
+        <!-- Иконка -->
+        <div class="icon-wrapper" aria-hidden="true">
+            <span class="gear-spin">⚙️</span>
+        </div>
+
+        <!-- Заголовки -->
+        <h1 id="maintenance-title">Технические работы</h1>
+        <p class="subtitle">⏳ Расписание временно недоступно</p>
+
+        <!-- Описание -->
+        <p class="description">
+            Ведутся плановые технические работы по обновлению серверов и базы данных расписания.
+            <br><strong>Мы скоро вернёмся!</strong>
+        </p>
+
+        <!-- Время -->
+        <div class="time-block">
+            <div class="label">🕐 Примерное время завершения</div>
+            <div class="time">
+                <span class="highlight" id="estimatedTime">20:00</span> <span style="color:#718096;font-weight:400;">по МСК</span>
+            </div>
+        </div>
+
+        <!-- Прогресс-бар -->
+        <div class="progress-container">
+            <div class="progress-bar-bg" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Прогресс работ">
+                <div class="progress-bar-fill" style="width:65%;"></div>
+            </div>
+            <div class="progress-text">Выполнено 65%</div>
+        </div>
+
+        <!-- Статус работ -->
+        <ul class="status-list" aria-label="Статус работ">
+            <li>
+                <span class="icon">✅</span>
+                <span class="status-done">Обновление базы данных</span>
+            </li>
+            <li>
+                <span class="icon">🔄</span>
+                <span class="status-in-progress">Оптимизация серверов</span>
+            </li>
+            <li>
+                <span class="icon">⏳</span>
+                <span class="status-pending">Тестирование новой версии</span>
+            </li>
+        </ul>
+
+        <!-- Кнопки -->
+        <div class="buttons">
+            <button class="btn" onclick="window.location.reload()">
+                🔄 Проверить обновления
+            </button>
+            <a href="mailto:support@example.com" class="btn btn-secondary">
+                📧 Связаться с поддержкой
+            </a>
+        </div>
+
+        <p class="footer-note">
+            Приносим извинения за неудобства.<br>
+            <a href="#" onclick="event.preventDefault(); window.location.reload();">Обновить страницу</a>
+            · Версия 2.1.0
+        </p>
+    </div>
+
+    <script>
+        // Автоматическое обновление страницы каждые 30 секунд
+        let reloadTimer = setTimeout(function() {
+            window.location.reload();
+        }, 30000);
+
+        // Сброс таймера при взаимодействии пользователя
+        document.addEventListener('click', function() {
+            clearTimeout(reloadTimer);
+        });
+
+        document.addEventListener('keydown', function() {
+            clearTimeout(reloadTimer);
+        });
+
+        // Обновляем примерное время завершения (сейчас + 2 часа)
+        function updateEstimatedTime() {
+            var now = new Date();
+            now.setHours(now.getHours() + 2);
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var timeEl = document.getElementById('estimatedTime');
+            if (timeEl) {
+                timeEl.textContent = hours + ':' + minutes;
+            }
+        }
+
+        // Обновляем прогресс каждые 5 секунд (имитация)
+        var progress = 65;
+        var progressFill = document.querySelector('.progress-bar-fill');
+        var progressText = document.querySelector('.progress-text');
+
+        setInterval(function() {
+            if (progress < 98) {
+                progress += Math.random() * 0.5;
+                if (progress > 98) progress = 98;
+                if (progressFill) {
+                    progressFill.style.width = progress + '%';
+                }
+                if (progressText) {
+                    progressText.textContent = 'Выполнено ' + Math.floor(progress) + '%';
+                }
+            }
+        }, 5000);
+
+        // Обновляем время при загрузке
+        updateEstimatedTime();
+
+        console.log('🛠️ Страница технических работ v2.1.0');
+    </script>
+</body>
+</html>
