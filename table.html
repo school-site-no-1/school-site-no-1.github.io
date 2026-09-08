@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.2.2">
+<html lang="ru" data-version="v4.2.3">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     <style>
         /* ============================
-           БАЗОВЫЕ СТИЛИ (из table1.html)
+           БАЗОВЫЕ СТИЛИ
            ============================ */
         * {
             margin: 0;
@@ -48,7 +48,7 @@
         }
 
         /* ============================
-           ШАПКА (из table1.html)
+           ШАПКА
            ============================ */
         .header {
             flex-shrink: 0;
@@ -189,8 +189,12 @@
         }
 
         /* ============================
-           ЧАСЫ (стили из table1.html)
+           ЧАСЫ (уменьшены через CSS)
            ============================ */
+        #clockContainer {
+            transform: scale(0.7);
+            transform-origin: top right;
+        }
         .clock-wrapper {
             display: flex;
             align-items: center;
@@ -227,7 +231,7 @@
         }
 
         /* ============================
-           ОСНОВНАЯ ЧАСТЬ (из table1.html)
+           ОСНОВНАЯ ЧАСТЬ
            ============================ */
         .main-layout {
             flex: 1;
@@ -245,7 +249,7 @@
         }
 
         /* ============================
-           ТАБЛИЦА (из table1.html)
+           ТАБЛИЦА
            ============================ */
         .desktop-table {
             display: table !important;
@@ -371,7 +375,7 @@
         }
 
         /* ============================
-           ПОДВАЛ (из table1.html)
+           ПОДВАЛ
            ============================ */
         .footer {
             flex-shrink: 0;
@@ -629,9 +633,9 @@
 
     <script>
         // ================================================================
-        // КОНФИГУРАЦИЯ (из table1.html)
+        // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.2.2';
+        var APP_VERSION = '4.2.3';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -673,7 +677,7 @@
         }
 
         // ================================================================
-        // ОСНОВНАЯ ЛОГИКА (из table1.html)
+        // ОСНОВНАЯ ЛОГИКА
         // ================================================================
 
         function parseTime(timeStr) {
@@ -852,7 +856,7 @@
         }
 
         // ================================================================
-        // ЗАГРУЗКА schedule.primary.json (из table1.html)
+        // ЗАГРУЗКА schedule.primary.json
         // ================================================================
 
         function loadData() {
@@ -1002,7 +1006,7 @@
         }
 
         // ================================================================
-        // ОТРИСОВКА (из table1.html)
+        // ОТРИСОВКА
         // ================================================================
 
         function renderTable() {
@@ -1105,11 +1109,7 @@
             if (typeof initClock === 'function') {
                 initClock('clockContainer');
             } else {
-                console.warn('clock.js не загружен, используется fallback');
-                // fallback на случай, если clock.js не загрузился
-                if (typeof initRotatedClock === 'function') {
-                    initRotatedClock('clockContainer');
-                }
+                console.warn('clock.js не загружен');
             }
 
             window.addEventListener('beforeinstallprompt', function(e) {
@@ -1144,7 +1144,7 @@
             window.addEventListener('online', loadData);
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('ℹ️ Часы загружены из clock.js');
+            console.log('ℹ️ Часы загружены из clock.js, уменьшены через CSS (scale: 0.7)');
         });
     </script>
 </body>
