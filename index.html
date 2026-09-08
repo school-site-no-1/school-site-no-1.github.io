@@ -543,26 +543,6 @@
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
         }
-
-        /* ============================
-           СКРЫВАЕМ ИКОНКУ ЯНДЕКС МЕТРИКИ
-           ============================ */
-        .ym-counter,
-        .ym-counter img,
-        img[src*="mc.yandex.ru"],
-        img[src*="yandex.ru/watch"],
-        .metrika-icon,
-        [class*="metrika"],
-        [id*="metrika"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            position: absolute !important;
-            width: 1px !important;
-            height: 1px !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-        }
     </style>
 </head>
 <body>
@@ -649,7 +629,7 @@
     <!-- ===== ПОДКЛЮЧЕНИЕ CLOCK.JS ===== -->
     <script src="clock.js"></script>
 
-    <!-- ===== ЯНДЕКС.МЕТРИКА (сбор данных без отображения иконки) ===== -->
+    <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
     <script type="text/javascript">
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
        m[i].l=1*new Date();
@@ -664,7 +644,7 @@
             webvisor:true
        });
     </script>
-    <!-- Блок <noscript> УДАЛЁН — иконка не отображается -->
+    <noscript><div><img src="https://mc.yandex.ru/watch/110291320" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
     <script>
         // ================================================================
@@ -696,7 +676,7 @@
         var deferredPrompt = null;
         var lastBoardRenderKey = '';
         var dataRequestInFlight = false;
-        var DATA_REFRESH_INTERVAL_MS = 2400000; // 40 минут (не используется, т.к. автообновление отключено)
+        var DATA_REFRESH_INTERVAL_MS = 2400000; // 40 минут
 
         // ================================================================
         // УВЕДОМЛЕНИЯ
@@ -826,7 +806,8 @@
         }
 
         // ================================================================
-        // ОПРЕДЕЛЕНИЕ ЦЕЛЕВОГО ДНЯ (после 16:00 — следующий день)
+        // ⭐ ГЛАВНОЕ ИСПРАВЛЕНИЕ: функция getTargetDay
+        // Теперь правильно определяет следующий день после 16:00
         // ================================================================
         function getTargetDay() {
             var now = new Date();
@@ -844,4 +825,334 @@
             }
             
             var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
-            var dayFull
+            var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+            // Проверяем, есть ли данные для этого дня
+            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                return { key: dayKey, full: dayFull };
+            }
+
+            // Если данных нет — ищем любой доступный день
+            for (var i = 0; i < DAYS_LIST.length; i++) {
+                var d = DAYS_LIST[i];
+                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                }
+            }
+            return { key: dayKey, full: dayFull };
+        }
+
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return null;
+            var d = new Date(dateValue);
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА schedule.primary.json
+        // ================================================================
+
+        function loadData() {
+            if (dataRequestInFlight) return;
+            dataRequestInFlight = true;
+            var statusEl = document.getElementById('scheduleStatus');
+            if (statusEl) statusEl.textContent = 'Загружаем расписание…';
+            setBoardSync('loading', 'Обновляем данные…');
+
+            var cacheBuster = Math.floor(Date.now() / 3600000);
+            var url = 'schedule.primary.json?t=' + cacheBuster;
+
+            fetch(url, { cache: 'default' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('schedule.primary.json не найден (код ' + res.status + ')');
+                    
+                    var etag = res.headers.get('ETag');
+                    
+                    if (etag) {
+                        var cachedEtag = localStorage.getItem('schedule_etag');
+                        if (cachedEtag === etag) {
+                            if (statusEl) statusEl.textContent = '✅ данные актуальны (ETag)';
+                            return res.json();
+                        }
+                        localStorage.setItem('schedule_etag', etag);
+                        if (statusEl) statusEl.textContent = '🔄 данные обновлены (новый ETag)';
+                    } else {
+                        if (statusEl) statusEl.textContent = '⚠️ ETag не поддерживается';
+                    }
+                    
+                    return res.json();
+                })
+                .then(function(data) {
+                    var scheduleData = null;
+                    var updatedDate = data.updated || data.last_update || (data.meta && data.meta.updated) || null;
+
+                    if (updatedDate) {
+                        var formatted = formatDateForDisplay(updatedDate);
+                        if (formatted) {
+                            scheduleUpdatedDate = formatted;
+                            document.getElementById('scheduleUpdated').textContent = '📅 ' + formatted;
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated';
+                        } else {
+                            document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                        }
+                    } else {
+                        document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                        document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    }
+
+                    if (data.schedule) {
+                        scheduleData = data.schedule.primary || data.schedule;
+                    } else if (data.primary) {
+                        scheduleData = data.primary;
+                    } else {
+                        scheduleData = data;
+                    }
+
+                    var hasDays = false;
+                    DAYS_LIST.forEach(function(day) {
+                        if (scheduleData && scheduleData[day]) {
+                            hasDays = true;
+                            var filtered = {};
+                            Object.keys(scheduleData[day]).forEach(function(cls) {
+                                if (PRIMARY_CLASSES.indexOf(cls) !== -1) {
+                                    filtered[cls] = scheduleData[day][cls];
+                                }
+                            });
+                            weekDays[day] = Object.keys(filtered).length > 0 ? filtered : {};
+                        }
+                    });
+
+                    if (!hasDays) {
+                        DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    }
+
+                    if (statusEl) statusEl.textContent = 'Расписание обновлено.';
+                    processLoadedData();
+                    lastBoardRenderKey = getBoardRenderKey();
+                    setBoardSync('online', 'Данные актуальны');
+                })
+                .catch(function(err) {
+                    console.warn('Ошибка загрузки schedule.primary.json:', err.message);
+                    if (statusEl) statusEl.textContent = 'Не удалось обновить расписание. Проверьте соединение и попробуйте снова.';
+                    DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
+                    document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    setBoardSync('offline', 'Нет связи · показываем последние данные');
+                    processLoadedData();
+                })
+                .finally(function() {
+                    dataRequestInFlight = false;
+                });
+        }
+
+        function processLoadedData() {
+            classNames = PRIMARY_CLASSES;
+
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                classNames.forEach(function(cls) {
+                    if (!dayData[cls]) {
+                        dayData[cls] = [];
+                        for (var i = 0; i < MAX_LESSONS; i++) {
+                            dayData[cls].push(['', '']);
+                        }
+                    } else {
+                        var lessons = dayData[cls];
+                        while (lessons.length < MAX_LESSONS) {
+                            lessons.push(['', '']);
+                        }
+                    }
+                });
+                weekDays[day] = dayData;
+            });
+
+            dataLoaded = true;
+            renderMobile();
+            lastBoardRenderKey = getBoardRenderKey();
+        }
+
+        function escapeHTML(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function isEmptyLesson(value) {
+            var normalized = String(value == null ? '' : value).trim().toLowerCase();
+            return normalized === '' || normalized === 'нет урока' || normalized === 'нет' || normalized === '—' || normalized === '-';
+        }
+
+        function sortClasses(classes) {
+            var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+            return classes.sort(function(a, b) {
+                var numA = parseInt(a.match(/\d+/)?.[0] || 0);
+                var numB = parseInt(b.match(/\d+/)?.[0] || 0);
+                if (numA !== numB) return numA - numB;
+                var lA = a.match(/[А-Я]/)?.[0] || '';
+                var lB = b.match(/[А-Я]/)?.[0] || '';
+                return letters.indexOf(lA) - letters.indexOf(lB);
+            });
+        }
+
+        // ================================================================
+        // ОТРИСОВКА МОБИЛЬНОЙ ВЕРСИИ
+        // ================================================================
+
+        function renderMobile() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+
+            var currentLesson = 0;
+            var info = getCurrentPeriodInfo();
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+
+            var dayData = weekDays[dayKey];
+            if (!dayData || Object.keys(dayData).length === 0) {
+                document.getElementById('mobileView').innerHTML = '<div style="text-align:center;padding:30px 0;color:#a0aec0;">📌 Нет расписания на ' + targetDay.full + '</div>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+            
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            var selectedMobileClass = mobileClassFilter ? mobileClassFilter.value : 'all';
+            if (selectedMobileClass !== 'all' && classes.indexOf(selectedMobileClass) !== -1) {
+                classes = [selectedMobileClass];
+            }
+
+            var html = '';
+            classes.forEach(function(className) {
+                var lessons = dayData[className] || [];
+
+                html += '<section class="mobile-class-card" aria-label="Расписание класса ' + escapeHTML(className) + '">';
+                html += '<h3 class="mobile-class-header"><span class="class-name">' + escapeHTML(className) + ' · ' + targetDay.full + '</span></h3>';
+
+                for (var i = 0; i < MAX_LESSONS; i++) {
+                    var lesson = lessons[i] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+                    var isCurrent = (i + 1 === currentLesson);
+                    var hasContent = !isEmptyLesson(subject);
+
+                    html += '<div class="mobile-lesson-card' + (isCurrent ? ' current' : '') + '">';
+                    html += '<span class="lesson-num-mobile">' + (i + 1) + '</span>';
+
+                    if (hasContent) {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
+                        if (cabinet && cabinet.trim() !== '') {
+                            html += '<span class="room-name">' + escapeHTML(cabinet) + '</span>';
+                        }
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
+                    } else {
+                        html += '<div class="lesson-info">';
+                        html += '<span class="subject-name empty" aria-label="Нет урока">—</span>';
+                        html += '</div>';
+                        html += '<span class="lesson-time">' + LESSON_TIMES[i].start + '–' + LESSON_TIMES[i].end + '</span>';
+                    }
+                    html += '</div>';
+                }
+                html += '</section>';
+            });
+
+            document.getElementById('mobileView').innerHTML = html;
+        }
+
+        function getBoardRenderKey() {
+            var targetDay = getTargetDay();
+            var info = getCurrentPeriodInfo();
+            var activeLesson = 0;
+            if (info.type === 'lesson') {
+                activeLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                activeLesson = Math.max(0, info.nextLesson - 1);
+            }
+            return targetDay.key + '|' + info.type + '|' + activeLesson;
+        }
+
+        function setBoardSync(state, message) {
+            var sync = document.getElementById('boardSync');
+            if (!sync) return;
+            sync.className = 'board-sync ' + state;
+            sync.textContent = message;
+        }
+
+        function refreshAll() {
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+            var renderKey = getBoardRenderKey();
+            if (renderKey !== lastBoardRenderKey) {
+                lastBoardRenderKey = renderKey;
+                renderMobile();
+            }
+        }
+
+        // ================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Часы инициализируются из clock.js
+            if (typeof initClock === 'function') {
+                initClock('clockContainer');
+            } else {
+                console.warn('clock.js не загружен или функция initClock не найдена');
+            }
+
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                var pwaNotification = document.getElementById('pwaNotification');
+                if (pwaNotification) pwaNotification.style.display = 'block';
+            });
+
+            var mobileClassFilter = document.getElementById('mobileClassFilter');
+            if (mobileClassFilter) {
+                mobileClassFilter.addEventListener('change', function() {
+                    renderMobile();
+                    var mobileView = document.getElementById('mobileView');
+                    if (mobileView) mobileView.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            loadData();
+
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    renderMobile();
+                    refreshAll();
+                }, 120);
+            });
+
+            setInterval(refreshAll, 1000);
+            setInterval(loadData, DATA_REFRESH_INTERVAL_MS);
+
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) loadData();
+            });
+            window.addEventListener('online', loadData);
+
+            console.log('✅ Мобильное расписание v' + APP_VERSION + ' загружено!');
+        });
+    </script>
+</body>
+</html>
