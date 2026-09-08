@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.4.2">
+<html lang="ru" data-version="v4.4.3">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,50 +113,17 @@
         }
 
         /* ============================
-           ЧАСЫ (уменьшены в 2 раза)
+           ЧАСЫ (уменьшены через CSS)
            ============================ */
-        .clock-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0px;
+        #clockContainer {
+            transform: scale(0.55);
+            transform-origin: top right;
+            margin-right: -8px;
+            margin-top: -4px;
         }
-        .clock-top {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-        .clock-wrapper svg {
-            width: 14px !important;
-            height: 14px !important;
-        }
-        .clock-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            white-space: nowrap;
-        }
-        .clock-text .digital-time {
-            font-size: 9px;
-            color: #2b6cb0;
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-            line-height: 1.1;
-        }
-        .clock-text .countdown {
-            display: none !important;
-        }
-
-        .clock-date-row {
-            font-size: 5px;
-            color: #4a5568;
-            font-weight: 600;
-            line-height: 1.1;
-            margin-bottom: 1px;
-        }
-        .clock-date-row .day-name {
-            color: #2b6cb0;
-            font-weight: 700;
+        /* Компенсация для сохранения места */
+        .header-right {
+            overflow: visible;
         }
 
         /* ============================
@@ -569,15 +536,10 @@
             .period .line2 {
                 font-size: 7px;
             }
-            .clock-wrapper svg {
-                width: 12px !important;
-                height: 12px !important;
-            }
-            .clock-text .digital-time {
-                font-size: 7px;
-            }
-            .clock-date-row {
-                font-size: 4px;
+            #clockContainer {
+                transform: scale(0.4);
+                margin-right: -10px;
+                margin-top: -6px;
             }
             .desktop-table thead th {
                 font-size: clamp(4px, 0.4vw, 6px) !important;
@@ -619,15 +581,10 @@
         }
 
         @media (max-width: 400px) {
-            .clock-wrapper svg {
-                width: 10px !important;
-                height: 10px !important;
-            }
-            .clock-text .digital-time {
-                font-size: 6px;
-            }
-            .clock-date-row {
-                font-size: 3px;
+            #clockContainer {
+                transform: scale(0.3);
+                margin-right: -14px;
+                margin-top: -8px;
             }
             .period {
                 font-size: 8px;
@@ -702,7 +659,7 @@
         <span id="notificationMessage"></span>
     </div>
 
-    <!-- ===== ПОДКЛЮЧАЕМ clock.js ===== -->
+    <!-- ===== ПОДКЛЮЧАЕМ clock.js (БЕЗ ИЗМЕНЕНИЙ) ===== -->
     <script src="clock.js"></script>
 
     <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
@@ -726,7 +683,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.4.2';
+        var APP_VERSION = '4.4.3';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -1203,11 +1160,15 @@
         // ================================================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            // ⭐ ЧАСЫ ЗАГРУЖАЮТСЯ ИЗ clock.js
-            if (typeof initRotatedClock === 'function') {
-                initRotatedClock('clockContainer');
+            // ⭐ ЧАСЫ ИЗ clock.js (БЕЗ ИЗМЕНЕНИЙ)
+            if (typeof initClock === 'function') {
+                initClock('clockContainer');
             } else {
                 console.warn('clock.js не загружен!');
+                // fallback
+                if (typeof initRotatedClock === 'function') {
+                    initRotatedClock('clockContainer');
+                }
             }
 
             window.addEventListener('beforeinstallprompt', function(e) {
@@ -1236,7 +1197,7 @@
             });
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('ℹ️ Часы загружены из clock.js (уменьшены в 2 раза)');
+            console.log('ℹ️ Часы загружены из clock.js (уменьшены через CSS)');
             console.log('ℹ️ Для обновления данных нажмите кнопку "🔄 Обновить" в подвале');
         });
     </script>
