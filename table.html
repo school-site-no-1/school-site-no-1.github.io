@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.4.1">
+<html lang="ru" data-version="v4.4.2">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,7 +62,7 @@
             padding-bottom: 2px;
             flex-wrap: nowrap;
             gap: 4px;
-            min-height: 36px;
+            min-height: 28px;
         }
         .header-left {
             display: none !important;
@@ -86,19 +86,19 @@
         .period {
             color: #e65100;
             font-weight: 600;
-            min-height: 1.3em;
+            min-height: 1.2em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 13px;
-            line-height: 1.2;
+            font-size: 11px;
+            line-height: 1.1;
         }
         .period .line1 {
-            font-size: 13px;
+            font-size: 11px;
             display: block;
         }
         .period .line2 {
-            font-size: 11px;
+            font-size: 9px;
             display: block;
             font-weight: 500;
             color: #d45c00;
@@ -113,7 +113,7 @@
         }
 
         /* ============================
-           ЧАСЫ (стили для clock.js)
+           ЧАСЫ (уменьшены в 2 раза)
            ============================ */
         .clock-wrapper {
             display: flex;
@@ -124,11 +124,11 @@
         .clock-top {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
         .clock-wrapper svg {
-            width: 28px;
-            height: 28px;
+            width: 14px !important;
+            height: 14px !important;
         }
         .clock-text {
             display: flex;
@@ -137,7 +137,7 @@
             white-space: nowrap;
         }
         .clock-text .digital-time {
-            font-size: 14px;
+            font-size: 9px;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
@@ -148,7 +148,7 @@
         }
 
         .clock-date-row {
-            font-size: 7px;
+            font-size: 5px;
             color: #4a5568;
             font-weight: 600;
             line-height: 1.1;
@@ -216,7 +216,7 @@
         .desktop-table thead tr {
             flex-shrink: 0;
             flex: 0 0 auto !important;
-            min-height: 24px !important;
+            min-height: 20px !important;
         }
         .desktop-table th,
         .desktop-table td {
@@ -246,29 +246,29 @@
             font-weight: 700;
             border-bottom: 2px solid #2b6cb0;
             text-transform: uppercase;
-            font-size: clamp(7px, 0.65vw, 10px) !important;
+            font-size: clamp(6px, 0.5vw, 8px) !important;
             line-height: 1.1 !important;
-            padding: 2px 2px !important;
-            min-height: 22px !important;
+            padding: 1px 2px !important;
+            min-height: 18px !important;
             flex: 1;
         }
         .desktop-table thead th:first-child {
-            flex: 0 0 28px !important;
-            min-width: 28px !important;
-            max-width: 28px !important;
+            flex: 0 0 22px !important;
+            min-width: 22px !important;
+            max-width: 22px !important;
         }
         .desktop-table tbody th {
             background: #f7fafc;
             color: #4a5568;
             font-weight: 700;
-            font-size: clamp(8px, 0.7vw, 11px) !important;
-            flex: 0 0 28px !important;
-            min-width: 28px !important;
-            max-width: 28px !important;
+            font-size: clamp(6px, 0.5vw, 8px) !important;
+            flex: 0 0 22px !important;
+            min-width: 22px !important;
+            max-width: 22px !important;
             border-right: 1.5px solid #d0d7e0;
         }
         .desktop-table tbody td {
-            font-size: clamp(8px, 0.7vw, 11px) !important;
+            font-size: clamp(6px, 0.5vw, 8px) !important;
             line-height: 1.1 !important;
             padding: 1px 2px !important;
             flex: 1;
@@ -312,7 +312,7 @@
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            font-size: 0.9em !important;
+            font-size: 0.85em !important;
             text-align: center;
             width: 100%;
         }
@@ -320,7 +320,7 @@
             color: #9a3412 !important;
             display: block;
             font-weight: 700;
-            font-size: 0.65em !important;
+            font-size: 0.6em !important;
             line-height: 1 !important;
             white-space: nowrap;
             text-align: center;
@@ -345,14 +345,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 16px;
+            min-height: 14px;
             color: #a0aec0;
             text-align: center;
             border-top: 1px solid #e2e8f0;
             padding-top: 2px;
             margin-top: 2px;
-            font-size: 7px;
-            gap: 6px;
+            font-size: 6px;
+            gap: 4px;
             flex-wrap: wrap;
         }
         .footer .version {
@@ -363,32 +363,32 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             white-space: nowrap;
             flex-wrap: wrap;
         }
         .footer-status .schedule-updated {
             color: #475467 !important;
-            font-size: 7px;
-            padding: 0 3px;
+            font-size: 6px;
+            padding: 0 2px;
             background: transparent;
             border-radius: 0;
         }
         .footer-status .board-sync {
-            font-size: 7px;
-            padding: 0 3px;
+            font-size: 6px;
+            padding: 0 2px;
             background: transparent;
             border: 0;
             border-radius: 0;
         }
         .footer-status .sound-toggle {
-            font-size: 7px;
-            padding: 0 3px;
+            font-size: 6px;
+            padding: 0 2px;
             border-width: 1px;
         }
         .footer-status .board-sync::before {
-            width: 4px;
-            height: 4px;
+            width: 3px;
+            height: 3px;
         }
 
         /* ============================
@@ -396,15 +396,15 @@
            ============================ */
         .btn-refresh {
             border: 1px solid #2b6cb0;
-            border-radius: 4px;
+            border-radius: 3px;
             background: #ffffff;
             color: #1a365d;
-            padding: 1px 6px;
+            padding: 0 4px;
             font: inherit;
-            font-size: 7px;
+            font-size: 6px;
             cursor: pointer;
             transition: background 0.2s;
-            line-height: 1.4;
+            line-height: 1.3;
         }
         .btn-refresh:hover {
             background: #ebf8ff;
@@ -561,60 +561,82 @@
                 padding: 2px 3px;
             }
             .period {
-                font-size: 11px;
-            }
-            .period .line1 {
-                font-size: 11px;
-            }
-            .period .line2 {
                 font-size: 9px;
             }
+            .period .line1 {
+                font-size: 9px;
+            }
+            .period .line2 {
+                font-size: 7px;
+            }
             .clock-wrapper svg {
-                width: 22px;
-                height: 22px;
+                width: 12px !important;
+                height: 12px !important;
             }
             .clock-text .digital-time {
-                font-size: 12px;
+                font-size: 7px;
             }
             .clock-date-row {
-                font-size: 6px;
+                font-size: 4px;
             }
             .desktop-table thead th {
-                font-size: clamp(5px, 0.6vw, 8px) !important;
-                min-height: 18px !important;
+                font-size: clamp(4px, 0.4vw, 6px) !important;
+                min-height: 14px !important;
             }
             .desktop-table thead th:first-child {
-                flex: 0 0 20px !important;
-                min-width: 20px !important;
-                max-width: 20px !important;
+                flex: 0 0 16px !important;
+                min-width: 16px !important;
+                max-width: 16px !important;
             }
             .desktop-table tbody th {
-                flex: 0 0 20px !important;
-                min-width: 20px !important;
-                max-width: 20px !important;
-                font-size: clamp(6px, 0.6vw, 9px) !important;
+                flex: 0 0 16px !important;
+                min-width: 16px !important;
+                max-width: 16px !important;
+                font-size: clamp(4px, 0.4vw, 6px) !important;
             }
             .desktop-table tbody td {
-                font-size: clamp(6px, 0.6vw, 9px) !important;
+                font-size: clamp(4px, 0.4vw, 6px) !important;
             }
             .subject {
-                font-size: 0.8em !important;
+                font-size: 0.7em !important;
             }
             .cabinet {
-                font-size: 0.55em !important;
+                font-size: 0.5em !important;
             }
             .footer {
-                font-size: 6px;
-                min-height: 12px;
+                font-size: 5px;
+                min-height: 10px;
             }
             .footer-status .schedule-updated,
             .footer-status .board-sync,
             .footer-status .sound-toggle {
-                font-size: 6px;
+                font-size: 5px;
             }
             .btn-refresh {
+                font-size: 5px;
+                padding: 0 3px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .clock-wrapper svg {
+                width: 10px !important;
+                height: 10px !important;
+            }
+            .clock-text .digital-time {
                 font-size: 6px;
-                padding: 0 4px;
+            }
+            .clock-date-row {
+                font-size: 3px;
+            }
+            .period {
+                font-size: 8px;
+            }
+            .period .line1 {
+                font-size: 8px;
+            }
+            .period .line2 {
+                font-size: 6px;
             }
         }
     </style>
@@ -704,7 +726,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.4.1';
+        var APP_VERSION = '4.4.2';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -1214,7 +1236,7 @@
             });
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('ℹ️ Часы загружены из clock.js');
+            console.log('ℹ️ Часы загружены из clock.js (уменьшены в 2 раза)');
             console.log('ℹ️ Для обновления данных нажмите кнопку "🔄 Обновить" в подвале');
         });
     </script>
