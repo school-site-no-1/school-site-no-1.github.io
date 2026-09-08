@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.0">
+<html lang="ru" data-version="v4.3.1">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,7 +48,39 @@
         }
 
         /* ============================
-           ШАПКА (высота уменьшена до 30px)
+           УВЕДОМЛЕНИЕ СВЕРХУ ПО ЦЕНТРУ
+           ============================ */
+        .top-notification {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #38a169;
+            color: #ffffff;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .top-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .top-notification.error {
+            background: #e53e3e;
+        }
+        .top-notification.warning {
+            background: #d69e2e;
+        }
+
+        /* ============================
+           ШАПКА (высота 35px)
            ============================ */
         .header {
             flex-shrink: 0;
@@ -59,8 +91,8 @@
             padding-bottom: 1px;
             flex-wrap: nowrap;
             gap: 4px;
-            min-height: 30px;
-            max-height: 30px;
+            min-height: 35px;
+            max-height: 35px;
         }
         .header-left {
             display: none !important;
@@ -130,7 +162,7 @@
         }
 
         /* ============================
-           ЧАСЫ (уменьшены через CSS)
+           ЧАСЫ
            ============================ */
         #clockContainer {
             transform: scale(0.6);
@@ -280,15 +312,15 @@
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            font-size: clamp(6px, 0.7vw, 7px) !important;
-            margin-bottom: 2pt !important;  /* ← расстояние между предметом и кабинетом увеличено на 2pt */
+            font-size: clamp(8px, 0.85vw, 9px) !important;  /* +2pt */
+            margin-bottom: 2pt !important;
         }
         .cabinet {
             color: #9a3412 !important;
             display: block;
             font-weight: 700;
             margin-top: 0px !important;
-            font-size: 0.72em !important;
+            font-size: clamp(7px, 0.75vw, 8px) !important;  /* +2pt */
             line-height: 1 !important;
             white-space: nowrap;
         }
@@ -416,40 +448,6 @@
         }
 
         /* ============================
-           УВЕДОМЛЕНИЕ
-           ============================ */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
-            transform: translateX(450px);
-            transition: transform 0.3s;
-            z-index: 3000;
-            color: #2d3748;
-            max-width: 400px;
-        }
-        .notification.show {
-            transform: translateX(0);
-        }
-        .notification.success {
-            border-left: 4px solid #38a169;
-        }
-        .notification.error {
-            border-left: 4px solid #e53e3e;
-        }
-        .notification.info {
-            border-left: 4px solid #2b6cb0;
-        }
-        .notification.warning {
-            border-left: 4px solid #d69e2e;
-        }
-
-        /* ============================
            PWA
            ============================ */
         #pwaNotification {
@@ -512,10 +510,14 @@
             .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
+            .top-notification { display: none !important; }
         }
     </style>
 </head>
 <body>
+    <!-- ===== УВЕДОМЛЕНИЕ СВЕРХУ ПО ЦЕНТРУ ===== -->
+    <div id="topNotification" class="top-notification">✅ Расписание обновлено</div>
+
     <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
     <div class="container">
         <!-- ===== ШАПКА ===== -->
@@ -573,11 +575,6 @@
         <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
     </div>
 
-    <!-- ===== УВЕДОМЛЕНИЕ ===== -->
-    <div id="notification" class="notification" role="status" aria-live="polite" aria-atomic="true">
-        <span id="notificationMessage"></span>
-    </div>
-
     <!-- ===== ПОДКЛЮЧАЕМ clock.js ===== -->
     <script src="clock.js"></script>
 
@@ -602,7 +599,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.0';
+        var APP_VERSION = '4.3.1';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -631,18 +628,31 @@
         var lastRefreshTime = 0;
         var REFRESH_COOLDOWN_MS = 5000;
         var nextScheduledRefresh = null;
+        var notificationTimeout = null;
 
         // ================================================================
-        // УВЕДОМЛЕНИЯ
+        // УВЕДОМЛЕНИЕ СВЕРХУ ПО ЦЕНТРУ
         // ================================================================
-        function showNotification(message, type) {
-            var el = document.getElementById('notification');
-            var msg = document.getElementById('notificationMessage');
-            if (!el || !msg) return;
-            el.className = 'notification show ' + (type || 'info');
-            msg.textContent = message;
-            clearTimeout(el._timeout);
-            el._timeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
+        function showTopNotification(message, type) {
+            var el = document.getElementById('topNotification');
+            if (!el) return;
+            
+            el.textContent = message;
+            el.className = 'top-notification';
+            if (type) {
+                el.classList.add(type);
+            }
+            
+            // Показываем
+            requestAnimationFrame(function() {
+                el.classList.add('show');
+            });
+            
+            // Автоматически скрываем через 4 секунды
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(function() {
+                el.classList.remove('show');
+            }, 4000);
         }
 
         // ================================================================
@@ -833,7 +843,8 @@
             
             var now = Date.now();
             if (!force && (now - lastRefreshTime < REFRESH_COOLDOWN_MS)) {
-                showNotification('⏳ Подождите ' + Math.ceil((REFRESH_COOLDOWN_MS - (now - lastRefreshTime)) / 1000) + ' сек перед повторным обновлением', 'warning');
+                var waitTime = Math.ceil((REFRESH_COOLDOWN_MS - (now - lastRefreshTime)) / 1000);
+                showTopNotification('⏳ Подождите ' + waitTime + ' сек', 'warning');
                 return;
             }
             
@@ -844,8 +855,10 @@
             var refreshBtn = document.getElementById('refreshBtn');
             
             if (statusEl) statusEl.textContent = 'Загружаем расписание…';
-            if (refreshBtn) refreshBtn.classList.add('loading');
-            refreshBtn.textContent = '⏳ Загрузка...';
+            if (refreshBtn) {
+                refreshBtn.classList.add('loading');
+                refreshBtn.textContent = '⏳ Загрузка...';
+            }
             setBoardSync('loading', 'Обновляем данные…');
 
             var cacheBuster = Math.floor(Date.now() / 3600000);
@@ -920,7 +933,7 @@
                     processLoadedData();
                     lastBoardRenderKey = getBoardRenderKey();
                     setBoardSync('online', 'Данные актуальны');
-                    showNotification('✅ Расписание обновлено!', 'success');
+                    showTopNotification('✅ Расписание обновлено', 'success');
                 })
                 .catch(function(err) {
                     console.warn('Ошибка загрузки schedule.primary.json:', err.message);
@@ -928,7 +941,7 @@
                     document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
                     document.getElementById('scheduleUpdated').className = 'schedule-updated error';
                     setBoardSync('offline', 'Ошибка загрузки');
-                    showNotification('❌ Не удалось обновить расписание: ' + err.message, 'error');
+                    showTopNotification('❌ Ошибка: ' + err.message, 'error');
                 })
                 .finally(function() {
                     dataRequestInFlight = false;
@@ -1103,12 +1116,11 @@
             var minutes = now.getMinutes();
             var seconds = now.getSeconds();
             
-            // Проверяем 16:00:00
             if (hours === 16 && minutes === 0 && seconds < 5) {
                 if (!nextScheduledRefresh || Date.now() - nextScheduledRefresh > 60000) {
                     nextScheduledRefresh = Date.now();
                     console.log('🔄 Автоматическое обновление в 16:00');
-                    showNotification('🔄 Автообновление в 16:00', 'info');
+                    showTopNotification('🔄 Автообновление в 16:00', 'info');
                     loadData(true);
                 }
             }
@@ -1158,7 +1170,7 @@
             });
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('ℹ️ Часы загружены из clock.js, уменьшены через CSS (scale: 0.6)');
+            console.log('ℹ️ Часы загружены из clock.js');
             console.log('ℹ️ Автообновление данных: только в 16:00');
             console.log('ℹ️ Для обновления нажмите кнопку "🔄 Обновить расписание" в подвале');
         });
