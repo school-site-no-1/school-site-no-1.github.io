@@ -167,6 +167,7 @@
         #clockContainer {
             transform: scale(0.6);
             transform-origin: top right;
+            margin-top: 5pt;
         }
         .clock-wrapper {
             display: flex;
@@ -185,22 +186,31 @@
             align-items: flex-start;
             white-space: nowrap;
         }
-        .clock-text .day {
-            display: none !important;
-        }
-        .clock-text .date {
-            font-size: 0.35em;
-            color: #2d3748;
-            font-weight: 600;
-        }
         .clock-text .digital-time {
             font-size: 0.45em;
             color: #2b6cb0;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
+            line-height: 1.1;
+        }
+        .clock-text .date {
+            font-size: 0.55em;
+            color: #2d3748;
+            font-weight: 600;
+            line-height: 1.1;
         }
         .clock-text .countdown {
             display: none !important;
+        }
+        .clock-day-row {
+            font-size: 0.4em;
+            color: #4a5568;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+        .clock-day-row .day-name {
+            color: #2b6cb0;
+            font-weight: 700;
         }
 
         /* ============================
@@ -312,7 +322,7 @@
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            font-size: clamp(8px, 0.85vw, 9px) !important;  /* +2pt */
+            font-size: clamp(8px, 0.85vw, 9px) !important;
             margin-bottom: 2pt !important;
         }
         .cabinet {
@@ -320,7 +330,7 @@
             display: block;
             font-weight: 700;
             margin-top: 0px !important;
-            font-size: clamp(7px, 0.75vw, 8px) !important;  /* +2pt */
+            font-size: clamp(7px, 0.75vw, 8px) !important;
             line-height: 1 !important;
             white-space: nowrap;
         }
@@ -643,12 +653,10 @@
                 el.classList.add(type);
             }
             
-            // Показываем
             requestAnimationFrame(function() {
                 el.classList.add('show');
             });
             
-            // Автоматически скрываем через 4 секунды
             clearTimeout(notificationTimeout);
             notificationTimeout = setTimeout(function() {
                 el.classList.remove('show');
@@ -1135,7 +1143,11 @@
             if (typeof initClock === 'function') {
                 initClock('clockContainer');
             } else {
-                console.warn('clock.js не загружен');
+                console.warn('clock.js не загружен!');
+                // fallback на случай, если clock.js не загрузился
+                if (typeof initRotatedClock === 'function') {
+                    initRotatedClock('clockContainer');
+                }
             }
 
             window.addEventListener('beforeinstallprompt', function(e) {
