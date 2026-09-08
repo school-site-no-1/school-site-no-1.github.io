@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.4.4">
+<html lang="ru" data-version="v4.4.6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,19 +110,17 @@
             flex-direction: column;
             align-items: flex-end;
             flex-shrink: 0;
+            overflow: visible;
         }
 
         /* ============================
-           ЧАСЫ (увеличены в 1.5 раза)
+           ЧАСЫ (увеличены в 1.5 раза, сдвинуты влево на 40px)
            ============================ */
         #clockContainer {
             transform: scale(0.825);
             transform-origin: top right;
-            margin-right: -10px;
+            margin-right: -44px;
             margin-top: -6px;
-        }
-        .header-right {
-            overflow: visible;
         }
 
         /* ============================
@@ -537,7 +535,7 @@
             }
             #clockContainer {
                 transform: scale(0.6);
-                margin-right: -12px;
+                margin-right: -32px;
                 margin-top: -8px;
             }
             .desktop-table thead th {
@@ -582,7 +580,7 @@
         @media (max-width: 400px) {
             #clockContainer {
                 transform: scale(0.45);
-                margin-right: -16px;
+                margin-right: -24px;
                 margin-top: -10px;
             }
             .period {
@@ -691,7 +689,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.4.4';
+        var APP_VERSION = '4.4.6';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -1204,7 +1202,7 @@
             });
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('ℹ️ Часы загружены из clock.js (увеличены в 1.5 раза через CSS)');
+            console.log('ℹ️ Часы загружены из clock.js (увеличены в 1.5 раза, сдвинуты влево на 40px)');
             console.log('ℹ️ Для обновления данных нажмите кнопку "🔄 Обновить" в подвале');
         });
     </script>
