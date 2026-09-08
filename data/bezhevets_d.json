@@ -22,20 +22,20 @@
   ],
   "СР": [
     {
-      "lesson": 1,
-      "class": "5А",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
       "lesson": 2,
-      "class": "6Б",
+      "class": "5А",
       "subject": "ДКП",
       "room": "310"
     },
     {
       "lesson": 3,
       "class": "8Б",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 5,
+      "class": "6Б",
       "subject": "ДКП",
       "room": "310"
     },
@@ -74,5 +74,5 @@
   ],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-09-07 13:28:30"
+  "last_update": "2026-09-08 12:45:35"
 }
