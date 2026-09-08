@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.4.9">
+<html lang="ru" data-version="v4.2.2">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     <style>
         /* ============================
-           БАЗОВЫЕ СТИЛИ
+           БАЗОВЫЕ СТИЛИ (из table1.html)
            ============================ */
         * {
             margin: 0;
@@ -29,19 +29,16 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: stretch;
+            align-items: center;
             padding: 0;
-            min-height: 100vh;
-            min-height: 100dvh;
         }
 
         .container {
             width: 100%;
             height: 100vh;
-            height: 100dvh;
             max-width: none;
             background: #ffffff;
-            padding: 4px 6px 3px;
+            padding: 5px 8px 4px;
             border-radius: 0;
             border: none;
             display: flex;
@@ -51,7 +48,7 @@
         }
 
         /* ============================
-           ШАПКА
+           ШАПКА (из table1.html)
            ============================ */
         .header {
             flex-shrink: 0;
@@ -59,22 +56,43 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: none !important;
-            padding-bottom: 2px;
+            padding-bottom: 1px;
             flex-wrap: nowrap;
-            gap: 4px;
-            min-height: 32px;
+            gap: 6px;
+            min-height: 44px;
         }
         .header-left {
             display: none !important;
         }
         .header-banner {
-            display: none !important;
+            height: 39px;
+            min-height: 39px;
+            max-height: 39px;
+            padding: 0 4px;
+            flex: 1 1 auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 0;
+            background: #f7fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .mobile-banner-text {
+            display: none;
         }
 
         .header-center {
-            display: flex !important;
+            display: flex;
             align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
             flex: 1 1 auto;
+            justify-content: flex-start;
         }
         .header-center .day-indicator {
             display: none !important;
@@ -86,54 +104,137 @@
         .period {
             color: #e65100;
             font-weight: 600;
-            min-height: 1.2em;
+            min-height: 1.8em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 12px;
-            line-height: 1.1;
+            line-height: 1.2;
         }
         .period .line1 {
-            font-size: 12px;
-            display: block;
+            font-size: 10px;
+            line-height: 1.1;
         }
         .period .line2 {
-            font-size: 10px;
-            display: block;
+            font-size: 9px;
             font-weight: 500;
             color: #d45c00;
         }
 
         .header-right {
             text-align: right;
-            display: flex !important;
+            display: flex;
             flex-direction: column;
             align-items: flex-end;
+            gap: 2px;
             flex-shrink: 0;
-            overflow: visible;
+            margin-left: auto;
+        }
+        .header-right .schedule-updated {
+            color: #718096;
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-top: 1px;
+        }
+        .header-right .schedule-updated.error {
+            color: #e53e3e;
+            background: #fff5f5;
+        }
+        .sound-toggle {
+            border: 1px solid #2b6cb0;
+            border-radius: 4px;
+            background: #ffffff;
+            color: #1a365d;
+            padding: 2px 6px;
+            font: inherit;
+            cursor: pointer;
+            font-size: 9px;
+        }
+        .sound-toggle[aria-pressed="true"] {
+            background: #ebf8ff;
+            color: #1c64a5;
+        }
+        .board-sync {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #276749;
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 12px;
+            padding: 1px 8px;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+        .board-sync::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        .board-sync.loading {
+            color: #975a16;
+            background: #fffaf0;
+            border-color: #fbd38d;
+        }
+        .board-sync.offline {
+            color: #c53030;
+            background: #fff5f5;
+            border-color: #feb2b2;
         }
 
         /* ============================
-           ЧАСЫ (увеличены в 1.5 раза, сдвинуты вправо на 300px, отступ сверху 20px)
+           ЧАСЫ (стили из table1.html)
            ============================ */
-        #clockContainer {
-            transform: scale(0.6);
-            transform-origin: top right;
-            margin-right: 0px;
-            margin-left: 300px;
-            margin-top: 7px;
+        .clock-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .clock-wrapper svg {
+            width: 19px;
+            height: 19px;
+            transform: rotate(0deg) !important;
+            transform-origin: center;
+        }
+        .clock-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            white-space: nowrap;
+        }
+        .clock-text .day {
+            display: none !important;
+        }
+        .clock-text .date {
+            font-size: 0.41em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        .clock-text .digital-time {
+            font-size: 0.53em;
+            color: #2b6cb0;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .clock-text .countdown {
+            display: none !important;
         }
 
         /* ============================
-           ОСНОВНАЯ ЧАСТЬ
+           ОСНОВНАЯ ЧАСТЬ (из table1.html)
            ============================ */
         .main-layout {
             flex: 1;
             display: flex;
             gap: 0;
             min-height: 0;
-            margin-top: 2px;
-            height: 100%;
+            margin-top: 4px;
         }
         .table-wrapper {
             flex: 1;
@@ -141,159 +242,116 @@
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
-            height: 100%;
-            width: 100%;
         }
 
         /* ============================
-           ТАБЛИЦА (flexbox)
+           ТАБЛИЦА (из table1.html)
            ============================ */
         .desktop-table {
-            display: flex !important;
-            flex-direction: column !important;
+            display: table !important;
             width: 100% !important;
             height: 100% !important;
             border-collapse: collapse;
-            border-spacing: 0;
+            table-layout: fixed;
         }
-        .desktop-table thead,
-        .desktop-table tbody,
-        .desktop-table tr {
-            display: flex !important;
-            width: 100% !important;
-        }
-        .desktop-table thead {
-            flex-shrink: 0;
-            flex-direction: column;
-        }
-        .desktop-table tbody {
-            flex: 1 !important;
-            flex-direction: column;
-            height: 100% !important;
-            min-height: 0 !important;
-        }
-        .desktop-table tr {
-            flex-shrink: 0;
-            flex: 1 !important;
-            min-height: 0 !important;
-            align-items: stretch;
-        }
-        .desktop-table thead tr {
-            flex-shrink: 0;
-            flex: 0 0 auto !important;
-            min-height: 22px !important;
-        }
-        .desktop-table th,
-        .desktop-table td {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            padding: 2px 3px !important;
+        thead th, tbody td, tbody th {
             border-right: 1.5px solid #d0d7e0;
+        }
+        thead th:last-child, tbody td:last-child, tbody th:last-child {
+            border-right: none;
+        }
+        thead th {
+            background: #edf2f7;
+            color: #1a365d;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 2px solid #2b6cb0;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 1px 1px !important;
+            line-height: 1 !important;
+            min-height: 19px !important;
+            height: auto !important;
+            font-size: clamp(6px, 0.75vw, 7px) !important;
+        }
+        thead th:first-child {
+            width: 22px !important;
+            min-width: 22px !important;
+        }
+        thead th:not(:first-child) {
+            width: auto !important;
+        }
+        tbody td, tbody th {
+            color: #2d3748;
             border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
             text-align: center;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
+            line-height: 1.05 !important;
+            padding: 1px 1px !important;
+            min-height: 32px !important;
+            height: auto !important;
+            font-size: clamp(6px, 0.9vw, 9px) !important;
+            overflow-wrap: anywhere;
         }
-        .desktop-table th:last-child,
-        .desktop-table td:last-child {
-            border-right: none;
-        }
-        .desktop-table thead th {
-            background: #edf2f7;
-            color: #1a365d;
-            font-weight: 700;
-            border-bottom: 2px solid #2b6cb0;
-            text-transform: uppercase;
-            font-size: clamp(8px, 0.7vw, 11px) !important;
-            line-height: 1.1 !important;
-            padding: 2px 3px !important;
-            min-height: 20px !important;
-            flex: 1;
-        }
-        .desktop-table thead th:first-child {
-            flex: 0 0 28px !important;
-            min-width: 28px !important;
-            max-width: 28px !important;
-        }
-        .desktop-table tbody th {
-            background: #f7fafc;
-            color: #4a5568;
-            font-weight: 700;
-            font-size: clamp(8px, 0.7vw, 11px) !important;
-            flex: 0 0 28px !important;
-            min-width: 28px !important;
-            max-width: 28px !important;
-            border-right: 1.5px solid #d0d7e0;
-        }
-        .desktop-table tbody td {
-            font-size: clamp(8px, 0.7vw, 11px) !important;
-            line-height: 1.1 !important;
-            padding: 2px 3px !important;
-            flex: 1;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .desktop-table tbody tr:nth-child(even) {
+        tbody tr:nth-child(even) {
             background: #f7fafc;
         }
-        .desktop-table tbody tr:nth-child(odd) {
+        tbody tr:nth-child(odd) {
             background: #ffffff;
         }
-        .desktop-table tbody tr.current-lesson {
+        tbody tr.current-lesson {
             background: #bee3f8 !important;
         }
-        .desktop-table tbody tr.current-lesson td,
-        .desktop-table tbody tr.current-lesson th {
+        tbody tr.current-lesson td, tbody tr.current-lesson th {
             color: #1a365d;
             font-weight: 600;
         }
-        .desktop-table tbody tr.current-lesson .lesson-num {
+        tbody tr.current-lesson .lesson-num {
             color: #2b6cb0;
-        }
-        .desktop-table tbody tr:last-child td,
-        .desktop-table tbody tr:last-child th {
-            border-bottom: none !important;
         }
 
         .lesson-num {
             font-weight: 700;
             color: #4a5568;
-            font-size: 0.9em !important;
+            font-size: 0.85em !important;
         }
         .subject {
-            display: block;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
             font-weight: 500;
-            line-height: 1.2 !important;
+            line-height: 1.02 !important;
             color: #2d3748;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            font-size: 0.95em !important;
-            text-align: center;
-            width: 100%;
+            font-size: clamp(6px, 0.7vw, 7px) !important;
         }
         .cabinet {
             color: #9a3412 !important;
             display: block;
             font-weight: 700;
-            font-size: 0.7em !important;
+            margin-top: 0px !important;
+            font-size: 0.72em !important;
             line-height: 1 !important;
             white-space: nowrap;
-            text-align: center;
-            width: 100%;
         }
         .empty-cell {
             color: #cbd5e0;
-            font-size: 0.9em !important;
+            font-size: clamp(6px, 0.75vw, 8px) !important;
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            word-break: normal !important;
         }
         .empty-lesson {
             white-space: normal;
@@ -303,22 +361,30 @@
         }
 
         /* ============================
-           ПОДВАЛ
+           МОБИЛЬНАЯ ВЕРСИЯ (скрыта)
+           ============================ */
+        .mobile-view {
+            display: none !important;
+        }
+        .mobile-controls {
+            display: none !important;
+        }
+
+        /* ============================
+           ПОДВАЛ (из table1.html)
            ============================ */
         .footer {
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 14px;
+            min-height: 16px;
             color: #a0aec0;
             text-align: center;
             border-top: 1px solid #e2e8f0;
-            padding-top: 2px;
-            margin-top: 2px;
-            font-size: 7px;
-            gap: 4px;
-            flex-wrap: wrap;
+            padding-top: 1px;
+            margin-top: 1px;
+            font-size: 4px;
         }
         .footer .version {
             font-weight: 600;
@@ -330,66 +396,29 @@
             justify-content: center;
             gap: 3px;
             white-space: nowrap;
-            flex-wrap: wrap;
         }
         .footer-status .schedule-updated {
             color: #475467 !important;
-            font-size: 7px;
-            padding: 0 2px;
+            font-size: 4px;
+            padding: 0;
             background: transparent;
             border-radius: 0;
         }
         .footer-status .board-sync {
-            font-size: 7px;
-            padding: 0 2px;
+            font-size: 4px;
+            padding: 0;
             background: transparent;
             border: 0;
             border-radius: 0;
         }
         .footer-status .sound-toggle {
-            font-size: 7px;
+            font-size: 4px;
             padding: 0 2px;
             border-width: 1px;
         }
         .footer-status .board-sync::before {
-            width: 3px;
-            height: 3px;
-        }
-
-        /* ============================
-           КНОПКА ОБНОВЛЕНИЯ
-           ============================ */
-        .btn-refresh {
-            border: 1px solid #2b6cb0;
-            border-radius: 3px;
-            background: #ffffff;
-            color: #1a365d;
-            padding: 0 4px;
-            font: inherit;
-            font-size: 7px;
-            cursor: pointer;
-            transition: background 0.2s;
-            line-height: 1.3;
-        }
-        .btn-refresh:hover {
-            background: #ebf8ff;
-        }
-        .btn-refresh:active {
-            background: #bee3f8;
-        }
-        .btn-refresh.loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        /* ============================
-           МОБИЛЬНАЯ ВЕРСИЯ (скрыта)
-           ============================ */
-        .mobile-view {
-            display: none !important;
-        }
-        .mobile-controls {
-            display: none !important;
+            width: 5px;
+            height: 5px;
         }
 
         /* ============================
@@ -504,106 +533,9 @@
            ============================ */
         @media print {
             .no-print { display: none !important; }
+            .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
-            .desktop-table {
-                display: table !important;
-            }
-            .desktop-table thead,
-            .desktop-table tbody,
-            .desktop-table tr,
-            .desktop-table th,
-            .desktop-table td {
-                display: table-cell !important;
-            }
-        }
-
-        /* ============================
-           АДАПТИВНОСТЬ
-           ============================ */
-        @media (max-width: 600px) {
-            .container {
-                padding: 2px 3px;
-            }
-            .period {
-                font-size: 10px;
-            }
-            .period .line1 {
-                font-size: 10px;
-            }
-            .period .line2 {
-                font-size: 8px;
-            }
-            #clockContainer {
-                transform: scale(0.6);
-                margin-right: 0px;
-                margin-left: 200px;
-                margin-top: 10px;
-            }
-            .desktop-table thead th {
-                font-size: clamp(6px, 0.5vw, 8px) !important;
-                min-height: 16px !important;
-            }
-            .desktop-table thead th:first-child {
-                flex: 0 0 20px !important;
-                min-width: 20px !important;
-                max-width: 20px !important;
-            }
-            .desktop-table tbody th {
-                flex: 0 0 20px !important;
-                min-width: 20px !important;
-                max-width: 20px !important;
-                font-size: clamp(6px, 0.5vw, 8px) !important;
-            }
-            .desktop-table tbody td {
-                font-size: clamp(6px, 0.5vw, 8px) !important;
-            }
-            .subject {
-                font-size: 0.8em !important;
-            }
-            .cabinet {
-                font-size: 0.6em !important;
-            }
-            .footer {
-                font-size: 6px;
-                min-height: 10px;
-            }
-            .footer-status .schedule-updated,
-            .footer-status .board-sync,
-            .footer-status .sound-toggle {
-                font-size: 6px;
-            }
-            .btn-refresh {
-                font-size: 6px;
-                padding: 0 3px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            #clockContainer {
-                transform: scale(0.45);
-                margin-right: 0px;
-                margin-left: 150px;
-                margin-top: 8px;
-            }
-            .period {
-                font-size: 9px;
-            }
-            .period .line1 {
-                font-size: 9px;
-            }
-            .period .line2 {
-                font-size: 7px;
-            }
-            .desktop-table thead th {
-                font-size: clamp(5px, 0.4vw, 7px) !important;
-            }
-            .desktop-table tbody td {
-                font-size: clamp(5px, 0.4vw, 7px) !important;
-            }
-            .subject {
-                font-size: 0.75em !important;
-            }
         }
     </style>
 </head>
@@ -613,11 +545,19 @@
         <!-- ===== ШАПКА ===== -->
         <header class="header">
             <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
-            <div class="header-left"></div>
+            <div class="header-left">
+                <div class="header-banner" id="headerBanner">
+                    <img id="bannerImage" src="banner.png?v=20260901-2" alt="Баннер школьного расписания" onerror="this.style.display='none'; document.getElementById('mobileBannerText').style.display='block'">
+                    <span class="mobile-banner-text" id="mobileBannerText" style="display:none;">Изменения на понедельник</span>
+                </div>
+            </div>
+
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
+                <span class="divider">|</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
             </div>
+
             <div class="header-right">
                 <div id="clockContainer"></div>
             </div>
@@ -657,7 +597,6 @@
                 <span class="footer-status-separator" aria-hidden="true">·</span>
                 <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
                 <button type="button" id="soundToggle" class="sound-toggle" aria-pressed="false">Включить звук</button>
-                <button type="button" id="refreshBtn" class="btn-refresh" onclick="manualRefresh()">🔄 Обновить</button>
             </div>
         </footer>
         <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
@@ -690,9 +629,9 @@
 
     <script>
         // ================================================================
-        // КОНФИГУРАЦИЯ
+        // КОНФИГУРАЦИЯ (из table1.html)
         // ================================================================
-        var APP_VERSION = '4.4.9';
+        var APP_VERSION = '4.2.2';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -718,6 +657,7 @@
         var deferredPrompt = null;
         var lastBoardRenderKey = '';
         var dataRequestInFlight = false;
+        var DATA_REFRESH_INTERVAL_MS = 30000;
 
         // ================================================================
         // УВЕДОМЛЕНИЯ
@@ -733,7 +673,7 @@
         }
 
         // ================================================================
-        // ОСНОВНАЯ ЛОГИКА
+        // ОСНОВНАЯ ЛОГИКА (из table1.html)
         // ================================================================
 
         function parseTime(timeStr) {
@@ -912,18 +852,14 @@
         }
 
         // ================================================================
-        // ЗАГРУЗКА schedule.primary.json
+        // ЗАГРУЗКА schedule.primary.json (из table1.html)
         // ================================================================
 
         function loadData() {
             if (dataRequestInFlight) return;
             dataRequestInFlight = true;
-            
             var statusEl = document.getElementById('scheduleStatus');
-            var refreshBtn = document.getElementById('refreshBtn');
-            
             if (statusEl) statusEl.textContent = 'Загружаем расписание…';
-            if (refreshBtn) refreshBtn.classList.add('loading');
             setBoardSync('loading', 'Обновляем данные…');
 
             var cacheBuster = Math.floor(Date.now() / 3600000);
@@ -994,25 +930,22 @@
                         DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
                     }
 
-                    if (statusEl) statusEl.textContent = '✅ Расписание обновлено!';
+                    if (statusEl) statusEl.textContent = 'Расписание обновлено.';
                     processLoadedData();
                     lastBoardRenderKey = getBoardRenderKey();
                     setBoardSync('online', 'Данные актуальны');
-                    
-                    showNotification('✅ Расписание обновлено!', 'success');
                 })
                 .catch(function(err) {
                     console.warn('Ошибка загрузки schedule.primary.json:', err.message);
-                    if (statusEl) statusEl.textContent = '❌ Ошибка загрузки: ' + err.message;
+                    if (statusEl) statusEl.textContent = 'Не удалось обновить расписание. Проверьте соединение и попробуйте снова.';
+                    DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
                     document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
                     document.getElementById('scheduleUpdated').className = 'schedule-updated error';
-                    setBoardSync('offline', 'Ошибка загрузки');
-                    showNotification('❌ Не удалось обновить расписание: ' + err.message, 'error');
+                    setBoardSync('offline', 'Нет связи · показываем последние данные');
+                    processLoadedData();
                 })
                 .finally(function() {
                     dataRequestInFlight = false;
-                    var refreshBtn = document.getElementById('refreshBtn');
-                    if (refreshBtn) refreshBtn.classList.remove('loading');
                 });
         }
 
@@ -1069,7 +1002,7 @@
         }
 
         // ================================================================
-        // ОТРИСОВКА ТАБЛИЦЫ
+        // ОТРИСОВКА (из table1.html)
         // ================================================================
 
         function renderTable() {
@@ -1088,7 +1021,13 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
+            var dayDisplay = displayDay.full;
+            if (displayDay.isTomorrow) {
+                dayDisplay = 'Завтра, ' + dayDisplay;
+            }
+            document.getElementById('dayIndicator').textContent = dayDisplay;
             document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            document.getElementById('scheduleCaption').textContent = 'Расписание уроков на ' + dayDisplay;
 
             var dayData = weekDays[dayKey];
             if (!dayData || Object.keys(dayData).length === 0) {
@@ -1158,22 +1097,16 @@
         }
 
         // ================================================================
-        // ⭐ РУЧНОЕ ОБНОВЛЕНИЕ
-        // ================================================================
-        function manualRefresh() {
-            loadData();
-        }
-
-        // ================================================================
         // ИНИЦИАЛИЗАЦИЯ
         // ================================================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            // ⭐ ЧАСЫ ИЗ clock.js
+            // ⭐ ЧАСЫ ПОДКЛЮЧАЮТСЯ ИЗ clock.js
             if (typeof initClock === 'function') {
                 initClock('clockContainer');
             } else {
-                console.warn('clock.js не загружен!');
+                console.warn('clock.js не загружен, используется fallback');
+                // fallback на случай, если clock.js не загрузился
                 if (typeof initRotatedClock === 'function') {
                     initRotatedClock('clockContainer');
                 }
@@ -1196,17 +1129,22 @@
                 }, 120);
             });
 
+            var soundToggle = document.getElementById('soundToggle');
+            var breakMusic = document.getElementById('breakMusic');
+            if (soundToggle && breakMusic) {
+                soundToggle.hidden = true;
+            }
+
             setInterval(refreshAll, 1000);
+            setInterval(loadData, DATA_REFRESH_INTERVAL_MS);
 
             document.addEventListener('visibilitychange', function() {
-                if (!document.hidden) {
-                    refreshAll();
-                }
+                if (!document.hidden) loadData();
             });
+            window.addEventListener('online', loadData);
 
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('ℹ️ Часы загружены из clock.js (увеличены в 1.5 раза, сдвинуты вправо на 300px, отступ сверху 20px)');
-            console.log('ℹ️ Для обновления данных нажмите кнопку "🔄 Обновить" в подвале');
+            console.log('ℹ️ Часы загружены из clock.js');
         });
     </script>
 </body>
