@@ -1,173 +1,180 @@
-// clock.js - Часы с днём недели внизу
-(function() {
-    function initClock(containerId) {
-        var container = document.getElementById(containerId);
-        if (!container) {
-            console.warn('Контейнер для часов не найден:', containerId);
-            return;
-        }
+/**
+ * clock14.js — отдельный модуль для часов в стиле #14
+ * Цвета: время RGB(43,108,176) · дата/день RGB(79,122,156)
+ * 
+ * Использование:
+ *   1. Подключите этот файл в HTML: <script src="clock14.js"></script>
+ *   2. Вызовите initClock14(containerId) с ID контейнера
+ *   3. Функция создаст внутри контейнера структуру часов и запустит обновление
+ * 
+ * Возвращает объект { update, destroy, setColors } для управления
+ */
 
+(function(global) {
+  "use strict";
+
+  // Цвета по заданию
+  const DEFAULT_TIME_COLOR = '#2b6cb0';   // RGB(43,108,176)
+  const DEFAULT_DATE_COLOR = '#4f7a9c';   // RGB(79,122,156)
+
+  // Массив дней недели (полные названия)
+  const DAYS_FULL = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+
+  // Хранилище активных экземпляров (для возможности управления)
+  const instances = [];
+
+  /**
+   * Основная функция инициализации часов
+   * @param {string} containerId - ID элемента, куда будут вставлены часы
+   * @param {object} options - опциональные настройки
+   * @param {string} options.timeColor - цвет времени (hex)
+   * @param {string} options.dateColor - цвет даты и дня (hex)
+   * @param {string} options.label - текст метки (по умолчанию '#14')
+   * @returns {object} API для управления экземпляром
+   */
+  function initClock14(containerId, options) {
+    options = options || {};
+
+    const container = document.getElementById(containerId);
+    if (!container) {
+      console.error(`clock14.js: контейнер с id "${containerId}" не найден`);
+      return null;
+    }
+
+    // Очищаем контейнер (на случай повторной инициализации)
+    container.innerHTML = '';
+
+    // Создаём структуру
+    const labelEl = document.createElement('div');
+    labelEl.className = 'clock-label';
+    labelEl.textContent = options.label || '#14';
+
+    const timeEl = document.createElement('div');
+    timeEl.className = 'clock-time';
+    timeEl.textContent = '00:00:00';
+
+    const dayDateEl = document.createElement('div');
+    dayDateEl.className = 'clock-daydate';
+
+    const datePart = document.createElement('span');
+    datePart.className = 'date-part';
+    datePart.textContent = '01.01.2026';
+
+    const dayPart = document.createElement('span');
+    dayPart.className = 'day-part';
+    dayPart.textContent = 'Понедельник';
+
+    dayDateEl.appendChild(datePart);
+    dayDateEl.appendChild(dayPart);
+
+    container.appendChild(labelEl);
+    container.appendChild(timeEl);
+    container.appendChild(dayDateEl);
+
+    // Применяем цвета
+    const timeColor = options.timeColor || DEFAULT_TIME_COLOR;
+    const dateColor = options.dateColor || DEFAULT_DATE_COLOR;
+    timeEl.style.color = timeColor;
+    datePart.style.color = dateColor;
+    dayPart.style.color = dateColor;
+
+    // Переменные для управления интервалом
+    let intervalId = null;
+    let isDestroyed = false;
+
+    // Функция обновления
+    function update() {
+      if (isDestroyed) return;
+
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      const timeStr = `${h}:${m}:${s}`;
+
+      const dayName = DAYS_FULL[now.getDay()];
+      const d = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const dateStr = `${d}.${month}.${year}`;
+
+      timeEl.textContent = timeStr;
+      datePart.textContent = dateStr;
+      dayPart.textContent = dayName;
+    }
+
+    // Запускаем обновление
+    update();
+    intervalId = setInterval(update, 1000);
+
+    // API для управления экземпляром
+    const instanceApi = {
+      /**
+       * Обновить цвета
+       * @param {string} newTimeColor - цвет времени (hex)
+       * @param {string} newDateColor - цвет даты и дня (hex)
+       */
+      setColors: function(newTimeColor, newDateColor) {
+        if (newTimeColor) {
+          timeEl.style.color = newTimeColor;
+        }
+        if (newDateColor) {
+          datePart.style.color = newDateColor;
+          dayPart.style.color = newDateColor;
+        }
+      },
+
+      /**
+       * Принудительно обновить отображение
+       */
+      update: function() {
+        update();
+      },
+
+      /**
+       * Остановить часы и очистить контейнер
+       */
+      destroy: function() {
+        if (isDestroyed) return;
+        isDestroyed = true;
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
         container.innerHTML = '';
-
-        var wrapper = document.createElement('div');
-        wrapper.className = 'clock-wrapper';
-
-        // SVG циферблат
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('viewBox', '0 0 100 100');
-        svg.setAttribute('width', '50');
-        svg.setAttribute('height', '50');
-
-        var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('transform', 'rotate(0, 50, 50)');
-
-        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', '50');
-        circle.setAttribute('cy', '50');
-        circle.setAttribute('r', '45');
-        circle.setAttribute('fill', '#f7fafc');
-        circle.setAttribute('stroke', '#2b6cb0');
-        circle.setAttribute('stroke-width', '3');
-        g.appendChild(circle);
-
-        for (var i = 1; i <= 12; i++) {
-            var angle = (i / 12) * 2 * Math.PI - Math.PI / 2;
-            var x1 = 50 + 38 * Math.cos(angle);
-            var y1 = 50 + 38 * Math.sin(angle);
-            var x2 = 50 + 32 * Math.cos(angle);
-            var y2 = 50 + 32 * Math.sin(angle);
-            var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            line.setAttribute('x1', x1);
-            line.setAttribute('y1', y1);
-            line.setAttribute('x2', x2);
-            line.setAttribute('y2', y2);
-            line.setAttribute('stroke', '#2d3748');
-            line.setAttribute('stroke-width', i % 3 === 0 ? '3' : '1.5');
-            line.setAttribute('stroke-linecap', 'round');
-            g.appendChild(line);
+        // Удаляем из списка экземпляров
+        const idx = instances.indexOf(instanceApi);
+        if (idx !== -1) {
+          instances.splice(idx, 1);
         }
+      },
 
-        svg.appendChild(g);
+      /**
+       * Получить текущие элементы DOM (для отладки)
+       */
+      getElements: function() {
+        return {
+          container: container,
+          time: timeEl,
+          date: datePart,
+          day: dayPart,
+          label: labelEl
+        };
+      }
+    };
 
-        var hourHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        hourHand.setAttribute('x1', '50');
-        hourHand.setAttribute('y1', '50');
-        hourHand.setAttribute('x2', '50');
-        hourHand.setAttribute('y2', '28');
-        hourHand.setAttribute('stroke', '#2b6cb0');
-        hourHand.setAttribute('stroke-width', '4');
-        hourHand.setAttribute('stroke-linecap', 'round');
-        hourHand.setAttribute('id', 'hour-hand');
-        svg.appendChild(hourHand);
+    // Сохраняем экземпляр
+    instances.push(instanceApi);
 
-        var minHand = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        minHand.setAttribute('x1', '50');
-        minHand.setAttribute('y1', '50');
-        minHand.setAttribute('x2', '50');
-        minHand.setAttribute('y2', '18');
-        minHand.setAttribute('stroke', '#2b6cb0');
-        minHand.setAttribute('stroke-width', '3');
-        minHand.setAttribute('stroke-linecap', 'round');
-        minHand.setAttribute('id', 'min-hand');
-        svg.appendChild(minHand);
+    return instanceApi;
+  }
 
-        var center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        center.setAttribute('cx', '50');
-        center.setAttribute('cy', '50');
-        center.setAttribute('r', '4');
-        center.setAttribute('fill', '#2b6cb0');
-        svg.appendChild(center);
+  // Экспортируем в глобальную область
+  global.initClock14 = initClock14;
 
-        wrapper.appendChild(svg);
+  // Для совместимости с модулями (если используется)
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = initClock14;
+  }
 
-        // Текстовый блок: время, дата, день недели
-        var textBlock = document.createElement('div');
-        textBlock.className = 'clock-text';
-
-        // Цифровое время (сверху)
-        var digitalSpan = document.createElement('span');
-        digitalSpan.className = 'digital-time';
-        digitalSpan.id = 'digital-time';
-        digitalSpan.textContent = new Date().toLocaleTimeString('ru-RU', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-        textBlock.appendChild(digitalSpan);
-
-        // Дата (посередине, увеличенная)
-        var dateSpan = document.createElement('span');
-        dateSpan.className = 'date';
-        dateSpan.id = 'clock-date';
-        dateSpan.textContent = new Date().toLocaleDateString('ru-RU', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-        });
-        textBlock.appendChild(dateSpan);
-
-        // День недели (внизу)
-        var daySpan = document.createElement('span');
-        daySpan.className = 'clock-day-row';
-        daySpan.id = 'clock-day';
-        var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-        daySpan.textContent = days[new Date().getDay()];
-        textBlock.appendChild(daySpan);
-
-        wrapper.appendChild(textBlock);
-        container.appendChild(wrapper);
-
-        function updateClock() {
-            var now = new Date();
-            var hours = now.getHours() % 12;
-            var minutes = now.getMinutes();
-            var seconds = now.getSeconds();
-
-            var hourAngle = (hours * 30) + (minutes * 0.5) - 90;
-            var minAngle = (minutes * 6) + (seconds * 0.1) - 90;
-
-            var hourHandEl = document.getElementById('hour-hand');
-            var minHandEl = document.getElementById('min-hand');
-
-            if (hourHandEl) {
-                hourHandEl.setAttribute('transform', 'rotate(' + hourAngle + ', 50, 50)');
-            }
-            if (minHandEl) {
-                minHandEl.setAttribute('transform', 'rotate(' + minAngle + ', 50, 50)');
-            }
-
-            var digitalEl = document.getElementById('digital-time');
-            if (digitalEl) {
-                digitalEl.textContent = now.toLocaleTimeString('ru-RU', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-            }
-
-            var dateEl = document.getElementById('clock-date');
-            if (dateEl) {
-                dateEl.textContent = now.toLocaleDateString('ru-RU', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
-            }
-
-            var dayEl = document.getElementById('clock-day');
-            if (dayEl) {
-                var days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-                dayEl.textContent = days[now.getDay()];
-            }
-        }
-
-        updateClock();
-        setInterval(updateClock, 1000);
-    }
-
-    window.initClock = initClock;
-
-    if (document.getElementById('clockContainer')) {
-        initClock('clockContainer');
-    }
-})();
+})(typeof window !== 'undefined' ? window : this);
