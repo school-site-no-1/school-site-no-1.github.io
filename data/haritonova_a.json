@@ -2,60 +2,84 @@
   "ПН": [],
   "ВТ": [
     {
-      "lesson": 1,
-      "class": "6В",
+      "lesson": 3,
+      "class": "4В",
       "subject": "ИЗО",
       "room": "208"
     },
     {
-      "lesson": 7,
-      "class": "7Б",
+      "lesson": 4,
+      "class": "1В",
       "subject": "ИЗО",
-      "room": "208"
+      "room": ""
+    },
+    {
+      "lesson": 5,
+      "class": "2В",
+      "subject": "ИЗО",
+      "room": ""
     }
   ],
   "СР": [
     {
       "lesson": 3,
-      "class": "5Б",
+      "class": "1А",
       "subject": "ИЗО",
-      "room": "208"
+      "room": ""
+    },
+    {
+      "lesson": 4,
+      "class": "1Б",
+      "subject": "ИЗО",
+      "room": ""
+    },
+    {
+      "lesson": 5,
+      "class": "2А",
+      "subject": "ИЗО",
+      "room": ""
     }
   ],
   "ЧТ": [
     {
-      "lesson": 1,
-      "class": "6А",
+      "lesson": 3,
+      "class": "3Б",
       "subject": "ИЗО",
       "room": "208"
     },
     {
-      "lesson": 6,
-      "class": "5А",
+      "lesson": 4,
+      "class": "3В",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 5,
+      "class": "3А",
       "subject": "ИЗО",
       "room": "208"
     }
   ],
   "ПТ": [
     {
-      "lesson": 1,
-      "class": "7А",
+      "lesson": 3,
+      "class": "2Б",
       "subject": "ИЗО",
       "room": "208"
     },
     {
-      "lesson": 2,
-      "class": "7В",
+      "lesson": 4,
+      "class": "4Б",
       "subject": "ИЗО",
       "room": "208"
     },
     {
-      "lesson": 6,
-      "class": "6Б",
+      "lesson": 5,
+      "class": "4А",
       "subject": "ИЗО",
       "room": "208"
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-08 13:01:39"
+  "last_update": "2026-09-09 09:55:45"
 }
