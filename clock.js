@@ -95,7 +95,7 @@
         });
         textBlock.appendChild(digitalSpan);
 
-        // Дата (посередине)
+        // Дата (посередине, увеличенная)
         var dateSpan = document.createElement('span');
         dateSpan.className = 'date';
         dateSpan.id = 'clock-date';
