@@ -1,86 +1,86 @@
 {
   "ПН": [
     {
-      "lesson": 5,
-      "class": "8Б",
+      "lesson": 2,
+      "class": "3Б",
       "subject": "Физ-ра",
       "room": "с/з"
     },
     {
-      "lesson": 8,
-      "class": "11Б",
+      "lesson": 4,
+      "class": "2Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "2В",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "ВТ": [
     {
-      "lesson": 1,
-      "class": "7Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 2,
-      "class": "11Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 3,
-      "class": "7В",
+      "lesson": 6,
+      "class": "3Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "СР": [
     {
-      "lesson": 1,
-      "class": "7В",
+      "lesson": 3,
+      "class": "3Б",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": ""
     },
     {
-      "lesson": 2,
-      "class": "7В",
+      "lesson": 4,
+      "class": "2В",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": ""
     },
     {
-      "lesson": 7,
-      "class": "7Б",
+      "lesson": 5,
+      "class": "2Б",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": ""
     },
     {
-      "lesson": 8,
-      "class": "7Б",
+      "lesson": 6,
+      "class": "4В",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": ""
     }
   ],
   "ЧТ": [
     {
-      "lesson": 7,
-      "class": "8Б",
+      "lesson": 3,
+      "class": "4В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 5,
+      "class": "2В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "2Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "ПТ": [
     {
-      "lesson": 6,
-      "class": "8Б",
+      "lesson": 4,
+      "class": "4В",
       "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 8,
-      "class": "11Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
+      "room": ""
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-08 13:01:36"
+  "last_update": "2026-09-09 09:55:41"
 }
