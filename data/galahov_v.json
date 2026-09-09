@@ -1,86 +1,86 @@
 {
   "ПН": [
     {
-      "lesson": 2,
-      "class": "3Б",
+      "lesson": 5,
+      "class": "8Б",
       "subject": "Физ-ра",
       "room": "с/з"
     },
     {
-      "lesson": 4,
-      "class": "2Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 6,
-      "class": "2В",
+      "lesson": 8,
+      "class": "11Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "ВТ": [
     {
-      "lesson": 6,
-      "class": "3Б",
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 2,
+      "class": "11Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 3,
+      "class": "7В",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "СР": [
     {
-      "lesson": 3,
-      "class": "3Б",
+      "lesson": 1,
+      "class": "7В",
       "subject": "Физ-ра",
-      "room": ""
+      "room": "Док"
     },
     {
-      "lesson": 4,
-      "class": "2В",
+      "lesson": 2,
+      "class": "7В",
       "subject": "Физ-ра",
-      "room": ""
+      "room": "Док"
     },
     {
-      "lesson": 5,
-      "class": "2Б",
+      "lesson": 7,
+      "class": "7Б",
       "subject": "Физ-ра",
-      "room": ""
+      "room": "Док"
     },
     {
-      "lesson": 6,
-      "class": "4В",
+      "lesson": 8,
+      "class": "7Б",
       "subject": "Физ-ра",
-      "room": ""
+      "room": "Док"
     }
   ],
   "ЧТ": [
     {
-      "lesson": 3,
-      "class": "4В",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 5,
-      "class": "2В",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 6,
-      "class": "2Б",
+      "lesson": 7,
+      "class": "8Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "ПТ": [
     {
-      "lesson": 4,
-      "class": "4В",
+      "lesson": 6,
+      "class": "8Б",
       "subject": "Физ-ра",
-      "room": ""
+      "room": "с/з"
+    },
+    {
+      "lesson": 8,
+      "class": "11Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-09 09:55:41"
+  "last_update": "2026-09-09 12:26:27"
 }
