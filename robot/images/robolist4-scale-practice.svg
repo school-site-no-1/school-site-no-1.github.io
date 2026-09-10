@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Практическая схема расчёта масштаба 1 к 2</title>
+  <desc id="desc">На чертеже показана платформа длиной 45 миллиметров. Указан масштаб один к двум.</desc>
+  <defs>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d7d3c8" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f15a24"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="680" fill="#f8f5ec"/>
+  <rect width="1200" height="680" fill="url(#grid)"/>
+  <rect x="66" y="58" width="302" height="64" fill="#202522"/>
+  <text x="92" y="98" fill="#fffdf7" font-family="Arial, sans-serif" font-size="29" font-weight="700" letter-spacing="2">МАСШТАБ 1 : 2</text>
+  <text x="70" y="176" fill="#4d5753" font-family="Arial, sans-serif" font-size="28">Длина на чертеже</text>
+  <rect x="192" y="262" width="630" height="205" rx="4" fill="#ece8db" stroke="#202522" stroke-width="5"/>
+  <rect x="255" y="308" width="504" height="110" fill="#d7ded4" stroke="#4f8d65" stroke-width="4"/>
+  <circle cx="289" cy="363" r="17" fill="#f15a24"/><circle cx="725" cy="363" r="17" fill="#f15a24"/>
+  <line x1="255" y1="522" x2="759" y2="522" stroke="#f15a24" stroke-width="5" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="255" y1="420" x2="255" y2="548" stroke="#f15a24" stroke-width="3" stroke-dasharray="8 8"/>
+  <line x1="759" y1="420" x2="759" y2="548" stroke="#f15a24" stroke-width="3" stroke-dasharray="8 8"/>
+  <text x="507" y="589" text-anchor="middle" fill="#202522" font-family="Arial, sans-serif" font-size="54" font-weight="700">45 мм</text>
+  <text x="507" y="628" text-anchor="middle" fill="#5d6863" font-family="Arial, sans-serif" font-size="24">размер показан на чертеже</text>
+  <path d="M 907 272 L 1082 272 L 1082 470 L 907 470 Z" fill="#fffdf7" stroke="#202522" stroke-width="3"/>
+  <text x="994" y="332" text-anchor="middle" fill="#f15a24" font-family="Arial, sans-serif" font-size="25" font-weight="700">НАЙДИТЕ</text>
+  <text x="994" y="380" text-anchor="middle" fill="#202522" font-family="Arial, sans-serif" font-size="23">настоящую</text>
+  <text x="994" y="414" text-anchor="middle" fill="#202522" font-family="Arial, sans-serif" font-size="23">длину детали</text>
+  <path d="M 823 362 C 854 362 869 362 894 362" fill="none" stroke="#f15a24" stroke-width="4" marker-end="url(#arrow)"/>
+</svg>
