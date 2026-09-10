@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- Design system: «Конструкторская станция» — защищённый вход преподавателя по Supabase magic link. -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Безопасный вход преподавателя в панель РобоЛист через Supabase Auth.">
+  <link rel="icon" type="image/png" href="images/robolist-mark.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <title>Вход преподавателя — РобоЛист</title>
+  <style>
+    :root{--ink:#202522;--paper:#f4f1e8;--orange:#f15a24;--muted:#5d6863;--line:rgba(32,37,34,.24)}*{box-sizing:border-box}body{min-height:100vh;margin:0;color:var(--ink);background-color:var(--paper);background-image:linear-gradient(rgba(32,37,34,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(32,37,34,.045) 1px,transparent 1px);background-size:28px 28px;font-family:"Source Sans 3",Arial,sans-serif}.shell{width:min(100% - 32px,1060px);margin:auto;padding:0 0 42px}.top{min-height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;font:800 14px/1 Manrope,sans-serif;letter-spacing:.1em}.brand img{width:33px;height:33px;object-fit:contain}.brand em{font-style:normal;color:var(--orange)}.status{font:600 10px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.status:before{content:"";display:inline-block;width:8px;height:8px;margin:0 8px 1px 0;background:var(--orange)}.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:66px;align-items:center;min-height:calc(100vh - 120px)}.kicker{margin:0;color:var(--muted);font:600 11px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase}.kicker:before{content:"";display:inline-block;width:30px;height:3px;margin:0 10px 4px 0;background:var(--orange)}h1{margin:16px 0;font:800 clamp(44px,6.2vw,74px)/.92 Manrope,sans-serif;letter-spacing:-.08em}h1 em{font-style:normal;color:var(--orange)}.lead{max-width:540px;margin:0;color:#4e5a54;font-size:19px;line-height:1.45}.facts{display:grid;gap:13px;margin-top:35px;border-top:1px solid var(--line);padding-top:18px}.fact{display:flex;gap:12px;align-items:baseline}.fact b{color:var(--orange);font:600 11px "IBM Plex Mono",monospace}.fact span{color:#56635d;font-size:15px}.card{padding:31px;border:1px solid var(--ink);background:rgba(255,253,247,.88);box-shadow:11px 11px 0 var(--orange)}.card h2{margin:0;font:800 30px/1 Manrope,sans-serif;letter-spacing:-.06em}.card p{margin:11px 0 20px;color:#58645e;line-height:1.4}.field{display:grid;gap:7px;color:#56625c;font:600 10px "IBM Plex Mono",monospace;letter-spacing:.07em;text-transform:uppercase}.field input{min-height:46px;border:1px solid #8d9690;border-radius:0;background:#fffdf7;padding:0 12px;color:var(--ink);font:600 15px "Source Sans 3",sans-serif}.field input:focus{outline:2px solid rgba(241,90,36,.26);border-color:var(--orange)}.submit{width:100%;min-height:47px;margin-top:18px;border:1px solid var(--ink);background:var(--ink);box-shadow:4px 4px 0 var(--orange);color:#fffdf7;font:800 12px Manrope,sans-serif;cursor:pointer}.submit:hover{background:var(--orange);border-color:var(--orange);box-shadow:4px 4px 0 var(--ink)}.submit:disabled{opacity:.65;cursor:wait}.notice{display:none;margin-top:18px;padding:12px 13px;border-left:4px solid var(--orange);background:#fff0eb;color:#813a2b;font-size:14px;line-height:1.35}.notice.show{display:block}.notice.good{border-color:#3e7754;background:#edf7ef;color:#28553a}.hint{margin-top:19px!important;font-size:13px!important}.back{display:inline-block;margin-top:19px;color:#3a4640;font:700 11px Manrope,sans-serif;text-decoration:none}.back:hover{color:var(--orange)}@media(max-width:760px){.grid{grid-template-columns:1fr;gap:32px;padding:54px 0;min-height:auto}.status{display:none}.card{padding:24px}.lead{font-size:17px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div class="brand"><img src="images/robolist-mark.png" alt="">РОБО<em>·</em>ЛИСТ</div><div class="status">Защищённый вход преподавателя</div></header>
+    <section class="grid">
+      <div><p class="kicker">Supabase Auth / Magic link</p><h1>Учительская<br><em>зона.</em></h1><p class="lead">Редактор РобоЛистов и журнал результатов доступны только после входа по защищённой ссылке, отправленной на e-mail преподавателя.</p><div class="facts"><div class="fact"><b>01</b><span>Ученикам не требуется учётная запись.</span></div><div class="fact"><b>02</b><span>Ссылка действительна только для адреса преподавателя.</span></div><div class="fact"><b>03</b><span>Права к журналу дополнительно проверяются политикой базы данных.</span></div></div></div>
+      <section class="card"><h2>Получить ссылку входа</h2><p>Введите служебный e-mail преподавателя. Supabase отправит одноразовую ссылку для входа.</p><form id="login-form"><label class="field">E-mail преподавателя<input id="email" type="email" autocomplete="email" required></label><button class="submit" id="submit" type="submit">Отправить защищённую ссылку</button></form><div class="notice" id="notice" role="status"></div><p class="hint">Первый вход может потребовать подтверждения письма. В Supabase должны быть добавлены адрес GitHub Pages и локальный адрес в списке Redirect URLs.</p><a class="back" href="robolist1.html">← Вернуться к ученическим РобоЛистам</a></section>
+    </section>
+  </main>
+  <script>
+    const config=window.ROBO_SUPABASE;
+    const client=window.supabase.createClient(config.url,config.publishableKey);
+    const form=document.getElementById('login-form'),email=document.getElementById('email'),button=document.getElementById('submit'),notice=document.getElementById('notice');
+    const params=new URLSearchParams(location.search);const requestedNext=params.get('next')||'teacher.html';
+    const safeNext=/^(teacher\.html|admin\.html|admin2\.html)(\?.*)?$/.test(requestedNext)?requestedNext:'teacher.html';
+    email.value=config.adminEmail;
+    function show(text,good=false){notice.textContent=text;notice.className=`notice show${good?' good':''}`}
+    async function continueIfSignedIn(){const {data:{session}}=await client.auth.getSession();if(session?.user?.email?.toLowerCase()===config.adminEmail.toLowerCase())location.replace(safeNext)}
+    if(params.get('reason')==='forbidden')show('Этот e-mail не имеет прав преподавателя. Используйте служебный адрес.',false);
+    if(params.get('reason')==='signedout')show('Вы вышли из учительской зоны.',true);
+    form.addEventListener('submit',async(event)=>{event.preventDefault();const value=email.value.trim().toLowerCase();if(value!==config.adminEmail.toLowerCase()){show('Вход разрешён только для служебного e-mail преподавателя.');return;}button.disabled=true;button.textContent='Отправляем…';const redirectTo=new URL('teacher-login.html',location.href);redirectTo.searchParams.set('next',safeNext);const {error}=await client.auth.signInWithOtp({email:value,options:{emailRedirectTo:redirectTo.href,shouldCreateUser:true}});if(error)show(`Не удалось отправить ссылку: ${error.message}`);else show('Проверьте почту. Откройте ссылку из письма в этом же браузере.',true);button.disabled=false;button.textContent='Отправить защищённую ссылку';});
+    client.auth.onAuthStateChange((_event,session)=>{if(session?.user?.email?.toLowerCase()===config.adminEmail.toLowerCase())location.replace(safeNext)});
+    continueIfSignedIn();
+  </script>
+</body>
+</html>

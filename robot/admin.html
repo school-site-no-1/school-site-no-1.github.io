@@ -1,0 +1,155 @@
+<!doctype html>
+<!-- Design system: «Конструкторская станция» — защищённый общий журнал результатов для преподавателя. -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Защищённая админ-панель РобоЛиста с общим журналом результатов Supabase." />
+  <link rel="icon" type="image/png" href="images/robolist-mark.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <title>РобоЛист — журнал результатов</title>
+  <style>
+    :root{--ink:#202522;--paper:#f4f1e8;--orange:#f15a24;--muted:#62706a;--green:#42785a;--red:#b34a37}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font-family:"Source Sans 3",Arial,sans-serif;background-image:linear-gradient(rgba(32,37,34,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(32,37,34,.035) 1px,transparent 1px);background-size:28px 28px}.app{max-width:1280px;margin:auto;padding:0 42px 42px}.top{height:77px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(32,37,34,.22)}.brand{display:flex;gap:10px;align-items:center;color:var(--ink);font:800 15px/1 Manrope,sans-serif;letter-spacing:.1em;text-decoration:none}.brand img{width:32px;height:32px;object-fit:contain}.brand em{font-style:normal;color:var(--orange)}.top-actions{display:flex;align-items:center;gap:14px}.storage{display:flex;align-items:center;gap:7px;color:var(--muted);font:500 10px "IBM Plex Mono",monospace;letter-spacing:.04em;text-transform:uppercase}.storage i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(66,120,90,.12)}.form-link,.signout{display:inline-flex;gap:7px;align-items:center;padding:10px 12px;border:1px solid #707973;color:#34413c;background:#faf8f0;font:700 12px/1 Manrope,sans-serif;text-decoration:none;cursor:pointer;transition:transform .16s ease,background .16s ease}.form-link:hover,.signout:hover{background:#fff;transform:translate(-2px,-2px)}.hero{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;padding:52px 0 29px}.eyebrow{margin:0;color:var(--muted);font:600 10px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase}.eyebrow:before{content:"";display:inline-block;width:23px;height:2px;margin:0 9px 3px 0;background:var(--orange)}h1{margin:14px 0 0;font:800 clamp(34px,4.5vw,58px)/.98 Manrope,sans-serif;letter-spacing:-.065em}h1 span{color:var(--orange)}.hero-note{max-width:350px;margin:0;color:#52605a;font-size:16px;line-height:1.4}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 21px}.metric{min-height:112px;padding:19px 20px;border:1px solid rgba(32,37,34,.2);background:rgba(255,255,252,.76)}.metric:first-child{border-top:4px solid var(--orange)}.metric-label{margin:0;color:var(--muted);font:600 9px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase}.metric-value{margin:11px 0 0;font:800 34px/1 Manrope,sans-serif;letter-spacing:-.06em}.metric-value span{color:var(--orange)}.notice{display:none;margin:0 0 20px;padding:12px 15px;border-left:4px solid var(--green);background:#edf6ed;color:#29543a;font-size:14px;line-height:1.35}.notice.show{display:block}.notice.error{border-color:var(--red);background:#fff0ec;color:#873324}.panel{border:1px solid rgba(32,37,34,.24);background:rgba(255,255,252,.87);box-shadow:8px 8px 0 rgba(32,37,34,.07)}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:20px 22px;border-bottom:1px solid rgba(32,37,34,.16)}.panel-title{display:flex;gap:11px;align-items:center}.panel-title b{display:grid;place-items:center;width:28px;height:28px;background:var(--orange);color:#fff;font:600 10px "IBM Plex Mono",monospace}.panel-title h2{margin:0;font:800 20px/1 Manrope,sans-serif;letter-spacing:-.045em}.panel-actions{display:flex;gap:9px}.outline-btn,.danger-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:37px;padding:0 11px;border:1px solid #6c7671;background:transparent;color:#37433e;font:700 11px/1 Manrope,sans-serif;cursor:pointer}.outline-btn:hover{background:#f4f1e8}.danger-btn{border-color:#a45648;color:#91402f}.danger-btn:hover{background:#fff0ec}.filters{display:grid;grid-template-columns:1.4fr repeat(2,minmax(140px,.5fr));gap:10px;padding:16px 22px;background:#f7f5ee;border-bottom:1px solid rgba(32,37,34,.13)}.filters label{display:grid;gap:5px;color:#66716c;font:600 9px "IBM Plex Mono",monospace;letter-spacing:.07em;text-transform:uppercase}.filters input,.filters select,.login-card input{width:100%;min-height:38px;padding:7px 10px;border:1px solid #aeb4ae;border-radius:0;outline:none;background:#fffdf7;color:#28332e;font:600 14px "Source Sans 3",sans-serif}.filters input:focus,.filters select:focus,.login-card input:focus{border-color:var(--orange)}.table-wrap{overflow-x:auto}.results{width:100%;border-collapse:collapse;min-width:760px}.results th{padding:12px 15px;color:#68736d;background:#fffdf8;border-bottom:1px solid #d7d9d0;text-align:left;font:600 9px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}.results td{padding:13px 15px;border-bottom:1px solid #e2e3dc;color:#3d4742;font-size:14px}.results tr:last-child td{border-bottom:0}.student{font-weight:700;color:#26302b}.subtle{color:#6f7a74;font-size:12px}.badge{display:inline-flex;align-items:center;justify-content:center;min-width:48px;padding:4px 7px;border:1px solid #aab2ac;background:#f6f4ed;color:#44514b;font:600 10px/1 "IBM Plex Mono",monospace}.score{font:800 16px/1 Manrope,sans-serif;color:#27603c}.score.low{color:#a74734}.row-delete{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;border:1px solid #aeb4ae;background:transparent;color:#68736d;cursor:pointer;font:600 17px/1 Arial}.row-delete:hover{border-color:#a34a38;background:#fff0ec;color:#963e2e}.empty{display:grid;justify-items:center;gap:9px;padding:56px 20px;color:#68736d;text-align:center}.empty .empty-mark{display:grid;place-items:center;width:43px;height:43px;border:1px solid #9fa8a2;color:var(--orange);font:600 18px "IBM Plex Mono",monospace}.empty p{margin:0;max-width:320px;line-height:1.35}.footer{display:flex;justify-content:space-between;gap:20px;padding-top:24px;color:#68736d;font:500 10px "IBM Plex Mono",monospace;letter-spacing:.035em;text-transform:uppercase}.login-layer{position:fixed;z-index:4;inset:0;display:grid;place-items:center;padding:18px;background:rgba(30,37,33,.56);backdrop-filter:blur(7px)}.login-layer.hidden{display:none}.login-card{width:min(100%,430px);padding:30px;border:1px solid #202522;background:#f7f5ed;box-shadow:10px 10px 0 var(--orange)}.login-card .lock{display:grid;place-items:center;width:39px;height:39px;margin-bottom:15px;background:#202522;color:#fff;font:600 16px "IBM Plex Mono",monospace}.login-card h2{margin:0 0 9px;font:800 28px/1 Manrope,sans-serif;letter-spacing:-.06em}.login-card p{margin:0 0 18px;color:#5a6660;font-size:14px;line-height:1.38}.login-card form{display:grid;gap:12px}.login-card label{display:grid;gap:6px;color:#55625c;font:600 10px "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase}.login-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px}.primary-btn{min-height:43px;border:1px solid #202522;background:#202522;color:#fffdf5;font:800 12px Manrope,sans-serif;cursor:pointer}.secondary-btn{min-height:43px;border:1px solid #68716d;background:transparent;color:#34413c;font:800 12px Manrope,sans-serif;cursor:pointer}.login-help{margin-top:13px!important;color:#738078!important;font-size:12px!important}.login-status{display:none;margin-top:14px;padding:10px 11px;border-left:3px solid var(--red);background:#fff0ec;color:#8a3829;font-size:13px;line-height:1.3}.login-status.show{display:block}.login-status.good{border-color:var(--green);background:#edf6ed;color:#28543a}@media(max-width:760px){.app{padding:0 15px 28px}.top{height:64px}.storage{display:none}.hero{display:block;padding:39px 0 25px}.hero-note{margin-top:16px}.metrics{grid-template-columns:1fr}.metric{min-height:88px}.panel-head{align-items:flex-start;flex-direction:column}.panel-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.footer{flex-direction:column;gap:10px}}
+  </style>
+<style>body.auth-pending{visibility:hidden}</style></head>
+<body class="auth-pending" data-teacher-auth="required">
+  <div id="login-layer" class="login-layer"><section class="login-card"><div class="lock">01</div><h2>Вход преподавателя</h2><p>Доступ к общему журналу имеют только авторизованные администраторы.</p><form id="login-form"><label>E-mail<input id="email" type="email" value="tgwmbh49ypiz@mail.ru" autocomplete="email" required /></label><label>Пароль<input id="password" type="password" autocomplete="current-password" required minlength="8" /></label><div class="login-actions"><button class="primary-btn" type="submit">Войти</button><button class="secondary-btn" id="signup-button" type="button" hidden aria-hidden="true">Создать доступ</button></div></form><p class="login-help">Вход в журнал доступен только через защищённую учительскую сессию.</p><div id="login-status" class="login-status" role="status"></div></section></div>
+  <main class="app">
+    <header class="top"><a class="brand" href="admin.html"><img src="images/robolist-mark.png" alt="" />РОБО<span><em>·</em>ЛИСТ</span></a><div class="top-actions"><span class="storage"><i></i> Общий журнал Supabase</span><a class="form-link" href="robolist1.html">← К форме</a><button class="signout" id="signout" type="button" data-auth-signout>Выйти</button></div></header>
+    <section class="hero"><div><p class="eyebrow">Панель преподавателя</p><h1>Результаты<br /><span>проверки.</span></h1></div><p class="hero-note">Здесь отображаются работы, которые ученики отправили из формы. Данные защищены входом администратора.</p></section>
+    <section class="metrics" aria-label="Сводка результатов"><article class="metric"><p class="metric-label" id="metric-total-label">Отправлено работ</p><p class="metric-value" id="metric-total">0</p></article><article class="metric"><p class="metric-label" id="metric-average-label">Средний результат</p><p class="metric-value"><span id="metric-average">—</span><small> %</small></p></article><article class="metric"><p class="metric-label" id="metric-best-label">Максимальный результат</p><p class="metric-value"><span id="metric-best">—</span><small> %</small></p></article></section>
+    <div id="notice" class="notice" role="status"></div>
+    <section class="panel"><div class="panel-head"><div class="panel-title"><b>01</b><h2>Журнал результатов</h2></div><div class="panel-actions"><button class="outline-btn" id="refresh-button" type="button">↻ Обновить</button><button class="outline-btn" id="csv-button" type="button">↓ Скачать CSV</button></div></div><div class="filters"><label>Поиск по имени<input id="search" type="search" placeholder="Например, Иванов" /></label><label>Класс<select id="class-filter"><option value="">Все классы</option></select></label><label>Уровень<select id="level-filter"><option value="">Все уровни</option></select></label></div><div class="table-wrap"><table class="results"><thead><tr><th>Ученик</th><th>Класс</th><th>Уровень</th><th>Баллы</th><th>Процент</th><th>Дата отправки</th><th aria-label="Удалить"></th></tr></thead><tbody id="table-body"></tbody></table><div class="empty" id="empty"><div class="empty-mark">{ }</div><p><strong>Работ пока нет.</strong><br />Результаты появятся здесь после отправки учениками формы.</p></div></div></section>
+    <footer class="footer"><span>РобоЛист / защищённая админ-панель</span><span>Общий журнал результатов</span></footer>
+  </main>
+  <script>
+    const client=window.supabase.createClient(window.ROBO_SUPABASE.url,window.ROBO_SUPABASE.publishableKey);let allResults=[];
+    const $=selector=>document.querySelector(selector);const loginLayer=$('#login-layer'),loginForm=$('#login-form'),emailInput=$('#email'),passwordInput=$('#password'),loginStatus=$('#login-status'),tableBody=$('#table-body'),empty=$('#empty'),notice=$('#notice'),search=$('#search'),classFilter=$('#class-filter'),levelFilter=$('#level-filter');
+    function showLoginStatus(message,good=false){loginStatus.textContent=message;loginStatus.className=`login-status show${good?' good':''}`;}function showNotice(message,error=false){notice.textContent=message;notice.className=`notice show${error?' error':''}`;window.clearTimeout(showNotice.timer);showNotice.timer=window.setTimeout(()=>notice.className='notice',5000);}function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));}function dateText(value){if(!value)return'—';const date=new Date(value);return Number.isNaN(date.getTime())?'—':date.toLocaleString('ru-RU',{dateStyle:'short',timeStyle:'short'});}
+    function filtered(){const query=search.value.trim().toLocaleLowerCase();return allResults.filter(item=>{const name=`${item.last_name} ${item.first_name||''}`.toLocaleLowerCase();return(!query||name.includes(query))&&(!classFilter.value||item.class_name===classFilter.value)&&(!levelFilter.value||item.difficulty===levelFilter.value);});}
+    function fillFilters(){const currentClass=classFilter.value,currentLevel=levelFilter.value;const classes=[...new Set(allResults.map(item=>item.class_name).filter(Boolean))].sort(),levels=[...new Set(allResults.map(item=>item.difficulty).filter(Boolean))].sort();classFilter.innerHTML='<option value="">Все классы</option>'+classes.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');levelFilter.innerHTML='<option value="">Все уровни</option>'+levels.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');classFilter.value=currentClass;levelFilter.value=currentLevel;}
+    function render(){fillFilters();const rows=filtered();tableBody.innerHTML=rows.map(item=>`<tr><td><span class="student">${escapeHtml(`${item.last_name} ${item.first_name||''}`.trim())}</span></td><td>${escapeHtml(item.class_name||'—')}</td><td><span class="badge">${escapeHtml(item.difficulty)}</span></td><td class="score ${item.percentage<50?'low':''}">${item.score}/${item.total}</td><td>${item.percentage}%</td><td class="subtle">${dateText(item.client_submitted_at||item.created_at)}</td><td><button class="row-delete" title="Удалить запись" data-delete="${item.id}" type="button">×</button></td></tr>`).join('');empty.style.display=rows.length?'none':'grid';$('#metric-total').textContent=allResults.length;const values=allResults.map(item=>item.percentage);$('#metric-average').textContent=values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):'—';$('#metric-best').textContent=values.length?Math.max(...values):'—';}
+    async function loadResults(){const {data,error}=await client.from('robolist_submissions').select('id,created_at,client_submitted_at,last_name,first_name,class_name,difficulty,score,total,percentage').order('created_at',{ascending:false});if(error){showNotice(`Не удалось получить журнал: ${error.message}`,true);return;}allResults=data||[];render();}
+    async function ensureAdmin(){const {data:{session}}=await client.auth.getSession();if(!session){loginLayer.classList.remove('hidden');return;}if(session.user.email!==window.ROBO_SUPABASE.adminEmail){await client.auth.signOut();showLoginStatus('Этот e-mail не имеет прав преподавателя.');return;}loginLayer.classList.add('hidden');await loadResults();}
+    loginForm.addEventListener('submit',async event=>{event.preventDefault();showLoginStatus('Проверяем доступ…',true);const {error}=await client.auth.signInWithPassword({email:emailInput.value.trim(),password:passwordInput.value});if(error){showLoginStatus(`Не удалось войти: ${error.message}`);return;}await ensureAdmin();});
+    $('#signup-button').addEventListener('click',async()=>{const email=emailInput.value.trim();if(email!==window.ROBO_SUPABASE.adminEmail){showLoginStatus('Создать доступ можно только для e-mail преподавателя.');return;}if(passwordInput.value.length<8){showLoginStatus('Пароль должен содержать не менее 8 символов.');return;}const {data,error}=await client.auth.signUp({email,password:passwordInput.value,options:{emailRedirectTo:window.location.href}});if(error){showLoginStatus(`Не удалось создать доступ: ${error.message}`);return;}if(data.session){showLoginStatus('Доступ создан. Входим в журнал…',true);await ensureAdmin();}else showLoginStatus('Проверьте e-mail и подтвердите создание доступа, затем войдите.',true);});
+    $('#signout').addEventListener('click',async()=>{await client.auth.signOut();allResults=[];render();loginLayer.classList.remove('hidden');showLoginStatus('Вы вышли из админ-панели.',true);});$('#refresh-button').addEventListener('click',loadResults);[search,classFilter,levelFilter].forEach(element=>element.addEventListener('input',render));tableBody.addEventListener('click',async event=>{const button=event.target.closest('[data-delete]');if(!button||!confirm('Удалить этот результат из общего журнала?'))return;const {error}=await client.from('robolist_submissions').delete().eq('id',button.dataset.delete);if(error){showNotice(`Не удалось удалить запись: ${error.message}`,true);return;}showNotice('Запись удалена.');await loadResults();});$('#csv-button').addEventListener('click',()=>{if(!allResults.length){showNotice('Нет данных для экспорта.',true);return;}const quote=value=>`"${String(value??'').replaceAll('"','""')}"`;const rows=[['Фамилия','Имя','Класс','Уровень','Баллы','Всего','Процент','Дата отправки'],...allResults.map(item=>[item.last_name,item.first_name,item.class_name,item.difficulty,item.score,item.total,item.percentage,dateText(item.client_submitted_at||item.created_at)])];const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+rows.map(row=>row.map(quote).join(';')).join('\n')],{type:'text/csv;charset=utf-8'}));link.download=`robolist-results-${new Date().toISOString().slice(0,10)}.csv`;link.click();URL.revokeObjectURL(link.href);});client.auth.onAuthStateChange(()=>ensureAdmin());ensureAdmin();
+  </script>
+  <script>
+    // Worksheet extension: each future Robolist can use a distinct worksheet_name in the shared journal.
+    (() => {
+      const filters = document.querySelector('.filters');
+      filters.classList.add('worksheet-ready');
+      filters.querySelector('label').insertAdjacentHTML('afterend', '<label>РобоЛист<select id="worksheet-filter"><option value="">Все РобоЛисты</option></select></label>');
+      const layoutStyle = document.createElement('style');
+      layoutStyle.textContent = '.filters.worksheet-ready{grid-template-columns:minmax(170px,.82fr) minmax(150px,.72fr) repeat(2,minmax(130px,.5fr))}@media(max-width:760px){.filters.worksheet-ready{grid-template-columns:1fr}}';
+      document.head.append(layoutStyle);
+      const worksheetFilter = document.getElementById('worksheet-filter');
+      const headerCells = document.querySelectorAll('.results thead tr th');
+      headerCells[1].insertAdjacentHTML('afterend', '<th>РобоЛист</th>');
+
+      filtered = function () {
+        const query = search.value.trim().toLocaleLowerCase();
+        return allResults.filter(item => {
+          const name = `${item.last_name} ${item.first_name || ''}`.toLocaleLowerCase();
+          return (!query || name.includes(query)) &&
+            (!classFilter.value || item.class_name === classFilter.value) &&
+            (!levelFilter.value || item.difficulty === levelFilter.value) &&
+            (!worksheetFilter.value || item.worksheet_name === worksheetFilter.value);
+        });
+      };
+
+      fillFilters = function () {
+        const currentClass = classFilter.value;
+        const currentLevel = levelFilter.value;
+        const currentWorksheet = worksheetFilter.value;
+        const classes = [...new Set(allResults.map(item => item.class_name).filter(Boolean))].sort();
+        const levels = [...new Set(allResults.map(item => item.difficulty).filter(Boolean))].sort();
+        const worksheets = [...new Set(allResults.map(item => item.worksheet_name || 'РобоЛист 1').filter(Boolean))].sort();
+        classFilter.innerHTML = '<option value="">Все классы</option>' + classes.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+        levelFilter.innerHTML = '<option value="">Все уровни</option>' + levels.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+        worksheetFilter.innerHTML = '<option value="">Все РобоЛисты</option>' + worksheets.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join('');
+        classFilter.value = currentClass;
+        levelFilter.value = currentLevel;
+        worksheetFilter.value = currentWorksheet;
+      };
+
+      render = function () {
+        fillFilters();
+        const rows = filtered();
+        tableBody.innerHTML = rows.map(item => `<tr><td><span class="student">${escapeHtml(`${item.last_name} ${item.first_name || ''}`.trim())}</span></td><td>${escapeHtml(item.class_name || '—')}</td><td><span class="badge">${escapeHtml(item.worksheet_name || 'РобоЛист 1')}</span></td><td><span class="badge">${escapeHtml(item.difficulty)}</span></td><td class="score ${item.percentage < 50 ? 'low' : ''}">${item.score}/${item.total}</td><td>${item.percentage}%</td><td class="subtle">${dateText(item.client_submitted_at || item.created_at)}</td><td><button class="row-delete" title="Удалить запись" data-delete="${item.id}" type="button">×</button></td></tr>`).join('');
+        empty.style.display = rows.length ? 'none' : 'grid';
+        const filterActive = Boolean(search.value.trim() || classFilter.value || levelFilter.value || worksheetFilter.value);
+        $('#metric-total-label').textContent = filterActive ? 'Работ по фильтру' : 'Отправлено работ';
+        $('#metric-average-label').textContent = filterActive ? 'Средний по фильтру' : 'Средний результат';
+        $('#metric-best-label').textContent = filterActive ? 'Максимум по фильтру' : 'Максимальный результат';
+        $('#metric-total').textContent = rows.length;
+        const values = rows.map(item => item.percentage);
+        $('#metric-average').textContent = values.length ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length) : '—';
+        $('#metric-best').textContent = values.length ? Math.max(...values) : '—';
+      };
+
+      loadResults = async function () {
+        const { data, error } = await client.from('robolist_submissions').select('id,created_at,client_submitted_at,last_name,first_name,class_name,worksheet_name,difficulty,score,total,percentage').order('created_at', { ascending: false });
+        if (error) {
+          showNotice(`Не удалось получить журнал: ${error.message}`, true);
+          return;
+        }
+        allResults = data || [];
+        render();
+      };
+
+      ['input', 'change'].forEach(eventName => worksheetFilter.addEventListener(eventName, render));
+      document.getElementById('csv-button').addEventListener('click', event => {
+        event.stopImmediatePropagation();
+        if (!allResults.length) {
+          showNotice('Нет данных для экспорта.', true);
+          return;
+        }
+        const quote = value => `"${String(value ?? '').replaceAll('"', '""')}"`;
+        const rows = [['Фамилия', 'Имя', 'Класс', 'РобоЛист', 'Уровень', 'Баллы', 'Всего', 'Процент', 'Дата отправки'], ...allResults.map(item => [item.last_name, item.first_name, item.class_name, item.worksheet_name || 'РобоЛист 1', item.difficulty, item.score, item.total, item.percentage, dateText(item.client_submitted_at || item.created_at)])];
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob(['\ufeff' + rows.map(row => row.map(quote).join(';')).join('\n')], { type: 'text/csv;charset=utf-8' }));
+        link.download = `robolist-results-${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }, true);
+      ensureAdmin();
+    })();
+  </script>
+  <script>
+    // Текстовые ответы из JSON-колонки answers: отображаются сразу после процента.
+    (() => {
+      const worksheetFilter=document.getElementById('worksheet-filter');
+      const headerCells=document.querySelectorAll('.results thead tr th');
+      headerCells[5].insertAdjacentHTML('afterend','<th>Текстовый ответ</th>');
+      const style=document.createElement('style');
+      style.textContent='.results{min-width:980px}.written-answer{max-width:260px;white-space:normal;line-height:1.32;color:#37433e}.written-answer b{display:block;margin-bottom:3px;font:600 9px "IBM Plex Mono",monospace;color:#68736d;text-transform:uppercase}';
+      document.head.append(style);
+      function writtenAnswer(item){
+        let answers=item.answers;
+        if(typeof answers==='string'){try{answers=JSON.parse(answers)}catch(error){answers=[]}}
+        if(!Array.isArray(answers))return '—';
+        const texts=answers.filter(answer=>answer&&answer.type==='text'&&answer.selectedOption).map(answer=>`<b>${escapeHtml(answer.question||'Текстовый ответ')}</b>${escapeHtml(answer.selectedOption)}`);
+        return texts.length?texts.join('<hr style="border:0;border-top:1px solid #e2e3dc;margin:7px 0">'):'—';
+      }
+      render=function(){
+        fillFilters();
+        const rows=filtered();
+        tableBody.innerHTML=rows.map(item=>`<tr><td><span class="student">${escapeHtml(`${item.last_name} ${item.first_name||''}`.trim())}</span></td><td>${escapeHtml(item.class_name||'—')}</td><td><span class="badge">${escapeHtml(item.worksheet_name||'РобоЛист 1')}</span></td><td><span class="badge">${escapeHtml(item.difficulty)}</span></td><td class="score ${item.percentage<50?'low':''}">${item.score}/${item.total}</td><td>${item.percentage}%</td><td class="written-answer">${writtenAnswer(item)}</td><td class="subtle">${dateText(item.client_submitted_at||item.created_at)}</td><td><button class="row-delete" title="Удалить запись" data-delete="${item.id}" type="button">×</button></td></tr>`).join('');
+        empty.style.display=rows.length?'none':'grid';
+        const filterActive=Boolean(search.value.trim()||classFilter.value||levelFilter.value||worksheetFilter.value);
+        $('#metric-total-label').textContent=filterActive?'Работ по фильтру':'Отправлено работ';$('#metric-average-label').textContent=filterActive?'Средний по фильтру':'Средний результат';$('#metric-best-label').textContent=filterActive?'Максимум по фильтру':'Максимальный результат';$('#metric-total').textContent=rows.length;
+        const values=rows.map(item=>item.percentage);$('#metric-average').textContent=values.length?Math.round(values.reduce((sum,value)=>sum+value,0)/values.length):'—';$('#metric-best').textContent=values.length?Math.max(...values):'—';
+      };
+      loadResults=async function(){const {data,error}=await client.from('robolist_submissions').select('id,created_at,client_submitted_at,last_name,first_name,class_name,worksheet_name,difficulty,score,total,percentage,answers').order('created_at',{ascending:false});if(error){showNotice(`Не удалось получить журнал: ${error.message}`,true);return;}allResults=data||[];render();};
+      document.getElementById('csv-button').addEventListener('click',event=>{event.stopImmediatePropagation();if(!allResults.length){showNotice('Нет данных для экспорта.',true);return;}const plain=item=>{let answers=item.answers;if(typeof answers==='string'){try{answers=JSON.parse(answers)}catch(error){answers=[]}}return Array.isArray(answers)?answers.filter(answer=>answer&&answer.type==='text'&&answer.selectedOption).map(answer=>`${answer.question||'Текстовый ответ'}: ${answer.selectedOption}`).join(' | '):''};const quote=value=>`"${String(value??'').replaceAll('"','""')}"`;const csv=[['Фамилия','Имя','Класс','РобоЛист','Уровень','Баллы','Всего','Процент','Текстовый ответ','Дата отправки'],...allResults.map(item=>[item.last_name,item.first_name,item.class_name,item.worksheet_name||'РобоЛист 1',item.difficulty,item.score,item.total,item.percentage,plain(item),dateText(item.client_submitted_at||item.created_at)])];const link=document.createElement('a');link.href=URL.createObjectURL(new Blob(['\ufeff'+csv.map(row=>row.map(quote).join(';')).join('\n')],{type:'text/csv;charset=utf-8'}));link.download=`robolist-results-${new Date().toISOString().slice(0,10)}.csv`;link.click();URL.revokeObjectURL(link.href);},true);
+      ensureAdmin();
+    })();
+  </script>
+<script src="teacher-auth.js"></script></body>
+</html>
