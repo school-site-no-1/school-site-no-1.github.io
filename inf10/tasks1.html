@@ -5,181 +5,235 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Вычисление количества информации</title>
 <style>
+  :root {
+    --ink: #172033;
+    --muted: #667085;
+    --surface: rgba(255, 255, 255, 0.94);
+    --line: #e7eaf0;
+    --blue: #356ae6;
+    --blue-dark: #244db6;
+    --orange: #e8892f;
+    --red: #d34c5d;
+    --green: #1e9b69;
+    --shadow: 0 18px 48px rgba(27, 39, 74, 0.10);
+  }
+
   * { box-sizing: border-box; }
 
+  html { scroll-behavior: smooth; }
+
   body {
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    background: #f4f5f7;
     min-height: 100vh;
-    color: #2c3e50;
-    line-height: 1.6;
+    color: var(--ink);
+    line-height: 1.65;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(93, 130, 245, 0.18), transparent 34%),
+      radial-gradient(circle at 94% 10%, rgba(232, 137, 47, 0.13), transparent 28%),
+      #f5f7fb;
   }
 
   .container {
-    max-width: 920px;
+    width: min(100% - 32px, 980px);
     margin: 0 auto;
-    padding: 30px 20px 60px;
+    padding: 52px 0 72px;
   }
 
   header {
+    position: relative;
+    overflow: hidden;
     text-align: center;
-    color: #2c3e50;
     margin-bottom: 30px;
+    padding: 42px 34px 38px;
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 26px;
+    background: linear-gradient(135deg, #1b2a52 0%, #29458e 58%, #356ae6 100%);
+    box-shadow: 0 22px 55px rgba(35, 61, 128, 0.22);
+    color: #fff;
+  }
+
+  header::after {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    right: -72px;
+    top: -118px;
+    border: 34px solid rgba(255,255,255,.09);
+    border-radius: 50%;
   }
 
   header h1 {
-    font-size: 30px;
-    margin: 0 0 10px;
-    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    margin: 0 0 12px;
+    font-size: clamp(26px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.6px;
+    font-weight: 800;
   }
 
   header p {
-    font-size: 15px;
-    color: #555;
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
     margin: 0 auto;
-    max-width: 640px;
+    color: rgba(255,255,255,.84);
+    font-size: 15px;
   }
 
   .task {
-    background: #fff;
-    padding: 22px 26px;
-    margin-bottom: 18px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     position: relative;
     overflow: hidden;
+    margin-bottom: 16px;
+    padding: 24px 28px 22px 32px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 52px rgba(27, 39, 74, 0.14);
   }
 
   .task::before {
     content: '';
     position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 6px;
+    inset: 0 auto 0 0;
+    width: 5px;
   }
-  .task.basic::before    { background: #3498db; }
-  .task.advanced::before { background: #e67e22; }
-  .task.ege::before      { background: #c0392b; }
+  .task.basic::before { background: var(--blue); }
+  .task.advanced::before { background: var(--orange); }
+  .task.ege::before { background: var(--red); }
 
   .task h3 {
-    margin: 0 0 12px;
-    font-size: 18px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 11px;
+    flex-wrap: wrap;
+    margin: 0 0 13px;
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1.35;
   }
 
   .task h3 .badge {
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    min-height: 25px;
+    padding: 3px 11px;
+    border-radius: 999px;
     color: #fff;
-    letter-spacing: 0.5px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .65px;
+    text-transform: uppercase;
   }
-  .badge.basic    { background: #3498db; }
-  .badge.advanced { background: #e67e22; }
-  .badge.ege      { background: #c0392b; }
+  .badge.basic { background: var(--blue); }
+  .badge.advanced { background: var(--orange); }
+  .badge.ege { background: var(--red); }
 
   .task p {
     margin: 0;
+    color: #475467;
     font-size: 15px;
-    color: #34495e;
-    text-align: justify;
+    text-align: left;
   }
 
-  .task b { color: #2c3e50; }
+  .task b { color: var(--ink); }
 
   .answer-row {
-    margin-top: 16px;
     display: flex;
     align-items: center;
-    gap: 12px;
     flex-wrap: wrap;
-    padding-top: 14px;
-    border-top: 1px dashed #ecf0f1;
+    gap: 12px;
+    margin-top: 19px;
+    padding-top: 16px;
+    border-top: 1px solid #eef0f4;
   }
 
   .answer-row label {
-    font-weight: 600;
+    color: #475467;
     font-size: 14px;
-    color: #555;
+    font-weight: 700;
   }
 
   input[type="text"] {
-    padding: 10px 14px;
-    font-size: 15px;
-    border: 2px solid #dcdde1;
-    border-radius: 8px;
-    width: 180px;
-    background: #f8f9fa;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-
-  input[type="text"]:focus {
+    width: 190px;
+    padding: 10px 13px;
+    border: 2px solid #dfe3ea;
+    border-radius: 10px;
     outline: none;
-    border-color: #3498db;
-    background: #fff;
+    background: #fbfcfe;
+    color: var(--ink);
+    font: inherit;
+    font-size: 15px;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
   }
 
-  input[type="text"].ok {
-    border-color: #27ae60;
-    background: #eafaf1;
+  input[type="text"]::placeholder { color: #98a2b3; }
+  input[type="text"]:focus {
+    border-color: var(--blue);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(53,106,230,.12);
   }
-  input[type="text"].err {
-    border-color: #e74c3c;
-    background: #fdecea;
-  }
+  input[type="text"].ok { border-color: var(--green); background: #effaf5; }
+  input[type="text"].err { border-color: var(--red); background: #fff4f5; }
 
   .result {
-    font-weight: 700;
-    font-size: 15px;
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 4px 10px;
-    border-radius: 6px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 800;
   }
-
-  .result.correct { color: #1e8449; background: #eafaf1; }
-  .result.wrong   { color: #c0392b; background: #fdecea; }
+  .result.correct { color: #157347; background: #eaf8f1; }
+  .result.wrong { color: #b42335; background: #fff0f1; }
 
   #checkAll {
     display: block;
-    margin: 40px auto 0;
-    padding: 14px 40px;
-    font-size: 17px;
-    font-weight: 700;
-    background: #27ae60;
+    margin: 34px auto 0;
+    padding: 14px 30px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--green), #168257);
+    box-shadow: 0 10px 24px rgba(30,155,105,.22);
     color: #fff;
-    border: none;
-    border-radius: 30px;
     cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: background 0.15s ease;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
   }
-
-  #checkAll:hover { background: #1e8449; }
+  #checkAll:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(30,155,105,.30); background: linear-gradient(135deg, #168257, #116a48); }
+  #checkAll:active { transform: translateY(0); }
 
   #score {
-    text-align: center;
-    margin-top: 20px;
-    color: #2c3e50;
+    min-height: 27px;
+    margin-top: 18px;
+    color: var(--ink);
     font-size: 17px;
-    font-weight: 600;
-    min-height: 24px;
+    font-weight: 800;
+    text-align: center;
   }
 
   @media (max-width: 600px) {
-    header h1 { font-size: 22px; }
-    .task { padding: 18px 18px; }
-    .task h3 { font-size: 16px; flex-wrap: wrap; }
-    .task p { font-size: 14px; }
+    .container { width: min(100% - 20px, 980px); padding-top: 18px; }
+    header { padding: 30px 20px 28px; border-radius: 20px; }
+    header h1 { font-size: 25px; }
+    header p { font-size: 14px; line-height: 1.55; }
+    .task { padding: 20px 18px 18px 23px; border-radius: 15px; }
+    .task h3 { font-size: 16px; }
+    .task p { font-size: 14px; line-height: 1.58; }
+    .answer-row { align-items: stretch; flex-direction: column; gap: 8px; }
     input[type="text"] { width: 100%; }
-    .answer-row { flex-direction: column; align-items: stretch; }
-    .answer-row label { margin-bottom: 4px; }
+    .result { align-self: flex-start; }
   }
 </style>
 </head>
