@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вычисление количества информации</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f5f7;
+    min-height: 100vh;
+    color: #2c3e50;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  header {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+  }
+
+  header h1 {
+    font-size: 30px;
+    margin: 0 0 10px;
+    font-weight: 700;
+  }
+
+  header p {
+    font-size: 15px;
+    color: #555;
+    margin: 0 auto;
+    max-width: 640px;
+  }
+
+  .task {
+    background: #fff;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .task::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+  }
+  .task.basic::before    { background: #3498db; }
+  .task.advanced::before { background: #e67e22; }
+  .task.ege::before      { background: #c0392b; }
+
+  .task h3 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .task h3 .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .badge.basic    { background: #3498db; }
+  .badge.advanced { background: #e67e22; }
+  .badge.ege      { background: #c0392b; }
+
+  .task p {
+    margin: 0;
+    font-size: 15px;
+    color: #34495e;
+    text-align: justify;
+  }
+
+  .task b { color: #2c3e50; }
+
+  .answer-row {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    border-top: 1px dashed #ecf0f1;
+  }
+
+  .answer-row label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+  }
+
+  input[type="text"] {
+    padding: 10px 14px;
+    font-size: 15px;
+    border: 2px solid #dcdde1;
+    border-radius: 8px;
+    width: 180px;
+    background: #f8f9fa;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+  }
+
+  input[type="text"].ok {
+    border-color: #27ae60;
+    background: #eafaf1;
+  }
+  input[type="text"].err {
+    border-color: #e74c3c;
+    background: #fdecea;
+  }
+
+  .result {
+    font-weight: 700;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .result.correct { color: #1e8449; background: #eafaf1; }
+  .result.wrong   { color: #c0392b; background: #fdecea; }
+
+  #checkAll {
+    display: block;
+    margin: 40px auto 0;
+    padding: 14px 40px;
+    font-size: 17px;
+    font-weight: 700;
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.15s ease;
+  }
+
+  #checkAll:hover { background: #1e8449; }
+
+  #score {
+    text-align: center;
+    margin-top: 20px;
+    color: #2c3e50;
+    font-size: 17px;
+    font-weight: 600;
+    min-height: 24px;
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 22px; }
+    .task { padding: 18px 18px; }
+    .task h3 { font-size: 16px; flex-wrap: wrap; }
+    .task p { font-size: 14px; }
+    input[type="text"] { width: 100%; }
+    .answer-row { flex-direction: column; align-items: stretch; }
+    .answer-row label { margin-bottom: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Вычисление количества информации</h1>
+    <p>Введите ответ. Для задач 1–6 — в килобайтах, для задачи 7 — целое число.<br>
+    Можно использовать дробь (например, 1500/1024) или десятичную запись с запятой или точкой. Погрешность — 0,01.</p>
+  </header>
+
+  <div class="task basic" data-id="0">
+    <h3><span class="badge basic">Базовый</span> Задача 1</h3>
+    <p>В школьной базе данных каждый ученик получил идентификатор, состоящий ровно из <b>7 символов</b>. В качестве символов используются все заглавные буквы русского алфавита, кроме «Ё», «Й», «Ъ» и «Ь», а также все десятичные цифры за исключением цифры <b>0</b>. Каждый такой идентификатор записывается минимально возможным и одинаковым целым количеством байт (посимвольное кодирование, все символы кодируются одинаковым и минимально возможным количеством бит). Определите объём памяти для хранения <b>250</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    <div class="answer-row">
+      <label>Ответ (Кбайт):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <div class="task basic" data-id="1">
+    <h3><span class="badge basic">Базовый</span> Задача 2</h3>
+    <p>В базе данных каждый сотрудник получил идентификатор, состоящий ровно из <b>5 символов</b>. Используются все заглавные буквы русского алфавита, кроме «Ё», «Ы», «Ъ», «Ь», и все десятичные цифры, кроме <b>0 и 1</b>. Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>300</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    <div class="answer-row">
+      <label>Ответ (Кбайт):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <div class="task basic" data-id="2">
+    <h3><span class="badge basic">Базовый</span> Задача 3</h3>
+    <p>В информационной системе каждый пользователь имеет логин ровно из <b>8 символов</b>. Разрешены: все заглавные латинские буквы (<b>26</b>), все десятичные цифры, кроме <b>0</b>, и ещё <b>6 специальных символов</b>. Каждый логин записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>400</b> логинов. Ответ выразите в килобайтах.</p>
+    <div class="answer-row">
+      <label>Ответ (Кбайт):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <div class="task advanced" data-id="3">
+    <h3><span class="badge advanced">Углублённый</span> Задача 4</h3>
+    <p>В школьной базе данных каждый ученик получил идентификатор, состоящий ровно из <b>6 символов</b>. Используются все заглавные буквы русского алфавита, кроме «Ё», «Й», «Ъ», «Ь», и все десятичные цифры, кроме <b>0, 1, 2</b>. Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>120</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    <div class="answer-row">
+      <label>Ответ (Кбайт):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <div class="task advanced" data-id="4">
+    <h3><span class="badge advanced">Углублённый</span> Задача 5</h3>
+    <p>В базе данных каждый сотрудник получил идентификатор, состоящий ровно из <b>9 символов</b>. В качестве символов используются все заглавные буквы русского алфавита, кроме «Ё», «Ы», «Ъ», «Ь», все десятичные цифры, кроме <b>0</b>, и <b>2 дополнительных символа</b> («_» и «-»). Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>500</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    <div class="answer-row">
+      <label>Ответ (Кбайт):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <div class="task advanced" data-id="5">
+    <h3><span class="badge advanced">Углублённый</span> Задача 6</h3>
+    <p>В информационной системе каждый пользователь имеет логин ровно из <b>10 символов</b>. Разрешены: все заглавные латинские буквы (<b>26</b>), все десятичные цифры, кроме <b>0</b>, и <b>4 специальных символа</b>. Каждый логин записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>600</b> логинов. Ответ выразите в килобайтах.</p>
+    <div class="answer-row">
+      <label>Ответ (Кбайт):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <div class="task ege" data-id="6">
+    <h3><span class="badge ege">ЕГЭ</span> Задача 7 (№31508)</h3>
+    <p>На предприятии каждой изготовленной детали присваивают серийный номер, состоящий из <b>157 символов</b>. В базе данных для хранения каждого серийного номера отведено одинаковое и минимально возможное целое число байт. При этом используется посимвольное кодирование серийных номеров, все символы кодируются одинаковым и минимально возможным числом бит. Известно, что для хранения <b>12 450</b> серийных номеров отведено не более <b>955 Кбайт</b> памяти. Определите максимально возможную мощность алфавита, используемого для записи серийных номеров. В ответе запишите только целое число.</p>
+    <div class="answer-row">
+      <label>Ответ (целое число):</label>
+      <input type="text" class="userAnswer" placeholder="Введите ответ">
+      <span class="result"></span>
+    </div>
+  </div>
+
+  <button id="checkAll">Проверить все ответы</button>
+  <div id="score"></div>
+</div>
+
+<script>
+  var _enc = [
+    "MTUwMC8xMDI0",
+    "MTIwMC8xMDI0",
+    "MjQwMC8xMDI0",
+    "NjAwLzEwMjQ=",
+    "MzUwMC8xMDI0",
+    "NDgwMC8xMDI0",
+    "OA=="
+  ];
+
+  function _dec(s) {
+    try { return atob(s); } catch (e) { return ""; }
+  }
+
+  var correctAnswers = _enc.map(function (code, i) {
+    var raw = _dec(code);
+    if (i === 6) {
+      return { value: parseFloat(raw), isInt: true };
+    }
+    var parts = raw.split("/");
+    var a = parseFloat(parts[0]);
+    var b = parseFloat(parts[1]);
+    return { value: (b && b !== 0) ? a / b : NaN, isInt: false };
+  });
+
+  var TOLERANCE = 0.01;
+
+  function parseUserAnswer(str) {
+    str = str.trim().replace(',', '.').replace(/\s/g, '');
+    if (str === '') return NaN;
+    if (str.includes('/')) {
+      var parts = str.split('/');
+      if (parts.length === 2) {
+        var a = parseFloat(parts[0]);
+        var b = parseFloat(parts[1]);
+        if (!isNaN(a) && !isNaN(b) && b !== 0) return a / b;
+      }
+      return NaN;
+    }
+    var num = parseFloat(str);
+    return isNaN(num) ? NaN : num;
+  }
+
+  function checkTask(task, index) {
+    var correct = correctAnswers[index];
+    var input = task.querySelector('.userAnswer');
+    var resultSpan = task.querySelector('.result');
+    var userVal = parseUserAnswer(input.value);
+
+    input.classList.remove('ok', 'err');
+    resultSpan.classList.remove('correct', 'wrong');
+    resultSpan.textContent = '';
+
+    if (isNaN(userVal)) {
+      resultSpan.textContent = 'Введите число';
+      resultSpan.classList.add('wrong');
+      input.classList.add('err');
+      return false;
+    }
+
+    var isCorrect;
+    if (correct.isInt) {
+      isCorrect = (userVal === correct.value);
+    } else {
+      isCorrect = Math.abs(userVal - correct.value) <= TOLERANCE;
+    }
+
+    if (isCorrect) {
+      resultSpan.textContent = '✓ Верно';
+      resultSpan.classList.add('correct');
+      input.classList.add('ok');
+      return true;
+    } else {
+      resultSpan.textContent = '✗ Неверно';
+      resultSpan.classList.add('wrong');
+      input.classList.add('err');
+      return false;
+    }
+  }
+
+  document.getElementById('checkAll').addEventListener('click', function () {
+    var tasks = document.querySelectorAll('.task');
+    var total = tasks.length;
+    var done = 0;
+
+    tasks.forEach(function (task) {
+      var idx = parseInt(task.dataset.id, 10);
+      if (checkTask(task, idx)) done++;
+    });
+
+    var scoreDiv = document.getElementById('score');
+    scoreDiv.textContent = 'Правильно: ' + done + ' из ' + total;
+    if (done === total) {
+      scoreDiv.textContent = 'Отлично! Все ответы верны: ' + done + ' из ' + total;
+    }
+  });
+
+  document.querySelectorAll('.userAnswer').forEach(function (input) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        var task = input.closest('.task');
+        var idx = parseInt(task.dataset.id, 10);
+        checkTask(task, idx);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
