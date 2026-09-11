@@ -60,7 +60,7 @@
         }
         .header-selector .refresh-btn:hover { background: #1a4f8b; }
         
-        /* Блок с часами */
+        /* Часы */
         #clockContainer {
             display: flex;
             justify-content: flex-end;
@@ -192,30 +192,28 @@
         tbody tr.current-lesson td.period .time-start { color: #1a4f8b; font-weight: 800; }
         tbody tr.current-lesson td.period .time-end { color: #2b6cb0; font-weight: 700; }
         
-        /* ФОН текущего урока */
+        /* ФОН текущего урока (светло-голубой) */
         tbody tr.current-lesson::before {
             content: '';
             position: absolute;
             left: 0; top: 0;
             width: 100%; height: 100%;
-            background: #bee3f8;
+            background: #e6f4ff;
             z-index: 0;
         }
         
-        /* ПОЛОСКА ПРОГРЕССА УРОКА (растёт от 0 до 100% за урок) */
+        /* ПОЛОСКА ОСТАВШЕГОСЯ ВРЕМЕНИ УРОКА 
+           (ширина = % оставшегося времени, плавно уменьшается) */
         tbody tr.current-lesson::after {
             content: '';
             position: absolute;
             left: 0; top: 0;
             height: 100%;
-            width: 0%;
-            background: linear-gradient(to right, rgba(43,108,176,0.35), rgba(43,108,176,0.55));
+            width: var(--lesson-progress, 100%);
+            background: linear-gradient(to right, rgba(43,108,176,0.45), rgba(43,108,176,0.65));
             z-index: 1;
             transition: width 1s linear;
             pointer-events: none;
-        }
-        tbody tr.current-lesson .lesson-bar-fill {
-            display: none;
         }
         
         /* Узкие столбцы */
@@ -264,12 +262,13 @@
             letter-spacing: 0.5px;
         }
         
-        /* Полоска перемены */
+        /* Полоска ОСТАВШЕГОСЯ времени перемены (уменьшается) */
         .break-progress-bar {
             position: absolute;
             left: 0; top: 0;
             height: 100%;
-            background: linear-gradient(to right, rgba(43,108,176,0.35), rgba(43,108,176,0.55));
+            width: var(--break-progress, 100%);
+            background: linear-gradient(to right, rgba(43,108,176,0.45), rgba(43,108,176,0.65));
             transition: width 1s linear;
             z-index: 1;
             pointer-events: none;
@@ -604,6 +603,7 @@
         return null;
     }
 
+    // ОСТАВШЕЕСЯ время перемены (в минутах, с секундами)
     function getBreakTimeLeft(breakInfo) {
         if (!breakInfo) return 0;
         const now = new Date();
@@ -617,6 +617,7 @@
         return parseTime(breakInfo.end) - parseTime(breakInfo.start);
     }
 
+    // ОСТАВШЕЕСЯ время урока
     function getLessonTimeLeft(lessonNum) {
         if (!lessonNum || lessonNum < 1 || lessonNum > LESSON_PERIODS.length) return 0;
         const now = new Date();
@@ -631,29 +632,29 @@
     }
 
     // ===== ОБНОВЛЕНИЕ ПОЛОСОК =====
+    // Полоска = % ОСТАВШЕГОСЯ времени. В начале = 100%, в конце = 0%.
+    // Плавно УМЕНЬШАЕТСЯ по мере течения урока/перемены.
     function updateProgressBars() {
         const currentLessonNum = getCurrentLessonNum();
         const currentBreak = getCurrentBreak();
 
-        // === УРОК: полоска РАСТЁТ от 0% до 100% ===
+        // === УРОК ===
         const lessonRows = document.querySelectorAll('tr.current-lesson');
         if (currentLessonNum > 0 && lessonRows.length > 0) {
             const timeLeft = getLessonTimeLeft(currentLessonNum);
             const totalTime = getLessonTotalTime(currentLessonNum);
-            const elapsed = totalTime - timeLeft;
-            const progress = totalTime > 0 ? (elapsed / totalTime) * 100 : 0;
+            const progress = totalTime > 0 ? (timeLeft / totalTime) * 100 : 0;
             lessonRows.forEach(row => {
                 row.style.setProperty('--lesson-progress', progress + '%');
             });
         }
 
-        // === ПЕРЕМЕНА: полоска РАСТЁТ от 0% до 100% ===
+        // === ПЕРЕМЕНА ===
         const breakRows = document.querySelectorAll('.break-row.current-break');
         if (currentBreak && breakRows.length > 0) {
             const timeLeft = getBreakTimeLeft(currentBreak);
             const totalTime = getBreakTotalTime(currentBreak);
-            const elapsed = totalTime - timeLeft;
-            const progress = totalTime > 0 ? (elapsed / totalTime) * 100 : 0;
+            const progress = totalTime > 0 ? (timeLeft / totalTime) * 100 : 0;
             breakRows.forEach(row => {
                 const timeLabel = row.querySelector('.break-time-left');
                 if (timeLabel) {
@@ -662,7 +663,7 @@
                         : '⏳ 00:00';
                 }
                 const bar = row.querySelector('.break-progress-bar');
-                if (bar) bar.style.width = progress + '%';
+                if (bar) bar.style.setProperty('--break-progress', progress + '%');
             });
         }
     }
@@ -850,12 +851,20 @@
             const isCurrentLesson = (i === currentLessonNum && !isEmpty && isToday);
             const rowClass = isCurrentLesson ? ' class="current-lesson"' : '';
 
+            // Начальная ширина полоски урока = % оставшегося времени
+            let lessonProgress = 100;
+            if (isCurrentLesson) {
+                const tl = getLessonTimeLeft(i);
+                const tt = getLessonTotalTime(i);
+                lessonProgress = tt > 0 ? (tl / tt) * 100 : 0;
+            }
+
             const classesDisplay = isEmpty ? '—' : item.classes.join(', ');
             const subjectsDisplay = isEmpty ? '—' : item.subjects.join(', ');
             const roomsDisplay = isEmpty ? '—' : item.rooms.join(', ');
 
             html += `
-                <tr${rowClass}>
+                <tr${rowClass} style="--lesson-progress: ${lessonProgress}%">
                     <td class="num">${i}</td>
                     <td class="period">
                         <div class="time-start">${period.start}</div>
@@ -875,13 +884,12 @@
                     const timeLeft = isBreakNow ? getBreakTimeLeft(breakInfo) : 0;
                     const timeText = isBreakNow ? `⏳ ${formatTimeWithSeconds(timeLeft)}` : '';
                     const totalTime = isBreakNow ? getBreakTotalTime(breakInfo) : 0;
-                    const elapsed = isBreakNow ? (totalTime - timeLeft) : 0;
-                    const progress = isBreakNow && totalTime > 0 ? (elapsed / totalTime) * 100 : 0;
+                    const progress = isBreakNow && totalTime > 0 ? (timeLeft / totalTime) * 100 : 100;
 
                     html += `
                         <tr${breakRowClass}>
                             <td colspan="5" style="position: relative; overflow: hidden;">
-                                <div class="break-progress-bar" style="width: ${progress}%;"></div>
+                                <div class="break-progress-bar" style="--break-progress: ${progress}%;"></div>
                                 <div class="break-label">
                                     <span class="break-icon">🏃</span>
                                     <span class="break-text">Перемена</span>
