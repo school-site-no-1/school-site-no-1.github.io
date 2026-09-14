@@ -1,46 +1,52 @@
 {
-  "ПН": [
+  "ПН": [],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "9Б",
+      "subject": "Физика",
+      "room": "211"
+    },
     {
       "lesson": 2,
-      "class": "9В",
+      "class": "9А",
       "subject": "Физика",
       "room": "211"
     },
     {
       "lesson": 3,
-      "class": "11Б",
+      "class": "11А",
       "subject": "Физика",
       "room": "211"
     },
     {
       "lesson": 4,
-      "class": "10Б",
+      "class": "7А",
+      "subject": "Физика",
+      "room": "211"
+    },
+    {
+      "lesson": 5,
+      "class": "8Б",
       "subject": "Физика",
       "room": "211"
     },
     {
       "lesson": 6,
-      "class": "7В",
+      "class": "8А",
       "subject": "Физика",
       "room": "211"
     },
     {
       "lesson": 7,
-      "class": "7Б",
-      "subject": "Физика",
-      "room": "211"
-    },
-    {
-      "lesson": 8,
-      "class": "10А",
+      "class": "8В",
       "subject": "Физика",
       "room": "211"
     }
   ],
-  "ВТ": [],
   "СР": [],
   "ЧТ": [],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-09-14 12:42:37"
+  "last_update": "2026-09-14 13:08:21"
 }
