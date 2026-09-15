@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.1">
+<html lang="ru" data-version="v4.3.3">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,13 +29,16 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
             padding: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
         .container {
             width: 100%;
             height: 100vh;
+            height: 100dvh;
             max-width: none;
             background: #ffffff;
             padding: 3px 6px 2px;
@@ -59,7 +62,7 @@
             color: #ffffff;
             padding: 8px 24px;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             z-index: 9999;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -165,7 +168,7 @@
            ЧАСЫ
            ============================ */
         #clockContainer {
-            transform: scale(0.9);
+            transform: scale(0.6);
             transform-origin: top right;
             margin-top: 5pt;
         }
@@ -222,6 +225,7 @@
             gap: 0;
             min-height: 0;
             margin-top: 2px;
+            height: 100%;
         }
         .table-wrapper {
             flex: 1;
@@ -229,79 +233,124 @@
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+            height: 100%;
         }
 
         /* ============================
-           ТАБЛИЦА
+           ТАБЛИЦА (flexbox - равномерное распределение)
            ============================ */
         .desktop-table {
-            display: table !important;
+            display: flex !important;
+            flex-direction: column !important;
             width: 100% !important;
             height: 100% !important;
             border-collapse: collapse;
-            table-layout: fixed;
+            border-spacing: 0;
         }
-        thead th, tbody td, tbody th {
-            border-right: 1.5px solid #d0d7e0;
+        .desktop-table thead,
+        .desktop-table tbody,
+        .desktop-table tr {
+            display: flex !important;
+            width: 100% !important;
         }
-        thead th:last-child, tbody td:last-child, tbody th:last-child {
-            border-right: none;
+        .desktop-table thead {
+            flex-shrink: 0;
+            flex-direction: column;
         }
-        thead th {
-            background: #edf2f7;
-            color: #1a365d;
-            font-weight: 700;
-            text-align: center;
-            border-bottom: 2px solid #2b6cb0;
-            text-transform: uppercase;
-            white-space: nowrap;
+        .desktop-table tbody {
+            flex: 1 !important;
+            flex-direction: column;
+            height: 100% !important;
+            min-height: 0 !important;
+        }
+        .desktop-table tr {
+            flex-shrink: 0;
+            flex: 1 !important;
+            min-height: 0 !important;
+            align-items: stretch;
+        }
+        .desktop-table thead tr {
+            flex-shrink: 0;
+            flex: 0 0 auto !important;
+            min-height: 24px !important;
+        }
+        .desktop-table th,
+        .desktop-table td {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-width: 0;
             overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 1px 1px !important;
-            line-height: 1 !important;
-            min-height: 18px !important;
-            height: auto !important;
-            font-size: clamp(6px, 0.7vw, 7px) !important;
-        }
-        thead th:first-child {
-            width: 20px !important;
-            min-width: 20px !important;
-        }
-        thead th:not(:first-child) {
-            width: auto !important;
-        }
-        tbody td, tbody th {
-            color: #2d3748;
+            padding: 2px 3px !important;
+            border-right: 1.5px solid #d0d7e0;
             border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
             text-align: center;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            line-height: 1.05 !important;
-            padding: 2px 2px !important;
-            min-height: 30px !important;
-            height: auto !important;
-            font-size: clamp(6px, 0.85vw, 9px) !important;
-            overflow-wrap: anywhere;
         }
-        tbody tr:nth-child(even) {
+        .desktop-table th:last-child,
+        .desktop-table td:last-child {
+            border-right: none;
+        }
+        .desktop-table thead th {
+            background: #edf2f7;
+            color: #1a365d;
+            font-weight: 700;
+            border-bottom: 2px solid #2b6cb0;
+            text-transform: uppercase;
+            font-size: clamp(7px, 0.65vw, 10px) !important;
+            line-height: 1.1 !important;
+            padding: 2px 2px !important;
+            min-height: 22px !important;
+            flex: 1;
+        }
+        .desktop-table thead th:first-child {
+            flex: 0 0 28px !important;
+            min-width: 28px !important;
+            max-width: 28px !important;
+        }
+        .desktop-table tbody th {
+            background: #f7fafc;
+            color: #4a5568;
+            font-weight: 700;
+            font-size: clamp(8px, 0.7vw, 11px) !important;
+            flex: 0 0 28px !important;
+            min-width: 28px !important;
+            max-width: 28px !important;
+            border-right: 1.5px solid #d0d7e0;
+        }
+        .desktop-table tbody td {
+            font-size: clamp(8px, 0.7vw, 11px) !important;
+            line-height: 1.1 !important;
+            padding: 2px 3px !important;
+            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .desktop-table tbody tr:nth-child(even) {
             background: #f7fafc;
         }
-        tbody tr:nth-child(odd) {
+        .desktop-table tbody tr:nth-child(odd) {
             background: #ffffff;
         }
-        tbody tr.current-lesson {
+        .desktop-table tbody tr.current-lesson {
             background: #bee3f8 !important;
         }
-        tbody tr.current-lesson td, tbody tr.current-lesson th {
+        .desktop-table tbody tr.current-lesson td,
+        .desktop-table tbody tr.current-lesson th {
             color: #1a365d;
             font-weight: 600;
         }
-        tbody tr.current-lesson .lesson-num {
+        .desktop-table tbody tr.current-lesson .lesson-num {
             color: #2b6cb0;
+        }
+        .desktop-table tbody tr:last-child td,
+        .desktop-table tbody tr:last-child th {
+            border-bottom: none !important;
         }
 
         .lesson-num {
@@ -310,36 +359,32 @@
             font-size: 0.85em !important;
         }
         .subject {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            display: block;
             font-weight: 500;
-            line-height: 1.05 !important;
+            line-height: 1.1 !important;
             color: #2d3748;
             word-wrap: break-word !important;
             word-break: break-word !important;
             white-space: normal !important;
             overflow-wrap: break-word !important;
             hyphens: auto !important;
-            font-size: clamp(8px, 0.85vw, 9px) !important;
-            margin-bottom: 2pt !important;
+            font-size: 0.9em !important;
+            text-align: center;
+            width: 100%;
         }
         .cabinet {
             color: #9a3412 !important;
             display: block;
             font-weight: 700;
-            margin-top: 0px !important;
-            font-size: clamp(7px, 0.75vw, 8px) !important;
+            font-size: 0.65em !important;
             line-height: 1 !important;
             white-space: nowrap;
+            text-align: center;
+            width: 100%;
         }
         .empty-cell {
             color: #cbd5e0;
-            font-size: clamp(6px, 0.75vw, 8px) !important;
-            white-space: normal !important;
-            overflow-wrap: break-word !important;
-            word-break: normal !important;
+            font-size: 0.9em !important;
         }
         .empty-lesson {
             white-space: normal;
@@ -521,6 +566,16 @@
             body, html { background: white !important; overflow: visible !important; }
             .container { border: none !important; box-shadow: none !important; }
             .top-notification { display: none !important; }
+            .desktop-table {
+                display: table !important;
+            }
+            .desktop-table thead,
+            .desktop-table tbody,
+            .desktop-table tr,
+            .desktop-table th,
+            .desktop-table td {
+                display: table-cell !important;
+            }
         }
     </style>
 </head>
@@ -609,7 +664,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.1';
+        var APP_VERSION = '4.3.3';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -1144,7 +1199,6 @@
                 initClock('clockContainer');
             } else {
                 console.warn('clock.js не загружен!');
-                // fallback на случай, если clock.js не загрузился
                 if (typeof initRotatedClock === 'function') {
                     initRotatedClock('clockContainer');
                 }
