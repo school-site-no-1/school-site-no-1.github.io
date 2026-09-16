@@ -1,86 +1,35 @@
 {
-  "ПН": [
-    {
-      "lesson": 3,
-      "class": "4А",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 5,
-      "class": "1А",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    }
-  ],
-  "ВТ": [
-    {
-      "lesson": 4,
-      "class": "1Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 5,
-      "class": "1А",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    }
-  ],
+  "ПН": [],
+  "ВТ": [],
   "СР": [
     {
-      "lesson": 3,
-      "class": "4А",
+      "lesson": 2,
+      "class": "11А",
       "subject": "Физ-ра",
       "room": "с/з"
     },
     {
-      "lesson": 4,
-      "class": "4Б",
+      "lesson": 7,
+      "class": "7А",
       "subject": "Физ-ра",
-      "room": "с/з"
+      "room": "Док"
+    },
+    {
+      "lesson": 8,
+      "class": "7А",
+      "subject": "Физ-ра",
+      "room": "Док"
     }
   ],
   "ЧТ": [
     {
-      "lesson": 3,
-      "class": "4Б",
+      "lesson": 7,
+      "class": "10А",
       "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 4,
-      "class": "1А",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 5,
-      "class": "1Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 6,
-      "class": "4А",
-      "subject": "Физ-ра",
-      "room": "с/з"
+      "room": "311"
     }
   ],
-  "ПТ": [
-    {
-      "lesson": 5,
-      "class": "1Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 6,
-      "class": "4Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    }
-  ],
+  "ПТ": [],
   "СБ": [],
-  "last_update": "2026-09-16 10:58:01"
+  "last_update": "2026-09-16 12:29:56"
 }
