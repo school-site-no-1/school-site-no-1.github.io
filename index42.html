@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.5.3">
+<html lang="ru" data-version="v4.5.4">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +24,8 @@
             min-height: 100dvh;
             overflow-x: hidden;
             overflow-y: auto;
-            background: #b8c2cc;
+            /* Платиново-серый фон */
+            background: #E5E4E2;
             font-family: 'Segoe UI', Arial, sans-serif;
         }
         body {
@@ -40,11 +41,12 @@
             min-height: calc(100dvh - 8px);
             padding: 8px;
             border-radius: 12px;
-            background: #d5dce4;
+            /* Контейнер чуть светлее платинового */
+            background: #EFEEEC;
             display: flex;
             flex-direction: column;
-            border: 1px solid #94a3b8;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            border: 1px solid #B8B8B3;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10);
         }
 
         /* ============================
@@ -55,7 +57,7 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 8px;
-            border-bottom: 2px solid #94a3b8;
+            border-bottom: 2px solid #B8B8B3;
             flex-wrap: nowrap;
             gap: 8px;
             min-height: 44px;
@@ -153,9 +155,9 @@
             gap: 10px;
             padding: 6px 12px;
             margin: 0 0 6px;
-            border: 1px solid #94a3b8;
+            border: 1px solid #B8B8B3;
             border-radius: 8px;
-            background: #e8edf2;
+            background: #F5F4F2;
             color: #1a365d;
             font-size: 14px;
             font-weight: 700;
@@ -193,7 +195,7 @@
         }
         .tiles-view::-webkit-scrollbar { width: 6px; }
         .tiles-view::-webkit-scrollbar-thumb {
-            background: #94a3b8;
+            background: #B8B8B3;
             border-radius: 3px;
         }
 
@@ -203,7 +205,7 @@
             align-items: center;
             justify-content: center;
             padding: 5px 10px;
-            background: #b8c2cc;
+            background: #D6D5D2;
             color: #1a365d;
             font-weight: 700;
             font-size: 14px;
@@ -238,9 +240,9 @@
             font-weight: 700;
             font-size: 13px;
             color: #4a5568;
-            background: #e8edf2;
+            background: #F5F4F2;
             border-radius: 6px;
-            border: 1px solid #94a3b8;
+            border: 1px solid #B8B8B3;
             padding: 2px;
         }
         .tiles-row.current-lesson-row .tile-number {
@@ -263,7 +265,7 @@
             justify-content: center;
             padding: 6px 10px;
             border-radius: 6px;
-            border: 1px solid #94a3b8;
+            border: 1px solid #B8B8B3;
             background: #ffffff;
             text-align: left;
             overflow: hidden;
@@ -323,8 +325,8 @@
 
         /* Пустая плитка */
         .tile-subject.empty-tile {
-            background: #e8edf2;
-            border: 1px dashed #94a3b8;
+            background: #F5F4F2;
+            border: 1px dashed #B8B8B3;
             box-shadow: none;
         }
         .tile-subject.empty-tile .subject-name {
@@ -345,7 +347,7 @@
             flex-shrink: 0;
             min-height: 11px;
             border-radius: 6px;
-            background: #d5dce4;
+            background: #E5E4E2;
             box-shadow: none;
             align-items: stretch;
             margin: 0;
@@ -358,7 +360,7 @@
             top: 0;
             left: 0;
             height: 100%;
-            background: rgba(148, 163, 184, 0.35);
+            background: rgba(184, 184, 179, 0.40);
             width: 0%;
             transition: width 0.5s linear;
             pointer-events: none;
@@ -421,36 +423,36 @@
         }
         .break-content .break-status.status-past {
             color: #a0aec0;
-            background: #b8c2cc;
+            background: #D6D5D2;
         }
         .break-content .break-status.status-now {
             color: #ffffff;
-            background: #64748b;
+            background: #7A7A75;
             animation: pulse-break 1.4s ease-in-out infinite;
         }
         .break-content .break-status.status-future {
             color: #4a5568;
-            background: #b8c2cc;
+            background: #D6D5D2;
         }
         @keyframes pulse-break {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
         .tiles-break-row.current-break-row {
-            background: #b8c2cc;
+            background: #D6D5D2;
             box-shadow: none;
         }
         .tiles-break-row.current-break-row .break-progress {
-            background: rgba(100, 116, 139, 0.35);
+            background: rgba(122, 122, 117, 0.35);
         }
         .tiles-break-row.past-break-row {
             opacity: 0.55;
-            background: #d5dce4;
+            background: #EFEEEC;
             box-shadow: none;
         }
         .tiles-break-row.past-break-row .break-content { color: #a0aec0; }
         .tiles-break-row.past-break-row .break-progress {
-            background: rgba(203, 213, 225, 0.5);
+            background: rgba(214, 213, 210, 0.5);
         }
 
         /* ============================
@@ -459,9 +461,9 @@
         .footer {
             flex-shrink: 0;
             margin-top: 4px;
-            color: #64748b;
+            color: #7A7A75;
             text-align: center;
-            border-top: 1px solid #94a3b8;
+            border-top: 1px solid #B8B8B3;
             padding-top: 4px;
             font-size: 12px;
         }
@@ -738,7 +740,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.5.3';
+        var APP_VERSION = '4.5.4';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -759,7 +761,6 @@
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
         var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
 
-        // Ключ для сохранения выбранного класса
         var STORAGE_KEY_CLASS = 'schedule_selected_class';
 
         var weekDays = {};
@@ -984,7 +985,6 @@
                 var saved = localStorage.getItem(STORAGE_KEY_CLASS);
                 var select = document.getElementById('mobileClassFilter');
                 if (select && saved) {
-                    // Проверяем, что такое значение есть среди option
                     var exists = false;
                     for (var i = 0; i < select.options.length; i++) {
                         if (select.options[i].value === saved) {
@@ -1331,13 +1331,12 @@
                 if (pwaNotification) pwaNotification.style.display = 'block';
             });
 
-            // ⭐ Восстанавливаем выбранный класс из localStorage ДО первого рендера
+            // Восстанавливаем выбранный класс из localStorage до первого рендера
             restoreSelectedClass();
 
             var mobileClassFilter = document.getElementById('mobileClassFilter');
             if (mobileClassFilter) {
                 mobileClassFilter.addEventListener('change', function() {
-                    // ⭐ Сохраняем выбор пользователя
                     saveSelectedClass(this.value);
                     renderTiles();
                     var tilesView = document.getElementById('tilesView');
@@ -1364,7 +1363,7 @@
             });
             window.addEventListener('online', loadData);
 
-            console.log('✅ Плиточное расписание v' + APP_VERSION + ' загружено!');
+            console.log('✅ Плиточное расписание v' + APP_VERSION + ' (платиново-серый) загружено!');
         });
     </script>
 </body>
