@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.5.1">
+<html lang="ru" data-version="v4.5.2">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +24,7 @@
             min-height: 100dvh;
             overflow-x: hidden;
             overflow-y: auto;
-            background: #cbd5e0;
+            background: #b8c2cc;
             font-family: 'Segoe UI', Arial, sans-serif;
         }
         body {
@@ -40,11 +40,11 @@
             min-height: calc(100dvh - 8px);
             padding: 8px;
             border-radius: 12px;
-            background: #e2e8f0;
+            background: #d5dce4;
             display: flex;
             flex-direction: column;
-            border: 1px solid #a0aec0;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10);
+            border: 1px solid #94a3b8;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
         }
 
         /* ============================
@@ -55,7 +55,7 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 8px;
-            border-bottom: 2px solid #a0aec0;
+            border-bottom: 2px solid #94a3b8;
             flex-wrap: nowrap;
             gap: 8px;
             min-height: 44px;
@@ -153,9 +153,9 @@
             gap: 10px;
             padding: 6px 12px;
             margin: 0 0 6px;
-            border: 1px solid #a0aec0;
+            border: 1px solid #94a3b8;
             border-radius: 8px;
-            background: #f7fafc;
+            background: #e8edf2;
             color: #1a365d;
             font-size: 14px;
             font-weight: 700;
@@ -193,7 +193,7 @@
         }
         .tiles-view::-webkit-scrollbar { width: 6px; }
         .tiles-view::-webkit-scrollbar-thumb {
-            background: #a0aec0;
+            background: #94a3b8;
             border-radius: 3px;
         }
 
@@ -203,7 +203,7 @@
             align-items: center;
             justify-content: center;
             padding: 5px 10px;
-            background: #cbd5e0;
+            background: #b8c2cc;
             color: #1a365d;
             font-weight: 700;
             font-size: 14px;
@@ -238,9 +238,9 @@
             font-weight: 700;
             font-size: 13px;
             color: #4a5568;
-            background: #edf2f7;
+            background: #e8edf2;
             border-radius: 6px;
-            border: 1px solid #a0aec0;
+            border: 1px solid #94a3b8;
             padding: 2px;
         }
         .tiles-row.current-lesson-row .tile-number {
@@ -251,8 +251,8 @@
 
         /* ==========================================
            ПЛИТКА ПРЕДМЕТА
-           Верхняя строка: время (вправо)
-           Нижняя часть: предмет, под ним кабинет (слева)
+           Верхняя строка: время (справа) + предмет (слева)
+           Нижняя строка: кабинет
            ========================================== */
         .tile-subject {
             flex: 1 1 0;
@@ -263,38 +263,32 @@
             justify-content: center;
             padding: 6px 10px;
             border-radius: 6px;
-            border: 1px solid #a0aec0;
+            border: 1px solid #94a3b8;
             background: #ffffff;
             text-align: left;
             overflow: hidden;
             line-height: 1.2;
             min-height: 44px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
         .tiles-row.current-lesson-row .tile-subject {
             border-color: #63b3ed;
             box-shadow: 0 2px 6px rgba(43, 108, 176, 0.10);
         }
 
-        /* Верхняя строка: только время, выравнивание ВПРАВО */
-        .tile-subject .lesson-meta {
-            font-weight: 600;
-            font-size: 10px;
-            color: #718096;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            letter-spacing: 0.2px;
-            font-variant-numeric: tabular-nums;
-            margin-bottom: 2px;
-            text-align: right;
+        /* Верхняя строка: предмет + время на одной строке */
+        .tile-subject .subject-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 6px;
+            width: 100%;
+            margin-bottom: 1px;
         }
-
-        /* Предмет — чуть крупнее, слева */
+        /* Предмет — слева, чуть крупнее */
         .tile-subject .subject-name {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             color: #2d3748;
             display: block;
             text-align: left;
@@ -302,6 +296,20 @@
             word-wrap: break-word;
             word-break: break-word;
             hyphens: auto;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        /* Время — справа, на той же строке */
+        .tile-subject .lesson-meta {
+            font-weight: 600;
+            font-size: 10px;
+            color: #718096;
+            display: block;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+            text-align: right;
         }
 
         /* Кабинет — под предметом, слева */
@@ -317,17 +325,17 @@
 
         /* Пустая плитка */
         .tile-subject.empty-tile {
-            background: #f7fafc;
-            border: 1px dashed #a0aec0;
+            background: #e8edf2;
+            border: 1px dashed #94a3b8;
             box-shadow: none;
-        }
-        .tile-subject.empty-tile .lesson-meta {
-            color: #cbd5e0;
         }
         .tile-subject.empty-tile .subject-name {
             color: #a0aec0;
             font-weight: 400;
             font-style: italic;
+        }
+        .tile-subject.empty-tile .lesson-meta {
+            color: #a0aec0;
         }
 
         /* ==========================================
@@ -339,7 +347,7 @@
             flex-shrink: 0;
             min-height: 11px;
             border-radius: 6px;
-            background: #e2e8f0;
+            background: #d5dce4;
             box-shadow: none;
             align-items: stretch;
             margin: 0;
@@ -358,7 +366,6 @@
             pointer-events: none;
             z-index: 0;
         }
-        /* Блок с иконкой скрыт */
         .break-label {
             display: none !important;
         }
@@ -386,7 +393,6 @@
             overflow: hidden;
             white-space: nowrap;
         }
-        /* Слово «Перемена» скрыто */
         .break-content .break-title { display: none !important; }
         .break-content .break-time {
             font-weight: 600;
@@ -419,40 +425,40 @@
         }
         .break-content .break-status.status-past {
             color: #a0aec0;
-            background: #cbd5e0;
+            background: #b8c2cc;
         }
         .break-content .break-status.status-now {
             color: #ffffff;
-            background: #718096;
+            background: #64748b;
             animation: pulse-break 1.4s ease-in-out infinite;
         }
         .break-content .break-status.status-future {
             color: #4a5568;
-            background: #cbd5e0;
+            background: #b8c2cc;
         }
         @keyframes pulse-break {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
 
-        /* Текущая перемена — серая подсветка без рамки */
+        /* Текущая перемена */
         .tiles-break-row.current-break-row {
-            background: #cbd5e0;
+            background: #b8c2cc;
             box-shadow: none;
         }
         .tiles-break-row.current-break-row .break-progress {
-            background: rgba(113, 128, 150, 0.35);
+            background: rgba(100, 116, 139, 0.35);
         }
 
-        /* Прошедшая перемена — приглушённая, без рамки */
+        /* Прошедшая перемена */
         .tiles-break-row.past-break-row {
             opacity: 0.55;
-            background: #edf2f7;
+            background: #d5dce4;
             box-shadow: none;
         }
         .tiles-break-row.past-break-row .break-content { color: #a0aec0; }
         .tiles-break-row.past-break-row .break-progress {
-            background: rgba(226, 232, 240, 0.5);
+            background: rgba(203, 213, 225, 0.5);
         }
 
         /* ============================
@@ -461,9 +467,9 @@
         .footer {
             flex-shrink: 0;
             margin-top: 4px;
-            color: #718096;
+            color: #64748b;
             text-align: center;
-            border-top: 1px solid #a0aec0;
+            border-top: 1px solid #94a3b8;
             padding-top: 4px;
             font-size: 12px;
         }
@@ -603,8 +609,8 @@
             .tiles-class-header { font-size: 12px; padding: 4px 8px; }
             .tile-number { flex: 0 0 26px; min-width: 26px; max-width: 26px; font-size: 11px; }
             .tile-subject { padding: 4px 6px; min-height: 38px; }
+            .tile-subject .subject-name { font-size: 13px; }
             .tile-subject .lesson-meta { font-size: 8px; }
-            .tile-subject .subject-name { font-size: 12px; }
             .tile-subject .subject-room { font-size: 10px; }
             .tiles-break-row { min-height: 10px; }
             .break-content { font-size: 9px; padding: 0 6px; }
@@ -740,7 +746,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.5.1';
+        var APP_VERSION = '4.5.2';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -753,7 +759,6 @@
             { num: 9, start: "15:25", end: "16:05", break: "10" }
         ];
 
-        // Иконки перемен (по индексу: 0 — первая перемена, 1 — вторая и т.д.)
         var BREAK_ICONS = ['🍎', '💧', '☕', '🍲', '🍛', '☕', '🧃', '🥐'];
 
         var MAX_LESSONS = 9;
@@ -769,11 +774,8 @@
         var deferredPrompt = null;
         var lastBoardRenderKey = '';
         var dataRequestInFlight = false;
-        var DATA_REFRESH_INTERVAL_MS = 2400000; // 40 минут
+        var DATA_REFRESH_INTERVAL_MS = 2400000;
 
-        // ================================================================
-        // УВЕДОМЛЕНИЯ
-        // ================================================================
         function showNotification(message, type) {
             var el = document.getElementById('notification');
             var msg = document.getElementById('notificationMessage');
@@ -784,9 +786,6 @@
             el._timeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
         }
 
-        // ================================================================
-        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ВРЕМЕНИ
-        // ================================================================
         function parseTime(timeStr) {
             var parts = timeStr.split(':');
             return parseInt(parts[0]) * 60 + parseInt(parts[1]);
@@ -970,9 +969,6 @@
             return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
-        // ================================================================
-        // ЗАГРУЗКА schedule.primary.json
-        // ================================================================
         function loadData() {
             if (dataRequestInFlight) return;
             dataRequestInFlight = true;
@@ -1117,9 +1113,6 @@
             });
         }
 
-        // ================================================================
-        // ОТРИСОВКА ПЛИТОК
-        // ================================================================
         function renderTiles() {
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
 
@@ -1172,16 +1165,16 @@
                     var timeEnd = LESSON_TIMES[i].end;
                     var timeRange = timeStart + '–' + timeEnd;
 
-                    // --- Ряд с уроком ---
                     html += '<div class="tiles-row' + (isCurrent ? ' current-lesson-row' : '') + '" role="row">';
                     html += '<div class="tile-number" role="rowheader">' + lessonNum + '</div>';
 
                     if (hasContent) {
                         html += '<div class="tile-subject" role="cell">';
-                        // Верхняя строка: время, выравнивание вправо
-                        html += '<span class="lesson-meta">' + timeRange + '</span>';
-                        // Предмет
+                        // Верхняя строка: предмет слева + время справа
+                        html += '<div class="subject-line">';
                         html += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
+                        html += '<span class="lesson-meta">' + timeRange + '</span>';
+                        html += '</div>';
                         // Кабинет под предметом
                         if (cabinet && cabinet.trim() !== '') {
                             html += '<span class="subject-room">каб. ' + escapeHTML(cabinet) + '</span>';
@@ -1189,13 +1182,14 @@
                         html += '</div>';
                     } else {
                         html += '<div class="tile-subject empty-tile" role="cell">';
-                        html += '<span class="lesson-meta">' + timeRange + '</span>';
+                        html += '<div class="subject-line">';
                         html += '<span class="subject-name">—</span>';
+                        html += '<span class="lesson-meta">' + timeRange + '</span>';
+                        html += '</div>';
                         html += '</div>';
                     }
                     html += '</div>';
 
-                    // --- Статусбар перемены (без слова «Перемена») ---
                     if (lessonNum < MAX_LESSONS) {
                         var breakInfo = getBreakInfo(i);
                         if (breakInfo) {
@@ -1225,7 +1219,6 @@
                             }
                             html += '<div class="break-content" role="cell">';
                             html += '<div class="break-left">';
-                            // Слово «Перемена» убрано, оставлено только время
                             html += '<span class="break-time">' + breakInfo.start + ' – ' + breakInfo.end + '</span>';
                             html += '</div>';
                             html += '<div class="break-right">';
@@ -1289,9 +1282,6 @@
             }
         }
 
-        // ================================================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof initClock === 'function') {
                 initClock('clockContainer');
