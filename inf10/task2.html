@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задача 1 — решение на Python</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f5f7;
+    color: #2c3e50;
+    line-height: 1.65;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  header {
+    margin-bottom: 30px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e1e4e8;
+  }
+
+  header h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+
+  header p {
+    margin: 0;
+    color: #555;
+    font-size: 15px;
+  }
+
+  h2 {
+    font-size: 20px;
+    margin: 36px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid #3498db;
+  }
+
+  h3 {
+    font-size: 17px;
+    margin: 24px 0 10px;
+    color: #2c3e50;
+  }
+
+  p { margin: 10px 0; font-size: 15px; }
+
+  ul, ol {
+    margin: 10px 0;
+    padding-left: 24px;
+    font-size: 15px;
+  }
+
+  li { margin-bottom: 6px; }
+
+  code {
+    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+    background: #eef1f4;
+    color: #c0392b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  /* Код с пояснениями в две колонки */
+  .code-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e2a38;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin: 14px 0;
+    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .code-table td {
+    padding: 8px 16px;
+    vertical-align: top;
+    border-bottom: 1px solid #2c3e50;
+  }
+
+  .code-table tr:last-child td { border-bottom: none; }
+
+  .code-table td.line-no {
+    width: 40px;
+    text-align: right;
+    color: #6272a4;
+    user-select: none;
+    padding-right: 8px;
+  }
+
+  .code-table td.code-cell {
+    color: #e6edf3;
+    white-space: pre;
+    width: 45%;
+  }
+
+  .code-table td.comment-cell {
+    color: #8fa6c0;
+    font-style: italic;
+    width: 45%;
+  }
+
+  .kw  { color: #ff79c6; }
+  .fn  { color: #50fa7b; }
+  .num { color: #bd93f9; }
+  .str { color: #f1fa8c; }
+  .com { color: #6272a4; font-style: italic; }
+
+  .output {
+    background: #f6f8fa;
+    color: #24292e;
+    border-left: 4px solid #27ae60;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+
+  .note {
+    background: #fff8e1;
+    border-left: 4px solid #f39c12;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+
+  .info {
+    background: #e8f4fd;
+    border-left: 4px solid #3498db;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+
+  table.simple {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  table.simple th, table.simple td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+  }
+
+  table.simple th {
+    background: #3498db;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  table.simple tr:last-child td { border-bottom: none; }
+
+  .center { text-align: center; }
+
+  @media (max-width: 700px) {
+    header h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    .code-table { font-size: 12px; }
+    .code-table td.code-cell,
+    .code-table td.comment-cell { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Задача 1 — решение на Python</h1>
+    <p>Идентификаторы по 7 символов, алфавит из 38 знаков, 250 идентификаторов.</p>
+  </header>
+
+  <!-- ================= УСЛОВИЕ ================= -->
+  <h2>Условие</h2>
+  <p>В школьной базе данных каждый ученик получил идентификатор, состоящий ровно из <b>7 символов</b>. В качестве символов используются все заглавные буквы русского алфавита, кроме «Ё», «Й», «Ъ» и «Ь» (29 букв), а также все десятичные цифры, кроме <b>0</b> (9 цифр). Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>250</b> идентификаторов. Ответ выразите в килобайтах.</p>
+
+  <!-- ================= ПОЛНЫЙ КОД С ПОЯСНЕНИЯМИ ================= -->
+  <h2>Полный код с пояснениями</h2>
+
+  <table class="code-table">
+    <tr>
+      <td class="line-no">1</td>
+      <td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td>
+      <td class="comment-cell">объявляем функцию solve, чтобы код был оформлен аккуратно</td>
+    </tr>
+    <tr>
+      <td class="line-no">2</td>
+      <td class="code-cell">    alphabet = <span class="num">29</span> + <span class="num">9</span></td>
+      <td class="comment-cell">мощность алфавита: 29 букв (33 − 4 исключённых) + 9 цифр (1–9) = 38 символов</td>
+    </tr>
+    <tr>
+      <td class="line-no">3</td>
+      <td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td>
+      <td class="comment-cell">минимальное число бит на 1 символ: (38−1).bit_length() = 37.bit_length() = 6 бит</td>
+    </tr>
+    <tr>
+      <td class="line-no">4</td>
+      <td class="code-cell">    bits_per_id = <span class="num">7</span> * bits</td>
+      <td class="comment-cell">бит на один идентификатор: 7 символов × 6 бит = 42 бита</td>
+    </tr>
+    <tr>
+      <td class="line-no">5</td>
+      <td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td>
+      <td class="comment-cell">байт на идентификатор: (42+7)//8 = 49//8 = 6 байт (округление вверх)</td>
+    </tr>
+    <tr>
+      <td class="line-no">6</td>
+      <td class="code-cell">    total_bytes = <span class="num">250</span> * bytes_per_id</td>
+      <td class="comment-cell">объём для 250 идентификаторов: 250 × 6 = 1500 байт</td>
+    </tr>
+    <tr>
+      <td class="line-no">7</td>
+      <td class="code-cell">    total_kb = total_bytes / <span class="num">1024</span></td>
+      <td class="comment-cell">перевод в килобайты: 1500 / 1024 ≈ 1,4648 Кбайт</td>
+    </tr>
+    <tr>
+      <td class="line-no">8</td>
+      <td class="code-cell">    <span class="fn">print</span>(<span class="str">f"Ответ: {total_bytes}/1024 ≈ {total_kb:.4f} Кбайт"</span>)</td>
+      <td class="comment-cell">вывод результата: f-строка подставляет значения, .4f — 4 знака после запятой</td>
+    </tr>
+    <tr>
+      <td class="line-no">9</td>
+      <td class="code-cell"><span class="fn">solve</span>()</td>
+      <td class="comment-cell">вызов функции — запускаем решение</td>
+    </tr>
+  </table>
+
+  <h3>Вывод программы</h3>
+  <div class="output">Ответ: 1500/1024 ≈ 1.4648 Кбайт</div>
+
+  <!-- ================= ФОРМУЛА ОКРУГЛЕНИЯ ================= -->
+  <h2>Формула округления вверх для байт</h2>
+
+  <p>В Python оператор <code>//</code> — это <b>целочисленное деление с округлением вниз</b> (floor). Чтобы округлить <b>вверх</b> (ceil) для положительных чисел, используют приём:</p>
+
+  <div class="info" style="text-align:center;font-size:18px;">
+    <code>ceil(x / n) == (x + n - 1) // n</code>
+  </div>
+
+  <p>Для перевода бит в байты <code>n = 8</code>, значит:</p>
+
+  <div class="info" style="text-align:center;font-size:18px;">
+    <code>bytes = (bits + 7) // 8</code>
+  </div>
+
+  <h3>Проверка на примерах</h3>
+  <table class="simple">
+    <thead>
+      <tr>
+        <th>bits</th>
+        <th>Точный расчёт</th>
+        <th>Формула (bits+7)//8</th>
+        <th>Верно?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>42</td>
+        <td>42/8 = 5,25 → 6</td>
+        <td>(42+7)//8 = 49//8 = 6</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>48</td>
+        <td>48/8 = 6,00 → 6</td>
+        <td>(48+7)//8 = 55//8 = 6</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>36</td>
+        <td>36/8 = 4,50 → 5</td>
+        <td>(36+7)//8 = 43//8 = 5</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>32</td>
+        <td>32/8 = 4,00 → 4</td>
+        <td>(32+7)//8 = 39//8 = 4</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>33</td>
+        <td>33/8 = 4,125 → 5</td>
+        <td>(33+7)//8 = 40//8 = 5</td>
+        <td>✅</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <b>Почему работает?</b> Если <code>bits</code> уже кратно 8, то <code>bits + 7</code> даёт число, которое при делении на 8 даёт то же частное (потому что остаток 7 «съедается»). Если не кратно — добавка 7 гарантированно переводит результат в следующее целое.
+  </div>
+
+  <h3>Альтернативы</h3>
+  <table class="simple">
+    <thead>
+      <tr>
+        <th>Способ</th>
+        <th>Код</th>
+        <th>Комментарий</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Формула с +7</td>
+        <td><code>(bits + 7) // 8</code></td>
+        <td>Классика, работает всегда</td>
+      </tr>
+      <tr>
+        <td>Модуль math</td>
+        <td><code>math.ceil(bits / 8)</code></td>
+        <td>Требует <code>import math</code>, чуть медленнее</td>
+      </tr>
+      <tr>
+        <td>Через divmod</td>
+        <td><code>divmod(bits, 8)[0] + (1 if bits % 8 else 0)</code></td>
+        <td>Громоздко, но наглядно</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ================= ИТОГ ================= -->
+  <h2>Итог</h2>
+  <div class="output">Ответ: 1500 байт = 1500/1024 ≈ 1,4648 Кбайт</div>
+
+</div>
+
+</body>
+</html>
