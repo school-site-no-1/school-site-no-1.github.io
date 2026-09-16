@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.5.2">
+<html lang="ru" data-version="v4.5.3">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -251,7 +251,7 @@
 
         /* ==========================================
            ПЛИТКА ПРЕДМЕТА
-           Верхняя строка: время (справа) + предмет (слева)
+           Верхняя строка: предмет (слева) + время (справа)
            Нижняя строка: кабинет
            ========================================== */
         .tile-subject {
@@ -285,7 +285,6 @@
             width: 100%;
             margin-bottom: 1px;
         }
-        /* Предмет — слева, чуть крупнее */
         .tile-subject .subject-name {
             font-weight: 600;
             font-size: 15px;
@@ -299,7 +298,6 @@
             flex: 1 1 auto;
             min-width: 0;
         }
-        /* Время — справа, на той же строке */
         .tile-subject .lesson-meta {
             font-weight: 600;
             font-size: 10px;
@@ -339,7 +337,7 @@
         }
 
         /* ==========================================
-           СТАТУСБАР ПЕРЕМЕНЫ — БЕЗ СЛОВА «ПЕРЕМЕНА»
+           СТАТУСБАР ПЕРЕМЕНЫ
            ========================================== */
         .tiles-break-row {
             display: flex;
@@ -366,9 +364,7 @@
             pointer-events: none;
             z-index: 0;
         }
-        .break-label {
-            display: none !important;
-        }
+        .break-label { display: none !important; }
         .break-content {
             flex: 1 1 0;
             min-width: 0;
@@ -440,8 +436,6 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
-
-        /* Текущая перемена */
         .tiles-break-row.current-break-row {
             background: #b8c2cc;
             box-shadow: none;
@@ -449,8 +443,6 @@
         .tiles-break-row.current-break-row .break-progress {
             background: rgba(100, 116, 139, 0.35);
         }
-
-        /* Прошедшая перемена */
         .tiles-break-row.past-break-row {
             opacity: 0.55;
             background: #d5dce4;
@@ -746,7 +738,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.5.2';
+        var APP_VERSION = '4.5.3';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -766,6 +758,9 @@
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
         var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+
+        // Ключ для сохранения выбранного класса
+        var STORAGE_KEY_CLASS = 'schedule_selected_class';
 
         var weekDays = {};
         var classNames = [];
@@ -969,6 +964,48 @@
             return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
+        // ================================================================
+        // СОХРАНЕНИЕ / ВОССТАНОВЛЕНИЕ ВЫБРАННОГО КЛАССА
+        // ================================================================
+        function saveSelectedClass(value) {
+            try {
+                if (value === 'all') {
+                    localStorage.removeItem(STORAGE_KEY_CLASS);
+                } else {
+                    localStorage.setItem(STORAGE_KEY_CLASS, value);
+                }
+            } catch (e) {
+                console.warn('Не удалось сохранить выбранный класс:', e);
+            }
+        }
+
+        function restoreSelectedClass() {
+            try {
+                var saved = localStorage.getItem(STORAGE_KEY_CLASS);
+                var select = document.getElementById('mobileClassFilter');
+                if (select && saved) {
+                    // Проверяем, что такое значение есть среди option
+                    var exists = false;
+                    for (var i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === saved) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (exists) {
+                        select.value = saved;
+                        return saved;
+                    }
+                }
+            } catch (e) {
+                console.warn('Не удалось восстановить выбранный класс:', e);
+            }
+            return 'all';
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА schedule.primary.json
+        // ================================================================
         function loadData() {
             if (dataRequestInFlight) return;
             dataRequestInFlight = true;
@@ -1170,12 +1207,10 @@
 
                     if (hasContent) {
                         html += '<div class="tile-subject" role="cell">';
-                        // Верхняя строка: предмет слева + время справа
                         html += '<div class="subject-line">';
                         html += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
                         html += '<span class="lesson-meta">' + timeRange + '</span>';
                         html += '</div>';
-                        // Кабинет под предметом
                         if (cabinet && cabinet.trim() !== '') {
                             html += '<span class="subject-room">каб. ' + escapeHTML(cabinet) + '</span>';
                         }
@@ -1296,9 +1331,14 @@
                 if (pwaNotification) pwaNotification.style.display = 'block';
             });
 
+            // ⭐ Восстанавливаем выбранный класс из localStorage ДО первого рендера
+            restoreSelectedClass();
+
             var mobileClassFilter = document.getElementById('mobileClassFilter');
             if (mobileClassFilter) {
                 mobileClassFilter.addEventListener('change', function() {
+                    // ⭐ Сохраняем выбор пользователя
+                    saveSelectedClass(this.value);
                     renderTiles();
                     var tilesView = document.getElementById('tilesView');
                     if (tilesView) tilesView.scrollTo({ top: 0, behavior: 'smooth' });
