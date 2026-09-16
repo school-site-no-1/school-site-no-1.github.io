@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ru" data-version="v4.3.9">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание 5-11 (компактные перемены)</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2b6cb0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <style>
+        /* ============================
+           БАЗОВЫЕ СТИЛИ
+           ============================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            padding: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            max-width: none;
+            background: #ffffff;
+            padding: 3px 6px 2px;
+            border-radius: 0;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            box-shadow: none;
+            overflow: hidden;
+        }
+
+        /* ============================
+           УВЕДОМЛЕНИЕ СВЕРХУ
+           ============================ */
+        .top-notification {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #38a169;
+            color: #ffffff;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .top-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .top-notification.error { background: #e53e3e; }
+        .top-notification.warning { background: #d69e2e; }
+
+        /* ============================
+           ШАПКА
+           ============================ */
+        .header {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: none !important;
+            padding-bottom: 1px;
+            flex-wrap: nowrap;
+            gap: 4px;
+            min-height: 35px;
+            max-height: 35px;
+        }
+        .header-left { display: none !important; }
+        .header-banner { display: none !important; }
+        .mobile-banner-text { display: none !important; }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            flex: 1 1 auto;
+            justify-content: flex-start;
+        }
+        .header-center .day-indicator { display: none !important; }
+        .header-center .divider { display: none !important; }
+
+        .period {
+            color: #e65100;
+            font-weight: 600;
+            min-height: 1.4em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.1;
+        }
+        .period .line1 { font-size: 10px; line-height: 1.1; }
+        .period .line2 { font-size: 9px; font-weight: 500; color: #d45c00; }
+
+        .header-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .header-right .schedule-updated {
+            color: #718096;
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 0 6px;
+            border-radius: 8px;
+            font-size: 8px;
+            margin-top: 0px;
+        }
+        .header-right .schedule-updated.error {
+            color: #e53e3e;
+            background: #fff5f5;
+        }
+
+        /* ============================
+           ЧАСЫ
+           ============================ */
+        #clockContainer {
+            transform: scale(0.6);
+            transform-origin: top right;
+            margin-top: 5pt;
+        }
+        .clock-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .clock-wrapper svg {
+            width: 19px;
+            height: 19px;
+            transform: rotate(0deg) !important;
+            transform-origin: center;
+        }
+        .clock-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            white-space: nowrap;
+        }
+        .clock-text .digital-time {
+            font-size: 0.45em;
+            color: #2b6cb0;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.1;
+        }
+        .clock-text .date {
+            font-size: 0.55em;
+            color: #2d3748;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+        .clock-text .countdown { display: none !important; }
+        .clock-day-row {
+            font-size: 0.4em;
+            color: #4a5568;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+        .clock-day-row .day-name {
+            color: #2b6cb0;
+            font-weight: 700;
+        }
+
+        /* ============================
+           ОСНОВНАЯ ЧАСТЬ
+           ============================ */
+        .main-layout {
+            flex: 1;
+            display: flex;
+            gap: 0;
+            min-height: 0;
+            margin-top: 2px;
+            height: 100%;
+        }
+        .table-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* ==========================================
+           ПЛИТОЧНАЯ СЕТКА
+           ========================================== */
+        .tiles-grid {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            gap: 4px;
+            padding: 2px 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 #f0f4f8;
+        }
+        .tiles-grid::-webkit-scrollbar { width: 6px; }
+        .tiles-grid::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+
+        /* Строка-заголовок с классами */
+        .tiles-header-row {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: #ffffff;
+            padding-bottom: 2px;
+            border-bottom: 2px solid #2b6cb0;
+        }
+        .tiles-header-row .tile-header {
+            flex: 1 1 0;
+            min-width: 0;
+            background: #edf2f7;
+            color: #1a365d;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: clamp(8px, 0.75vw, 12px);
+            padding: 4px 2px;
+            text-align: center;
+            border-radius: 6px 6px 0 0;
+            letter-spacing: 0.3px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tiles-header-row .tile-header:first-child {
+            flex: 0 0 36px;
+            min-width: 36px;
+            max-width: 36px;
+            background: #e2e8f0;
+            color: #4a5568;
+            font-size: clamp(8px, 0.7vw, 11px);
+        }
+
+        /* Ряд с уроками */
+        .tiles-row {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            min-height: 0;
+            border-radius: 8px;
+            transition: background 0.15s, opacity 0.2s;
+        }
+        .tiles-row.current-lesson-row {
+            background: #ebf8ff;
+            box-shadow: 0 0 0 2px #3182ce inset;
+        }
+
+        /* Прошедший урок — затемнение */
+        .tiles-row.past-lesson-row {
+            opacity: 0.45;
+            filter: grayscale(0.45);
+        }
+        .tiles-row.past-lesson-row .tile-number {
+            background: #edf2f7;
+            color: #a0aec0;
+            border-color: #e2e8f0;
+        }
+        .tiles-row.past-lesson-row .tile-subject {
+            background: #f7fafc;
+            border-color: #e2e8f0;
+        }
+        .tiles-row.past-lesson-row .tile-subject .subject-name {
+            color: #718096;
+        }
+        .tiles-row.past-lesson-row .tile-subject .subject-room {
+            color: #a0aec0;
+        }
+        .tiles-row.past-lesson-row .tile-subject.empty-tile {
+            background: #fafbfc;
+            border-color: #e2e8f0;
+        }
+
+        /* Номер урока */
+        .tile-number {
+            flex: 0 0 36px;
+            min-width: 36px;
+            max-width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: clamp(10px, 0.85vw, 14px);
+            color: #4a5568;
+            background: #f7fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            padding: 2px;
+            line-height: 1.1;
+        }
+        .tiles-row.current-lesson-row .tile-number {
+            background: #bee3f8;
+            color: #1a365d;
+            border-color: #90cdf4;
+        }
+
+        /* Плитка предмета */
+        .tile-subject {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 3px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            transition: background 0.15s, border-color 0.15s;
+            text-align: center;
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+            line-height: 1.15;
+            min-height: 42px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .tiles-row.current-lesson-row .tile-subject {
+            background: #ffffff;
+            border-color: #90cdf4;
+            box-shadow: 0 2px 6px rgba(43, 108, 176, 0.10);
+        }
+
+        .tile-subject .subject-name {
+            font-weight: 500;
+            font-size: clamp(8px, 0.72vw, 12px);
+            color: #2d3748;
+            display: block;
+            line-height: 1.2;
+        }
+        .tile-subject .subject-room {
+            font-weight: 700;
+            font-size: clamp(7px, 0.6vw, 10px);
+            color: #9a3412;
+            display: block;
+            margin-top: 2px;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+
+        /* Пустая плитка */
+        .tile-subject.empty-tile {
+            background: #fafbfc;
+            border: 1px dashed #d0d7e0;
+            color: #a0aec0;
+            font-size: clamp(8px, 0.7vw, 11px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+        }
+        .tile-subject.empty-tile .empty-label {
+            font-size: 0.9em;
+            color: #cbd5e0;
+            font-weight: 400;
+        }
+
+        /* ==========================================
+           СТАТУСБАР ПЕРЕМЕНЫ — КОМПАКТНЫЙ,
+           БЕЗ ФОНА, БЕЗ ОБВОДКИ, БЕЗ ОКРУГЛЕНИЙ,
+           БЕЗ ИКОНКИ ЯБЛОКА
+           ========================================== */
+        .tiles-break-row {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            /* Высота строки перемены уменьшена примерно в 3 раза */
+            min-height: 9px;
+            max-height: 9px;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+            align-items: stretch;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            transition: opacity 0.2s;
+        }
+
+        /* Прогресс-полоса перемены (появляется только когда перемена идёт) */
+        .tiles-break-row .break-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(221, 107, 32, 0.25);
+            width: 0%;
+            transition: width 0.5s linear;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Метка слева (⏸) */
+        .break-label {
+            flex: 0 0 36px;
+            min-width: 36px;
+            max-width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 8px;
+            color: #975a16;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            line-height: 1;
+            z-index: 1;
+        }
+
+        /* Основное содержимое статусбара */
+        .break-content {
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+            border-radius: 0;
+            color: #975a16;
+            font-weight: 600;
+            font-size: 7px;
+            letter-spacing: 0.2px;
+            z-index: 1;
+            gap: 4px;
+            flex-wrap: nowrap;
+            line-height: 1;
+        }
+        .break-content .break-left {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .break-content .break-title {
+            font-weight: 700;
+            color: #975a16;
+            white-space: nowrap;
+        }
+        .break-content .break-time {
+            font-weight: 600;
+            color: #b7791f;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            font-size: 0.95em;
+        }
+        .break-content .break-right {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+        .break-content .break-duration {
+            font-weight: 700;
+            color: #b7791f;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .break-content .break-status {
+            font-size: 0.85em;
+            font-weight: 700;
+            padding: 0;
+            border-radius: 0;
+            white-space: nowrap;
+        }
+        .break-content .break-status.status-past {
+            color: #a0aec0;
+        }
+        .break-content .break-status.status-now {
+            color: #dd6b20;
+            animation: pulse-break 1.4s ease-in-out infinite;
+        }
+        .break-content .break-status.status-future {
+            color: #2b6cb0;
+        }
+
+        @keyframes pulse-break {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Текущая перемена — только цвет текста, без фона и обводки */
+        .tiles-break-row.current-break-row .break-label {
+            color: #dd6b20;
+        }
+        .tiles-break-row.current-break-row .break-content {
+            color: #dd6b20;
+        }
+        .tiles-break-row.current-break-row .break-title {
+            color: #dd6b20;
+        }
+        .tiles-break-row.current-break-row .break-time {
+            color: #dd6b20;
+        }
+        .tiles-break-row.current-break-row .break-duration {
+            color: #dd6b20;
+        }
+
+        /* Прошедшая перемена — приглушение */
+        .tiles-break-row.past-break-row {
+            opacity: 0.55;
+        }
+        .tiles-break-row.past-break-row .break-label {
+            color: #a0aec0;
+        }
+        .tiles-break-row.past-break-row .break-content {
+            color: #a0aec0;
+        }
+        .tiles-break-row.past-break-row .break-title {
+            color: #a0aec0;
+        }
+        .tiles-break-row.past-break-row .break-time {
+            color: #a0aec0;
+        }
+        .tiles-break-row.past-break-row .break-duration {
+            color: #a0aec0;
+        }
+        .tiles-break-row.past-break-row .break-progress {
+            background: transparent;
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 700px) {
+            .tiles-header-row .tile-header {
+                font-size: 7px;
+                padding: 3px 1px;
+            }
+            .tiles-header-row .tile-header:first-child {
+                flex: 0 0 28px;
+                min-width: 28px;
+                max-width: 28px;
+                font-size: 7px;
+            }
+            .tile-number {
+                flex: 0 0 28px;
+                min-width: 28px;
+                max-width: 28px;
+                font-size: 9px;
+            }
+            .tile-subject {
+                padding: 3px 2px;
+                min-height: 34px;
+            }
+            .tile-subject .subject-name { font-size: 7px; }
+            .tile-subject .subject-room { font-size: 6px; }
+            .tiles-grid { gap: 2px; }
+            .tiles-row { gap: 2px; }
+            .tiles-break-row {
+                gap: 2px;
+                min-height: 7px;
+                max-height: 7px;
+            }
+            .break-label {
+                flex: 0 0 28px;
+                min-width: 28px;
+                max-width: 28px;
+                font-size: 7px;
+            }
+            .break-content {
+                font-size: 6px;
+                padding: 0 4px;
+                gap: 2px;
+            }
+            .break-content .break-time { font-size: 0.9em; }
+            .break-content .break-duration { font-size: 0.85em; }
+            .break-content .break-status { font-size: 0.8em; }
+        }
+
+        @media (max-width: 480px) {
+            .tiles-header-row .tile-header {
+                font-size: 6px;
+                padding: 2px 0;
+            }
+            .tiles-header-row .tile-header:first-child {
+                flex: 0 0 22px;
+                min-width: 22px;
+                max-width: 22px;
+                font-size: 6px;
+            }
+            .tile-number {
+                flex: 0 0 22px;
+                min-width: 22px;
+                max-width: 22px;
+                font-size: 8px;
+            }
+            .tile-subject .subject-name { font-size: 6px; }
+            .tile-subject .subject-room { font-size: 5.5px; }
+            .tiles-row.current-lesson-row {
+                box-shadow: 0 0 0 1.5px #3182ce inset;
+            }
+            .tiles-break-row {
+                min-height: 6px;
+                max-height: 6px;
+            }
+            .break-label {
+                flex: 0 0 22px;
+                min-width: 22px;
+                max-width: 22px;
+                font-size: 6px;
+            }
+            .break-content { font-size: 5.5px; padding: 0 2px; gap: 2px; }
+            .break-content .break-title { display: none; }
+            .break-content .break-status { font-size: 0.7em; }
+            .break-content .break-duration { font-size: 0.7em; }
+        }
+
+        /* ============================
+           ПОДВАЛ
+           ============================ */
+        .footer {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 20px;
+            color: #a0aec0;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 2px;
+            margin-top: 2px;
+            font-size: 8px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .footer .version {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .footer-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            flex-wrap: wrap;
+        }
+        .footer-status .schedule-updated {
+            color: #475467 !important;
+            font-size: 8px;
+            padding: 0 4px;
+            background: transparent;
+            border-radius: 0;
+        }
+        .footer-status .board-sync {
+            font-size: 8px;
+            padding: 0 4px;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+        }
+        .footer-status .sound-toggle {
+            font-size: 8px;
+            padding: 0 4px;
+            border-width: 1px;
+            display: none !important;
+        }
+        .footer-status .board-sync::before {
+            width: 4px;
+            height: 4px;
+        }
+
+        .btn-refresh {
+            border: 1px solid #2b6cb0;
+            border-radius: 4px;
+            background: #ffffff;
+            color: #1a365d;
+            padding: 1px 8px;
+            font: inherit;
+            font-size: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            line-height: 1.4;
+        }
+        .btn-refresh:hover { background: #ebf8ff; }
+        .btn-refresh:active { background: #bee3f8; }
+        .btn-refresh.loading { opacity: 0.6; pointer-events: none; }
+
+        /* ============================
+           ЗАГРУЗКА
+           ============================ */
+        .loading-overlay {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #4a5568;
+            font-weight: 300;
+            flex-direction: column;
+            gap: 6px;
+            padding: 30px 10px;
+        }
+        .loading-overlay .sub {
+            font-size: 0.6em;
+            color: #a0aec0;
+        }
+
+        /* ============================
+           PWA
+           ============================ */
+        #pwaNotification {
+            display: none;
+            background: #ebf8ff;
+            border: 1px solid #2b6cb0;
+            border-radius: 8px;
+            padding: 8px 14px;
+            margin: 4px 0;
+            text-align: center;
+        }
+        #pwaNotification p {
+            margin: 0;
+            color: #2b6cb0;
+            font-size: 0.85rem;
+        }
+        #pwaNotification .small { font-size: 0.75rem; }
+
+        /* ============================
+           ДОСТУПНОСТЬ
+           ============================ */
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .skip-link {
+            position: fixed;
+            z-index: 1000;
+            top: 8px;
+            left: 8px;
+            padding: 10px 14px;
+            background: #1a365d;
+            color: #ffffff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            transform: translateY(-160%);
+            transition: transform 0.2s ease;
+        }
+        .skip-link:focus {
+            transform: translateY(0);
+            outline: 3px solid #f6ad55;
+            outline-offset: 2px;
+        }
+
+        /* ============================
+           ПЕЧАТЬ
+           ============================ */
+        @media print {
+            .no-print { display: none !important; }
+            .header-banner { border: none !important; background: none !important; max-width: 1200px !important; height: 40px !important; max-height: 40px !important; min-height: 40px !important; }
+            body, html { background: white !important; overflow: visible !important; }
+            .container { border: none !important; box-shadow: none !important; }
+            .top-notification { display: none !important; }
+            .tiles-grid { overflow: visible !important; height: auto !important; }
+            .tiles-row.past-lesson-row { opacity: 1 !important; filter: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="topNotification" class="top-notification">✅ Расписание обновлено</div>
+
+    <a class="skip-link" href="#mainContent">Перейти к расписанию</a>
+    <div class="container">
+        <header class="header">
+            <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
+            <div class="header-left"></div>
+
+            <div class="header-center">
+                <span class="day-indicator" id="dayIndicator">ПН</span>
+                <span class="divider">|</span>
+                <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
+            </div>
+
+            <div class="header-right">
+                <div id="clockContainer"></div>
+            </div>
+        </header>
+
+        <div id="pwaNotification">
+            <p>📱 <strong>Установите приложение</strong><br>
+            <span class="small">Нажмите "Добавить на главный экран" в браузере</span></p>
+        </div>
+
+        <main class="main-layout" id="mainContent" tabindex="-1">
+            <p id="scheduleStatus" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">Загружаем расписание…</p>
+            <div class="table-wrapper" id="tableWrapper">
+                <div class="tiles-grid" id="tilesGrid" aria-describedby="scheduleStatus">
+                    <div class="tiles-header-row" id="tilesHeader"></div>
+                    <div id="tilesBody">
+                        <div class="loading-overlay">⏳ Загрузка...<span class="sub"></span></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer no-print">
+            <div class="footer-status" aria-label="Состояние расписания">
+                <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
+                <span class="footer-status-separator" aria-hidden="true">·</span>
+                <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
+                <button type="button" id="refreshBtn" class="btn-refresh" onclick="manualRefresh()">🔄 Обновить расписание</button>
+            </div>
+        </footer>
+        <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
+    </div>
+
+    <script src="clock.js"></script>
+
+    <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
+    <script type="text/javascript">
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(110291320, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110291320" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <script>
+        // ================================================================
+        // КОНФИГУРАЦИЯ
+        // ================================================================
+        var APP_VERSION = '4.3.9';
+        var LESSON_TIMES = [
+            { num: 1, start: "08:30", end: "09:10", break: "10" },
+            { num: 2, start: "09:20", end: "10:00", break: "10" },
+            { num: 3, start: "10:10", end: "10:50", break: "15" },
+            { num: 4, start: "11:05", end: "11:45", break: "15" },
+            { num: 5, start: "12:00", end: "12:40", break: "15" },
+            { num: 6, start: "12:55", end: "13:35", break: "10" },
+            { num: 7, start: "13:45", end: "14:25", break: "10" },
+            { num: 8, start: "14:35", end: "15:15", break: "10" },
+            { num: 9, start: "15:25", end: "16:05", break: "10" }
+        ];
+
+        var MAX_LESSONS = 9;
+        var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
+        var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
+        var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
+        var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+
+        var weekDays = {};
+        var classNames = [];
+        var dataLoaded = false;
+        var scheduleUpdatedDate = null;
+        var deferredPrompt = null;
+        var lastBoardRenderKey = '';
+        var dataRequestInFlight = false;
+        var lastRefreshTime = 0;
+        var REFRESH_COOLDOWN_MS = 5000;
+        var nextScheduledRefresh = null;
+        var notificationTimeout = null;
+
+        // ================================================================
+        // УВЕДОМЛЕНИЕ
+        // ================================================================
+        function showTopNotification(message, type) {
+            var el = document.getElementById('topNotification');
+            if (!el) return;
+            el.textContent = message;
+            el.className = 'top-notification';
+            if (type) el.classList.add(type);
+            requestAnimationFrame(function() { el.classList.add('show'); });
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
+        }
+
+        // ================================================================
+        // ЛОГИКА ВРЕМЕНИ
+        // ================================================================
+        function parseTime(timeStr) {
+            var parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function formatMinutes(minutes) {
+            if (!minutes || minutes <= 0) return '0 мин';
+            var rounded = Math.ceil(minutes);
+            if (rounded >= 60) {
+                var hours = Math.floor(rounded / 60);
+                var mins = rounded % 60;
+                return mins === 0 ? hours + ' ч' : hours + ' ч ' + mins + ' мин';
+            }
+            return rounded + ' мин';
+        }
+
+        // Текущее время в минутах от начала суток (с дробной частью)
+        function getNowMinutes() {
+            var now = new Date();
+            return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+        }
+
+        // Получить информацию о перемене между уроками
+        function getBreakInfo(breakIndex) {
+            if (breakIndex < 0 || breakIndex >= LESSON_TIMES.length - 1) return null;
+            var currentLesson = LESSON_TIMES[breakIndex];
+            var nextLesson = LESSON_TIMES[breakIndex + 1];
+            if (!currentLesson || !nextLesson) return null;
+
+            var start = currentLesson.end;
+            var end = nextLesson.start;
+            var duration = parseTime(end) - parseTime(start);
+            if (duration <= 0) return null;
+
+            return {
+                index: breakIndex,
+                afterLesson: currentLesson.num,
+                beforeLesson: nextLesson.num,
+                start: start,
+                end: end,
+                duration: duration,
+                startMin: parseTime(start),
+                endMin: parseTime(end)
+            };
+        }
+
+        // Статус перемены: 'past' | 'now' | 'future'
+        function getBreakStatus(breakInfo) {
+            if (!breakInfo) return 'future';
+            var nowMin = getNowMinutes();
+            if (nowMin < breakInfo.startMin) return 'future';
+            if (nowMin >= breakInfo.endMin) return 'past';
+            return 'now';
+        }
+
+        // Прогресс перемены в процентах
+        function getBreakProgress(breakInfo) {
+            if (!breakInfo) return 0;
+            var nowMin = getNowMinutes();
+            var total = breakInfo.endMin - breakInfo.startMin;
+            if (total <= 0) return 0;
+            var passed = nowMin - breakInfo.startMin;
+            if (passed < 0) return 0;
+            if (passed > total) return 100;
+            return (passed / total) * 100;
+        }
+
+        // Статус урока: 'past' | 'now' | 'future'
+        function getLessonStatus(lessonNum) {
+            var lesson = LESSON_TIMES[lessonNum - 1];
+            if (!lesson) return 'future';
+            var nowMin = getNowMinutes();
+            var startMin = parseTime(lesson.start);
+            var endMin = parseTime(lesson.end);
+            if (nowMin >= endMin) return 'past';
+            if (nowMin >= startMin && nowMin < endMin) return 'now';
+            return 'future';
+        }
+
+        function getCurrentPeriodInfo() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                var endMin = parseTime(lesson.end);
+                if (totalMinutes >= startMin && totalMinutes < endMin) {
+                    return { type: 'lesson', num: lesson.num, start: lesson.start, end: lesson.end };
+                }
+            }
+
+            for (var i = 0; i < LESSON_TIMES.length; i++) {
+                var lesson = LESSON_TIMES[i];
+                var startMin = parseTime(lesson.start);
+                if (i > 0) {
+                    var prevEndMin = parseTime(LESSON_TIMES[i - 1].end);
+                    if (totalMinutes >= prevEndMin && totalMinutes < startMin) {
+                        return { type: 'break', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin - totalMinutes, breakIndex: i - 1 };
+                    }
+                }
+                if (i === 0 && totalMinutes < startMin) {
+                    return { type: 'before', nextLesson: lesson.num, nextStart: lesson.start, remaining: startMin - totalMinutes };
+                }
+            }
+
+            var lastEndMin = parseTime(LESSON_TIMES[LESSON_TIMES.length - 1].end);
+            if (totalMinutes >= lastEndMin) {
+                return { type: 'after' };
+            }
+            return { type: 'unknown' };
+        }
+
+        function getPeriodName() {
+            var info = getCurrentPeriodInfo();
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+
+            if (info.type === 'lesson') {
+                return '<span class="line1">📖 ' + info.num + '-й урок</span><span class="line2">' + info.start + '–' + info.end + '</span>';
+            }
+
+            if (info.type === 'break') {
+                var breakInfo = getBreakInfo(info.breakIndex);
+                var timeStr = breakInfo ? (breakInfo.start + '–' + breakInfo.end) : '';
+                if (info.remaining <= 0) {
+                    return '<span class="line1">⏰ ' + info.nextLesson + '-й урок</span><span class="line2">начинается</span>';
+                }
+                return '<span class="line1">⏸ Перемена</span><span class="line2">' + timeStr + ' · осталось ' + formatMinutes(info.remaining) + '</span>';
+            }
+
+            if (info.type === 'before') {
+                if (info.remaining <= 0) {
+                    return '<span class="line1">⏰ ' + info.nextLesson + '-й урок</span><span class="line2">начинается</span>';
+                }
+                return '<span class="line1">⏳ До начала занятий</span><span class="line2">' + formatMinutes(info.remaining) + '</span>';
+            }
+
+            if (info.type === 'after') {
+                var dayNum = now.getDay();
+                var nextDayNum = dayNum + 1;
+                if (nextDayNum === 7) nextDayNum = 1;
+                if (nextDayNum === 0) nextDayNum = 1;
+                var nextDayFull = DAYS_FULL[nextDayNum] || 'Понедельник';
+                var dayGenitive = {
+                    'Понедельник': 'понедельник',
+                    'Вторник': 'вторник',
+                    'Среда': 'среду',
+                    'Четверг': 'четверг',
+                    'Пятница': 'пятницу',
+                    'Суббота': 'субботу',
+                    'Воскресенье': 'воскресенье'
+                };
+                var nextDayGen = dayGenitive[nextDayFull] || nextDayFull.toLowerCase();
+                return '<span class="line1">📌 Изменения</span><span class="line2">на ' + nextDayGen + '</span>';
+            }
+            return '<span class="line1">⏰ Загрузка...</span>';
+        }
+
+        function getDisplayDay() {
+            var now = new Date();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var dayNum = now.getDay() === 0 ? 1 : now.getDay();
+            if (totalMinutes >= 16 * 60) {
+                var nextDayNum = dayNum + 1;
+                if (nextDayNum === 7) nextDayNum = 1;
+                if (nextDayNum === 0) nextDayNum = 1;
+                return { key: DAYS_SHORT[nextDayNum] || "ПН", full: DAYS_FULL[nextDayNum] || "Понедельник", isTomorrow: true };
+            }
+            return { key: DAYS_SHORT[dayNum] || "ПН", full: DAYS_FULL[dayNum] || "Понедельник", isTomorrow: false };
+        }
+
+        function getTargetDay() {
+            var now = new Date();
+            var dayNum = now.getDay();
+            var totalMinutes = now.getHours() * 60 + now.getMinutes();
+            var shift = (totalMinutes >= 16 * 60) ? 1 : 0;
+            var targetDayNum = dayNum + shift;
+            if (targetDayNum === 0) targetDayNum = 1;
+            if (targetDayNum > 6) targetDayNum = 1;
+
+            var dayKey = DAYS_SHORT[targetDayNum] || "ПН";
+            var dayFull = DAYS_FULL[targetDayNum] || "Понедельник";
+
+            if (weekDays[dayKey] && Object.keys(weekDays[dayKey]).length > 0) {
+                return { key: dayKey, full: dayFull };
+            }
+
+            for (var i = 0; i < DAYS_LIST.length; i++) {
+                var d = DAYS_LIST[i];
+                if (weekDays[d] && Object.keys(weekDays[d]).length > 0) {
+                    return { key: d, full: DAYS_FULL[DAYS_LIST.indexOf(d) + 1] || d };
+                }
+            }
+            return { key: "ПН", full: "Понедельник" };
+        }
+
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return null;
+            var d = new Date(dateValue);
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        // ================================================================
+        // ЗАГРУЗКА ДАННЫХ
+        // ================================================================
+        function loadData(force) {
+            if (dataRequestInFlight) return;
+            var now = Date.now();
+            if (!force && (now - lastRefreshTime < REFRESH_COOLDOWN_MS)) {
+                var waitTime = Math.ceil((REFRESH_COOLDOWN_MS - (now - lastRefreshTime)) / 1000);
+                showTopNotification('⏳ Подождите ' + waitTime + ' сек', 'warning');
+                return;
+            }
+
+            dataRequestInFlight = true;
+            lastRefreshTime = now;
+
+            var statusEl = document.getElementById('scheduleStatus');
+            var refreshBtn = document.getElementById('refreshBtn');
+            if (statusEl) statusEl.textContent = 'Загружаем расписание…';
+            if (refreshBtn) {
+                refreshBtn.classList.add('loading');
+                refreshBtn.textContent = '⏳ Загрузка...';
+            }
+            setBoardSync('loading', 'Обновляем данные…');
+
+            var cacheBuster = Math.floor(Date.now() / 3600000);
+            var url = 'schedule.primary.json?t=' + cacheBuster;
+
+            fetch(url, { cache: 'default' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('schedule.primary.json не найден (код ' + res.status + ')');
+                    return res.json();
+                })
+                .then(function(data) {
+                    var scheduleData = null;
+                    var updatedDate = data.updated || data.last_update || (data.meta && data.meta.updated) || null;
+
+                    if (updatedDate) {
+                        var formatted = formatDateForDisplay(updatedDate);
+                        if (formatted) {
+                            scheduleUpdatedDate = formatted;
+                            document.getElementById('scheduleUpdated').textContent = '📅 ' + formatted;
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated';
+                        } else {
+                            document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                            document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                        }
+                    } else {
+                        document.getElementById('scheduleUpdated').textContent = '📅 дата не указана';
+                        document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    }
+
+                    if (data.schedule) {
+                        scheduleData = data.schedule.primary || data.schedule;
+                    } else if (data.primary) {
+                        scheduleData = data.primary;
+                    } else {
+                        scheduleData = data;
+                    }
+
+                    var hasDays = false;
+                    DAYS_LIST.forEach(function(day) {
+                        if (scheduleData && scheduleData[day]) {
+                            hasDays = true;
+                            var filtered = {};
+                            Object.keys(scheduleData[day]).forEach(function(cls) {
+                                if (PRIMARY_CLASSES.indexOf(cls) !== -1) {
+                                    filtered[cls] = scheduleData[day][cls];
+                                }
+                            });
+                            weekDays[day] = Object.keys(filtered).length > 0 ? filtered : {};
+                        }
+                    });
+
+                    if (!hasDays) {
+                        DAYS_LIST.forEach(function(day) { weekDays[day] = {}; });
+                    }
+
+                    if (statusEl) statusEl.textContent = 'Расписание обновлено.';
+                    processLoadedData();
+                    lastBoardRenderKey = getBoardRenderKey();
+                    setBoardSync('online', 'Данные актуальны');
+                    showTopNotification('✅ Расписание обновлено', 'success');
+                })
+                .catch(function(err) {
+                    console.warn('Ошибка загрузки schedule.primary.json:', err.message);
+                    if (statusEl) statusEl.textContent = 'Не удалось обновить расписание. Проверьте соединение и попробуйте снова.';
+                    document.getElementById('scheduleUpdated').textContent = '📅 ошибка загрузки';
+                    document.getElementById('scheduleUpdated').className = 'schedule-updated error';
+                    setBoardSync('offline', 'Ошибка загрузки');
+                    showTopNotification('❌ Ошибка: ' + err.message, 'error');
+                })
+                .finally(function() {
+                    dataRequestInFlight = false;
+                    var refreshBtn = document.getElementById('refreshBtn');
+                    if (refreshBtn) {
+                        refreshBtn.classList.remove('loading');
+                        refreshBtn.textContent = '🔄 Обновить расписание';
+                    }
+                });
+        }
+
+        function processLoadedData() {
+            classNames = PRIMARY_CLASSES;
+
+            DAYS_LIST.forEach(function(day) {
+                var dayData = weekDays[day] || {};
+                classNames.forEach(function(cls) {
+                    if (!dayData[cls]) {
+                        dayData[cls] = [];
+                        for (var i = 0; i < MAX_LESSONS; i++) {
+                            dayData[cls].push(['', '']);
+                        }
+                    } else {
+                        var lessons = dayData[cls];
+                        while (lessons.length < MAX_LESSONS) {
+                            lessons.push(['', '']);
+                        }
+                    }
+                });
+                weekDays[day] = dayData;
+            });
+
+            dataLoaded = true;
+            renderTiles();
+            lastBoardRenderKey = getBoardRenderKey();
+        }
+
+        function escapeHTML(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function isEmptyLesson(value) {
+            var normalized = String(value == null ? '' : value).trim().toLowerCase();
+            return normalized === '' || normalized === 'нет урока' || normalized === 'нет' || normalized === '—' || normalized === '-';
+        }
+
+        function sortClasses(classes) {
+            var letters = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+            return classes.sort(function(a, b) {
+                var numA = parseInt(a.match(/\d+/)?.[0] || 0);
+                var numB = parseInt(b.match(/\d+/)?.[0] || 0);
+                if (numA !== numB) return numA - numB;
+                var lA = a.match(/[А-Я]/)?.[0] || '';
+                var lB = b.match(/[А-Я]/)?.[0] || '';
+                return letters.indexOf(lA) - letters.indexOf(lB);
+            });
+        }
+
+        // ================================================================
+        // ОТРИСОВКА ПЛИТОК
+        // ================================================================
+        function renderTiles() {
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var targetDay = getTargetDay();
+            var dayKey = targetDay.key;
+            var displayDay = getDisplayDay();
+
+            var info = getCurrentPeriodInfo();
+            var currentLesson = 0;
+            if (info.type === 'lesson') {
+                currentLesson = info.num;
+            } else if (info.type === 'break' || info.type === 'before') {
+                currentLesson = info.nextLesson - 1;
+                if (currentLesson < 0) currentLesson = 0;
+            }
+
+            var dayDisplay = displayDay.full;
+            if (displayDay.isTomorrow) {
+                dayDisplay = 'Завтра, ' + dayDisplay;
+            }
+            document.getElementById('dayIndicator').textContent = dayDisplay;
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+
+            var dayData = weekDays[dayKey];
+            var tilesHeader = document.getElementById('tilesHeader');
+            var tilesBody = document.getElementById('tilesBody');
+
+            if (!dayData || Object.keys(dayData).length === 0) {
+                tilesHeader.innerHTML = '';
+                tilesBody.innerHTML = '<div class="loading-overlay">📌 Нет расписания</div>';
+                return;
+            }
+
+            var classes = Object.keys(dayData).filter(function(cls) { return PRIMARY_CLASSES.indexOf(cls) !== -1; });
+            if (classes.length === 0) classes = PRIMARY_CLASSES;
+            classes = sortClasses(classes);
+
+            // Заголовок
+            var headerHTML = '<div class="tile-header" aria-hidden="true"></div>';
+            classes.forEach(function(cls) {
+                headerHTML += '<div class="tile-header" role="columnheader">' + escapeHTML(cls) + '</div>';
+            });
+            tilesHeader.innerHTML = headerHTML;
+
+            // Тело
+            var bodyHTML = '';
+            var currentBreakIndex = (info.type === 'break') ? info.breakIndex : -1;
+
+            for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
+                var idx = lessonNum - 1;
+
+                var lessonStatus = getLessonStatus(lessonNum);
+                var isCurrent = (lessonStatus === 'now');
+                var isPast = (lessonStatus === 'past');
+
+                var rowClasses = 'tiles-row';
+                if (isCurrent) rowClasses += ' current-lesson-row';
+                if (isPast) rowClasses += ' past-lesson-row';
+
+                var ariaLabel = '';
+                if (isCurrent) ariaLabel = ' aria-label="Текущий урок"';
+                else if (isPast) ariaLabel = ' aria-label="Прошедший урок"';
+
+                // --- Строка урока ---
+                bodyHTML += '<div class="' + rowClasses + '"' + ariaLabel + ' role="row">';
+                bodyHTML += '<div class="tile-number" role="rowheader">' + lessonNum + '</div>';
+
+                classes.forEach(function(cls) {
+                    var lessons = dayData[cls] || [];
+                    var lesson = lessons[idx] || ['', ''];
+                    var subject = Array.isArray(lesson) ? lesson[0] : (lesson.subject || lesson[0] || '');
+                    var cabinet = Array.isArray(lesson) ? lesson[1] : (lesson.room || lesson[1] || '');
+
+                    if (!isEmptyLesson(subject)) {
+                        bodyHTML += '<div class="tile-subject" role="cell">';
+                        bodyHTML += '<span class="subject-name">' + escapeHTML(subject) + '</span>';
+                        if (cabinet) {
+                            bodyHTML += '<span class="subject-room">' + escapeHTML(cabinet) + '</span>';
+                        }
+                        bodyHTML += '</div>';
+                    } else {
+                        bodyHTML += '<div class="tile-subject empty-tile" role="cell"><span class="empty-label">—</span></div>';
+                    }
+                });
+                bodyHTML += '</div>';
+
+                // --- Статусбар перемены (компактный, без фона/обводки/скруглений/яблока) ---
+                if (lessonNum < MAX_LESSONS) {
+                    var breakInfo = getBreakInfo(idx);
+                    if (breakInfo) {
+                        var status = getBreakStatus(breakInfo);
+                        var progress = getBreakProgress(breakInfo);
+                        var isCurrentBreak = (status === 'now');
+
+                        var rowClass = 'tiles-break-row';
+                        if (status === 'now') rowClass += ' current-break-row';
+                        else if (status === 'past') rowClass += ' past-break-row';
+
+                        var statusText = '';
+                        var statusClass = '';
+                        if (status === 'past') {
+                            statusText = 'завершена';
+                            statusClass = 'status-past';
+                        } else if (status === 'now') {
+                            statusText = 'идёт';
+                            statusClass = 'status-now';
+                        } else {
+                            statusText = 'впереди';
+                            statusClass = 'status-future';
+                        }
+
+                        bodyHTML += '<div class="' + rowClass + '" role="row" aria-label="Перемена ' + breakInfo.start + '–' + breakInfo.end + '">';
+                        if (status === 'now') {
+                            bodyHTML += '<div class="break-progress" style="width:' + progress.toFixed(1) + '%"></div>';
+                        }
+                        bodyHTML += '<div class="break-label" role="rowheader">⏸</div>';
+                        bodyHTML += '<div class="break-content" role="cell">';
+                        bodyHTML += '<div class="break-left">';
+                        bodyHTML += '<span class="break-title">Перемена</span>';
+                        bodyHTML += '<span class="break-time">' + breakInfo.start + '–' + breakInfo.end + '</span>';
+                        bodyHTML += '</div>';
+                        bodyHTML += '<div class="break-right">';
+                        bodyHTML += '<span class="break-duration">' + breakInfo.duration + ' мин</span>';
+                        bodyHTML += '<span class="break-status ' + statusClass + '">' + statusText + '</span>';
+                        bodyHTML += '</div>';
+                        bodyHTML += '</div>';
+                        bodyHTML += '</div>';
+                    }
+                }
+            }
+            tilesBody.innerHTML = bodyHTML;
+        }
+
+        function getBoardRenderKey() {
+            var targetDay = getTargetDay();
+            var info = getCurrentPeriodInfo();
+            var activeLesson = 0;
+            var breakKey = '';
+            if (info.type === 'lesson') {
+                activeLesson = info.num;
+            } else if (info.type === 'break') {
+                activeLesson = Math.max(0, info.nextLesson - 1);
+                breakKey = 'b' + info.breakIndex;
+            } else if (info.type === 'before') {
+                activeLesson = Math.max(0, info.nextLesson - 1);
+            }
+            return targetDay.key + '|' + info.type + '|' + activeLesson + '|' + breakKey;
+        }
+
+        function setBoardSync(state, message) {
+            var sync = document.getElementById('boardSync');
+            if (!sync) return;
+            sync.className = 'board-sync ' + state;
+            sync.textContent = message;
+        }
+
+        function refreshAll() {
+            document.getElementById('currentPeriod').innerHTML = getPeriodName();
+            if (!dataLoaded && Object.keys(weekDays).length === 0) return;
+
+            var renderKey = getBoardRenderKey();
+            if (renderKey !== lastBoardRenderKey) {
+                lastBoardRenderKey = renderKey;
+                renderTiles();
+            } else {
+                updateCurrentBreakProgress();
+                updatePastLessons();
+            }
+        }
+
+        // Обновление прогресса текущей перемены без полной перерисовки
+        function updateCurrentBreakProgress() {
+            var info = getCurrentPeriodInfo();
+            if (info.type !== 'break') return;
+            var breakInfo = getBreakInfo(info.breakIndex);
+            if (!breakInfo) return;
+            var progress = getBreakProgress(breakInfo);
+            var progressEl = document.querySelector('.tiles-break-row.current-break-row .break-progress');
+            if (progressEl) {
+                progressEl.style.width = progress.toFixed(1) + '%';
+            }
+        }
+
+        // Обновление затемнения прошедших уроков без полной перерисовки
+        function updatePastLessons() {
+            var rows = document.querySelectorAll('.tiles-row');
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                var lessonNum = i + 1;
+                var status = getLessonStatus(lessonNum);
+                var isPast = (status === 'past');
+                var isNow = (status === 'now');
+                if (isPast && !row.classList.contains('past-lesson-row')) {
+                    row.classList.add('past-lesson-row');
+                } else if (!isPast && row.classList.contains('past-lesson-row')) {
+                    row.classList.remove('past-lesson-row');
+                }
+                if (isNow && !row.classList.contains('current-lesson-row')) {
+                    row.classList.add('current-lesson-row');
+                } else if (!isNow && row.classList.contains('current-lesson-row')) {
+                    row.classList.remove('current-lesson-row');
+                }
+            }
+        }
+
+        function manualRefresh() {
+            loadData(true);
+        }
+
+        function checkForMidnightRefresh() {
+            var now = new Date();
+            if (now.getHours() === 16 && now.getMinutes() === 0 && now.getSeconds() < 5) {
+                if (!nextScheduledRefresh || Date.now() - nextScheduledRefresh > 60000) {
+                    nextScheduledRefresh = Date.now();
+                    console.log('🔄 Автоматическое обновление в 16:00');
+                    showTopNotification('🔄 Автообновление в 16:00', 'info');
+                    loadData(true);
+                }
+            }
+        }
+
+        // ================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof initClock === 'function') {
+                initClock('clockContainer');
+            } else {
+                console.warn('clock.js не загружен!');
+                if (typeof initRotatedClock === 'function') {
+                    initRotatedClock('clockContainer');
+                }
+            }
+
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                deferredPrompt = e;
+                var pwaNotification = document.getElementById('pwaNotification');
+                if (pwaNotification) pwaNotification.style.display = 'block';
+            });
+
+            loadData(true);
+
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    refreshAll();
+                }, 120);
+            });
+
+            setInterval(refreshAll, 1000);
+            setInterval(checkForMidnightRefresh, 1000);
+
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    refreshAll();
+                }
+            });
+
+            console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
+            console.log('ℹ️ Автообновление данных: только в 16:00');
+        });
+    </script>
+</body>
+</html>
