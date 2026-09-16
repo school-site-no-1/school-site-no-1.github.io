@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.5.4">
+<html lang="ru" data-version="v4.5.5">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,6 @@
             min-height: calc(100dvh - 8px);
             padding: 8px;
             border-radius: 12px;
-            /* Контейнер чуть светлее платинового */
             background: #EFEEEC;
             display: flex;
             flex-direction: column;
@@ -339,32 +338,37 @@
         }
 
         /* ==========================================
-           СТАТУСБАР ПЕРЕМЕНЫ
+           СТАТУСБАР ПЕРЕМЕНЫ — БЕЗ ГРАНИЦ, ОБВОДОК,
+           ЗАКРУГЛЕНИЙ И ЗАЛИВКИ
            ========================================== */
         .tiles-break-row {
             display: flex;
             gap: 4px;
             flex-shrink: 0;
             min-height: 11px;
-            border-radius: 6px;
-            background: #E5E4E2;
+            /* Без заливки и без закругления */
+            background: transparent;
+            border: none;
+            border-radius: 0;
             box-shadow: none;
             align-items: stretch;
             margin: 0;
             overflow: hidden;
             position: relative;
-            transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+            transition: opacity 0.2s;
         }
         .tiles-break-row .break-progress {
             position: absolute;
             top: 0;
             left: 0;
             height: 100%;
-            background: rgba(184, 184, 179, 0.40);
+            /* Прогресс-полоса — тонкая, нейтральная */
+            background: rgba(148, 163, 184, 0.35);
             width: 0%;
             transition: width 0.5s linear;
             pointer-events: none;
             z-index: 0;
+            border-radius: 0;
         }
         .break-label { display: none !important; }
         .break-content {
@@ -374,7 +378,10 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 8px;
-            border-radius: 4px;
+            /* Без заливки и без закругления */
+            background: transparent;
+            border: none;
+            border-radius: 0;
             color: #4a5568;
             font-weight: 600;
             font-size: 10px;
@@ -408,51 +415,57 @@
         .break-content .break-duration {
             font-weight: 700;
             color: #4a5568;
-            background: rgba(255,255,255,0.7);
-            padding: 0 5px;
-            border-radius: 3px;
+            /* Без заливки, без закругления */
+            background: transparent;
+            padding: 0 2px;
+            border: none;
+            border-radius: 0;
             white-space: nowrap;
             font-size: 9px;
         }
         .break-content .break-status {
             font-size: 9px;
             font-weight: 700;
-            padding: 0 5px;
-            border-radius: 3px;
+            /* Без заливки, без закругления */
+            background: transparent;
+            padding: 0 2px;
+            border: none;
+            border-radius: 0;
             white-space: nowrap;
         }
         .break-content .break-status.status-past {
             color: #a0aec0;
-            background: #D6D5D2;
         }
         .break-content .break-status.status-now {
-            color: #ffffff;
-            background: #7A7A75;
+            color: #7A7A75;
             animation: pulse-break 1.4s ease-in-out infinite;
         }
         .break-content .break-status.status-future {
             color: #4a5568;
-            background: #D6D5D2;
         }
         @keyframes pulse-break {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
+
+        /* Текущая перемена — без заливки, только прозрачность прогресса */
         .tiles-break-row.current-break-row {
-            background: #D6D5D2;
+            background: transparent;
             box-shadow: none;
         }
         .tiles-break-row.current-break-row .break-progress {
             background: rgba(122, 122, 117, 0.35);
         }
+
+        /* Прошедшая перемена — приглушённая, без заливки */
         .tiles-break-row.past-break-row {
             opacity: 0.55;
-            background: #EFEEEC;
+            background: transparent;
             box-shadow: none;
         }
         .tiles-break-row.past-break-row .break-content { color: #a0aec0; }
         .tiles-break-row.past-break-row .break-progress {
-            background: rgba(214, 213, 210, 0.5);
+            background: rgba(184, 184, 179, 0.35);
         }
 
         /* ============================
@@ -609,8 +622,8 @@
             .tiles-break-row { min-height: 10px; }
             .break-content { font-size: 9px; padding: 0 6px; }
             .break-content .break-time { font-size: 8px; }
-            .break-content .break-duration { font-size: 8px; padding: 0 4px; }
-            .break-content .break-status { font-size: 8px; padding: 0 4px; }
+            .break-content .break-duration { font-size: 8px; padding: 0 2px; }
+            .break-content .break-status { font-size: 8px; padding: 0 2px; }
             .mobile-controls { padding: 4px 8px; font-size: 12px; }
             .mobile-controls select { font-size: 12px; min-height: 30px; padding: 4px 6px; }
             .footer { font-size: 10px; }
@@ -740,7 +753,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.5.4';
+        var APP_VERSION = '4.5.5';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -965,9 +978,6 @@
             return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
-        // ================================================================
-        // СОХРАНЕНИЕ / ВОССТАНОВЛЕНИЕ ВЫБРАННОГО КЛАССА
-        // ================================================================
         function saveSelectedClass(value) {
             try {
                 if (value === 'all') {
@@ -1003,9 +1013,6 @@
             return 'all';
         }
 
-        // ================================================================
-        // ЗАГРУЗКА schedule.primary.json
-        // ================================================================
         function loadData() {
             if (dataRequestInFlight) return;
             dataRequestInFlight = true;
@@ -1331,7 +1338,6 @@
                 if (pwaNotification) pwaNotification.style.display = 'block';
             });
 
-            // Восстанавливаем выбранный класс из localStorage до первого рендера
             restoreSelectedClass();
 
             var mobileClassFilter = document.getElementById('mobileClassFilter');
@@ -1363,7 +1369,7 @@
             });
             window.addEventListener('online', loadData);
 
-            console.log('✅ Плиточное расписание v' + APP_VERSION + ' (платиново-серый) загружено!');
+            console.log('✅ Плиточное расписание v' + APP_VERSION + ' загружено!');
         });
     </script>
 </body>
