@@ -1,10 +1,11 @@
 // ==== 1. Настройки ====
-const SUPABASE_URL  = 'ВСТАВЬТЕ_ВАШ_URL';
-const SUPABASE_KEY  = 'ВСТАВЬТЕ_ВАШ_ANON_KEY';
+const SUPABASE_URL  = '
+https://wwspemquprfjggytfhno.supabase.co';
+const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';           // ID эфира (можно менять в URL)
 const QUESTION_ID   = 'q1';               // ID текущего вопроса
 
-const supabase = window.supabase.createClient('https://wwspemquprfjggytfhno.supabase.co, sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE');
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==== 2. DOM ====
 const chatEl      = document.getElementById('chat');
