@@ -8,6 +8,31 @@ const RATE_LIMIT_MS        = 2000;            // 1 сообщение в 2 се�
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ==== ФИЛЬТР МАТА ====
+const profanityFilter = new Filter({ placeHolder: '*' });
+
+// Русский словарь — добавляем корни и слова
+profanityFilter.addWords(
+  'бля', 'блят', 'блядь', 'бляд',
+  'хуй', 'хуя', 'хую', 'хуе', 'хуё', 'хуи', 'хуйн',
+  'пизд', 'пизда', 'пизде', 'пизду', 'пизды',
+  'еб', 'ёб', 'еба', 'ебал', 'ебан', 'ебат', 'ебаш', 'ебен', 'ебет',
+  'еби', 'ебис', 'еблан', 'ебло', 'ебуч',
+  'муд', 'мудак', 'мудил', 'мудозвон', 'мудоеб', 'мудоёб',
+  'сук', 'сука', 'суки', 'суч', 'сучка', 'сучки', 'сучон', 'сучён',
+  'гандон', 'гондон', 'долбо', 'долбоеб', 'долбоёб',
+  'говн', 'гавн', 'дерьм', 'жоп', 'задниц', 'залуп', 'золуп',
+  'пидор', 'пидар', 'пидрил', 'педик', 'педерас', 'педрил',
+  'манда', 'манда', 'минет', 'мошонк', 'моча',
+  'дроч', 'драчи', 'мастурб', 'онанизм', 'онанист',
+  'сперм', 'кончат', 'кончил', 'кончит',
+  'срак', 'срал', 'сран', 'срат', 'ссал', 'ссан', 'ссат',
+  'перд', 'перну', 'пёрну', 'бзде', 'бздёх',
+  'мраз', 'падл', 'падлюк', 'сволоч', 'стерв',
+  'потаску', 'путана', 'шлюх', 'шлюш',
+  'нарко', 'герыч', 'кокаин', 'каннабис', 'амфетами'
+);
+
 // ==== 2. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
@@ -42,7 +67,7 @@ if (qrParam) qrEl.src = qrParam;
 let questionStartedAt = null;
 let timerInterval = null;
 let currentDuration = QUESTION_DURATION_MS;
-let pausedAt = null;   // null = идёт; timestamp = на паузе
+let pausedAt = null;
 
 async function loadQuestion() {
   const { data, error } = await db
@@ -182,7 +207,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 8. Отправка ответа ====
+// ==== 8. Отправка ответа (с фильтром мата) ====
 let lastSentAt = 0;
 
 form.addEventListener('submit', async (e) => {
@@ -195,8 +220,17 @@ form.addEventListener('submit', async (e) => {
   }
 
   const nickname = nickEl.value.trim() || 'Аноним';
-  const text     = textEl.value.trim();
+  let text       = textEl.value.trim();
   if (!text) return;
+
+  // --- ФИЛЬТРАЦИЯ МАТА ---
+  if (profanityFilter.isProfane(text)) {
+    text = profanityFilter.clean(text);
+    // Вариант Б: отклонить сообщение — раскомментируйте, если нужно
+    // alert('Пожалуйста, не используйте нецензурные слова');
+    // return;
+  }
+  // ------------------------
 
   lastSentAt = now;
   submitBtn.disabled = true;
