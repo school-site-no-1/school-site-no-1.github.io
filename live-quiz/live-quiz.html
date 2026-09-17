@@ -73,7 +73,7 @@
       100% { transform: translateY(-70vh) scale(1.5) rotate(20deg); opacity: 0; }
     }
 
-    /* Чат: полупрозрачный, поверх картинки, в нижней половине */
+    /* Чат: полупрозрачный, поверх картинки */
     .chat-overlay {
       position: fixed;
       left: 0; right: 0;
@@ -136,7 +136,7 @@
     }
     .reaction-bar button:active { transform: scale(.9); }
 
-    /* Верхняя строка: имя + ответ */
+    /* Строка: имя + ответ */
     .input-row {
       display: flex; gap: 6px;
       padding: 8px 10px 10px;
@@ -170,13 +170,13 @@
     }
     .input-row button[type=submit]:disabled { opacity: .4; }
 
-    /* Статистика (только для модератора) */
+    /* Статистика (модератор) */
     .stats {
       position: fixed;
       top: calc(140px + env(safe-area-inset-top));
       right: 8px;
       max-width: 200px;
-      max-height: 40vh;
+      max-height: 30vh;
       overflow-y: auto;
       background: rgba(0,0,0,.7);
       border-radius: 10px;
@@ -191,7 +191,31 @@
     .stats.visible { display: block; }
     .stats b { color: #4fc3f7; }
 
-    /* Модалка для ввода пароля */
+    /* Кнопки модератора */
+    .mod-actions {
+      position: fixed;
+      top: calc(240px + env(safe-area-inset-top));
+      right: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 26;
+    }
+    .mod-actions.visible { display: flex; }
+    .mod-actions button {
+      background: rgba(0,0,0,.75);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .mod-actions button:active { transform: scale(.97); }
+
+    /* Модалка для пароля модератора */
     .mod-prompt {
       position: fixed; inset: 0;
       background: rgba(0,0,0,.7);
@@ -237,6 +261,12 @@
 
   <!-- Статистика (модератор) -->
   <div class="stats" id="stats"></div>
+
+  <!-- Кнопки модератора -->
+  <div class="mod-actions" id="mod-actions">
+    <button id="reset-timer">🔄 Сбросить таймер</button>
+    <button id="new-question">❓ Новый вопрос</button>
+  </div>
 
   <!-- Чат + ввод + реакции -->
   <div class="chat-overlay">

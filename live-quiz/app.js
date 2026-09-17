@@ -38,8 +38,10 @@ textEl.addEventListener('input', autoGrow);
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
-// ==== 4. Загрузка вопроса и таймера ====
+// ==== 4. Вопрос и таймер ====
 let questionStartedAt = null;
+let timerInterval = null;
+let currentDuration = QUESTION_DURATION_MS;
 
 async function loadQuestion() {
   const { data, error } = await db
@@ -48,14 +50,15 @@ async function loadQuestion() {
 
   document.getElementById('question').src = data.image_url;
   questionStartedAt = new Date(data.started_at).getTime();
+  currentDuration   = data.duration_ms || QUESTION_DURATION_MS;
 
-  const duration = data.duration_ms || QUESTION_DURATION_MS;
-  updateTimer(duration);
-  setInterval(() => updateTimer(duration), 1000);
+  updateTimer();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(updateTimer, 1000);
 }
 
-function updateTimer(duration) {
-  const left = Math.max(0, questionStartedAt + duration - Date.now());
+function updateTimer() {
+  const left = Math.max(0, questionStartedAt + currentDuration - Date.now());
   const sec  = Math.floor(left / 1000);
   const mm   = String(Math.floor(sec / 60)).padStart(2, '0');
   const ss   = String(sec % 60).padStart(2, '0');
@@ -67,7 +70,7 @@ function updateTimer(duration) {
   document.querySelectorAll('#reaction-bar button').forEach(b => b.disabled = ended);
 }
 
-// ==== 5. Загрузка истории ====
+// ==== 5. История ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -79,7 +82,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 6. Realtime ====
+// ==== 6. Realtime: ответы + реакции + вопрос ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -95,7 +98,24 @@ const channel = db
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
 
-// ==== 7. Отрисовка ====
+// Realtime: обновление вопроса (сброс таймера, новая картинка)
+db.channel('questions-watch')
+  .on(
+    'postgres_changes',
+    { event: 'UPDATE', schema: 'public', table: 'questions', filter: 'id=eq.' + QUESTION_ID },
+    (payload) => {
+      const q = payload.new;
+      document.getElementById('question').src = q.image_url;
+      questionStartedAt = new Date(q.started_at).getTime();
+      currentDuration   = q.duration_ms || QUESTION_DURATION_MS;
+      updateTimer();
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+  )
+  .subscribe();
+
+// ==== 7. Отрисовка сообщений ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -125,12 +145,10 @@ function removeMessage(id) {
 }
 
 async function hideMessage(id) {
-  if (!modPassword) {
-    modPassword = await askPassword();
-    if (!modPassword) return;
-  }
+  const pwd = await getModPassword();
+  if (!pwd) return;
   const { error } = await db.rpc('hide_answer', {
-    answer_id: id, password: modPassword
+    answer_id: id, password: pwd
   });
   if (error) {
     alert(error.message);
@@ -138,6 +156,11 @@ async function hideMessage(id) {
     return;
   }
   removeMessage(id);
+}
+
+async function getModPassword() {
+  if (!modPassword) modPassword = await askPassword();
+  return modPassword;
 }
 
 // ==== 8. Отправка ответа ====
@@ -198,7 +221,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 10. Presence (онлайн) ====
+// ==== 10. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -214,7 +237,7 @@ presence
     }
   });
 
-// ==== 11. Статистика (только модератор) ====
+// ==== 11. Модерация: статистика и кнопки ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -225,11 +248,41 @@ async function refreshStats() {
 
 if (isModerator) {
   statsEl.classList.add('visible');
+  document.getElementById('mod-actions').classList.add('visible');
   setInterval(refreshStats, 3000);
   refreshStats();
+
+  // Сбросить таймер
+  document.getElementById('reset-timer').addEventListener('click', async () => {
+    if (!confirm('Запустить таймер заново?')) return;
+    const pwd = await getModPassword();
+    if (!pwd) return;
+    const { error } = await db.rpc('restart_question', {
+      q_id: QUESTION_ID, password: pwd
+    });
+    if (error) { alert(error.message); return; }
+    // локально обновим сразу, чтобы не ждать realtime
+    questionStartedAt = Date.now();
+    updateTimer();
+  });
+
+  // Новый вопрос — новая картинка
+  document.getElementById('new-question').addEventListener('click', async () => {
+    const url = prompt('URL картинки вопроса:', document.getElementById('question').src);
+    if (!url) return;
+    const pwd = await getModPassword();
+    if (!pwd) return;
+    const { error } = await db.rpc('new_question_image', {
+      q_id: QUESTION_ID, new_url: url, password: pwd
+    });
+    if (error) { alert(error.message); return; }
+    document.getElementById('question').src = url;
+    questionStartedAt = Date.now();
+    updateTimer();
+  });
 }
 
-// ==== 12. Пароль модератора ====
+// ==== 12. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
