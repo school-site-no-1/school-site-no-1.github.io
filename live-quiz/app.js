@@ -1,37 +1,53 @@
+// ВНИМАНИЕ: этот ключ виден в исходном коде! Используйте только для теста.
+const DEEPSEEK_KEY = 'sk-8a3680d239174fa7a49347c35c6805f3';
+
+async function testDeepSeek() {
+  try {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + DEEPSEEK_KEY
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat', // или 'deepseek-v4-flash'
+        messages: [
+          { role: 'user', content: 'Ответь одним словом: работает?' }
+        ],
+        max_tokens: 50
+      })
+    });
+
+    const data = await response.json();
+    console.log('Ответ от DeepSeek:', data);
+    
+    if (data.choices && data.choices[0]) {
+      alert('Работает! Ответ: ' + data.choices[0].message.content);
+    } else {
+      alert('Ошибка: ' + JSON.stringify(data.error || data));
+    }
+  } catch (error) {
+    console.error('Ошибка сети:', error);
+    alert('Ошибка сети: ' + error.message);
+  }
+}
+
+// Запускаем тест
+testDeepSeek();
+
 // ==== 1. Настройки ====
 const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
-const QUESTION_DURATION_MS = 5 * 60 * 1000;   // 5 минут
-const RATE_LIMIT_MS        = 2000;            // 1 сообщение в 2 сек
+const QUESTION_DURATION_MS = 5 * 60 * 1000;
+const RATE_LIMIT_MS        = 2000;
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== ФИЛЬТР МАТА ====
-const profanityFilter = new Filter({ placeHolder: '*' });
-
-// Русский словарь — добавляем корни и слова
-profanityFilter.addWords(
-  'бля', 'блят', 'блядь', 'бляд',
-  'хуй', 'хуя', 'хую', 'хуе', 'хуё', 'хуи', 'хуйн',
-  'пизд', 'пизда', 'пизде', 'пизду', 'пизды',
-  'еб', 'ёб', 'еба', 'ебал', 'ебан', 'ебат', 'ебаш', 'ебен', 'ебет',
-  'еби', 'ебис', 'еблан', 'ебло', 'ебуч',
-  'муд', 'мудак', 'мудил', 'мудозвон', 'мудоеб', 'мудоёб',
-  'сук', 'сука', 'суки', 'суч', 'сучка', 'сучки', 'сучон', 'сучён',
-  'гандон', 'гондон', 'долбо', 'долбоеб', 'долбоёб',
-  'говн', 'гавн', 'дерьм', 'жоп', 'задниц', 'залуп', 'золуп',
-  'пидор', 'пидар', 'пидрил', 'педик', 'педерас', 'педрил',
-  'манда', 'манда', 'минет', 'мошонк', 'моча',
-  'дроч', 'драчи', 'мастурб', 'онанизм', 'онанист',
-  'сперм', 'кончат', 'кончил', 'кончит',
-  'срак', 'срал', 'сран', 'срат', 'ссал', 'ссан', 'ссат',
-  'перд', 'перну', 'пёрну', 'бзде', 'бздёх',
-  'мраз', 'падл', 'падлюк', 'сволоч', 'стерв',
-  'потаску', 'путана', 'шлюх', 'шлюш',
-  'нарко', 'герыч', 'кокаин', 'каннабис', 'амфетами'
-);
+// ==== ФИЛЬТР МАТА (russian-bad-word-censor) ====
+// 'strict' — максимально агрессивная проверка (ловит больше, но может зацепить безобидные слова)
+const censor = new RuCensor('strict');
 
 // ==== 2. DOM ====
 const chatEl      = document.getElementById('chat');
@@ -48,18 +64,15 @@ const submitBtn   = form.querySelector('button[type=submit]');
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
 let modPassword   = null;
 
-// Восстанавливаем имя
 nickEl.value = localStorage.getItem('nick') || '';
 nickEl.addEventListener('input', () => localStorage.setItem('nick', nickEl.value));
 
-// Автовысота textarea
 function autoGrow() {
   textEl.style.height = 'auto';
   textEl.style.height = Math.min(textEl.scrollHeight, 90) + 'px';
 }
 textEl.addEventListener('input', autoGrow);
 
-// ==== 3. QR — можно переопределить через ?qr=имя.png ====
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
@@ -124,7 +137,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 6. Realtime: ответы + реакции ====
+// ==== 6. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -140,7 +153,6 @@ const channel = db
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
 
-// Realtime: обновление вопроса
 db.channel('questions-watch')
   .on(
     'postgres_changes',
@@ -159,7 +171,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 7. Отрисовка сообщений ====
+// ==== 7. Отрисовка ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -207,7 +219,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 8. Отправка ответа (с фильтром мата) ====
+// ==== 8. Отправка ответа (с фильтром) ====
 let lastSentAt = 0;
 
 form.addEventListener('submit', async (e) => {
@@ -224,11 +236,8 @@ form.addEventListener('submit', async (e) => {
   if (!text) return;
 
   // --- ФИЛЬТРАЦИЯ МАТА ---
-  if (profanityFilter.isProfane(text)) {
-    text = profanityFilter.clean(text);
-    // Вариант Б: отклонить сообщение — раскомментируйте, если нужно
-    // alert('Пожалуйста, не используйте нецензурные слова');
-    // return;
+  if (censor.isContainsBadWords(text)) {
+    text = censor.replace(text, '*');
   }
   // ------------------------
 
@@ -278,7 +287,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 10. Presence (онлайн) ====
+// ==== 10. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -294,7 +303,7 @@ presence
     }
   });
 
-// ==== 11. Модерация: статистика и кнопки ====
+// ==== 11. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -309,7 +318,6 @@ if (isModerator) {
   setInterval(refreshStats, 3000);
   refreshStats();
 
-  // Сбросить таймер
   document.getElementById('reset-timer').addEventListener('click', async () => {
     if (!confirm('Запустить таймер заново?')) return;
     const pwd = await getModPassword();
@@ -324,7 +332,6 @@ if (isModerator) {
     updatePauseButton();
   });
 
-  // Пауза / возобновить
   document.getElementById('toggle-timer').addEventListener('click', async () => {
     const pwd = await getModPassword();
     if (!pwd) return;
@@ -339,7 +346,6 @@ if (isModerator) {
     updatePauseButton();
   });
 
-  // Новый вопрос — новая картинка
   document.getElementById('new-question').addEventListener('click', async () => {
     const url = prompt('URL картинки вопроса:', document.getElementById('question').src);
     if (!url) return;
