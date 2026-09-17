@@ -1,36 +1,3 @@
-// ВНИМАНИЕ: этот ключ виден в исходном коде! Используйте только для теста.
-const DEEPSEEK_KEY = 'sk-8a3680d239174fa7a49347c35c6805f3';
-
-async function testDeepSeek() {
-  try {
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + DEEPSEEK_KEY
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat', // или 'deepseek-v4-flash'
-        messages: [
-          { role: 'user', content: 'Ответь одним словом: работает?' }
-        ],
-        max_tokens: 50
-      })
-    });
-
-    const data = await response.json();
-    console.log('Ответ от DeepSeek:', data);
-    
-    if (data.choices && data.choices[0]) {
-      alert('Работает! Ответ: ' + data.choices[0].message.content);
-    } else {
-      alert('Ошибка: ' + JSON.stringify(data.error || data));
-    }
-  } catch (error) {
-    console.error('Ошибка сети:', error);
-    alert('Ошибка сети: ' + error.message);
-  }
-}
 
 // Запускаем тест
 testDeepSeek();
