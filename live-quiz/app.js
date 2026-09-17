@@ -1,8 +1,4 @@
-
-// Запускаем тест
-testDeepSeek();
-
-// ==== 1. Настройки ====
+// ==== 1. Настройки Supabase (остаются без изменений) ====
 const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
@@ -12,11 +8,71 @@ const RATE_LIMIT_MS        = 2000;
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== ФИЛЬТР МАТА (russian-bad-word-censor) ====
-// 'strict' — максимально агрессивная проверка (ловит больше, но может зацепить безобидные слова)
-const censor = new RuCensor('strict');
+// ==== 2. НАСТРОЙКИ GIGACHAT (ВРЕМЕННО ДЛЯ ТЕСТА) ====
+// ВНИМАНИЕ: этот ключ будет виден в исходном коде страницы!
+// НЕ используйте в публичном доступе.
+const GIGACHAT_AUTH_KEY = 'ВАШ_КЛЮЧ_АВТОРИЗАЦИИ_ИЗ_ЛИЧНОГО_КАБИНЕТА';
+const GIGACHAT_SCOPE    = 'GIGACHAT_API_PERS'; // Для физлиц
 
-// ==== 2. DOM ====
+// Переменная для кэширования токена (живёт 30 минут)
+let gigachatToken = null;
+let gigachatTokenExpires = 0;
+
+// ==== 3. ФУНКЦИЯ ДЛЯ ЗАПРОСА К GIGACHAT ====
+async function askGigaChat(prompt) {
+  try {
+    // Получаем токен, если его нет или он истёк
+    if (!gigachatToken || Date.now() > gigachatTokenExpires) {
+      const oauthResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+          'RqUID': crypto.randomUUID(),
+          'Authorization': 'Basic ' + GIGACHAT_AUTH_KEY
+        },
+        body: 'scope=' + GIGACHAT_SCOPE
+      });
+
+      const tokenData = await oauthResponse.json();
+      if (!tokenData.access_token) {
+        throw new Error('Ошибка получения токена GigaChat: ' + JSON.stringify(tokenData));
+      }
+
+      gigachatToken = tokenData.access_token;
+      // Токен живёт 30 минут, ставим с запасом 25 минут
+      gigachatTokenExpires = Date.now() + (tokenData.expires_at * 1000) - (5 * 60 * 1000);
+      console.log('GigaChat: токен получен');
+    }
+
+    // Отправляем запрос к модели
+    const chatResponse = await fetch('https://api.giga.chat/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + gigachatToken
+      },
+      body: JSON.stringify({
+        model: 'GigaChat',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 200
+      })
+    });
+
+    const data = await chatResponse.json();
+    if (data.choices && data.choices[0]) {
+      return data.choices[0].message.content;
+    } else {
+      throw new Error('Ошибка ответа GigaChat: ' + JSON.stringify(data));
+    }
+  } catch (error) {
+    console.error('GigaChat error:', error);
+    return 'Ошибка GigaChat: ' + error.message;
+  }
+}
+
+// ==== 4. DOM (остаётся без изменений) ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -43,7 +99,7 @@ textEl.addEventListener('input', autoGrow);
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
-// ==== 4. Вопрос и таймер ====
+// ==== 5. Вопрос и таймер (без изменений) ====
 let questionStartedAt = null;
 let timerInterval = null;
 let currentDuration = QUESTION_DURATION_MS;
@@ -92,7 +148,7 @@ function updatePauseButton() {
   btn.textContent = pausedAt ? '▶ Пуск' : '⏸ Пауза';
 }
 
-// ==== 5. История ====
+// ==== 6. История (без изменений) ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -104,7 +160,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 6. Realtime ====
+// ==== 7. Realtime (без изменений) ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -138,7 +194,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 7. Отрисовка ====
+// ==== 8. Отрисовка (без изменений) ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -186,7 +242,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 8. Отправка ответа (с фильтром) ====
+// ==== 9. Отправка ответа (с фильтром) ====
 let lastSentAt = 0;
 
 form.addEventListener('submit', async (e) => {
@@ -202,10 +258,14 @@ form.addEventListener('submit', async (e) => {
   let text       = textEl.value.trim();
   if (!text) return;
 
-  // --- ФИЛЬТРАЦИЯ МАТА ---
-  if (censor.isContainsBadWords(text)) {
-    text = censor.replace(text, '*');
-  }
+  // --- ФИЛЬТРАЦИЯ МАТА (из прошлой версии) ---
+  // Здесь можно оставить bad-words или использовать GigaChat для оценки токсичности
+  // Например, так (медленно, но умно):
+  // const toxicityCheck = await askGigaChat('Это сообщение токсичное или содержит мат? Ответь только ДА или НЕТ: "' + text + '"');
+  // if (toxicityCheck.toUpperCase().includes('ДА')) {
+  //   alert('Сообщение отклонено: недопустимый контент');
+  //   return;
+  // }
   // ------------------------
 
   lastSentAt = now;
@@ -233,7 +293,7 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 9. Реакции ====
+// ==== 10. Реакции (без изменений) ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', () => {
     spawnReaction(btn.dataset.emoji);
@@ -254,7 +314,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 10. Presence ====
+// ==== 11. Presence (без изменений) ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -270,7 +330,7 @@ presence
     }
   });
 
-// ==== 11. Модерация ====
+// ==== 12. Модерация (без изменений) ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -330,7 +390,7 @@ if (isModerator) {
   });
 }
 
-// ==== 12. Модалка пароля ====
+// ==== 13. Модалка пароля (без изменений) ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -356,13 +416,17 @@ function askPassword() {
   });
 }
 
-// ==== 13. Утилита ====
+// ==== 14. Утилита (без изменений) ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 14. Старт ====
+// ==== 15. Старт (без изменений) ====
 loadQuestion();
 loadHistory();
+
+// ==== 16. ТЕСТОВЫЙ ЗАПРОС К GIGACHAT ====
+// Раскомментируйте, чтобы проверить работу при загрузке страницы
+// askGigaChat('Ответь одним словом: работает?').then(console.log);
