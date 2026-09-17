@@ -38,6 +38,22 @@
     .online { background: rgba(0,0,0,.5); padding: 4px 12px; border-radius: 20px;
               font-size: 13px; color: #b3e5fc; }
 
+    /* QR под таймером, справа */
+    #qr {
+      position: fixed;
+      top: calc(58px + env(safe-area-inset-top));
+      right: 12px;
+      width: 72px;
+      height: 72px;
+      background: #fff;
+      padding: 4px;
+      border-radius: 8px;
+      z-index: 25;
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+      border: 1px solid rgba(0,0,0,.15);
+      pointer-events: none;
+    }
+
     /* Летящие реакции поверх всего */
     .reactions {
       position: fixed; inset: 0;
@@ -120,7 +136,7 @@
     }
     .reaction-bar button:active { transform: scale(.9); }
 
-    /* Верхняя строка: имя + ответ (поднята выше) */
+    /* Верхняя строка: имя + ответ */
     .input-row {
       display: flex; gap: 6px;
       padding: 8px 10px 10px;
@@ -133,7 +149,7 @@
       border-radius: 12px;
       color: #fff;
       padding: 10px 12px;
-      font-size: 16px;         /* важно: iOS не зумит */
+      font-size: 16px;
       font-family: inherit;
       outline: none;
       backdrop-filter: blur(6px);
@@ -157,7 +173,7 @@
     /* Статистика (только для модератора) */
     .stats {
       position: fixed;
-      top: calc(50px + env(safe-area-inset-top));
+      top: calc(140px + env(safe-area-inset-top));
       right: 8px;
       max-width: 200px;
       max-height: 40vh;
@@ -216,6 +232,9 @@
     <div class="online" id="online">Онлайн: 1</div>
   </div>
 
+  <!-- QR под таймером, справа -->
+  <img id="qr" src="quiz-1.png" alt="QR" />
+
   <!-- Статистика (модератор) -->
   <div class="stats" id="stats"></div>
 
@@ -232,8 +251,8 @@
     </div>
 
     <form class="input-row" id="form">
-      <input  id="nickname" placeholder="Имя" maxlength="20" autocomplete="off" />
-      <textarea id="text" placeholder="Ваш ответ..." maxlength="300" rows="1" autocomplete="off"></textarea>
+      <input    id="nickname" placeholder="Имя" maxlength="20" autocomplete="off" />
+      <textarea id="text"     placeholder="Ваш ответ..." maxlength="300" rows="1" autocomplete="off"></textarea>
       <button type="submit">➤</button>
     </form>
   </div>

@@ -17,6 +17,7 @@ const textEl      = document.getElementById('text');
 const timerEl     = document.getElementById('timer');
 const onlineEl    = document.getElementById('online');
 const statsEl     = document.getElementById('stats');
+const qrEl        = document.getElementById('qr');
 const submitBtn   = form.querySelector('button[type=submit]');
 
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
@@ -33,7 +34,11 @@ function autoGrow() {
 }
 textEl.addEventListener('input', autoGrow);
 
-// ==== 3. Загрузка вопроса и таймера ====
+// ==== 3. QR — можно переопределить через ?qr=имя.png ====
+const qrParam = new URLSearchParams(location.search).get('qr');
+if (qrParam) qrEl.src = qrParam;
+
+// ==== 4. Загрузка вопроса и таймера ====
 let questionStartedAt = null;
 
 async function loadQuestion() {
@@ -62,7 +67,7 @@ function updateTimer(duration) {
   document.querySelectorAll('#reaction-bar button').forEach(b => b.disabled = ended);
 }
 
-// ==== 4. Загрузка истории ====
+// ==== 5. Загрузка истории ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -74,7 +79,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 5. Realtime ====
+// ==== 6. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -90,7 +95,7 @@ const channel = db
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
 
-// ==== 6. Отрисовка ====
+// ==== 7. Отрисовка ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -135,7 +140,7 @@ async function hideMessage(id) {
   removeMessage(id);
 }
 
-// ==== 7. Отправка ответа ====
+// ==== 8. Отправка ответа ====
 let lastSentAt = 0;
 
 form.addEventListener('submit', async (e) => {
@@ -172,7 +177,7 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 8. Реакции ====
+// ==== 9. Реакции ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', () => {
     spawnReaction(btn.dataset.emoji);
@@ -193,7 +198,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 9. Presence (онлайн) ====
+// ==== 10. Presence (онлайн) ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -209,7 +214,7 @@ presence
     }
   });
 
-// ==== 10. Статистика (только модератор) ====
+// ==== 11. Статистика (только модератор) ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -224,7 +229,7 @@ if (isModerator) {
   refreshStats();
 }
 
-// ==== 11. Пароль модератора ====
+// ==== 12. Пароль модератора ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -250,13 +255,13 @@ function askPassword() {
   });
 }
 
-// ==== 12. Утилита ====
+// ==== 13. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 13. Старт ====
+// ==== 14. Старт ====
 loadQuestion();
 loadHistory();
