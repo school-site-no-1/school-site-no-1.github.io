@@ -11,7 +11,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ==== 2. НАСТРОЙКИ GIGACHAT (ВРЕМЕННО ДЛЯ ТЕСТА) ====
 // ВНИМАНИЕ: этот ключ будет виден в исходном коде страницы!
 // НЕ используйте в публичном доступе.
-const GIGACHAT_AUTH_KEY = 'ВАШ_КЛЮЧ_АВТОРИЗАЦИИ_ИЗ_ЛИЧНОГО_КАБИНЕТА';
+const GIGACHAT_AUTH_KEY = '01a0b13b-2643-7950-9fb5-f045df0d408d';
 const GIGACHAT_SCOPE    = 'GIGACHAT_API_PERS'; // Для физлиц
 
 // Переменная для кэширования токена (живёт 30 минут)
