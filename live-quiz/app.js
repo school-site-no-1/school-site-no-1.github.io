@@ -1,9 +1,8 @@
 // ==== 1. Настройки ====
-const SUPABASE_URL  = '
-https://wwspemquprfjggytfhno.supabase.co';
+const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
-const ROOM          = 'live-1';           // ID эфира (можно менять в URL)
-const QUESTION_ID   = 'q1';               // ID текущего вопроса
+const ROOM          = 'live-1';
+const QUESTION_ID   = 'q1';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -14,7 +13,7 @@ const form        = document.getElementById('form');
 const nickEl      = document.getElementById('nickname');
 const textEl      = document.getElementById('text');
 
-// Сохраняем имя в localStorage, чтобы не вводить заново
+// Сохраняем имя в localStorage
 nickEl.value = localStorage.getItem('nick') || '';
 nickEl.addEventListener('input', () => localStorage.setItem('nick', nickEl.value));
 
@@ -27,32 +26,36 @@ async function loadHistory() {
     .order('created_at', { ascending: true })
     .limit(200);
 
-  if (error) { console.error(error); return; }
+  if (error) {
+    console.error('Ошибка загрузки:', error);
+    return;
+  }
   data.forEach(addMessageToChat);
 }
 
 // ==== 4. Realtime-подписка ====
 const channel = supabase
-  .channel(`room:${ROOM}`)
+  .channel('room:' + ROOM)
   .on(
     'postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'answers', filter: `room=eq.${ROOM}` },
+    { event: 'INSERT', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
     (payload) => addMessageToChat(payload.new)
   )
   .on('broadcast', { event: 'reaction' }, ({ payload }) => {
     spawnReaction(payload.emoji);
   })
-  .subscribe();
+  .subscribe((status) => {
+    console.log('Realtime status:', status);
+  });
 
 // ==== 5. Отрисовка сообщения ====
 function addMessageToChat(row) {
-  // не дублируем своё сообщение (оно уже добавлено локально после отправки)
-  if (document.querySelector(`[data-id="${row.id}"]`)) return;
+  if (document.querySelector('[data-id="' + row.id + '"]')) return;
 
   const div = document.createElement('div');
   div.className = 'msg';
   div.dataset.id = row.id;
-  div.innerHTML = `<b>${escapeHtml(row.nickname)}</b>: ${escapeHtml(row.text)}`;
+  div.innerHTML = '<b>' + escapeHtml(row.nickname) + '</b>: ' + escapeHtml(row.text);
   chatEl.appendChild(div);
   chatEl.scrollTop = chatEl.scrollHeight;
 }
@@ -66,24 +69,25 @@ form.addEventListener('submit', async (e) => {
 
   const { data, error } = await supabase
     .from('answers')
-    .insert({ room: ROOM, nickname, text, question_id: QUESTION_ID })
+    .insert({ room: ROOM, nickname: nickname, text: text, question_id: QUESTION_ID })
     .select()
     .single();
 
-  if (error) { alert('Ошибка: ' + error.message); return; }
+  if (error) {
+    alert('Ошибка: ' + error.message);
+    console.error(error);
+    return;
+  }
 
-  // Показываем сразу, чтобы не ждать Realtime
   addMessageToChat(data);
   textEl.value = '';
   textEl.focus();
 });
 
 // ==== 7. Реакции ====
-document.querySelectorAll('#reaction-bar button').forEach(btn => {
+document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', () => {
-    // Локально сразу
     spawnReaction(btn.dataset.emoji);
-    // Всем остальным через Broadcast (не пишем в БД — реакции эфемерны)
     channel.send({
       type: 'broadcast',
       event: 'reaction',
@@ -103,9 +107,9 @@ function spawnReaction(emoji) {
 
 // ==== 8. Утилита ====
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
-  ));
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
 }
 
 // ==== 9. Старт ====
