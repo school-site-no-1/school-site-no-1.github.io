@@ -42,6 +42,7 @@ if (qrParam) qrEl.src = qrParam;
 let questionStartedAt = null;
 let timerInterval = null;
 let currentDuration = QUESTION_DURATION_MS;
+let pausedAt = null;   // null = идёт; timestamp = на паузе
 
 async function loadQuestion() {
   const { data, error } = await db
@@ -51,23 +52,39 @@ async function loadQuestion() {
   document.getElementById('question').src = data.image_url;
   questionStartedAt = new Date(data.started_at).getTime();
   currentDuration   = data.duration_ms || QUESTION_DURATION_MS;
+  pausedAt          = data.paused_at ? new Date(data.paused_at).getTime() : null;
 
   updateTimer();
   if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(updateTimer, 1000);
+  updatePauseButton();
 }
 
 function updateTimer() {
-  const left = Math.max(0, questionStartedAt + currentDuration - Date.now());
+  let left;
+  if (pausedAt) {
+    left = Math.max(0, questionStartedAt + currentDuration - pausedAt);
+  } else {
+    left = Math.max(0, questionStartedAt + currentDuration - Date.now());
+  }
   const sec  = Math.floor(left / 1000);
   const mm   = String(Math.floor(sec / 60)).padStart(2, '0');
   const ss   = String(sec % 60).padStart(2, '0');
   timerEl.textContent = mm + ':' + ss;
+  timerEl.style.opacity = pausedAt ? '0.5' : '1';
 
-  const ended = left === 0;
-  textEl.disabled    = ended;
-  submitBtn.disabled = ended;
-  document.querySelectorAll('#reaction-bar button').forEach(b => b.disabled = ended);
+  const ended  = left === 0;
+  const locked = ended || pausedAt !== null;
+
+  textEl.disabled    = locked;
+  submitBtn.disabled = locked;
+  document.querySelectorAll('#reaction-bar button').forEach(b => b.disabled = locked);
+}
+
+function updatePauseButton() {
+  const btn = document.getElementById('toggle-timer');
+  if (!btn) return;
+  btn.textContent = pausedAt ? '▶ Пуск' : '⏸ Пауза';
 }
 
 // ==== 5. История ====
@@ -82,7 +99,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 6. Realtime: ответы + реакции + вопрос ====
+// ==== 6. Realtime: ответы + реакции ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -98,7 +115,7 @@ const channel = db
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
 
-// Realtime: обновление вопроса (сброс таймера, новая картинка)
+// Realtime: обновление вопроса
 db.channel('questions-watch')
   .on(
     'postgres_changes',
@@ -108,7 +125,9 @@ db.channel('questions-watch')
       document.getElementById('question').src = q.image_url;
       questionStartedAt = new Date(q.started_at).getTime();
       currentDuration   = q.duration_ms || QUESTION_DURATION_MS;
+      pausedAt          = q.paused_at ? new Date(q.paused_at).getTime() : null;
       updateTimer();
+      updatePauseButton();
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(updateTimer, 1000);
     }
@@ -181,7 +200,11 @@ form.addEventListener('submit', async (e) => {
 
   lastSentAt = now;
   submitBtn.disabled = true;
-  setTimeout(() => { submitBtn.disabled = false; }, RATE_LIMIT_MS);
+  setTimeout(() => {
+    if (!pausedAt && Date.now() < questionStartedAt + currentDuration) {
+      submitBtn.disabled = false;
+    }
+  }, RATE_LIMIT_MS);
 
   const { data, error } = await db
     .from('answers')
@@ -221,7 +244,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 10. Presence ====
+// ==== 10. Presence (онлайн) ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -261,9 +284,25 @@ if (isModerator) {
       q_id: QUESTION_ID, password: pwd
     });
     if (error) { alert(error.message); return; }
-    // локально обновим сразу, чтобы не ждать realtime
     questionStartedAt = Date.now();
+    pausedAt = null;
     updateTimer();
+    updatePauseButton();
+  });
+
+  // Пауза / возобновить
+  document.getElementById('toggle-timer').addEventListener('click', async () => {
+    const pwd = await getModPassword();
+    if (!pwd) return;
+    const { data, error } = await db.rpc('toggle_timer_pause', {
+      q_id: QUESTION_ID, password: pwd
+    });
+    if (error) { alert(error.message); return; }
+
+    pausedAt = data ? Date.now() : null;
+    if (!data) questionStartedAt = Date.now();
+    updateTimer();
+    updatePauseButton();
   });
 
   // Новый вопрос — новая картинка
@@ -278,7 +317,9 @@ if (isModerator) {
     if (error) { alert(error.message); return; }
     document.getElementById('question').src = url;
     questionStartedAt = Date.now();
+    pausedAt = null;
     updateTimer();
+    updatePauseButton();
   });
 }
 

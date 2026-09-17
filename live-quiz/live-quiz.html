@@ -34,7 +34,8 @@
       pointer-events: none;
     }
     .timer  { background: rgba(0,0,0,.5); padding: 4px 12px; border-radius: 20px;
-              font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+              font-size: 18px; font-weight: 700; letter-spacing: 1px;
+              transition: opacity .2s; }
     .online { background: rgba(0,0,0,.5); padding: 4px 12px; border-radius: 20px;
               font-size: 13px; color: #b3e5fc; }
 
@@ -135,6 +136,7 @@
       transition: transform .1s;
     }
     .reaction-bar button:active { transform: scale(.9); }
+    .reaction-bar button:disabled { opacity: .4; }
 
     /* Строка: имя + ответ */
     .input-row {
@@ -191,14 +193,16 @@
     .stats.visible { display: block; }
     .stats b { color: #4fc3f7; }
 
-    /* Кнопки модератора */
+    /* Кнопки модератора (под таймером, слева) */
     .mod-actions {
       position: fixed;
-      top: calc(240px + env(safe-area-inset-top));
-      right: 8px;
+      top: calc(58px + env(safe-area-inset-top));
+      left: 12px;
       display: none;
-      flex-direction: column;
+      flex-direction: row;
+      flex-wrap: wrap;
       gap: 6px;
+      max-width: calc(100vw - 120px);
       z-index: 26;
     }
     .mod-actions.visible { display: flex; }
@@ -212,6 +216,7 @@
       cursor: pointer;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
+      white-space: nowrap;
     }
     .mod-actions button:active { transform: scale(.97); }
 
@@ -262,10 +267,11 @@
   <!-- Статистика (модератор) -->
   <div class="stats" id="stats"></div>
 
-  <!-- Кнопки модератора -->
+  <!-- Кнопки модератора (под таймером, слева) -->
   <div class="mod-actions" id="mod-actions">
-    <button id="reset-timer">🔄 Сбросить таймер</button>
-    <button id="new-question">❓ Новый вопрос</button>
+    <button id="reset-timer">🔄 Заново</button>
+    <button id="toggle-timer">⏸ Пауза</button>
+    <button id="new-question">❓ Вопрос</button>
   </div>
 
   <!-- Чат + ввод + реакции -->
