@@ -4,7 +4,7 @@ const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==== 2. DOM ====
 const chatEl      = document.getElementById('chat');
@@ -13,13 +13,12 @@ const form        = document.getElementById('form');
 const nickEl      = document.getElementById('nickname');
 const textEl      = document.getElementById('text');
 
-// Сохраняем имя в localStorage
 nickEl.value = localStorage.getItem('nick') || '';
 nickEl.addEventListener('input', () => localStorage.setItem('nick', nickEl.value));
 
-// ==== 3. Загрузка истории из БД ====
+// ==== 3. Загрузка истории ====
 async function loadHistory() {
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('answers')
     .select('*')
     .eq('room', ROOM)
@@ -33,8 +32,8 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 4. Realtime-подписка ====
-const channel = supabase
+// ==== 4. Realtime ====
+const channel = db
   .channel('room:' + ROOM)
   .on(
     'postgres_changes',
@@ -60,14 +59,14 @@ function addMessageToChat(row) {
   chatEl.scrollTop = chatEl.scrollHeight;
 }
 
-// ==== 6. Отправка ответа ====
+// ==== 6. Отправка ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const nickname = nickEl.value.trim() || 'Аноним';
   const text     = textEl.value.trim();
   if (!text) return;
 
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from('answers')
     .insert({ room: ROOM, nickname: nickname, text: text, question_id: QUESTION_ID })
     .select()
