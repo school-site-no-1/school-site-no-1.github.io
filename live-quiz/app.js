@@ -4,6 +4,8 @@ const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
 
+// ВАЖНО: переменная называется db, а не supabase,
+// иначе конфликт с глобальным объектом библиотеки
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==== 2. DOM ====
