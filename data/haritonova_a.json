@@ -1,9 +1,22 @@
 {
   "ПН": [],
-  "ВТ": [],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "6В",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 7,
+      "class": "7Б",
+      "subject": "ИЗО",
+      "room": "208"
+    }
+  ],
   "СР": [
     {
-      "lesson": 3,
+      "lesson": 1,
       "class": "5Б",
       "subject": "ИЗО",
       "room": "208"
@@ -12,13 +25,13 @@
   "ЧТ": [
     {
       "lesson": 1,
-      "class": "5А",
+      "class": "6А",
       "subject": "ИЗО",
       "room": "208"
     },
     {
-      "lesson": 3,
-      "class": "6А",
+      "lesson": 6,
+      "class": "5А",
       "subject": "ИЗО",
       "room": "208"
     }
@@ -44,5 +57,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-18 07:48:23"
+  "last_update": "2026-09-18 10:32:20"
 }
