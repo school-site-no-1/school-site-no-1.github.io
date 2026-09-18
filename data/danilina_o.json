@@ -1,6 +1,62 @@
 {
-  "ПН": [],
-  "ВТ": [],
+  "ПН": [
+    {
+      "lesson": 1,
+      "class": "8А",
+      "subject": "Разговор о важном",
+      "room": "112"
+    },
+    {
+      "lesson": 2,
+      "class": "6А",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 5,
+      "class": "6Б",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 6,
+      "class": "6Б",
+      "subject": "Труд",
+      "room": "112/113"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 3,
+      "class": "5А",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 4,
+      "class": "5А",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 5,
+      "class": "5Б",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 6,
+      "class": "5Б",
+      "subject": "Труд",
+      "room": "112/113"
+    }
+  ],
   "СР": [
     {
       "lesson": 1,
@@ -70,15 +126,27 @@
       "lesson": 3,
       "class": "7В",
       "subject": "Труд",
-      "room": "309/310"
+      "room": "112/113"
     },
     {
       "lesson": 4,
       "class": "7В",
       "subject": "Труд",
       "room": "112/113"
+    },
+    {
+      "lesson": 5,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "112/113"
+    },
+    {
+      "lesson": 6,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "112/113"
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-18 07:48:14"
+  "last_update": "2026-09-18 10:32:09"
 }
