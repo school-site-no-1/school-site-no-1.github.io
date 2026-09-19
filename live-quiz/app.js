@@ -77,7 +77,6 @@ const nickEl      = document.getElementById('nickname');
 const textEl      = document.getElementById('text');
 const onlineEl    = document.getElementById('online');
 const statsEl     = document.getElementById('stats');
-const qrEl        = document.getElementById('qr');
 const statsReactEl = document.getElementById('reactions-stats');
 const submitBtn   = form.querySelector('button[type=submit]');
 
@@ -95,9 +94,6 @@ function autoGrow() {
   textEl.style.height = Math.min(textEl.scrollHeight, 90) + 'px';
 }
 textEl.addEventListener('input', autoGrow);
-
-const qrParam = new URLSearchParams(location.search).get('qr');
-if (qrParam) qrEl.src = qrParam;
 
 // ==== 5. Загрузка вопроса ====
 async function loadQuestion() {
@@ -201,7 +197,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 9. Отправка ответа (с проверкой имени и текста) ====
+// ==== 9. Отправка ответа ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -212,7 +208,6 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
 
-  // 1. Проверяем ИМЯ на мат
   console.log('Проверка имени:', nickname);
   const nameBad = await containsProfanity(nickname);
   if (nameBad) {
@@ -222,7 +217,6 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2. Проверяем ТЕКСТ на мат
   console.log('Проверка текста:', text);
   const textBad = await containsProfanity(text);
   if (textBad) {
@@ -232,7 +226,6 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 3. Отправляем в Supabase
   console.log('Отправка в базу:', { nickname, text });
   const { data, error } = await db
     .from('answers')
@@ -277,7 +270,6 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// Перерисовывает блок статистики смайликов
 function renderReactionsStats() {
   const emojis = Object.keys(reactionCounts);
   if (emojis.length === 0) {
