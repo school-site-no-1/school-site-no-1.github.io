@@ -4,9 +4,50 @@ const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
 
+// ==== DeepSeek через Cloudflare Worker ====
+const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
+
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. DOM ====
+// ==== 2. Функция запроса к DeepSeek ====
+async function askDeepSeek(prompt, maxTokens = 50) {
+  try {
+    const response = await fetch(DEEPSEEK_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: maxTokens
+      })
+    });
+    const data = await response.json();
+    if (data.choices && data.choices[0]) return data.choices[0].message.content;
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    return null;
+  } catch (error) {
+    console.error('DeepSeek error:', error);
+    return null;
+  }
+}
+
+// ==== 3. Проверка на мат через DeepSeek ====
+// Возвращает true, если текст/имя содержат мат
+async function containsProfanity(text) {
+  if (!text || text.trim().length === 0) return false;
+
+  const prompt =
+    'Проверь текст на наличие мата, нецензурных слов, оскорблений (русский и английский). ' +
+    'Ответь строго одним словом: ДА (если есть мат) или НЕТ (если чисто). ' +
+    'Текст: "' + text.replace(/"/g, '') + '"';
+
+  const answer = await askDeepSeek(prompt, 10);
+  if (!answer) return false; // если DeepSeek недоступен — пропускаем
+  return answer.trim().toUpperCase().startsWith('ДА');
+}
+
+// ==== 4. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -21,7 +62,7 @@ const submitBtn   = form.querySelector('button[type=submit]');
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
 let modPassword   = null;
 
-// Кэш счётчиков — чтобы перерисовывать блок целиком
+// Кэш счётчиков реакций
 const reactionCounts = {};
 
 nickEl.value = localStorage.getItem('nick') || '';
@@ -36,7 +77,7 @@ textEl.addEventListener('input', autoGrow);
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
-// ==== 3. Загрузка вопроса ====
+// ==== 5. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
@@ -54,7 +95,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 4. История ответов ====
+// ==== 6. История ответов ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -66,7 +107,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 5. Realtime ====
+// ==== 7. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -94,7 +135,7 @@ db.channel('reactions-watch')
   )
   .subscribe();
 
-// ==== 6. Отрисовка сообщений ====
+// ==== 8. Отрисовка сообщений ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -138,7 +179,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 7. Отправка ответа ====
+// ==== 9. Отправка ответа (с проверкой имени и текста) ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -147,6 +188,25 @@ form.addEventListener('submit', async (e) => {
   if (!text) return;
 
   submitBtn.disabled = true;
+  submitBtn.textContent = '…';
+
+  // Проверяем ИМЯ на мат
+  const nameBad = await containsProfanity(nickname);
+  if (nameBad) {
+    alert('Имя содержит недопустимые слова. Пожалуйста, измените.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '➤';
+    return;
+  }
+
+  // Проверяем ТЕКСТ на мат
+  const textBad = await containsProfanity(text);
+  if (textBad) {
+    alert('Сообщение содержит недопустимые слова.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '➤';
+    return;
+  }
 
   const { data, error } = await db
     .from('answers')
@@ -154,6 +214,7 @@ form.addEventListener('submit', async (e) => {
     .select().single();
 
   submitBtn.disabled = false;
+  submitBtn.textContent = '➤';
 
   if (error) { alert('Ошибка: ' + error.message); return; }
 
@@ -163,7 +224,7 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 8. Реакции + счётчики ====
+// ==== 10. Реакции + счётчики ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
@@ -194,7 +255,6 @@ function renderReactionsStats() {
     return;
   }
 
-  // Сортируем по убыванию
   emojis.sort((a, b) => reactionCounts[b] - reactionCounts[a]);
 
   statsReactEl.innerHTML = emojis.map(e =>
@@ -217,7 +277,7 @@ async function loadReactionCounts() {
   renderReactionsStats();
 }
 
-// ==== 9. Presence ====
+// ==== 11. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -233,7 +293,7 @@ presence
     }
   });
 
-// ==== 10. Модерация ====
+// ==== 12. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -261,7 +321,7 @@ if (isModerator) {
   });
 }
 
-// ==== 11. Модалка пароля ====
+// ==== 13. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -287,14 +347,14 @@ function askPassword() {
   });
 }
 
-// ==== 12. Утилита ====
+// ==== 14. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 13. Старт ====
+// ==== 15. Старт ====
 loadQuestion();
 loadHistory();
 loadReactionCounts();
