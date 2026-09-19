@@ -8,11 +8,28 @@ const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. Функция запроса к DeepSeek (для проверки на мат) ====
+// ==== 2. Универсальный fetch с таймаутом ====
+async function fetchWithTimeout(url, options, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return response;
+  } catch (error) {
+    clearTimeout(timer);
+    if (error.name === 'AbortError') {
+      console.warn('Запрос превысил таймаут ' + timeoutMs + ' мс');
+      return null;
+    }
+    throw error;
+  }
+}
+
+// ==== 3. Запрос к DeepSeek (для проверки на мат) ====
 async function askDeepSeek(prompt, maxTokens = 10) {
   try {
-    console.log('Отправка в DeepSeek:', prompt.substring(0, 50) + '...');
-    const response = await fetch(DEEPSEEK_PROXY, {
+    const response = await fetchWithTimeout(DEEPSEEK_PROXY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -21,83 +38,61 @@ async function askDeepSeek(prompt, maxTokens = 10) {
         temperature: 0.1,
         max_tokens: maxTokens
       })
-    });
+    }, 8000);
 
-    if (!response.ok) {
-      console.error('DeepSeek HTTP ошибка:', response.status, response.statusText);
-      return null;
-    }
+    if (!response || !response.ok) return null;
 
     const data = await response.json();
-    console.log('Ответ DeepSeek:', data);
-
-    if (data.choices && data.choices[0]) {
-      const answer = data.choices[0].message.content;
-      console.log('Текст ответа:', answer);
-      return answer;
-    }
-
-    if (data.error) {
-      console.error('Ошибка в ответе DeepSeek:', data.error);
-    }
+    if (data.choices && data.choices[0]) return data.choices[0].message.content;
     return null;
   } catch (error) {
-    console.error('Сетевая ошибка DeepSeek:', error);
+    console.error('DeepSeek error:', error);
     return null;
   }
 }
 
-// ==== 3. Проверка на мат через DeepSeek ====
-async function containsProfanity(text) {
-  if (!text || text.trim().length === 0) return false;
-
+// ==== 4. Проверка ИМЕНИ и ТЕКСТА на мат ОДНИМ запросом ====
+async function checkProfanity(nickname, text) {
   const prompt =
-    'Проверь текст на наличие мата, нецензурных слов, оскорблений (русский и английский). ' +
-    'Ответь строго одним словом: ДА (если есть мат) или НЕТ (если чисто). ' +
-    'Текст: "' + text.replace(/"/g, '') + '"';
+    'Проверь ИМЯ и ТЕКСТ на наличие мата, нецензурных слов, оскорблений (русский и английский). ' +
+    'Ответь строго одним словом: ДА (если есть мат хотя бы где-то) или НЕТ (если чисто). ' +
+    'ИМЯ: "' + nickname.replace(/"/g, '') + '". ' +
+    'ТЕКСТ: "' + text.replace(/"/g, '') + '".';
 
   const answer = await askDeepSeek(prompt, 10);
-
   if (answer === null) {
     console.warn('DeepSeek не ответил, пропускаем проверку');
     return false;
   }
 
-  const isProfane = answer.trim().toUpperCase().startsWith('ДА');
-  console.log('Проверка "' + text + '": ' + answer + ' -> ' + (isProfane ? 'БЛОКИРОВАТЬ' : 'ПРОПУСТИТЬ'));
-  return isProfane;
+  const isBad = answer.trim().toUpperCase().startsWith('ДА');
+  console.log('Проверка -> ' + answer + ' -> ' + (isBad ? 'БЛОКИРОВАТЬ' : 'ПРОПУСТИТЬ'));
+  return isBad;
 }
 
-// ==== 4. Перевод в стиле древнерусского / былинного ====
+// ==== 5. Перевод в стиле древнерусского / былинного ====
 async function translateToOldRussian(text) {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    console.log('Перевод на древнерусский:', text);
-    const response = await fetch(DEEPSEEK_PROXY + '/translate', {
+    const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
-    });
+    }, 10000);
 
-    if (!response.ok) {
-      console.error('Ошибка HTTP при переводе:', response.status);
-      return null;
-    }
+    if (!response || !response.ok) return null;
 
     const data = await response.json();
-    console.log('Ответ перевода:', data);
-
     if (data.translated) return data.translated;
-    if (data.error) console.error('Ошибка перевода:', data.error);
     return null;
   } catch (error) {
-    console.error('Сетевая ошибка перевода:', error);
+    console.error('Ошибка перевода:', error);
     return null;
   }
 }
 
-// ==== 5. DOM ====
+// ==== 6. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -111,6 +106,7 @@ const submitBtn   = form.querySelector('button[type=submit]');
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
 let modPassword   = null;
 
+// Кэш счётчиков реакций
 const reactionCounts = {};
 
 nickEl.value = localStorage.getItem('nick') || '';
@@ -122,7 +118,7 @@ function autoGrow() {
 }
 textEl.addEventListener('input', autoGrow);
 
-// ==== 6. Загрузка вопроса ====
+// ==== 7. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
@@ -140,7 +136,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 7. История ответов ====
+// ==== 8. История ответов ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -152,7 +148,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 8. Realtime ====
+// ==== 9. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -179,7 +175,7 @@ db.channel('reactions-watch')
   )
   .subscribe();
 
-// ==== 9. Отрисовка сообщений ====
+// ==== 10. Отрисовка сообщений ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -223,7 +219,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 10. Отправка ответа (с проверкой на мат И переводом) ====
+// ==== 11. Отправка ответа ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -234,28 +230,18 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
 
-  // 1. Проверка ИМЕНИ
-  console.log('Проверка имени:', nickname);
-  const nameBad = await containsProfanity(nickname);
-  if (nameBad) {
-    alert('Имя содержит недопустимые слова. Пожалуйста, измените.');
+  // 1. Проверка имени и текста ОДНИМ запросом
+  console.log('Проверка на мат...');
+  const isBad = await checkProfanity(nickname, text);
+  if (isBad) {
+    alert('Имя или сообщение содержит недопустимые слова.');
     submitBtn.disabled = false;
     submitBtn.textContent = '➤';
     return;
   }
 
-  // 2. Проверка ТЕКСТА
-  console.log('Проверка текста:', text);
-  const textBad = await containsProfanity(text);
-  if (textBad) {
-    alert('Сообщение содержит недопустимые слова.');
-    submitBtn.disabled = false;
-    submitBtn.textContent = '➤';
-    return;
-  }
-
-  // 3. Перевод в стиле древнерусского / былинного
-  console.log('Перевод текста на древнерусский...');
+  // 2. Перевод на древнерусский
+  console.log('Перевод на древнерусский...');
   const translated = await translateToOldRussian(text);
   if (translated) {
     console.log('Перевод:', translated);
@@ -264,7 +250,7 @@ form.addEventListener('submit', async (e) => {
     console.warn('Перевод не удался, отправляем оригинал');
   }
 
-  // 4. Отправка в Supabase
+  // 3. Отправка в Supabase
   console.log('Отправка в базу:', { nickname, text });
   const { data, error } = await db
     .from('answers')
@@ -286,7 +272,7 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 11. Реакции + счётчики ====
+// ==== 12. Реакции + счётчики ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
@@ -338,7 +324,7 @@ async function loadReactionCounts() {
   renderReactionsStats();
 }
 
-// ==== 12. Presence ====
+// ==== 13. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -354,7 +340,7 @@ presence
     }
   });
 
-// ==== 13. Модерация ====
+// ==== 14. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -382,7 +368,7 @@ if (isModerator) {
   });
 }
 
-// ==== 14. Модалка пароля ====
+// ==== 15. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -408,14 +394,14 @@ function askPassword() {
   });
 }
 
-// ==== 15. Утилита ====
+// ==== 16. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 16. Старт ====
+// ==== 17. Старт ====
 loadQuestion();
 loadHistory();
 loadReactionCounts();
