@@ -3,60 +3,26 @@ const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
-const QUESTION_DURATION_MS = 5 * 60 * 1000;
-
-// ==== DeepSeek через Cloudflare Worker ====
-const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. DeepSeek ====
-async function askDeepSeek(prompt, maxTokens = 500) {
-  try {
-    const response = await fetch(DEEPSEEK_PROXY, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: maxTokens
-      })
-    });
-    const data = await response.json();
-    if (data.choices && data.choices[0]) return data.choices[0].message.content;
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-    throw new Error('Неизвестный ответ от DeepSeek');
-  } catch (error) {
-    console.error('DeepSeek error:', error);
-    return null;
-  }
-}
-
-async function isToxic(text) {
-  const prompt =
-    'Проверь сообщение на мат, оскорбления, токсичность и запрещённый контент. ' +
-    'Ответь строго одним словом: ДА (если недопустимо) или НЕТ (если нормально). ' +
-    'Сообщение: "' + text + '"';
-  const answer = await askDeepSeek(prompt, 10);
-  if (!answer) return false;
-  return answer.trim().toUpperCase().startsWith('ДА');
-}
-
-// ==== 3. DOM ====
+// ==== 2. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
 const nickEl      = document.getElementById('nickname');
 const textEl      = document.getElementById('text');
-const timerEl     = document.getElementById('timer');
 const onlineEl    = document.getElementById('online');
 const statsEl     = document.getElementById('stats');
 const qrEl        = document.getElementById('qr');
+const statsReactEl = document.getElementById('reactions-stats');
 const submitBtn   = form.querySelector('button[type=submit]');
 
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
 let modPassword   = null;
+
+// Кэш счётчиков — чтобы перерисовывать блок целиком
+const reactionCounts = {};
 
 nickEl.value = localStorage.getItem('nick') || '';
 nickEl.addEventListener('input', () => localStorage.setItem('nick', nickEl.value));
@@ -70,56 +36,25 @@ textEl.addEventListener('input', autoGrow);
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
-// ==== 4. Вопрос и таймер ====
-let questionStartedAt = null;
-let timerInterval = null;
-let currentDuration = QUESTION_DURATION_MS;
-let pausedAt = null;
-
+// ==== 3. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
   if (error || !data) { console.error(error); return; }
-
   document.getElementById('question').src = data.image_url;
-  questionStartedAt = new Date(data.started_at).getTime();
-  currentDuration   = data.duration_ms || QUESTION_DURATION_MS;
-  pausedAt          = data.paused_at ? new Date(data.paused_at).getTime() : null;
-
-  updateTimer();
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(updateTimer, 1000);
-  updatePauseButton();
 }
 
-function updateTimer() {
-  let left;
-  if (pausedAt) {
-    left = Math.max(0, questionStartedAt + currentDuration - pausedAt);
-  } else {
-    left = Math.max(0, questionStartedAt + currentDuration - Date.now());
-  }
-  const sec  = Math.floor(left / 1000);
-  const mm   = String(Math.floor(sec / 60)).padStart(2, '0');
-  const ss   = String(sec % 60).padStart(2, '0');
-  timerEl.textContent = mm + ':' + ss;
-  timerEl.style.opacity = pausedAt ? '0.5' : '1';
+db.channel('questions-watch')
+  .on(
+    'postgres_changes',
+    { event: 'UPDATE', schema: 'public', table: 'questions', filter: 'id=eq.' + QUESTION_ID },
+    (payload) => {
+      document.getElementById('question').src = payload.new.image_url;
+    }
+  )
+  .subscribe();
 
-  const ended  = left === 0;
-  const locked = ended || pausedAt !== null;
-
-  textEl.disabled    = locked;
-  submitBtn.disabled = locked;
-  document.querySelectorAll('#reaction-bar button').forEach(b => b.disabled = locked);
-}
-
-function updatePauseButton() {
-  const btn = document.getElementById('toggle-timer');
-  if (!btn) return;
-  btn.textContent = pausedAt ? '▶ Пуск' : '⏸ Пауза';
-}
-
-// ==== 5. История ответов ====
+// ==== 4. История ответов ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -131,7 +66,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 6. Realtime ====
+// ==== 5. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -147,24 +82,6 @@ const channel = db
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
 
-db.channel('questions-watch')
-  .on(
-    'postgres_changes',
-    { event: 'UPDATE', schema: 'public', table: 'questions', filter: 'id=eq.' + QUESTION_ID },
-    (payload) => {
-      const q = payload.new;
-      document.getElementById('question').src = q.image_url;
-      questionStartedAt = new Date(q.started_at).getTime();
-      currentDuration   = q.duration_ms || QUESTION_DURATION_MS;
-      pausedAt          = q.paused_at ? new Date(q.paused_at).getTime() : null;
-      updateTimer();
-      updatePauseButton();
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(updateTimer, 1000);
-    }
-  )
-  .subscribe();
-
 // Realtime: счётчики реакций
 db.channel('reactions-watch')
   .on(
@@ -177,7 +94,7 @@ db.channel('reactions-watch')
   )
   .subscribe();
 
-// ==== 7. Отрисовка сообщений ====
+// ==== 6. Отрисовка сообщений ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -221,7 +138,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 8. Отправка ответа (БЕЗ rate-limit) ====
+// ==== 7. Отправка ответа ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -229,16 +146,7 @@ form.addEventListener('submit', async (e) => {
   const text     = textEl.value.trim();
   if (!text) return;
 
-  // Умная модерация через DeepSeek
   submitBtn.disabled = true;
-  submitBtn.textContent = '…';
-  const toxic = await isToxic(text);
-  submitBtn.textContent = '➤';
-  if (toxic) {
-    alert('Сообщение отклонено: недопустимый контент');
-    submitBtn.disabled = false;
-    return;
-  }
 
   const { data, error } = await db
     .from('answers')
@@ -255,18 +163,12 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 9. Реакции + счётчики ====
+// ==== 8. Реакции + счётчики ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
-
-    // Локально — сразу
     spawnReaction(emoji);
-
-    // Счётчик в БД
     await db.rpc('bump_reaction', { p_room: ROOM, p_emoji: emoji });
-
-    // Broadcast всем остальным
     channel.send({
       type: 'broadcast',
       event: 'reaction',
@@ -284,23 +186,38 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-function updateReactionCounter(emoji, cnt) {
-  const el = document.querySelector('.cnt[data-cnt="' + emoji + '"]');
-  if (!el) return;
-  el.textContent = cnt;
-  if (cnt > 0) el.classList.add('visible');
-  else el.classList.remove('visible');
+// Перерисовывает блок статистики смайликов
+function renderReactionsStats() {
+  const emojis = Object.keys(reactionCounts);
+  if (emojis.length === 0) {
+    statsReactEl.classList.remove('visible');
+    return;
+  }
+
+  // Сортируем по убыванию
+  emojis.sort((a, b) => reactionCounts[b] - reactionCounts[a]);
+
+  statsReactEl.innerHTML = emojis.map(e =>
+    '<div class="row"><span>' + e + '</span><b>' + reactionCounts[e] + '</b></div>'
+  ).join('');
+
+  statsReactEl.classList.add('visible');
 }
 
-// Загрузка стартовых счётчиков
+function updateReactionCounter(emoji, cnt) {
+  reactionCounts[emoji] = cnt;
+  renderReactionsStats();
+}
+
 async function loadReactionCounts() {
   const { data, error } = await db
     .from('reactions_count').select('*').eq('room', ROOM);
   if (error || !data) return;
-  data.forEach(row => updateReactionCounter(row.emoji, row.cnt));
+  data.forEach(row => { reactionCounts[row.emoji] = row.cnt; });
+  renderReactionsStats();
 }
 
-// ==== 10. Presence ====
+// ==== 9. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -316,7 +233,7 @@ presence
     }
   });
 
-// ==== 11. Модерация ====
+// ==== 10. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -331,34 +248,6 @@ if (isModerator) {
   setInterval(refreshStats, 3000);
   refreshStats();
 
-  document.getElementById('reset-timer').addEventListener('click', async () => {
-    if (!confirm('Запустить таймер заново?')) return;
-    const pwd = await getModPassword();
-    if (!pwd) return;
-    const { error } = await db.rpc('restart_question', {
-      q_id: QUESTION_ID, password: pwd
-    });
-    if (error) { alert(error.message); return; }
-    questionStartedAt = Date.now();
-    pausedAt = null;
-    updateTimer();
-    updatePauseButton();
-  });
-
-  document.getElementById('toggle-timer').addEventListener('click', async () => {
-    const pwd = await getModPassword();
-    if (!pwd) return;
-    const { data, error } = await db.rpc('toggle_timer_pause', {
-      q_id: QUESTION_ID, password: pwd
-    });
-    if (error) { alert(error.message); return; }
-
-    pausedAt = data ? Date.now() : null;
-    if (!data) questionStartedAt = Date.now();
-    updateTimer();
-    updatePauseButton();
-  });
-
   document.getElementById('new-question').addEventListener('click', async () => {
     const url = prompt('URL картинки вопроса:', document.getElementById('question').src);
     if (!url) return;
@@ -369,14 +258,10 @@ if (isModerator) {
     });
     if (error) { alert(error.message); return; }
     document.getElementById('question').src = url;
-    questionStartedAt = Date.now();
-    pausedAt = null;
-    updateTimer();
-    updatePauseButton();
   });
 }
 
-// ==== 12. Модалка пароля ====
+// ==== 11. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -402,17 +287,14 @@ function askPassword() {
   });
 }
 
-// ==== 13. Утилита ====
+// ==== 12. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 14. Старт ====
+// ==== 13. Старт ====
 loadQuestion();
 loadHistory();
 loadReactionCounts();
-
-// ==== 15. Тест DeepSeek ====
-// askDeepSeek('Ответь одним словом: работает?').then(r => console.log('DeepSeek:', r));
