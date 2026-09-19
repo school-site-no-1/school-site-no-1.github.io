@@ -9,7 +9,7 @@ const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. Функция запроса к DeepSeek (с логированием) ====
+// ==== 2. Функция запроса к DeepSeek ====
 async function askDeepSeek(prompt, maxTokens = 10) {
   try {
     console.log('Отправка в DeepSeek:', prompt.substring(0, 50) + '...');

@@ -32,7 +32,6 @@
       pointer-events: none;
     }
 
-    /* Статистика смайликов — справа вверху, под QR */
     .reactions-stats {
       position: fixed;
       top: calc(140px + env(safe-area-inset-top));
@@ -91,14 +90,22 @@
     .msg .hide-btn { background: none; border: 0; color: #ff5252; font-size: 14px;
                      margin-left: 6px; cursor: pointer; padding: 0 4px; }
 
-    .reaction-bar { display: flex; justify-content: center; gap: 6px; padding: 6px 10px; }
+    /* Панель реакций */
+    .reaction-bar { display: flex; justify-content: center; gap: 6px; padding: 6px 10px; flex-wrap: wrap; }
     .reaction-bar button {
       width: 48px; height: 48px; font-size: 26px; background: rgba(0,0,0,.4);
       border: 1px solid rgba(255,255,255,.15); border-radius: 50%; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: transform .1s;
+      color: #fff;
     }
     .reaction-bar button:active { transform: scale(.9); }
+
+    /* Реакция "67" — чуть меньший шрифт, чтобы влезло */
+    .reaction-bar button[data-emoji="67"] {
+      font-size: 18px;
+      font-weight: 700;
+    }
 
     .input-row { display: flex; gap: 6px; padding: 8px 10px 10px; align-items: flex-end; }
     .input-row input, .input-row textarea {
@@ -169,7 +176,6 @@
 
   <img id="qr" src="quiz-1.png" alt="QR" />
 
-  <!-- Статистика смайликов -->
   <div class="reactions-stats" id="reactions-stats"></div>
 
   <div class="stats" id="stats"></div>
@@ -187,6 +193,7 @@
       <button data-emoji="😂">😂</button>
       <button data-emoji="👍">👍</button>
       <button data-emoji="😮">😮</button>
+      <button data-emoji="67">67</button>
     </div>
 
     <form class="input-row" id="form">
