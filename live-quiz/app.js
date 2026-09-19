@@ -4,14 +4,13 @@ const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
 const QUESTION_DURATION_MS = 5 * 60 * 1000;
-const RATE_LIMIT_MS        = 2000;
 
 // ==== DeepSeek через Cloudflare Worker ====
 const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. Функция запроса к DeepSeek ====
+// ==== 2. DeepSeek ====
 async function askDeepSeek(prompt, maxTokens = 500) {
   try {
     const response = await fetch(DEEPSEEK_PROXY, {
@@ -24,36 +23,27 @@ async function askDeepSeek(prompt, maxTokens = 500) {
         max_tokens: maxTokens
       })
     });
-
     const data = await response.json();
-
-    if (data.choices && data.choices[0]) {
-      return data.choices[0].message.content;
-    } else if (data.error) {
-      throw new Error(data.error.message || JSON.stringify(data.error));
-    } else {
-      throw new Error('Неизвестный ответ от DeepSeek');
-    }
+    if (data.choices && data.choices[0]) return data.choices[0].message.content;
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    throw new Error('Неизвестный ответ от DeepSeek');
   } catch (error) {
     console.error('DeepSeek error:', error);
-    return null; // null = ошибка
+    return null;
   }
 }
 
-// ==== 3. Умная модерация через DeepSeek (опционально) ====
-// Проверяет сообщение на токсичность, мат, оскорбления
 async function isToxic(text) {
   const prompt =
     'Проверь сообщение на мат, оскорбления, токсичность и запрещённый контент. ' +
     'Ответь строго одним словом: ДА (если недопустимо) или НЕТ (если нормально). ' +
     'Сообщение: "' + text + '"';
-
   const answer = await askDeepSeek(prompt, 10);
-  if (!answer) return false; // если DeepSeek недоступен — пропускаем
+  if (!answer) return false;
   return answer.trim().toUpperCase().startsWith('ДА');
 }
 
-// ==== 4. DOM ====
+// ==== 3. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -80,7 +70,7 @@ textEl.addEventListener('input', autoGrow);
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
-// ==== 5. Вопрос и таймер ====
+// ==== 4. Вопрос и таймер ====
 let questionStartedAt = null;
 let timerInterval = null;
 let currentDuration = QUESTION_DURATION_MS;
@@ -129,7 +119,7 @@ function updatePauseButton() {
   btn.textContent = pausedAt ? '▶ Пуск' : '⏸ Пауза';
 }
 
-// ==== 6. История ====
+// ==== 5. История ответов ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -141,7 +131,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 7. Realtime ====
+// ==== 6. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -175,7 +165,19 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 8. Отрисовка ====
+// Realtime: счётчики реакций
+db.channel('reactions-watch')
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'reactions_count', filter: 'room=eq.' + ROOM },
+    (payload) => {
+      const row = payload.new || payload.old;
+      if (row) updateReactionCounter(row.emoji, row.cnt);
+    }
+  )
+  .subscribe();
+
+// ==== 7. Отрисовка сообщений ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -210,11 +212,7 @@ async function hideMessage(id) {
   const { error } = await db.rpc('hide_answer', {
     answer_id: id, password: pwd
   });
-  if (error) {
-    alert(error.message);
-    modPassword = null;
-    return;
-  }
+  if (error) { alert(error.message); modPassword = null; return; }
   removeMessage(id);
 }
 
@@ -223,23 +221,15 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 9. Отправка ответа (с умной модерацией DeepSeek) ====
-let lastSentAt = 0;
-
+// ==== 8. Отправка ответа (БЕЗ rate-limit) ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const now = Date.now();
-  if (now - lastSentAt < RATE_LIMIT_MS) {
-    const wait = Math.ceil((RATE_LIMIT_MS - (now - lastSentAt)) / 1000);
-    alert('Подождите ' + wait + ' сек');
-    return;
-  }
 
   const nickname = nickEl.value.trim() || 'Аноним';
   const text     = textEl.value.trim();
   if (!text) return;
 
-  // --- УМНАЯ МОДЕРАЦИЯ через DeepSeek ---
+  // Умная модерация через DeepSeek
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
   const toxic = await isToxic(text);
@@ -249,26 +239,15 @@ form.addEventListener('submit', async (e) => {
     submitBtn.disabled = false;
     return;
   }
-  // --------------------------------------
-
-  lastSentAt = now;
-  submitBtn.disabled = true;
-  setTimeout(() => {
-    if (!pausedAt && Date.now() < questionStartedAt + currentDuration) {
-      submitBtn.disabled = false;
-    }
-  }, RATE_LIMIT_MS);
 
   const { data, error } = await db
     .from('answers')
     .insert({ room: ROOM, nickname, text, question_id: QUESTION_ID })
     .select().single();
 
-  if (error) {
-    alert('Ошибка: ' + error.message);
-    lastSentAt = 0;
-    return;
-  }
+  submitBtn.disabled = false;
+
+  if (error) { alert('Ошибка: ' + error.message); return; }
 
   addMessageToChat(data);
   textEl.value = '';
@@ -276,14 +255,22 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 10. Реакции ====
+// ==== 9. Реакции + счётчики ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    spawnReaction(btn.dataset.emoji);
+  btn.addEventListener('click', async () => {
+    const emoji = btn.dataset.emoji;
+
+    // Локально — сразу
+    spawnReaction(emoji);
+
+    // Счётчик в БД
+    await db.rpc('bump_reaction', { p_room: ROOM, p_emoji: emoji });
+
+    // Broadcast всем остальным
     channel.send({
       type: 'broadcast',
       event: 'reaction',
-      payload: { emoji: btn.dataset.emoji },
+      payload: { emoji },
     });
   });
 });
@@ -297,7 +284,23 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 11. Presence ====
+function updateReactionCounter(emoji, cnt) {
+  const el = document.querySelector('.cnt[data-cnt="' + emoji + '"]');
+  if (!el) return;
+  el.textContent = cnt;
+  if (cnt > 0) el.classList.add('visible');
+  else el.classList.remove('visible');
+}
+
+// Загрузка стартовых счётчиков
+async function loadReactionCounts() {
+  const { data, error } = await db
+    .from('reactions_count').select('*').eq('room', ROOM);
+  if (error || !data) return;
+  data.forEach(row => updateReactionCounter(row.emoji, row.cnt));
+}
+
+// ==== 10. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -313,7 +316,7 @@ presence
     }
   });
 
-// ==== 12. Модерация ====
+// ==== 11. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -373,7 +376,7 @@ if (isModerator) {
   });
 }
 
-// ==== 13. Модалка пароля ====
+// ==== 12. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -399,16 +402,17 @@ function askPassword() {
   });
 }
 
-// ==== 14. Утилита ====
+// ==== 13. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 15. Старт ====
+// ==== 14. Старт ====
 loadQuestion();
 loadHistory();
+loadReactionCounts();
 
-// ==== 16. Тест DeepSeek (раскомментируйте для проверки) ====
+// ==== 15. Тест DeepSeek ====
 // askDeepSeek('Ответь одним словом: работает?').then(r => console.log('DeepSeek:', r));
