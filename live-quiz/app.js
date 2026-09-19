@@ -1,4 +1,4 @@
-// ==== 1. Настройки Supabase (остаются без изменений) ====
+// ==== 1. Настройки ====
 const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
@@ -6,73 +6,54 @@ const QUESTION_ID   = 'q1';
 const QUESTION_DURATION_MS = 5 * 60 * 1000;
 const RATE_LIMIT_MS        = 2000;
 
+// ==== DeepSeek через Cloudflare Worker ====
+const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
+
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. НАСТРОЙКИ GIGACHAT (ВРЕМЕННО ДЛЯ ТЕСТА) ====
-// ВНИМАНИЕ: этот ключ будет виден в исходном коде страницы!
-// НЕ используйте в публичном доступе.
-const GIGACHAT_AUTH_KEY = '01a0b13b-2643-7950-9fb5-f045df0d408d';
-const GIGACHAT_SCOPE    = 'GIGACHAT_API_PERS'; // Для физлиц
-
-// Переменная для кэширования токена (живёт 30 минут)
-let gigachatToken = null;
-let gigachatTokenExpires = 0;
-
-// ==== 3. ФУНКЦИЯ ДЛЯ ЗАПРОСА К GIGACHAT ====
-async function askGigaChat(prompt) {
+// ==== 2. Функция запроса к DeepSeek ====
+async function askDeepSeek(prompt, maxTokens = 500) {
   try {
-    // Получаем токен, если его нет или он истёк
-    if (!gigachatToken || Date.now() > gigachatTokenExpires) {
-      const oauthResponse = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
-          'RqUID': crypto.randomUUID(),
-          'Authorization': 'Basic ' + GIGACHAT_AUTH_KEY
-        },
-        body: 'scope=' + GIGACHAT_SCOPE
-      });
-
-      const tokenData = await oauthResponse.json();
-      if (!tokenData.access_token) {
-        throw new Error('Ошибка получения токена GigaChat: ' + JSON.stringify(tokenData));
-      }
-
-      gigachatToken = tokenData.access_token;
-      // Токен живёт 30 минут, ставим с запасом 25 минут
-      gigachatTokenExpires = Date.now() + (tokenData.expires_at * 1000) - (5 * 60 * 1000);
-      console.log('GigaChat: токен получен');
-    }
-
-    // Отправляем запрос к модели
-    const chatResponse = await fetch('https://api.giga.chat/v1/chat/completions', {
+    const response = await fetch(DEEPSEEK_PROXY, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + gigachatToken
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'GigaChat',
+        model: 'deepseek-chat',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 200
+        temperature: 0.7,
+        max_tokens: maxTokens
       })
     });
 
-    const data = await chatResponse.json();
+    const data = await response.json();
+
     if (data.choices && data.choices[0]) {
       return data.choices[0].message.content;
+    } else if (data.error) {
+      throw new Error(data.error.message || JSON.stringify(data.error));
     } else {
-      throw new Error('Ошибка ответа GigaChat: ' + JSON.stringify(data));
+      throw new Error('Неизвестный ответ от DeepSeek');
     }
   } catch (error) {
-    console.error('GigaChat error:', error);
-    return 'Ошибка GigaChat: ' + error.message;
+    console.error('DeepSeek error:', error);
+    return null; // null = ошибка
   }
 }
 
-// ==== 4. DOM (остаётся без изменений) ====
+// ==== 3. Умная модерация через DeepSeek (опционально) ====
+// Проверяет сообщение на токсичность, мат, оскорбления
+async function isToxic(text) {
+  const prompt =
+    'Проверь сообщение на мат, оскорбления, токсичность и запрещённый контент. ' +
+    'Ответь строго одним словом: ДА (если недопустимо) или НЕТ (если нормально). ' +
+    'Сообщение: "' + text + '"';
+
+  const answer = await askDeepSeek(prompt, 10);
+  if (!answer) return false; // если DeepSeek недоступен — пропускаем
+  return answer.trim().toUpperCase().startsWith('ДА');
+}
+
+// ==== 4. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -99,7 +80,7 @@ textEl.addEventListener('input', autoGrow);
 const qrParam = new URLSearchParams(location.search).get('qr');
 if (qrParam) qrEl.src = qrParam;
 
-// ==== 5. Вопрос и таймер (без изменений) ====
+// ==== 5. Вопрос и таймер ====
 let questionStartedAt = null;
 let timerInterval = null;
 let currentDuration = QUESTION_DURATION_MS;
@@ -148,7 +129,7 @@ function updatePauseButton() {
   btn.textContent = pausedAt ? '▶ Пуск' : '⏸ Пауза';
 }
 
-// ==== 6. История (без изменений) ====
+// ==== 6. История ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -160,7 +141,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 7. Realtime (без изменений) ====
+// ==== 7. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -194,7 +175,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 8. Отрисовка (без изменений) ====
+// ==== 8. Отрисовка ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -242,7 +223,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 9. Отправка ответа (с фильтром) ====
+// ==== 9. Отправка ответа (с умной модерацией DeepSeek) ====
 let lastSentAt = 0;
 
 form.addEventListener('submit', async (e) => {
@@ -255,18 +236,20 @@ form.addEventListener('submit', async (e) => {
   }
 
   const nickname = nickEl.value.trim() || 'Аноним';
-  let text       = textEl.value.trim();
+  const text     = textEl.value.trim();
   if (!text) return;
 
-  // --- ФИЛЬТРАЦИЯ МАТА (из прошлой версии) ---
-  // Здесь можно оставить bad-words или использовать GigaChat для оценки токсичности
-  // Например, так (медленно, но умно):
-  // const toxicityCheck = await askGigaChat('Это сообщение токсичное или содержит мат? Ответь только ДА или НЕТ: "' + text + '"');
-  // if (toxicityCheck.toUpperCase().includes('ДА')) {
-  //   alert('Сообщение отклонено: недопустимый контент');
-  //   return;
-  // }
-  // ------------------------
+  // --- УМНАЯ МОДЕРАЦИЯ через DeepSeek ---
+  submitBtn.disabled = true;
+  submitBtn.textContent = '…';
+  const toxic = await isToxic(text);
+  submitBtn.textContent = '➤';
+  if (toxic) {
+    alert('Сообщение отклонено: недопустимый контент');
+    submitBtn.disabled = false;
+    return;
+  }
+  // --------------------------------------
 
   lastSentAt = now;
   submitBtn.disabled = true;
@@ -293,7 +276,7 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 10. Реакции (без изменений) ====
+// ==== 10. Реакции ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', () => {
     spawnReaction(btn.dataset.emoji);
@@ -314,7 +297,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// ==== 11. Presence (без изменений) ====
+// ==== 11. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -330,7 +313,7 @@ presence
     }
   });
 
-// ==== 12. Модерация (без изменений) ====
+// ==== 12. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -390,7 +373,7 @@ if (isModerator) {
   });
 }
 
-// ==== 13. Модалка пароля (без изменений) ====
+// ==== 13. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -416,17 +399,16 @@ function askPassword() {
   });
 }
 
-// ==== 14. Утилита (без изменений) ====
+// ==== 14. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 15. Старт (без изменений) ====
+// ==== 15. Старт ====
 loadQuestion();
 loadHistory();
 
-// ==== 16. ТЕСТОВЫЙ ЗАПРОС К GIGACHAT ====
-// Раскомментируйте, чтобы проверить работу при загрузке страницы
-askGigaChat('Ответь одним словом: работает?').then(console.log);
+// ==== 16. Тест DeepSeek (раскомментируйте для проверки) ====
+// askDeepSeek('Ответь одним словом: работает?').then(r => console.log('DeepSeek:', r));
