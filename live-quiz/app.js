@@ -9,31 +9,46 @@ const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. Функция запроса к DeepSeek ====
-async function askDeepSeek(prompt, maxTokens = 50) {
+// ==== 2. Функция запроса к DeepSeek (с логированием) ====
+async function askDeepSeek(prompt, maxTokens = 10) {
   try {
+    console.log('Отправка в DeepSeek:', prompt.substring(0, 50) + '...');
     const response = await fetch(DEEPSEEK_PROXY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3,
+        temperature: 0.1,
         max_tokens: maxTokens
       })
     });
+
+    if (!response.ok) {
+      console.error('DeepSeek HTTP ошибка:', response.status, response.statusText);
+      return null;
+    }
+
     const data = await response.json();
-    if (data.choices && data.choices[0]) return data.choices[0].message.content;
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    console.log('Ответ DeepSeek:', data);
+
+    if (data.choices && data.choices[0]) {
+      const answer = data.choices[0].message.content;
+      console.log('Текст ответа:', answer);
+      return answer;
+    }
+
+    if (data.error) {
+      console.error('Ошибка в ответе DeepSeek:', data.error);
+    }
     return null;
   } catch (error) {
-    console.error('DeepSeek error:', error);
+    console.error('Сетевая ошибка DeepSeek:', error);
     return null;
   }
 }
 
 // ==== 3. Проверка на мат через DeepSeek ====
-// Возвращает true, если текст/имя содержат мат
 async function containsProfanity(text) {
   if (!text || text.trim().length === 0) return false;
 
@@ -43,8 +58,15 @@ async function containsProfanity(text) {
     'Текст: "' + text.replace(/"/g, '') + '"';
 
   const answer = await askDeepSeek(prompt, 10);
-  if (!answer) return false; // если DeepSeek недоступен — пропускаем
-  return answer.trim().toUpperCase().startsWith('ДА');
+
+  if (answer === null) {
+    console.warn('DeepSeek не ответил, пропускаем проверку');
+    return false;
+  }
+
+  const isProfane = answer.trim().toUpperCase().startsWith('ДА');
+  console.log('Проверка "' + text + '": ' + answer + ' -> ' + (isProfane ? 'БЛОКИРОВАТЬ' : 'ПРОПУСТИТЬ'));
+  return isProfane;
 }
 
 // ==== 4. DOM ====
@@ -190,7 +212,8 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
 
-  // Проверяем ИМЯ на мат
+  // 1. Проверяем ИМЯ на мат
+  console.log('Проверка имени:', nickname);
   const nameBad = await containsProfanity(nickname);
   if (nameBad) {
     alert('Имя содержит недопустимые слова. Пожалуйста, измените.');
@@ -199,7 +222,8 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // Проверяем ТЕКСТ на мат
+  // 2. Проверяем ТЕКСТ на мат
+  console.log('Проверка текста:', text);
   const textBad = await containsProfanity(text);
   if (textBad) {
     alert('Сообщение содержит недопустимые слова.');
@@ -208,6 +232,8 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  // 3. Отправляем в Supabase
+  console.log('Отправка в базу:', { nickname, text });
   const { data, error } = await db
     .from('answers')
     .insert({ room: ROOM, nickname, text, question_id: QUESTION_ID })
@@ -216,7 +242,11 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = false;
   submitBtn.textContent = '➤';
 
-  if (error) { alert('Ошибка: ' + error.message); return; }
+  if (error) {
+    console.error('Ошибка Supabase:', error);
+    alert('Ошибка: ' + error.message);
+    return;
+  }
 
   addMessageToChat(data);
   textEl.value = '';
