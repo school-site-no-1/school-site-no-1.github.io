@@ -9,7 +9,7 @@ const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==== 2. Универсальный fetch с таймаутом ====
-async function fetchWithTimeout(url, options, timeoutMs = 8000) {
+async function fetchWithTimeout(url, options, timeoutMs = 15000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -70,24 +70,31 @@ async function checkProfanity(nickname, text) {
   return isBad;
 }
 
-// ==== 5. Перевод в стиле древнерусского / былинного ====
+// ==== 5. Перевод в стиле старославянского / былинного ====
 async function translateToOldRussian(text) {
   if (!text || text.trim().length === 0) return null;
 
   try {
+    console.log('Отправка на перевод:', text);
     const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
-    }, 10000);
+    }, 20000);   // 20 сек — перевод требует больше времени
 
-    if (!response || !response.ok) return null;
+    if (!response || !response.ok) {
+      console.error('Ошибка HTTP при переводе:', response ? response.status : 'нет ответа');
+      return null;
+    }
 
     const data = await response.json();
+    console.log('Ответ перевода:', data);
+
     if (data.translated) return data.translated;
+    if (data.error) console.error('Ошибка перевода:', data.error);
     return null;
   } catch (error) {
-    console.error('Ошибка перевода:', error);
+    console.error('Сетевая ошибка перевода:', error);
     return null;
   }
 }
@@ -106,7 +113,6 @@ const submitBtn   = form.querySelector('button[type=submit]');
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
 let modPassword   = null;
 
-// Кэш счётчиков реакций
 const reactionCounts = {};
 
 nickEl.value = localStorage.getItem('nick') || '';
@@ -240,11 +246,11 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2. Перевод на древнерусский
-  console.log('Перевод на древнерусский...');
+  // 2. Перевод на старославянский
+  console.log('Перевод на старославянский...');
   const translated = await translateToOldRussian(text);
   if (translated) {
-    console.log('Перевод:', translated);
+    console.log('Перевод получен:', translated);
     text = translated;
   } else {
     console.warn('Перевод не удался, отправляем оригинал');
