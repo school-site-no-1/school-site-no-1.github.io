@@ -175,11 +175,14 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 10. История ====
+// ==== 10. История — только за сегодня ====
 async function loadHistory() {
+  const day = todayMoscow();
   const { data, error } = await db
     .from('answers').select('*')
-    .eq('room', ROOM).eq('hidden', false)
+    .eq('room', ROOM)
+    .eq('hidden', false)
+    .eq('day', day)
     .order('created_at', { ascending: true })
     .limit(200);
 
@@ -193,12 +196,20 @@ const channel = db
   .on(
     'postgres_changes',
     { event: 'INSERT', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
-    (payload) => addMessageToChat(payload.new)
+    (payload) => {
+      if (payload.new.day === todayMoscow()) {
+        addMessageToChat(payload.new);
+      }
+    }
   )
   .on(
     'postgres_changes',
     { event: 'UPDATE', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
-    (payload) => { if (payload.new.hidden) removeMessage(payload.new.id); }
+    (payload) => {
+      if (payload.new.hidden && payload.new.day === todayMoscow()) {
+        removeMessage(payload.new.id);
+      }
+    }
   )
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
@@ -291,7 +302,13 @@ form.addEventListener('submit', async (e) => {
   const translated = await translateToOldRussian(originalText);
   const finalText = translated || originalText;
 
-  console.log('Отправка в базу:', { nickname, original_text: originalText, text: finalText });
+  console.log('Отправка в базу:', {
+    nickname,
+    original_text: originalText,
+    text: finalText,
+    day: todayMoscow()
+  });
+
   const { data, error } = await db
     .from('answers')
     .insert({
@@ -299,7 +316,8 @@ form.addEventListener('submit', async (e) => {
       nickname,
       text: finalText,
       original_text: originalText,
-      question_id: QUESTION_ID
+      question_id: QUESTION_ID,
+      day: todayMoscow()
     })
     .select().single();
 
@@ -342,7 +360,6 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// Отрисовка блока статистики с заголовком «Сегодня»
 function renderReactionsStats() {
   const emojis = Object.keys(reactionCounts);
   if (emojis.length === 0) {
@@ -458,7 +475,7 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// ==== 19. Автосброс счётчиков в 00:00 по Москве ====
+// ==== 19. Автосброс в 00:00 по Москве (чат + счётчики) ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -469,11 +486,15 @@ function msUntilMidnightMoscow() {
 
 function scheduleReset() {
   const ms = msUntilMidnightMoscow();
-  console.log('Сброс счётчиков через ' + Math.round(ms / 1000 / 60) + ' минут');
+  console.log('Сброс в 00:00 через ' + Math.round(ms / 1000 / 60) + ' минут');
 
   setTimeout(() => {
-    console.log('00:00 по Москве — сбрасываем счётчики');
-    loadReactionCounts();
+    console.log('00:00 по Москве — сбрасываем чат и счётчики');
+
+    chatEl.innerHTML = '';       // очищаем чат
+    loadHistory();                // загружаем за новый день (пусто)
+    loadReactionCounts();         // обнуляем счётчики
+
     scheduleReset();
   }, ms);
 }
