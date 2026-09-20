@@ -11,7 +11,7 @@
                  background: #000; color: #fff;
                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-    /* Картинка на весь экран: размытый фон + чёткая по центру */
+    /* Картинка: размытый тёмный фон + чёткая по центру */
     .stage {
       position: fixed; inset: 0;
       background: #000;
@@ -21,8 +21,8 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      filter: blur(30px) brightness(0.4);
-      transform: scale(1.1);
+      filter: blur(40px) brightness(0.1) saturate(0.5);
+      transform: scale(1.2);
       display: block;
       pointer-events: none;
     }
@@ -34,7 +34,7 @@
       display: block;
     }
 
-    /* Онлайн — поверх картинки, в правом верхнем углу */
+    /* Онлайн */
     .online {
       position: fixed;
       top: calc(12px + env(safe-area-inset-top));
@@ -52,34 +52,37 @@
       white-space: nowrap;
     }
 
-    /* Статистика смайликов — справа вверху, под онлайном */
+    /* Статистика смайликов */
     .reactions-stats {
       position: fixed;
       top: calc(52px + env(safe-area-inset-top));
       right: 8px;
-      background: rgba(0,0,0,.7);
+      background: rgba(0,0,0,.85);
       border-radius: 10px;
       padding: 8px 10px;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.6;
       z-index: 25;
       min-width: 100px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: none;
       pointer-events: none;
+      border: 1px solid rgba(255,255,255,.1);
     }
     .reactions-stats.visible { display: block; }
 
-    /* Заголовок «Сегодня» */
     .reactions-stats .title {
-      font-size: 11px;
+      font-size: 12px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #888;
-      margin-bottom: 6px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid rgba(255,255,255,.15);
+      letter-spacing: 1.5px;
+      color: #fff;
+      font-weight: 700;
+      margin: -8px -10px 6px -10px;
+      padding: 6px 10px;
+      background: rgba(79, 195, 247, .25);
+      border-bottom: 1px solid rgba(255,255,255,.2);
+      border-radius: 10px 10px 0 0;
       text-align: center;
     }
 
@@ -160,7 +163,6 @@
     }
     .input-row button[type=submit]:disabled { opacity: .4; }
 
-    /* Счётчик символов */
     .char-counter {
       position: absolute;
       right: 60px;
