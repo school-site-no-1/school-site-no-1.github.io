@@ -33,43 +33,33 @@
       display: block;
     }
 
-    /* Онлайн — очень прозрачный фон */
+    /* Онлайн — без фона, только текст с тенью */
     .online {
       position: fixed;
       top: calc(12px + env(safe-area-inset-top));
       right: 12px;
       z-index: 50;
-      background: rgba(0,0,0,.2);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 700;
       color: #fff;
-      text-shadow: 0 1px 3px rgba(0,0,0,.9);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,.1);
+      text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,.9);
       pointer-events: none;
       white-space: nowrap;
     }
 
-    /* Статистика смайликов — очень прозрачный фон */
+    /* Статистика смайликов — тоже без фона */
     .reactions-stats {
       position: fixed;
-      top: calc(52px + env(safe-area-inset-top));
+      top: calc(42px + env(safe-area-inset-top));
       right: 8px;
-      background: rgba(0,0,0,.2);
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.7;
       z-index: 25;
-      min-width: 100px;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,.9);
       display: none;
       pointer-events: none;
-      border: 1px solid rgba(255,255,255,.1);
-      text-shadow: 0 1px 3px rgba(0,0,0,.9);
     }
     .reactions-stats.visible { display: block; }
 
@@ -79,19 +69,21 @@
       letter-spacing: 1.5px;
       color: #fff;
       font-weight: 700;
-      margin: -8px -10px 6px -10px;
-      padding: 6px 10px;
-      background: rgba(79, 195, 247, .15);
-      border-bottom: 1px solid rgba(255,255,255,.15);
-      border-radius: 10px 10px 0 0;
-      text-align: center;
+      text-align: right;
+      margin-bottom: 2px;
+      text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,.9);
     }
 
     .reactions-stats .row {
-      display: flex; justify-content: space-between; gap: 10px;
+      display: flex; justify-content: flex-end; gap: 8px;
       white-space: nowrap;
     }
     .reactions-stats .row b { color: #4fc3f7; }
+
+    /* Эмодзи в статистике — жёлтые */
+    .reactions-stats .row .emoji {
+      color: #FFD54F;
+    }
 
     .reactions { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 40; }
     .reaction {
@@ -138,9 +130,11 @@
     }
     .reaction-bar button:active { transform: scale(.9); }
 
+    /* Реакция "67" — жёлтая, как остальные эмодзи */
     .reaction-bar button[data-emoji="67"] {
       font-size: 18px;
       font-weight: 700;
+      color: #FFD54F;
     }
 
     .input-row {
