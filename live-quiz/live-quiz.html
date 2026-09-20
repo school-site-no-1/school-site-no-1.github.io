@@ -11,7 +11,7 @@
                  background: #000; color: #fff;
                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-    /* Картинка: размытый тёмный фон + чёткая по центру */
+    /* Картинка: размытый тёмный фон + чёткая по центру, прижата к верху */
     .stage {
       position: fixed; inset: 0;
       background: #000;
@@ -30,7 +30,7 @@
       position: relative;
       width: 100%; height: 100%;
       object-fit: contain;
-      object-position: center center;
+      object-position: center top;   /* ← прижата к верху */
       display: block;
     }
 
