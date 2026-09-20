@@ -3,12 +3,20 @@ const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
+const MAX_LEN       = 150;   // было 300, стало 150
 
 const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==== 2. Универсальный fetch с таймаутом ====
+// ==== 2. Дата по Москве ====
+function todayMoscow() {
+  const now = new Date();
+  const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
+  return moscow.toISOString().slice(0, 10);
+}
+
+// ==== 3. Fetch с таймаутом ====
 async function fetchWithTimeout(url, options, timeoutMs = 15000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -26,7 +34,7 @@ async function fetchWithTimeout(url, options, timeoutMs = 15000) {
   }
 }
 
-// ==== 3. Запрос к DeepSeek (для проверки на мат) ====
+// ==== 4. Запрос к DeepSeek ====
 async function askDeepSeek(prompt, maxTokens = 10) {
   try {
     const response = await fetchWithTimeout(DEEPSEEK_PROXY, {
@@ -51,7 +59,7 @@ async function askDeepSeek(prompt, maxTokens = 10) {
   }
 }
 
-// ==== 4. Проверка ИМЕНИ и ТЕКСТА на мат ОДНИМ запросом ====
+// ==== 5. Проверка на мат ====
 async function checkProfanity(nickname, text) {
   const prompt =
     'Проверь ИМЯ и ТЕКСТ на наличие мата, нецензурных слов, оскорблений (русский и английский). ' +
@@ -70,28 +78,21 @@ async function checkProfanity(nickname, text) {
   return isBad;
 }
 
-// ==== 5. Перевод в стиле старославянского / былинного ====
+// ==== 6. Перевод в стиле былин ====
 async function translateToOldRussian(text) {
   if (!text || text.trim().length === 0) return null;
 
   try {
-    console.log('Отправка на перевод:', text);
     const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text })
-    }, 20000);   // 20 сек — перевод требует больше времени
+    }, 20000);
 
-    if (!response || !response.ok) {
-      console.error('Ошибка HTTP при переводе:', response ? response.status : 'нет ответа');
-      return null;
-    }
+    if (!response || !response.ok) return null;
 
     const data = await response.json();
-    console.log('Ответ перевода:', data);
-
     if (data.translated) return data.translated;
-    if (data.error) console.error('Ошибка перевода:', data.error);
     return null;
   } catch (error) {
     console.error('Сетевая ошибка перевода:', error);
@@ -99,7 +100,7 @@ async function translateToOldRussian(text) {
   }
 }
 
-// ==== 6. DOM ====
+// ==== 7. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -108,6 +109,7 @@ const textEl      = document.getElementById('text');
 const onlineEl    = document.getElementById('online');
 const statsEl     = document.getElementById('stats');
 const statsReactEl = document.getElementById('reactions-stats');
+const charCounterEl = document.getElementById('char-counter');
 const submitBtn   = form.querySelector('button[type=submit]');
 
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
@@ -118,18 +120,48 @@ const reactionCounts = {};
 nickEl.value = localStorage.getItem('nick') || '';
 nickEl.addEventListener('input', () => localStorage.setItem('nick', nickEl.value));
 
+// ==== 8. Счётчик символов ====
 function autoGrow() {
   textEl.style.height = 'auto';
   textEl.style.height = Math.min(textEl.scrollHeight, 90) + 'px';
+  updateCharCounter();
 }
-textEl.addEventListener('input', autoGrow);
 
-// ==== 7. Загрузка вопроса ====
+function updateCharCounter() {
+  const len = textEl.value.length;
+  charCounterEl.textContent = len + '/' + MAX_LEN;
+  charCounterEl.classList.remove('warn', 'danger');
+  if (len >= MAX_LEN) charCounterEl.classList.add('danger');
+  else if (len > MAX_LEN - 25) charCounterEl.classList.add('warn');   // 25 = половина от 50
+}
+
+textEl.addEventListener('input', () => {
+  if (textEl.value.length > MAX_LEN) {
+    textEl.value = textEl.value.slice(0, MAX_LEN);
+  }
+  autoGrow();
+});
+
+textEl.addEventListener('paste', (e) => {
+  const pasted = (e.clipboardData || window.clipboardData).getData('text');
+  if (textEl.value.length + pasted.length > MAX_LEN) {
+    e.preventDefault();
+    const allowed = MAX_LEN - textEl.value.length;
+    textEl.value += pasted.slice(0, allowed);
+    updateCharCounter();
+  }
+});
+
+updateCharCounter();
+
+// ==== 9. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
   if (error || !data) { console.error(error); return; }
-  document.getElementById('question').src = data.image_url;
+
+  document.getElementById('question').src    = data.image_url;
+  document.getElementById('question-bg').src = data.image_url;
 }
 
 db.channel('questions-watch')
@@ -137,12 +169,13 @@ db.channel('questions-watch')
     'postgres_changes',
     { event: 'UPDATE', schema: 'public', table: 'questions', filter: 'id=eq.' + QUESTION_ID },
     (payload) => {
-      document.getElementById('question').src = payload.new.image_url;
+      document.getElementById('question').src    = payload.new.image_url;
+      document.getElementById('question-bg').src = payload.new.image_url;
     }
   )
   .subscribe();
 
-// ==== 8. История ответов ====
+// ==== 10. История ====
 async function loadHistory() {
   const { data, error } = await db
     .from('answers').select('*')
@@ -154,7 +187,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 9. Realtime ====
+// ==== 11. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -176,12 +209,15 @@ db.channel('reactions-watch')
     { event: '*', schema: 'public', table: 'reactions_count', filter: 'room=eq.' + ROOM },
     (payload) => {
       const row = payload.new || payload.old;
-      if (row) updateReactionCounter(row.emoji, row.cnt);
+      if (!row) return;
+      if (row.day === todayMoscow()) {
+        updateReactionCounter(row.emoji, row.cnt);
+      }
     }
   )
   .subscribe();
 
-// ==== 10. Отрисовка сообщений ====
+// ==== 12. Отрисовка сообщений ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -225,20 +261,26 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 11. Отправка ответа ====
+// ==== 13. Отправка (с сохранением ОБОИХ текстов) ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const nickname = nickEl.value.trim() || 'Аноним';
-  let   text     = textEl.value.trim();
-  if (!text) return;
+  let   originalText = textEl.value.trim();
+  if (!originalText) return;
+
+  if (originalText.length > MAX_LEN) {
+    originalText = originalText.slice(0, MAX_LEN);
+    textEl.value = originalText;
+    updateCharCounter();
+  }
 
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
 
-  // 1. Проверка имени и текста ОДНИМ запросом
+  // 1. Проверка на мат (по ОРИГИНАЛУ)
   console.log('Проверка на мат...');
-  const isBad = await checkProfanity(nickname, text);
+  const isBad = await checkProfanity(nickname, originalText);
   if (isBad) {
     alert('Имя или сообщение содержит недопустимые слова.');
     submitBtn.disabled = false;
@@ -246,21 +288,27 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2. Перевод на старославянский
-  console.log('Перевод на старославянский...');
-  const translated = await translateToOldRussian(text);
-  if (translated) {
-    console.log('Перевод получен:', translated);
-    text = translated;
-  } else {
-    console.warn('Перевод не удался, отправляем оригинал');
-  }
+  // 2. Перевод
+  console.log('Перевод...');
+  const translated = await translateToOldRussian(originalText);
+  const finalText = translated || originalText;
 
-  // 3. Отправка в Supabase
-  console.log('Отправка в базу:', { nickname, text });
+  // 3. Отправка в базу — ОБА текста
+  console.log('Отправка в базу:', {
+    nickname,
+    original_text: originalText,
+    text: finalText
+  });
+
   const { data, error } = await db
     .from('answers')
-    .insert({ room: ROOM, nickname, text, question_id: QUESTION_ID })
+    .insert({
+      room: ROOM,
+      nickname,
+      text: finalText,
+      original_text: originalText,
+      question_id: QUESTION_ID
+    })
     .select().single();
 
   submitBtn.disabled = false;
@@ -275,10 +323,11 @@ form.addEventListener('submit', async (e) => {
   addMessageToChat(data);
   textEl.value = '';
   autoGrow();
+  updateCharCounter();
   textEl.focus();
 });
 
-// ==== 12. Реакции + счётчики ====
+// ==== 14. Реакции ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
@@ -323,14 +372,19 @@ function updateReactionCounter(emoji, cnt) {
 }
 
 async function loadReactionCounts() {
+  const day = todayMoscow();
   const { data, error } = await db
-    .from('reactions_count').select('*').eq('room', ROOM);
+    .from('reactions_count').select('*')
+    .eq('room', ROOM)
+    .eq('day', day);
   if (error || !data) return;
+
+  Object.keys(reactionCounts).forEach(k => delete reactionCounts[k]);
   data.forEach(row => { reactionCounts[row.emoji] = row.cnt; });
   renderReactionsStats();
 }
 
-// ==== 13. Presence ====
+// ==== 15. Presence ====
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
@@ -346,7 +400,7 @@ presence
     }
   });
 
-// ==== 14. Модерация ====
+// ==== 16. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -370,11 +424,12 @@ if (isModerator) {
       q_id: QUESTION_ID, new_url: url, password: pwd
     });
     if (error) { alert(error.message); return; }
-    document.getElementById('question').src = url;
+    document.getElementById('question').src    = url;
+    document.getElementById('question-bg').src = url;
   });
 }
 
-// ==== 15. Модалка пароля ====
+// ==== 17. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -400,14 +455,36 @@ function askPassword() {
   });
 }
 
-// ==== 16. Утилита ====
+// ==== 18. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 17. Старт ====
+// ==== 19. Автосброс счётчиков в 00:00 по Москве ====
+function msUntilMidnightMoscow() {
+  const now = new Date();
+  const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
+  const midnight = new Date(moscow);
+  midnight.setHours(24, 0, 0, 0);
+  return midnight.getTime() - moscow.getTime();
+}
+
+function scheduleReset() {
+  const ms = msUntilMidnightMoscow();
+  console.log('Сброс счётчиков через ' + Math.round(ms / 1000 / 60) + ' минут');
+
+  setTimeout(() => {
+    console.log('00:00 по Москве — сбрасываем счётчики');
+    loadReactionCounts();
+    scheduleReset();
+  }, ms);
+}
+
+scheduleReset();
+
+// ==== 20. Старт ====
 loadQuestion();
 loadHistory();
 loadReactionCounts();
