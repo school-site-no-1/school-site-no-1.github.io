@@ -3,7 +3,7 @@ const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
-const MAX_LEN       = 150;   // было 300, стало 150
+const MAX_LEN       = 150;
 
 const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
@@ -132,7 +132,7 @@ function updateCharCounter() {
   charCounterEl.textContent = len + '/' + MAX_LEN;
   charCounterEl.classList.remove('warn', 'danger');
   if (len >= MAX_LEN) charCounterEl.classList.add('danger');
-  else if (len > MAX_LEN - 25) charCounterEl.classList.add('warn');   // 25 = половина от 50
+  else if (len > MAX_LEN - 25) charCounterEl.classList.add('warn');
 }
 
 textEl.addEventListener('input', () => {
@@ -261,7 +261,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 13. Отправка (с сохранением ОБОИХ текстов) ====
+// ==== 13. Отправка ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -278,7 +278,6 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = '…';
 
-  // 1. Проверка на мат (по ОРИГИНАЛУ)
   console.log('Проверка на мат...');
   const isBad = await checkProfanity(nickname, originalText);
   if (isBad) {
@@ -288,18 +287,11 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  // 2. Перевод
   console.log('Перевод...');
   const translated = await translateToOldRussian(originalText);
   const finalText = translated || originalText;
 
-  // 3. Отправка в базу — ОБА текста
-  console.log('Отправка в базу:', {
-    nickname,
-    original_text: originalText,
-    text: finalText
-  });
-
+  console.log('Отправка в базу:', { nickname, original_text: originalText, text: finalText });
   const { data, error } = await db
     .from('answers')
     .insert({
@@ -350,6 +342,7 @@ function spawnReaction(emoji) {
   setTimeout(() => el.remove(), 3000);
 }
 
+// Отрисовка блока статистики с заголовком «Сегодня»
 function renderReactionsStats() {
   const emojis = Object.keys(reactionCounts);
   if (emojis.length === 0) {
@@ -359,9 +352,12 @@ function renderReactionsStats() {
 
   emojis.sort((a, b) => reactionCounts[b] - reactionCounts[a]);
 
-  statsReactEl.innerHTML = emojis.map(e =>
+  const rowsHtml = emojis.map(e =>
     '<div class="row"><span>' + e + '</span><b>' + reactionCounts[e] + '</b></div>'
   ).join('');
+
+  statsReactEl.innerHTML =
+    '<div class="title">Сегодня</div>' + rowsHtml;
 
   statsReactEl.classList.add('visible');
 }

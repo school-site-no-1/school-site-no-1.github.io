@@ -63,13 +63,26 @@
       font-size: 13px;
       line-height: 1.6;
       z-index: 25;
-      min-width: 90px;
+      min-width: 100px;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       display: none;
       pointer-events: none;
     }
     .reactions-stats.visible { display: block; }
+
+    /* Заголовок «Сегодня» */
+    .reactions-stats .title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      text-align: center;
+    }
+
     .reactions-stats .row {
       display: flex; justify-content: space-between; gap: 10px;
       white-space: nowrap;
