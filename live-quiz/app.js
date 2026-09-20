@@ -78,15 +78,15 @@ async function checkProfanity(nickname, text) {
   return isBad;
 }
 
-// ==== 6. Перевод в стиле былин ====
-async function translateToOldRussian(text) {
+// ==== 6. Перевод в стиле былин (с учётом пола) ====
+async function translateToOldRussian(text, gender) {
   if (!text || text.trim().length === 0) return null;
 
   try {
     const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, gender })
     }, 20000);
 
     if (!response || !response.ok) return null;
@@ -105,6 +105,7 @@ const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
 const nickEl      = document.getElementById('nickname');
+const genderEl    = document.getElementById('gender');
 const textEl      = document.getElementById('text');
 const onlineEl    = document.getElementById('online');
 const statsEl     = document.getElementById('stats');
@@ -117,8 +118,11 @@ let modPassword   = null;
 
 const reactionCounts = {};
 
+// Восстанавливаем имя и пол
 nickEl.value = localStorage.getItem('nick') || '';
+genderEl.value = localStorage.getItem('gender') || '';
 nickEl.addEventListener('input', () => localStorage.setItem('nick', nickEl.value));
+genderEl.addEventListener('change', () => localStorage.setItem('gender', genderEl.value));
 
 // ==== 8. Счётчик символов ====
 function autoGrow() {
@@ -180,9 +184,7 @@ async function loadHistory() {
   const day = todayMoscow();
   const { data, error } = await db
     .from('answers').select('*')
-    .eq('room', ROOM)
-    .eq('hidden', false)
-    .eq('day', day)
+    .eq('room', ROOM).eq('hidden', false).eq('day', day)
     .order('created_at', { ascending: true })
     .limit(200);
 
@@ -197,9 +199,7 @@ const channel = db
     'postgres_changes',
     { event: 'INSERT', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
     (payload) => {
-      if (payload.new.day === todayMoscow()) {
-        addMessageToChat(payload.new);
-      }
+      if (payload.new.day === todayMoscow()) addMessageToChat(payload.new);
     }
   )
   .on(
@@ -221,9 +221,7 @@ db.channel('reactions-watch')
     (payload) => {
       const row = payload.new || payload.old;
       if (!row) return;
-      if (row.day === todayMoscow()) {
-        updateReactionCounter(row.emoji, row.cnt);
-      }
+      if (row.day === todayMoscow()) updateReactionCounter(row.emoji, row.cnt);
     }
   )
   .subscribe();
@@ -277,6 +275,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const nickname = nickEl.value.trim() || 'Аноним';
+  const gender   = genderEl.value || null;   // 'male' | 'female' | null
   let   originalText = textEl.value.trim();
   if (!originalText) return;
 
@@ -298,15 +297,12 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  console.log('Перевод...');
-  const translated = await translateToOldRussian(originalText);
+  console.log('Перевод... Пол:', gender || 'не указан');
+  const translated = await translateToOldRussian(originalText, gender);
   const finalText = translated || originalText;
 
   console.log('Отправка в базу:', {
-    nickname,
-    original_text: originalText,
-    text: finalText,
-    day: todayMoscow()
+    nickname, gender, original_text: originalText, text: finalText
   });
 
   const { data, error } = await db
@@ -314,6 +310,7 @@ form.addEventListener('submit', async (e) => {
     .insert({
       room: ROOM,
       nickname,
+      gender,
       text: finalText,
       original_text: originalText,
       question_id: QUESTION_ID,
@@ -370,12 +367,10 @@ function renderReactionsStats() {
   emojis.sort((a, b) => reactionCounts[b] - reactionCounts[a]);
 
   const rowsHtml = emojis.map(e =>
-    '<div class="row"><span>' + e + '</span><b>' + reactionCounts[e] + '</b></div>'
+    '<div class="row"><span class="emoji">' + e + '</span><b>' + reactionCounts[e] + '</b></div>'
   ).join('');
 
-  statsReactEl.innerHTML =
-    '<div class="title">Сегодня</div>' + rowsHtml;
-
+  statsReactEl.innerHTML = '<div class="title">Сегодня</div>' + rowsHtml;
   statsReactEl.classList.add('visible');
 }
 
@@ -388,8 +383,7 @@ async function loadReactionCounts() {
   const day = todayMoscow();
   const { data, error } = await db
     .from('reactions_count').select('*')
-    .eq('room', ROOM)
-    .eq('day', day);
+    .eq('room', ROOM).eq('day', day);
   if (error || !data) return;
 
   Object.keys(reactionCounts).forEach(k => delete reactionCounts[k]);
@@ -408,9 +402,7 @@ presence
     onlineEl.textContent = 'Онлайн: ' + Object.keys(state).length;
   })
   .subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') {
-      await presence.track({ joined_at: Date.now() });
-    }
+    if (status === 'SUBSCRIBED') await presence.track({ joined_at: Date.now() });
   });
 
 // ==== 16. Модерация ====
@@ -475,7 +467,7 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// ==== 19. Автосброс в 00:00 по Москве (чат + счётчики) ====
+// ==== 19. Автосброс в 00:00 по Москве ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -490,11 +482,9 @@ function scheduleReset() {
 
   setTimeout(() => {
     console.log('00:00 по Москве — сбрасываем чат и счётчики');
-
-    chatEl.innerHTML = '';       // очищаем чат
-    loadHistory();                // загружаем за новый день (пусто)
-    loadReactionCounts();         // обнуляем счётчики
-
+    chatEl.innerHTML = '';
+    loadHistory();
+    loadReactionCounts();
     scheduleReset();
   }, ms);
 }
