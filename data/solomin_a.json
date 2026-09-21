@@ -7,8 +7,14 @@
       "room": "307"
     },
     {
-      "lesson": 4,
+      "lesson": 3,
       "class": "10А",
+      "subject": "История",
+      "room": "307"
+    },
+    {
+      "lesson": 4,
+      "class": "11А",
       "subject": "История",
       "room": "307"
     },
@@ -23,15 +29,15 @@
       "class": "11А",
       "subject": "История",
       "room": "307"
-    },
-    {
-      "lesson": 7,
-      "class": "11А",
-      "subject": "История",
-      "room": "307"
     }
   ],
   "ВТ": [
+    {
+      "lesson": 1,
+      "class": "7В",
+      "subject": "История",
+      "room": "307"
+    },
     {
       "lesson": 2,
       "class": "10А",
@@ -40,24 +46,18 @@
     },
     {
       "lesson": 5,
-      "class": "7В",
-      "subject": "История",
-      "room": "307"
-    },
-    {
-      "lesson": 6,
       "class": "7Б",
       "subject": "История",
       "room": "307"
     },
     {
-      "lesson": 7,
+      "lesson": 6,
       "class": "7А",
       "subject": "История",
       "room": "307"
     },
     {
-      "lesson": 8,
+      "lesson": 7,
       "class": "11А",
       "subject": "Эл.по обществозн.",
       "room": "307"
@@ -184,5 +184,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-21 17:35:47"
+  "last_update": "2026-09-21 18:37:54"
 }
