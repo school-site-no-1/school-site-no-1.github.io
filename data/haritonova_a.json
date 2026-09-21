@@ -8,25 +8,7 @@
       "room": "208"
     },
     {
-      "lesson": 3,
-      "class": "4В",
-      "subject": "ИЗО",
-      "room": "208"
-    },
-    {
-      "lesson": 4,
-      "class": "1В",
-      "subject": "ИЗО",
-      "room": ""
-    },
-    {
-      "lesson": 5,
-      "class": "2В",
-      "subject": "ИЗО",
-      "room": ""
-    },
-    {
-      "lesson": 7,
+      "lesson": 2,
       "class": "7Б",
       "subject": "ИЗО",
       "room": "208"
@@ -62,36 +44,18 @@
       "room": "208"
     },
     {
-      "lesson": 2,
-      "class": "7В",
-      "subject": "ИЗО",
-      "room": "208"
-    },
-    {
-      "lesson": 3,
-      "class": "2Б",
-      "subject": "ИЗО",
-      "room": "208"
-    },
-    {
-      "lesson": 4,
-      "class": "4Б",
-      "subject": "ИЗО",
-      "room": "208"
-    },
-    {
-      "lesson": 5,
-      "class": "4А",
-      "subject": "ИЗО",
-      "room": "208"
-    },
-    {
       "lesson": 6,
       "class": "6Б",
+      "subject": "ИЗО",
+      "room": "208"
+    },
+    {
+      "lesson": 7,
+      "class": "7В",
       "subject": "ИЗО",
       "room": "208"
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-21 17:36:30"
+  "last_update": "2026-09-21 18:38:38"
 }
