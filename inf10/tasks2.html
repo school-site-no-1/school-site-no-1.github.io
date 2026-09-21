@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вычисление количества информации</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f5f7;
+    color: #2c3e50;
+    line-height: 1.65;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e1e4e8;
+  }
+
+  header h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+
+  header p {
+    margin: 0;
+    color: #555;
+    font-size: 15px;
+  }
+
+  /* ---------- Вкладки ---------- */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    border-bottom: 2px solid #dcdde1;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 12px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    background: transparent;
+    color: #555;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .tab-btn:hover {
+    background: #eef1f4;
+    color: #2c3e50;
+  }
+
+  .tab-btn.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+    background: #eaf4fc;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---------- Общее ---------- */
+  h2 {
+    font-size: 22px;
+    margin: 32px 0 14px;
+    padding: 8px 14px;
+    background: #3498db;
+    color: #fff;
+    border-radius: 8px;
+  }
+
+  h2:first-child { margin-top: 0; }
+
+  h2.advanced { background: #e67e22; }
+  h2.ege      { background: #c0392b; }
+
+  h3 {
+    font-size: 17px;
+    margin: 22px 0 10px;
+    color: #2c3e50;
+  }
+
+  p { margin: 10px 0; font-size: 15px; }
+
+  ul, ol {
+    margin: 10px 0;
+    padding-left: 24px;
+    font-size: 15px;
+  }
+
+  li { margin-bottom: 6px; }
+
+  code {
+    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+    background: #eef1f4;
+    color: #c0392b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  /* ---------- Таблица кода ---------- */
+  .code-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e2a38;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin: 14px 0;
+    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .code-table td {
+    padding: 8px 16px;
+    vertical-align: top;
+    border-bottom: 1px solid #2c3e50;
+  }
+
+  .code-table tr:last-child td { border-bottom: none; }
+
+  .code-table td.line-no {
+    width: 40px;
+    text-align: right;
+    color: #6272a4;
+    user-select: none;
+    padding-right: 8px;
+  }
+
+  .code-table td.code-cell {
+    color: #e6edf3;
+    white-space: pre;
+    width: 45%;
+  }
+
+  .code-table td.comment-cell {
+    color: #8fa6c0;
+    font-style: italic;
+    width: 45%;
+  }
+
+  .kw  { color: #ff79c6; }
+  .fn  { color: #50fa7b; }
+  .num { color: #bd93f9; }
+  .str { color: #f1fa8c; }
+  .com { color: #6272a4; font-style: italic; }
+
+  /* ---------- Блоки ---------- */
+  .output {
+    background: #f6f8fa;
+    color: #24292e;
+    border-left: 4px solid #27ae60;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+
+  .note {
+    background: #fff8e1;
+    border-left: 4px solid #f39c12;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+
+  .info {
+    background: #e8f4fd;
+    border-left: 4px solid #3498db;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+
+  .answer {
+    background: #eafaf1;
+    border-left: 4px solid #27ae60;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 14px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e8449;
+  }
+
+  .task-card {
+    background: #fff;
+    padding: 20px 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 18px;
+    border-left: 6px solid #3498db;
+  }
+
+  .task-card.advanced { border-left-color: #e67e22; }
+  .task-card.ege      { border-left-color: #c0392b; }
+
+  .task-card h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .badge.basic    { background: #3498db; }
+  .badge.advanced { background: #e67e22; }
+  .badge.ege      { background: #c0392b; }
+
+  table.simple {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  table.simple th, table.simple td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+  }
+
+  table.simple th {
+    background: #3498db;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  table.simple tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 700px) {
+    header h1 { font-size: 22px; }
+    h2 { font-size: 18px; }
+    .tab-btn { padding: 10px 14px; font-size: 14px; }
+    .code-table { font-size: 12px; }
+    .code-table td.code-cell,
+    .code-table td.comment-cell { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Вычисление количества информации</h1>
+    <p>Задачи, ручной разбор и решение на Python.</p>
+  </header>
+
+  <!-- ================= ВКЛАДКИ ================= -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tasks">Задачи</button>
+    <button class="tab-btn" data-tab="manual">Разбор вручную</button>
+    <button class="tab-btn" data-tab="python">Решение на Python</button>
+  </div>
+
+  <!-- ================= ВКЛАДКА 1: ЗАДАЧИ ================= -->
+  <div class="tab-panel active" id="tasks">
+
+    <div class="task-card">
+      <h3><span class="badge basic">Базовый</span> Задача 1</h3>
+      <p>В школьной базе данных каждый ученик получил идентификатор, состоящий ровно из <b>7 символов</b>. В качестве символов используются все заглавные буквы русского алфавита, кроме «Ё», «Й», «Ъ» и «Ь», а также все десятичные цифры за исключением цифры <b>0</b>. Каждый такой идентификатор записывается минимально возможным и одинаковым целым количеством байт (посимвольное кодирование, все символы кодируются одинаковым и минимально возможным количеством бит). Определите объём памяти для хранения <b>250</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    </div>
+
+    <div class="task-card">
+      <h3><span class="badge basic">Базовый</span> Задача 2</h3>
+      <p>В базе данных каждый сотрудник получил идентификатор, состоящий ровно из <b>5 символов</b>. Используются все заглавные буквы русского алфавита, кроме «Ё», «Ы», «Ъ», «Ь», и все десятичные цифры, кроме <b>0 и 1</b>. Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>300</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    </div>
+
+    <div class="task-card">
+      <h3><span class="badge basic">Базовый</span> Задача 3</h3>
+      <p>В информационной системе каждый пользователь имеет логин ровно из <b>8 символов</b>. Разрешены: все заглавные латинские буквы (<b>26</b>), все десятичные цифры, кроме <b>0</b>, и ещё <b>6 специальных символов</b>. Каждый логин записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>400</b> логинов. Ответ выразите в килобайтах.</p>
+    </div>
+
+    <div class="task-card advanced">
+      <h3><span class="badge advanced">Углублённый</span> Задача 4</h3>
+      <p>В школьной базе данных каждый ученик получил идентификатор, состоящий ровно из <b>6 символов</b>. Используются все заглавные буквы русского алфавита, кроме «Ё», «Й», «Ъ», «Ь», и все десятичные цифры, кроме <b>0, 1, 2</b>. Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>120</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    </div>
+
+    <div class="task-card advanced">
+      <h3><span class="badge advanced">Углублённый</span> Задача 5</h3>
+      <p>В базе данных каждый сотрудник получил идентификатор, состоящий ровно из <b>9 символов</b>. В качестве символов используются все заглавные буквы русского алфавита, кроме «Ё», «Ы», «Ъ», «Ь», все десятичные цифры, кроме <b>0</b>, и <b>2 дополнительных символа</b> («_» и «-»). Каждый идентификатор записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>500</b> идентификаторов. Ответ выразите в килобайтах.</p>
+    </div>
+
+    <div class="task-card advanced">
+      <h3><span class="badge advanced">Углублённый</span> Задача 6</h3>
+      <p>В информационной системе каждый пользователь имеет логин ровно из <b>10 символов</b>. Разрешены: все заглавные латинские буквы (<b>26</b>), все десятичные цифры, кроме <b>0</b>, и <b>4 специальных символа</b>. Каждый логин записывается минимально возможным и одинаковым целым количеством байт. Определите объём памяти для хранения <b>600</b> логинов. Ответ выразите в килобайтах.</p>
+    </div>
+
+    <div class="task-card ege">
+      <h3><span class="badge ege">ЕГЭ</span> Задача 7 (№31508)</h3>
+      <p>На предприятии каждой изготовленной детали присваивают серийный номер, состоящий из <b>157 символов</b>. В базе данных для хранения каждого серийного номера отведено одинаковое и минимально возможное целое число байт. При этом используется посимвольное кодирование серийных номеров, все символы кодируются одинаковым и минимально возможным числом бит. Известно, что для хранения <b>12 450</b> серийных номеров отведено не более <b>955 Кбайт</b> памяти. Определите максимально возможную мощность алфавита, используемого для записи серийных номеров. В ответе запишите только целое число.</p>
+    </div>
+
+  </div>
+
+  <!-- ================= ВКЛАДКА 2: РУЧНОЙ РАЗБОР ================= -->
+  <div class="tab-panel" id="manual">
+
+    <h2>Задача 1</h2>
+    <ol>
+      <li><b>Мощность алфавита:</b> 29 букв + 9 цифр = <b>38</b> символов.</li>
+      <li><b>Бит на символ:</b> 2⁵ = 32 &lt; 38 ≤ 64 = 2⁶ → <b>6 бит</b>.</li>
+      <li><b>Бит на идентификатор:</b> 7 × 6 = <b>42 бита</b>.</li>
+      <li><b>Байт на идентификатор:</b> 42 / 8 = 5,25 → округляем вверх → <b>6 байт</b>.</li>
+      <li><b>Всего байт:</b> 250 × 6 = <b>1500 байт</b>.</li>
+      <li><b>В килобайтах:</b> 1500 / 1024 ≈ <b>1,46 Кбайт</b>.</li>
+    </ol>
+    <div class="answer">Ответ: 1500/1024 ≈ 1,46 Кбайт</div>
+
+    <h2>Задача 2</h2>
+    <ol>
+      <li><b>Мощность алфавита:</b> 29 букв + 8 цифр = <b>37</b> символов.</li>
+      <li><b>Бит на символ:</b> 2⁵ = 32 &lt; 37 ≤ 64 = 2⁶ → <b>6 бит</b>.</li>
+      <li><b>Бит на идентификатор:</b> 5 × 6 = <b>30 бит</b>.</li>
+      <li><b>Байт на идентификатор:</b> 30 / 8 = 3,75 → округляем вверх → <b>4 байта</b>.</li>
+      <li><b>Всего байт:</b> 300 × 4 = <b>1200 байт</b>.</li>
+      <li><b>В килобайтах:</b> 1200 / 1024 ≈ <b>1,17 Кбайт</b>.</li>
+    </ol>
+    <div class="answer">Ответ: 1200/1024 ≈ 1,17 Кбайт</div>
+
+    <h2>Задача 3</h2>
+    <ol>
+      <li><b>Мощность алфавита:</b> 26 букв + 9 цифр + 6 спецсимволов = <b>41</b> символ.</li>
+      <li><b>Бит на символ:</b> 2⁵ = 32 &lt; 41 ≤ 64 = 2⁶ → <b>6 бит</b>.</li>
+      <li><b>Бит на логин:</b> 8 × 6 = <b>48 бит</b>.</li>
+      <li><b>Байт на логин:</b> 48 / 8 = 6 ровно → <b>6 байт</b>.</li>
+      <li><b>Всего байт:</b> 400 × 6 = <b>2400 байт</b>.</li>
+      <li><b>В килобайтах:</b> 2400 / 1024 ≈ <b>2,34 Кбайт</b>.</li>
+    </ol>
+    <div class="answer">Ответ: 2400/1024 ≈ 2,34 Кбайт</div>
+
+    <h2 class="advanced">Задача 4</h2>
+    <ol>
+      <li><b>Мощность алфавита:</b> 29 букв + 7 цифр = <b>36</b> символов.</li>
+      <li><b>Бит на символ:</b> 2⁵ = 32 &lt; 36 ≤ 64 = 2⁶ → <b>6 бит</b>.</li>
+      <li><b>Бит на идентификатор:</b> 6 × 6 = <b>36 бит</b>.</li>
+      <li><b>Байт на идентификатор:</b> 36 / 8 = 4,5 → округляем вверх → <b>5 байт</b>.</li>
+      <li><b>Всего байт:</b> 120 × 5 = <b>600 байт</b>.</li>
+      <li><b>В килобайтах:</b> 600 / 1024 ≈ <b>0,59 Кбайт</b>.</li>
+    </ol>
+    <div class="answer">Ответ: 600/1024 ≈ 0,59 Кбайт</div>
+
+    <h2 class="advanced">Задача 5</h2>
+    <ol>
+      <li><b>Мощность алфавита:</b> 29 букв + 9 цифр + 2 спецсимвола = <b>40</b> символов.</li>
+      <li><b>Бит на символ:</b> 2⁵ = 32 &lt; 40 ≤ 64 = 2⁶ → <b>6 бит</b>.</li>
+      <li><b>Бит на идентификатор:</b> 9 × 6 = <b>54 бита</b>.</li>
+      <li><b>Байт на идентификатор:</b> 54 / 8 = 6,75 → округляем вверх → <b>7 байт</b>.</li>
+      <li><b>Всего байт:</b> 500 × 7 = <b>3500 байт</b>.</li>
+      <li><b>В килобайтах:</b> 3500 / 1024 ≈ <b>3,42 Кбайт</b>.</li>
+    </ol>
+    <div class="answer">Ответ: 3500/1024 ≈ 3,42 Кбайт</div>
+
+    <h2 class="advanced">Задача 6</h2>
+    <ol>
+      <li><b>Мощность алфавита:</b> 26 букв + 9 цифр + 4 спецсимвола = <b>39</b> символов.</li>
+      <li><b>Бит на символ:</b> 2⁵ = 32 &lt; 39 ≤ 64 = 2⁶ → <b>6 бит</b>.</li>
+      <li><b>Бит на логин:</b> 10 × 6 = <b>60 бит</b>.</li>
+      <li><b>Байт на логин:</b> 60 / 8 = 7,5 → округляем вверх → <b>8 байт</b>.</li>
+      <li><b>Всего байт:</b> 600 × 8 = <b>4800 байт</b>.</li>
+      <li><b>В килобайтах:</b> 4800 / 1024 ≈ <b>4,69 Кбайт</b>.</li>
+    </ol>
+    <div class="answer">Ответ: 4800/1024 ≈ 4,69 Кбайт</div>
+
+    <h2 class="ege">Задача 7 (ЕГЭ №31508)</h2>
+    <p><b>Обратная задача:</b> известен объём, нужно найти мощность алфавита.</p>
+    <ol>
+      <li><b>Переведём лимит в байты:</b> 955 × 1024 = <b>977 920 байт</b>.</li>
+      <li><b>Байт на один номер:</b> 977 920 / 12 450 ≈ 78,55. Так как «не более», берём целое вниз → <b>78 байт</b>.</li>
+      <li><b>Переведём в биты:</b> 78 × 8 = <b>624 бита</b>.</li>
+      <li><b>Бит на один символ:</b> 624 / 157 ≈ 3,97 → <b>3 бита</b> (4 бита не влезут в лимит).</li>
+      <li><b>Максимальная мощность алфавита:</b> 2³ = <b>8</b>.</li>
+    </ol>
+    <div class="note">
+      Здесь округление идёт <b>вниз</b>, потому что в условии «не более 955 Кбайт». Если взять 79 байт, объём превысит лимит.
+    </div>
+    <div class="answer">Ответ: 8</div>
+
+  </div>
+
+  <!-- ================= ВКЛАДКА 3: PYTHON ================= -->
+  <div class="tab-panel" id="python">
+
+    <h2>Общие сведения</h2>
+    <h3>Бит на символ</h3>
+    <div class="info"><code>bits = (alphabet - 1).bit_length()</code></div>
+    <p>Метод <code>.bit_length()</code> возвращает число бит для представления числа. Вычитание 1 убирает лишний бит для точных степеней двойки.</p>
+
+    <h3>Округление бит вверх до байт</h3>
+    <div class="info"><code>bytes = (bits + 7) // 8</code></div>
+
+    <h3>Перевод в килобайты</h3>
+    <div class="info"><code>kb = total_bytes / 1024</code></div>
+
+    <!-- Задача 1 -->
+    <h2>Задача 1</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    alphabet = <span class="num">29</span> + <span class="num">9</span></td><td class="comment-cell">мощность алфавита: 29 букв + 9 цифр = 38</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td><td class="comment-cell">бит на символ: (38−1).bit_length() = 6</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_id = <span class="num">7</span> * bits</td><td class="comment-cell">бит на идентификатор: 7 × 6 = 42</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td><td class="comment-cell">байт на идентификатор: (42+7)//8 = 6</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    total = <span class="num">250</span> * bytes_per_id</td><td class="comment-cell">всего байт: 250 × 6 = 1500</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(<span class="str">f"{total}/1024 ≈ {total/<span class="num">1024</span>:.4f} Кбайт"</span>)</td><td class="comment-cell">вывод: 1500/1024 ≈ 1,4648 Кбайт</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">1500/1024 ≈ 1.4648 Кбайт</div>
+
+    <!-- Задача 2 -->
+    <h2>Задача 2</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    alphabet = <span class="num">29</span> + <span class="num">8</span></td><td class="comment-cell">мощность алфавита: 29 букв + 8 цифр = 37</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td><td class="comment-cell">бит на символ: (37−1).bit_length() = 6</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_id = <span class="num">5</span> * bits</td><td class="comment-cell">бит на идентификатор: 5 × 6 = 30</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td><td class="comment-cell">байт на идентификатор: (30+7)//8 = 4</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    total = <span class="num">300</span> * bytes_per_id</td><td class="comment-cell">всего байт: 300 × 4 = 1200</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(<span class="str">f"{total}/1024 ≈ {total/<span class="num">1024</span>:.4f} Кбайт"</span>)</td><td class="comment-cell">вывод: 1200/1024 ≈ 1,1719 Кбайт</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">1200/1024 ≈ 1.1719 Кбайт</div>
+
+    <!-- Задача 3 -->
+    <h2>Задача 3</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    alphabet = <span class="num">26</span> + <span class="num">9</span> + <span class="num">6</span></td><td class="comment-cell">мощность алфавита: 26 + 9 + 6 = 41</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td><td class="comment-cell">бит на символ: (41−1).bit_length() = 6</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_id = <span class="num">8</span> * bits</td><td class="comment-cell">бит на логин: 8 × 6 = 48</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td><td class="comment-cell">байт на логин: (48+7)//8 = 6</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    total = <span class="num">400</span> * bytes_per_id</td><td class="comment-cell">всего байт: 400 × 6 = 2400</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(<span class="str">f"{total}/1024 ≈ {total/<span class="num">1024</span>:.4f} Кбайт"</span>)</td><td class="comment-cell">вывод: 2400/1024 ≈ 2,3438 Кбайт</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">2400/1024 ≈ 2.3438 Кбайт</div>
+
+    <!-- Задача 4 -->
+    <h2 class="advanced">Задача 4</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    alphabet = <span class="num">29</span> + <span class="num">7</span></td><td class="comment-cell">мощность алфавита: 29 букв + 7 цифр = 36</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td><td class="comment-cell">бит на символ: (36−1).bit_length() = 6</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_id = <span class="num">6</span> * bits</td><td class="comment-cell">бит на идентификатор: 6 × 6 = 36</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td><td class="comment-cell">байт на идентификатор: (36+7)//8 = 5</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    total = <span class="num">120</span> * bytes_per_id</td><td class="comment-cell">всего байт: 120 × 5 = 600</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(<span class="str">f"{total}/1024 ≈ {total/<span class="num">1024</span>:.4f} Кбайт"</span>)</td><td class="comment-cell">вывод: 600/1024 ≈ 0,5859 Кбайт</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">600/1024 ≈ 0.5859 Кбайт</div>
+
+    <!-- Задача 5 -->
+    <h2 class="advanced">Задача 5</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    alphabet = <span class="num">29</span> + <span class="num">9</span> + <span class="num">2</span></td><td class="comment-cell">мощность алфавита: 29 + 9 + 2 = 40</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td><td class="comment-cell">бит на символ: (40−1).bit_length() = 6</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_id = <span class="num">9</span> * bits</td><td class="comment-cell">бит на идентификатор: 9 × 6 = 54</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td><td class="comment-cell">байт на идентификатор: (54+7)//8 = 7</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    total = <span class="num">500</span> * bytes_per_id</td><td class="comment-cell">всего байт: 500 × 7 = 3500</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(<span class="str">f"{total}/1024 ≈ {total/<span class="num">1024</span>:.4f} Кбайт"</span>)</td><td class="comment-cell">вывод: 3500/1024 ≈ 3,4180 Кбайт</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">3500/1024 ≈ 3.4180 Кбайт</div>
+
+    <!-- Задача 6 -->
+    <h2 class="advanced">Задача 6</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    alphabet = <span class="num">26</span> + <span class="num">9</span> + <span class="num">4</span></td><td class="comment-cell">мощность алфавита: 26 + 9 + 4 = 39</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bits = (alphabet - <span class="num">1</span>).bit_length()</td><td class="comment-cell">бит на символ: (39−1).bit_length() = 6</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_id = <span class="num">10</span> * bits</td><td class="comment-cell">бит на логин: 10 × 6 = 60</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bytes_per_id = (bits_per_id + <span class="num">7</span>) // <span class="num">8</span></td><td class="comment-cell">байт на логин: (60+7)//8 = 8</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    total = <span class="num">600</span> * bytes_per_id</td><td class="comment-cell">всего байт: 600 × 8 = 4800</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(<span class="str">f"{total}/1024 ≈ {total/<span class="num">1024</span>:.4f} Кбайт"</span>)</td><td class="comment-cell">вывод: 4800/1024 ≈ 4,6875 Кбайт</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">4800/1024 ≈ 4.6875 Кбайт</div>
+
+    <!-- Задача 7 -->
+    <h2 class="ege">Задача 7 (ЕГЭ №31508)</h2>
+    <table class="code-table">
+      <tr><td class="line-no">1</td><td class="code-cell"><span class="kw">def</span> <span class="fn">solve</span>():</td><td class="comment-cell">объявляем функцию</td></tr>
+      <tr><td class="line-no">2</td><td class="code-cell">    limit_bytes = <span class="num">955</span> * <span class="num">1024</span></td><td class="comment-cell">переводим 955 Кбайт в байты = 977920</td></tr>
+      <tr><td class="line-no">3</td><td class="code-cell">    bytes_per_num = limit_bytes // <span class="num">12450</span></td><td class="comment-cell">максимум байт на номер: 977920 // 12450 = 78</td></tr>
+      <tr><td class="line-no">4</td><td class="code-cell">    bits_per_num = bytes_per_num * <span class="num">8</span></td><td class="comment-cell">переводим в биты: 78 × 8 = 624</td></tr>
+      <tr><td class="line-no">5</td><td class="code-cell">    bits_per_char = bits_per_num // <span class="num">157</span></td><td class="comment-cell">бит на символ: 624 // 157 = 3</td></tr>
+      <tr><td class="line-no">6</td><td class="code-cell">    power = <span class="num">2</span> ** bits_per_char</td><td class="comment-cell">максимальная мощность алфавита: 2³ = 8</td></tr>
+      <tr><td class="line-no">7</td><td class="code-cell">    <span class="fn">print</span>(power)</td><td class="comment-cell">вывод: 8</td></tr>
+      <tr><td class="line-no">8</td><td class="code-cell"><span class="fn">solve</span>()</td><td class="comment-cell">запуск</td></tr>
+    </table>
+    <div class="output">8</div>
+    <div class="note">
+      Здесь округление идёт <b>вниз</b>, потому что в условии «не более 955 Кбайт».
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Переключение вкладок
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = btn.dataset.tab;
+
+      document.querySelectorAll('.tab-btn').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.remove('active');
+      });
+
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
