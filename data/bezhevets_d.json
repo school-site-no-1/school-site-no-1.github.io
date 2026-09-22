@@ -1,59 +1,9 @@
 {
   "ПН": [],
   "ВТ": [],
-  "СР": [
-    {
-      "lesson": 1,
-      "class": "5А",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
-      "lesson": 2,
-      "class": "6Б",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
-      "lesson": 3,
-      "class": "8Б",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
-      "lesson": 6,
-      "class": "6В",
-      "subject": "ДКП",
-      "room": "310"
-    }
-  ],
-  "ЧТ": [
-    {
-      "lesson": 1,
-      "class": "7В",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
-      "lesson": 3,
-      "class": "6А",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
-      "lesson": 5,
-      "class": "5Б",
-      "subject": "ДКП",
-      "room": "310"
-    },
-    {
-      "lesson": 7,
-      "class": "7А",
-      "subject": "ДКП",
-      "room": "310"
-    }
-  ],
+  "СР": [],
+  "ЧТ": [],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-09-22 07:03:00"
+  "last_update": "2026-09-22 11:48:49"
 }
