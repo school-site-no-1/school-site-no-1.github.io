@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#000" />
-  <title>Live Quiz</title>
+  <title>Остановись на минуту. Что сегодня стало понятнее?</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; padding: 0; height: 100%; overflow: hidden;
@@ -81,7 +81,7 @@
     }
 
     .chat-overlay {
-      position: fixed; left: 0; right: 0; bottom: 0; height: 50vh;
+      position: fixed; left: 0; right: 0; bottom: 0; height: 62.5vh;   /* было 50vh — увеличено на 25% */
       display: flex; flex-direction: column;
       background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,0) 100%);
       z-index: 20; padding-bottom: env(safe-area-inset-bottom); pointer-events: none;
