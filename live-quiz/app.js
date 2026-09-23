@@ -34,7 +34,7 @@ async function fetchWithTimeout(url, options, timeoutMs = 15000) {
   }
 }
 
-// ==== 4. Запрос к DeepSeek ====
+// ==== 4. Запрос к DeepSeek (проверка на мат) ====
 async function askDeepSeek(prompt, maxTokens = 10) {
   try {
     const response = await fetchWithTimeout(DEEPSEEK_PROXY, {
@@ -144,7 +144,7 @@ textEl.addEventListener('paste', (e) => {
 
 updateCharCounter();
 
-// ==== 9. Приветствие (сохраняется в БД, но показывается только адресату) ====
+// ==== 9. Приветствие нового ученика (приватное) ====
 async function sendGreeting() {
   const gender   = genderEl.value || null;
   const nickname = nickEl.value.trim() || '';
@@ -157,7 +157,7 @@ async function sendGreeting() {
   // Показываем ЛОКАЛЬНО
   const div = document.createElement('div');
   div.className = 'msg system-msg';
-  div.dataset.private = '1';    // помечаем как «своё»
+  div.dataset.private = '1';
   div.innerHTML = '<i>' + escapeHtml(greeting) + '</i>';
   chatEl.appendChild(div);
   chatEl.scrollTop = chatEl.scrollHeight;
@@ -172,7 +172,7 @@ async function sendGreeting() {
       ai_question: greeting,
       original_text: null,
       ai_answer: null,
-      is_private: true,               // ← показывать только адресату
+      is_private: true,
       question_id: QUESTION_ID,
       day: todayMoscow()
     });
@@ -190,15 +190,14 @@ async function trySendGreeting() {
   const nickname = nickEl.value.trim();
   if (!nickname) return;
 
-  // Локальная метка на сегодня
   const localKey = 'greeted_' + todayMoscow();
   if (localStorage.getItem(localKey) === '1') {
-    console.log('Приветствие уже было сегодня — не отправляем');
+    console.log('Приветствие уже было сегодня');
     greetingSent = true;
     return;
   }
 
-  // Проверка в БД: есть ли уже приветствие для этого имени сегодня?
+  // Проверка в БД
   try {
     const { data, error } = await db
       .from('answers')
@@ -275,15 +274,13 @@ const channel = db
     { event: 'INSERT', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
     (payload) => {
       const row = payload.new;
-
-      // Показываем только за сегодня
       if (row.day !== todayMoscow()) return;
 
-      // Приватное — показываем только адресату
+      // Приватное — только адресату
       if (row.is_private) {
         const myName = nickEl.value.trim();
-        if (row.nickname !== myName) return;   // это чужое приветствие — не показываем
-        if (document.querySelector('[data-private="1"]')) return;  // уже показано локально
+        if (row.nickname !== myName) return;
+        if (document.querySelector('[data-private="1"]')) return;
       }
 
       addMessageToChat(row);
@@ -321,7 +318,7 @@ function addMessageToChat(row) {
   const div = document.createElement('div');
   div.dataset.id = row.id;
 
-  // Приветствие нейронки (приватное, без ответа ученика)
+  // Приветствие нейронки
   if (row.ai_question && !row.original_text) {
     div.className = 'msg system-msg';
     div.dataset.private = '1';
@@ -414,7 +411,7 @@ form.addEventListener('submit', async (e) => {
       original_text: originalText,
       ai_answer: aiAnswer,
       ai_question: null,
-      is_private: false,             // ответы учеников — публичные
+      is_private: false,
       question_id: QUESTION_ID,
       day: todayMoscow()
     })
@@ -484,18 +481,43 @@ async function loadReactionCounts() {
   renderReactionsStats();
 }
 
-// ==== 16. Presence ====
+// ==== 16. Presence + статистика посещений ====
+let visitLogged = false;
+
 const presence = db.channel('presence:' + ROOM, {
   config: { presence: { key: crypto.randomUUID() } }
 });
 
 presence
-  .on('presence', { event: 'sync' }, () => {
+  .on('presence', { event: 'sync' }, async () => {
     const state = presence.presenceState();
-    onlineEl.textContent = 'Онлайн: ' + Object.keys(state).length;
+    const count = Object.keys(state).length;
+    onlineEl.textContent = 'Онлайн: ' + count;
+
+    // Обновляем максимум онлайна
+    try {
+      await db.rpc('bump_online', { p_room: ROOM, p_current_online: count });
+    } catch (e) {
+      console.warn('Ошибка bump_online:', e);
+    }
   })
   .subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') await presence.track({ joined_at: Date.now() });
+    if (status === 'SUBSCRIBED') {
+      await presence.track({ joined_at: Date.now() });
+
+      // Фиксируем посещение (1 раз за сессию)
+      if (!visitLogged) {
+        visitLogged = true;
+        try {
+          const state = presence.presenceState();
+          const count = Object.keys(state).length;
+          await db.rpc('visit_room', { p_room: ROOM, p_current_online: count });
+          console.log('Посещение зафиксировано, онлайн:', count);
+        } catch (e) {
+          console.warn('Ошибка visit_room:', e);
+        }
+      }
+    }
   });
 
 // ==== 17. Модерация ====
@@ -559,7 +581,7 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// ==== 20. Автосброс ====
+// ==== 20. Автосброс в 00:00 ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -570,7 +592,10 @@ function msUntilMidnightMoscow() {
 
 function scheduleReset() {
   const ms = msUntilMidnightMoscow();
+  console.log('Сброс в 00:00 через ' + Math.round(ms / 1000 / 60) + ' минут');
+
   setTimeout(() => {
+    console.log('00:00 по Москве — сбрасываем чат и счётчики');
     chatEl.innerHTML = '';
     loadHistory();
     loadReactionCounts();
