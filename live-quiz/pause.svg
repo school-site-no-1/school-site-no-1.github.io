@@ -1,26 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000" role="img" aria-label="Остановись на минуту. Что сегодня стало понятнее?">
   <defs>
+    <!-- Фон -->
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#0f172a"/>
       <stop offset="55%" stop-color="#111827"/>
       <stop offset="100%" stop-color="#1e1b4b"/>
     </linearGradient>
 
-    <radialGradient id="glow" cx="50%" cy="38%" r="35%">
-      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.35"/>
-      <stop offset="60%" stop-color="#22d3ee" stop-opacity="0.10"/>
+    <!-- Свечение вокруг текста (верхняя часть) -->
+    <radialGradient id="glow-top" cx="50%" cy="10%" r="50%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.30"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
 
+    <!-- Размытие для свечения иконок -->
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="10"/>
+      <feGaussianBlur stdDeviation="8"/>
     </filter>
   </defs>
 
+  <!-- Основной фон -->
   <rect width="800" height="1000" fill="url(#bg)"/>
-  <rect width="800" height="1000" fill="url(#glow)"/>
+  <rect width="800" height="1000" fill="url(#glow-top)"/>
 
-  <g fill="#e2e8f0" opacity="0.55">
+  <!-- Декоративные звезды (точки) -->
+  <g fill="#e2e8f0" opacity="0.4">
     <circle cx="90" cy="120" r="2"/>
     <circle cx="160" cy="210" r="1.5"/>
     <circle cx="250" cy="90" r="1.8"/>
@@ -33,40 +37,52 @@
     <circle cx="70" cy="560" r="1.5"/>
   </g>
 
-  <g fill="none" stroke="#93c5fd" stroke-opacity="0.12">
-    <circle cx="400" cy="360" r="150"/>
-    <circle cx="400" cy="360" r="200"/>
-    <circle cx="400" cy="360" r="250"/>
+  <!-- Концентрические круги (волны спокойствия) - центрированы на иконке паузы -->
+  <g fill="none" stroke="#93c5fd" stroke-opacity="0.08">
+    <circle cx="400" cy="650" r="120"/>
+    <circle cx="400" cy="650" r="180"/>
+    <circle cx="400" cy="650" r="240"/>
   </g>
 
-  <g filter="url(#soft)" fill="#60a5fa" opacity="0.55">
-    <rect x="365" y="305" width="22" height="110" rx="11"/>
-    <rect x="413" y="305" width="22" height="110" rx="11"/>
-  </g>
+  <!-- ТЕКСТ В САМОМ ВЕРХУ -->
 
-  <g fill="#f8fafc">
-    <rect x="365" y="305" width="22" height="110" rx="11"/>
-    <rect x="413" y="305" width="22" height="110" rx="11"/>
-  </g>
-
-  <text x="400" y="560" text-anchor="middle"
+  <!-- Заголовок: "Остановись на минуту." -->
+  <text x="400" y="120" text-anchor="middle"
         font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
-        font-size="50" font-weight="600" fill="#e2e8f0" letter-spacing="0.5">
+        font-size="48" font-weight="600" fill="#e2e8f0" letter-spacing="0.5">
     Остановись на минуту.
   </text>
 
-  <line x1="340" y1="610" x2="460" y2="610"
-        stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <!-- Разделительная линия между текстами -->
+  <line x1="350" y1="170" x2="450" y2="170"
+        stroke="#64748b" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
 
-  <text x="400" y="680" text-anchor="middle"
+  <!-- Подзаголовок: "Что сегодня стало понятнее?" -->
+  <text x="400" y="240" text-anchor="middle"
         font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
-        font-size="36" fill="#94a3b8" letter-spacing="0.2">
+        font-size="32" fill="#94a3b8" letter-spacing="0.2">
     Что сегодня стало понятнее?
   </text>
 
+
+  <!-- ИКОНКА ПАУЗЫ НИЖЕ ТЕКСТА -->
+  
+  <!-- Свечение позади паузы -->
+  <g filter="url(#soft)" fill="#60a5fa" opacity="0.5">
+    <rect x="370" y="610" width="18" height="80" rx="9"/>
+    <rect x="412" y="610" width="18" height="80" rx="9"/>
+  </g>
+  
+  <!-- Сама иконка паузы -->
+  <g fill="#f8fafc">
+    <rect x="370" y="610" width="18" height="80" rx="9"/>
+    <rect x="412" y="610" width="18" height="80" rx="9"/>
+  </g>
+
+  <!-- Нижняя подпись (остается внизу для баланса) -->
   <text x="400" y="900" text-anchor="middle"
         font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
-        font-size="20" fill="#64748b" letter-spacing="3">
+        font-size="18" fill="#475569" letter-spacing="4">
     ПАУЗА · ДЫХАНИЕ · ЯСНОСТЬ
   </text>
 </svg>
