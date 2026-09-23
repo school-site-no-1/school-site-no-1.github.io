@@ -34,7 +34,7 @@ async function fetchWithTimeout(url, options, timeoutMs = 15000) {
   }
 }
 
-// ==== 4. Запрос к DeepSeek (проверка на мат) ====
+// ==== 4. Запрос к DeepSeek ====
 async function askDeepSeek(prompt, maxTokens = 10) {
   try {
     const response = await fetchWithTimeout(DEEPSEEK_PROXY, {
@@ -49,7 +49,6 @@ async function askDeepSeek(prompt, maxTokens = 10) {
     }, 8000);
 
     if (!response || !response.ok) return null;
-
     const data = await response.json();
     if (data.choices && data.choices[0]) return data.choices[0].message.content;
     return null;
@@ -68,17 +67,11 @@ async function checkProfanity(nickname, text) {
     'ТЕКСТ: "' + text.replace(/"/g, '') + '".';
 
   const answer = await askDeepSeek(prompt, 10);
-  if (answer === null) {
-    console.warn('DeepSeek не ответил, пропускаем проверку');
-    return false;
-  }
-
-  const isBad = answer.trim().toUpperCase().startsWith('ДА');
-  console.log('Проверка -> ' + answer + ' -> ' + (isBad ? 'БЛОКИРОВАТЬ' : 'ПРОПУСТИТЬ'));
-  return isBad;
+  if (answer === null) return false;
+  return answer.trim().toUpperCase().startsWith('ДА');
 }
 
-// ==== 6. Универсальный запрос к Worker ====
+// ==== 6. Запрос к Worker ====
 async function callTranslate(text, gender, mode, nickname) {
   try {
     const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
@@ -88,7 +81,6 @@ async function callTranslate(text, gender, mode, nickname) {
     }, 20000);
 
     if (!response || !response.ok) return null;
-
     const data = await response.json();
     if (data.translated) return data.translated;
     return null;
@@ -152,7 +144,7 @@ textEl.addEventListener('paste', (e) => {
 
 updateCharCounter();
 
-// ==== 9. Приветствие нового ученика (сохраняется в БД) ====
+// ==== 9. Приветствие (сохраняется в БД, но показывается только адресату) ====
 async function sendGreeting() {
   const gender   = genderEl.value || null;
   const nickname = nickEl.value.trim() || '';
@@ -162,14 +154,15 @@ async function sendGreeting() {
   const greeting = await callTranslate('', gender, 'greeting', nickname);
   if (!greeting) return;
 
-  // Показываем в чате
+  // Показываем ЛОКАЛЬНО
   const div = document.createElement('div');
   div.className = 'msg system-msg';
+  div.dataset.private = '1';    // помечаем как «своё»
   div.innerHTML = '<i>' + escapeHtml(greeting) + '</i>';
   chatEl.appendChild(div);
   chatEl.scrollTop = chatEl.scrollHeight;
 
-  // Сохраняем в БД как отдельную запись
+  // Сохраняем в БД с флагом is_private
   try {
     await db.from('answers').insert({
       room: ROOM,
@@ -179,9 +172,11 @@ async function sendGreeting() {
       ai_question: greeting,
       original_text: null,
       ai_answer: null,
+      is_private: true,               // ← показывать только адресату
       question_id: QUESTION_ID,
       day: todayMoscow()
     });
+    console.log('Приветствие сохранено в БД (приватное)');
   } catch (e) {
     console.error('Ошибка сохранения приветствия:', e);
   }
@@ -189,15 +184,43 @@ async function sendGreeting() {
 
 let greetingSent = false;
 
-function trySendGreeting() {
+async function trySendGreeting() {
   if (greetingSent) return;
-  if (sessionStorage.getItem('greeted') === '1') return;
 
   const nickname = nickEl.value.trim();
   if (!nickname) return;
 
+  // Локальная метка на сегодня
+  const localKey = 'greeted_' + todayMoscow();
+  if (localStorage.getItem(localKey) === '1') {
+    console.log('Приветствие уже было сегодня — не отправляем');
+    greetingSent = true;
+    return;
+  }
+
+  // Проверка в БД: есть ли уже приветствие для этого имени сегодня?
+  try {
+    const { data, error } = await db
+      .from('answers')
+      .select('id')
+      .eq('room', ROOM)
+      .eq('day', todayMoscow())
+      .eq('nickname', nickname)
+      .eq('is_private', true)
+      .limit(1);
+
+    if (!error && data && data.length > 0) {
+      console.log('Ученик ' + nickname + ' уже получал приветствие сегодня');
+      greetingSent = true;
+      localStorage.setItem(localKey, '1');
+      return;
+    }
+  } catch (e) {
+    console.warn('Ошибка проверки в БД:', e);
+  }
+
   greetingSent = true;
-  sessionStorage.setItem('greeted', '1');
+  localStorage.setItem(localKey, '1');
   sendGreeting();
 }
 
@@ -208,11 +231,7 @@ nickEl.addEventListener('input', () => {
 });
 
 setTimeout(() => {
-  if (!greetingSent && sessionStorage.getItem('greeted') !== '1') {
-    greetingSent = true;
-    sessionStorage.setItem('greeted', '1');
-    sendGreeting();
-  }
+  if (!greetingSent) trySendGreeting();
 }, 30000);
 
 // ==== 10. Загрузка вопроса ====
@@ -254,12 +273,30 @@ const channel = db
   .on(
     'postgres_changes',
     { event: 'INSERT', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
-    (payload) => { if (payload.new.day === todayMoscow()) addMessageToChat(payload.new); }
+    (payload) => {
+      const row = payload.new;
+
+      // Показываем только за сегодня
+      if (row.day !== todayMoscow()) return;
+
+      // Приватное — показываем только адресату
+      if (row.is_private) {
+        const myName = nickEl.value.trim();
+        if (row.nickname !== myName) return;   // это чужое приветствие — не показываем
+        if (document.querySelector('[data-private="1"]')) return;  // уже показано локально
+      }
+
+      addMessageToChat(row);
+    }
   )
   .on(
     'postgres_changes',
     { event: 'UPDATE', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
-    (payload) => { if (payload.new.hidden && payload.new.day === todayMoscow()) removeMessage(payload.new.id); }
+    (payload) => {
+      if (payload.new.hidden && payload.new.day === todayMoscow()) {
+        removeMessage(payload.new.id);
+      }
+    }
   )
   .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
   .subscribe(status => console.log('Realtime status:', status));
@@ -284,12 +321,12 @@ function addMessageToChat(row) {
   const div = document.createElement('div');
   div.dataset.id = row.id;
 
-  // Если это приветствие нейронки (нет ответа ученика)
+  // Приветствие нейронки (приватное, без ответа ученика)
   if (row.ai_question && !row.original_text) {
     div.className = 'msg system-msg';
+    div.dataset.private = '1';
     div.innerHTML = '<i>' + escapeHtml(row.ai_question) + '</i>';
   } else {
-    // Обычное сообщение ученика (возможно с ответом нейронки)
     div.className = 'msg';
     div.innerHTML =
       '<b>' + escapeHtml(row.nickname) + '</b>: ' +
@@ -377,6 +414,7 @@ form.addEventListener('submit', async (e) => {
       original_text: originalText,
       ai_answer: aiAnswer,
       ai_question: null,
+      is_private: false,             // ответы учеников — публичные
       question_id: QUESTION_ID,
       day: todayMoscow()
     })
