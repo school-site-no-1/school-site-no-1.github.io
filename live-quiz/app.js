@@ -152,7 +152,7 @@ textEl.addEventListener('paste', (e) => {
 
 updateCharCounter();
 
-// ==== 9. Приветствие нового ученика ====
+// ==== 9. Приветствие нового ученика (сохраняется в БД) ====
 async function sendGreeting() {
   const gender   = genderEl.value || null;
   const nickname = nickEl.value.trim() || '';
@@ -162,11 +162,29 @@ async function sendGreeting() {
   const greeting = await callTranslate('', gender, 'greeting', nickname);
   if (!greeting) return;
 
+  // Показываем в чате
   const div = document.createElement('div');
   div.className = 'msg system-msg';
   div.innerHTML = '<i>' + escapeHtml(greeting) + '</i>';
   chatEl.appendChild(div);
   chatEl.scrollTop = chatEl.scrollHeight;
+
+  // Сохраняем в БД как отдельную запись
+  try {
+    await db.from('answers').insert({
+      room: ROOM,
+      nickname: nickname || 'Аноним',
+      gender,
+      text: greeting,
+      ai_question: greeting,
+      original_text: null,
+      ai_answer: null,
+      question_id: QUESTION_ID,
+      day: todayMoscow()
+    });
+  } catch (e) {
+    console.error('Ошибка сохранения приветствия:', e);
+  }
 }
 
 let greetingSent = false;
@@ -264,11 +282,19 @@ function addMessageToChat(row) {
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
 
   const div = document.createElement('div');
-  div.className = 'msg';
   div.dataset.id = row.id;
-  div.innerHTML =
-    '<b>' + escapeHtml(row.nickname) + '</b>: ' +
-    escapeHtml(row.text).replace(/\n/g, '<br>');
+
+  // Если это приветствие нейронки (нет ответа ученика)
+  if (row.ai_question && !row.original_text) {
+    div.className = 'msg system-msg';
+    div.innerHTML = '<i>' + escapeHtml(row.ai_question) + '</i>';
+  } else {
+    // Обычное сообщение ученика (возможно с ответом нейронки)
+    div.className = 'msg';
+    div.innerHTML =
+      '<b>' + escapeHtml(row.nickname) + '</b>: ' +
+      escapeHtml(row.text).replace(/\n/g, '<br>');
+  }
 
   if (isModerator) {
     const btn = document.createElement('button');
@@ -329,12 +355,14 @@ form.addEventListener('submit', async (e) => {
 
   const isQuestion = /[?]|^(что|как|почему|зачем|когда|где|кто|какой|какая|какие|сколько)/i.test(originalText);
 
+  let aiAnswer = null;
   let finalText = originalText;
 
   if (isQuestion) {
     console.log('Вопрос. Пол:', gender || 'не указан', '· Имя:', nickname);
     const answer = await callTranslate(originalText, gender, 'question', nickname);
     if (answer) {
+      aiAnswer = answer;
       finalText = '❓ ' + originalText + '\n' + answer;
     }
   }
@@ -347,6 +375,8 @@ form.addEventListener('submit', async (e) => {
       gender,
       text: finalText,
       original_text: originalText,
+      ai_answer: aiAnswer,
+      ai_question: null,
       question_id: QUESTION_ID,
       day: todayMoscow()
     })
@@ -491,7 +521,7 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// ==== 20. Автосброс в 00:00 ====
+// ==== 20. Автосброс ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -502,10 +532,7 @@ function msUntilMidnightMoscow() {
 
 function scheduleReset() {
   const ms = msUntilMidnightMoscow();
-  console.log('Сброс в 00:00 через ' + Math.round(ms / 1000 / 60) + ' минут');
-
   setTimeout(() => {
-    console.log('00:00 по Москве — сбрасываем чат и счётчики');
     chatEl.innerHTML = '';
     loadHistory();
     loadReactionCounts();
