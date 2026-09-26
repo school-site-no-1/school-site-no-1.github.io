@@ -4,13 +4,13 @@
       "lesson": 2,
       "class": "6А",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "113"
     },
     {
       "lesson": 3,
       "class": "6А",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "113"
     },
     {
       "lesson": 4,
@@ -28,13 +28,13 @@
       "lesson": 6,
       "class": "6Б",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "113"
     },
     {
       "lesson": 7,
       "class": "6Б",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "113"
     },
     {
       "lesson": 8,
@@ -226,5 +226,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-25 05:20:56"
+  "last_update": "2026-09-26 14:25:19"
 }
