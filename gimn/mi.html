@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Расписание</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #f5f7fa; padding: 15px; margin: 0; }
+  .toolbar { text-align: center; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .toolbar button {
+    background: #4a76a8; color: #fff; border: none; padding: 8px 16px;
+    border-radius: 5px; cursor: pointer; font-size: 14px;
+  }
+  .toolbar button:hover { background: #35577d; }
+  .toolbar button.green { background: #27ae60; }
+  .toolbar button.green:hover { background: #1e8449; }
+  .toolbar button.orange { background: #e67e22; }
+  .toolbar button.orange:hover { background: #ca6f1e; }
+  .toolbar button.red { background: #e74c3c; }
+  .toolbar button.red:hover { background: #c0392b; }
+  .status {
+    text-align: center; font-size: 13px; color: #555;
+    min-height: 18px; margin-bottom: 10px;
+  }
+  .status.ok { color: #27ae60; font-weight: bold; }
+  .status.err { color: #c0392b; font-weight: bold; }
+
+  /* 📅 Баннер с датой из PDF */
+  .date-banner {
+    text-align: center;
+    background: #fff8e1;
+    border: 2px solid #ffc107;
+    color: #7a5c00;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 0 auto 15px;
+    max-width: 720px;
+  }
+  .date-banner::before {
+    content: '📅 ';
+    font-size: 18px;
+  }
+
+  .students {
+    display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;
+    max-width: 720px; margin: 0 auto;
+  }
+  .student { flex: 1 1 340px; max-width: 350px; }
+  .student h2 {
+    text-align: center; color: #fff; background: #4a76a8;
+    padding: 8px; border-radius: 6px 6px 0 0; margin: 0; font-size: 18px;
+  }
+  .student.masha h2 { background: #b85c8a; }
+  .days {
+    background: #fff; padding: 10px; border-radius: 0 0 6px 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .day { border: 1px solid #e3e9f0; border-radius: 4px; overflow: hidden; }
+  .day h3 {
+    background: #e8eef5; color: #35577d; margin: 0; padding: 4px 10px;
+    font-size: 14px; letter-spacing: 1px;
+  }
+  .student.masha .day h3 { background: #f5e6ee; color: #8a3a62; }
+  .lesson {
+    display: flex; align-items: center; padding: 3px 10px;
+    border-bottom: 1px solid #eee; font-size: 13px; color: #333;
+    line-height: 1.25; min-height: 22px;
+  }
+  .lesson:last-child { border-bottom: none; }
+  .lesson .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; background: #dce6f2; color: #35577d;
+    border-radius: 50%; font-weight: bold; font-size: 11px;
+    margin-right: 7px; flex-shrink: 0;
+  }
+  .student.masha .lesson .num { background: #f0d8e4; color: #8a3a62; }
+  .lesson .time {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #fff3cd; color: #856404; border: 1px solid #ffeeba;
+    border-radius: 4px; font-weight: bold; font-size: 10px;
+    padding: 1px 5px; margin-right: 6px; flex-shrink: 0;
+    white-space: nowrap; font-family: monospace;
+  }
+  .student.masha .lesson .time {
+    background: #fce4ec; color: #8a3a62; border-color: #f8bbd0;
+  }
+  .lesson.empty { color: #bbb; font-style: italic; }
+  .lesson.empty .num { background: #f0f0f0; color: #bbb; }
+
+  /* 🔥 Выделение изменённых уроков (из PDF) */
+  .lesson.changed {
+    background: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding-left: 6px;
+  }
+  .lesson.changed .num {
+    background: #ffe082;
+    color: #7a5c00;
+  }
+  .lesson.changed::after {
+    content: '⏺';
+    color: #ff9800;
+    margin-left: auto;
+    font-size: 10px;
+    padding-left: 6px;
+  }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: #fff; border-radius: 10px; max-width: 900px; width: 100%;
+    max-height: 90vh; overflow-y: auto; padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+  .modal.small { max-width: 380px; }
+  .modal h2 {
+    margin: 0 0 15px; text-align: center; color: #333; font-size: 20px;
+  }
+  .pin-input {
+    width: 100%; padding: 12px; font-size: 24px; text-align: center;
+    letter-spacing: 8px; border: 2px solid #ccc; border-radius: 8px;
+    margin-bottom: 15px; font-family: monospace;
+  }
+  .pin-input:focus { outline: none; border-color: #4a76a8; }
+  .pin-error {
+    color: #c0392b; text-align: center; font-size: 14px;
+    min-height: 20px; margin-bottom: 10px;
+  }
+  .modal-tabs {
+    display: flex; gap: 6px; margin-bottom: 15px;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .modal-tabs button {
+    background: #e8eef5; color: #35577d; border: none; padding: 6px 14px;
+    border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold;
+  }
+  .modal-tabs button.active { background: #4a76a8; color: #fff; }
+  .modal-tabs button.names-tab { background: #e6f4ea; color: #1e8449; }
+  .modal-tabs button.names-tab.active { background: #27ae60; color: #fff; }
+  .admin-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px;
+  }
+  .admin-table th, .admin-table td {
+    border: 1px solid #ddd; padding: 5px; text-align: left;
+  }
+  .admin-table th { background: #e8eef5; color: #35577d; font-size: 12px; }
+  .admin-table input {
+    width: 100%; border: 1px solid #ccc; border-radius: 4px;
+    padding: 4px 6px; font-size: 13px; font-family: inherit;
+  }
+  .admin-table input.num-input { width: 50px; text-align: center; }
+  .admin-table input.time-input {
+    width: 70px; text-align: center; font-family: monospace;
+  }
+  .admin-table .del-btn {
+    background: #c0392b; color: #fff; border: none; border-radius: 4px;
+    padding: 3px 8px; cursor: pointer; font-size: 12px;
+  }
+  .admin-table .del-btn:hover { background: #922b21; }
+  .names-form { max-width: 500px; margin: 0 auto; }
+  .names-form .form-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .names-form .form-row label {
+    flex: 0 0 120px; font-size: 14px; color: #555; font-weight: bold;
+  }
+  .names-form .form-row input {
+    flex: 1; padding: 8px 10px; border: 1px solid #ccc;
+    border-radius: 5px; font-size: 14px; font-family: inherit;
+  }
+  .names-form .form-row input:focus { outline: none; border-color: #4a76a8; }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: center;
+    margin-top: 15px; flex-wrap: wrap;
+  }
+  .modal-actions button {
+    padding: 8px 20px; border: none; border-radius: 5px;
+    cursor: pointer; font-size: 14px; font-weight: bold;
+  }
+  .btn-save { background: #27ae60; color: #fff; }
+  .btn-save:hover { background: #1e8449; }
+  .btn-current { background: #e67e22; color: #fff; }
+  .btn-current:hover { background: #ca6f1e; }
+  .btn-reset { background: #e74c3c; color: #fff; }
+  .btn-reset:hover { background: #c0392b; }
+  .btn-cancel { background: #95a5a6; color: #fff; }
+  .btn-cancel:hover { background: #7f8c8d; }
+  .btn-add { background: #2980b9; color: #fff; }
+  .btn-add:hover { background: #1f618d; }
+  .btn-pin { background: #8e44ad; color: #fff; }
+  .btn-pin:hover { background: #6c3483; }
+
+  @media print {
+    @page { size: A4 portrait; margin: 8mm; }
+    body { background: #fff; padding: 0; }
+    .toolbar, .status, .modal-overlay { display: none !important; }
+    .date-banner {
+      border: 2px solid #333;
+      background: #fff;
+      color: #000;
+      font-size: 14px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+    }
+    .students { gap: 8px; max-width: 100%; }
+    .student { flex: 1 1 48%; max-width: 48%; }
+    .student h2 { font-size: 14px; padding: 5px; }
+    .days { padding: 6px; gap: 5px; box-shadow: none; }
+    .day h3 { font-size: 11px; padding: 2px 8px; }
+    .lesson { font-size: 11px; padding: 1px 8px; min-height: 0; }
+    .lesson .num { width: 15px; height: 15px; font-size: 9px; margin-right: 5px; }
+    .lesson .time { font-size: 8px; padding: 0 3px; margin-right: 4px; }
+    .lesson.changed { background: transparent; border-left: none; }
+    .lesson.changed::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="askPin()">🔒 Админка</button>
+  <button class="orange" onclick="loadFromPdf()">📥 Обновить из PDF</button>
+  <button class="green" onclick="reloadFromServer()">↻ Обновить с сервера</button>
+  <button class="red" onclick="quickReset()">🔄 Сбросить замены</button>
+  <button onclick="window.print()">🖨️ Печать</button>
+</div>
+
+<div class="status" id="status"></div>
+
+<!-- 📅 Баннер с датой из PDF -->
+<div class="date-banner" id="dateBanner" style="display:none;"></div>
+
+<div class="students" id="scheduleContainer"></div>
+
+<!-- PIN -->
+<div class="modal-overlay" id="pinModal">
+  <div class="modal small">
+    <h2>🔒 Вход в админку</h2>
+    <input type="password" id="pinInput" class="pin-input" maxlength="8"
+           placeholder="••••" inputmode="numeric" autocomplete="off">
+    <div class="pin-error" id="pinError"></div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="checkPin()">Войти</button>
+      <button class="btn-cancel" onclick="closePin()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- АДМИНКА -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <h2>Редактирование</h2>
+    <div class="modal-tabs" id="modalTabs"></div>
+    <div id="adminContent"></div>
+    <div class="modal-actions" id="adminActions"></div>
+  </div>
+</div>
+
+<!-- СМЕНА PIN -->
+<div class="modal-overlay" id="changePinModal">
+  <div class="modal small">
+    <h2>🔑 Смена PIN-кода</h2>
+    <input type="password" id="oldPin" class="pin-input" maxlength="8" placeholder="Текущий PIN" inputmode="numeric" autocomplete="off">
+    <input type="password" id="newPin" class="pin-input" maxlength="8" placeholder="Новый PIN" inputmode="numeric" autocomplete="off">
+    <input type="password" id="newPin2" class="pin-input" maxlength="8" placeholder="Повтор PIN" inputmode="numeric" autocomplete="off">
+    <div class="pin-error" id="changePinError"></div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="changePin()">Сохранить</button>
+      <button class="btn-cancel" onclick="closeChangePin()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ КОНСТАНТЫ ============
+const WORKER = 'https://cors-proxy.a-mikhalitsyn.workers.dev';
+
+// 🔗 ФИКСИРОВАННАЯ ССЫЛКА НА PDF (вариант 1.А)
+const PDF_URL = 'https://disk.yandex.ru/i/FVk0PKMp9wV7Vg';
+
+const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'];
+const STUDENTS = [
+  { id: 'vanya', name: '3а', cls: 'vanya' },
+  { id: 'masha', name: '5а', cls: 'masha' }
+];
+const TIME_FROM_LESSON = 8;
+
+const DAY_MAP = {
+  'понедельник': 'Пн',
+  'вторник': 'Вт',
+  'среда': 'Ср',
+  'четверг': 'Чт',
+  'пятница': 'Пт',
+};
+
+// ============ ГЛОБАЛЬНОЕ СОСТОЯНИЕ ============
+let scheduleData = {};
+let mainScheduleData = {};
+let namesData = { vanya: '3а', masha: '5а' };
+let timesData = [
+  { start: '14:00', end: '14:40' },
+  { start: '14:50', end: '15:30' }
+];
+
+let currentAdmin = { student: 'vanya', day: 'Пн' };
+let tempData = null;
+let tempTimes = null;
+let tempNames = null;
+let activeTab = 'lessons';
+let currentPin = null;
+
+// ============ СТАТУС ============
+function setStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status' + (type ? ' ' + type : '');
+  if (type === 'ok') setTimeout(() => { el.textContent = ''; el.className = 'status'; }, 5000);
+}
+
+// ============ БАННЕР С ДАТОЙ ============
+function showDateBanner(dateStr) {
+  const banner = document.getElementById('dateBanner');
+  if (dateStr) {
+    banner.textContent = 'Изменения на ' + dateStr;
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// ============ ЗАГРУЗКА С СЕРВЕРА ============
+async function reloadFromServer() {
+  setStatus('Загрузка с сервера...');
+  showDateBanner(null); // скрываем баннер — он относится только к PDF
+  try {
+    const [curResp, mainResp] = await Promise.all([
+      fetch(WORKER + '/?action=get-current'),
+      fetch(WORKER + '/?action=get-main')
+    ]);
+    const cur = await curResp.json();
+    const main = await mainResp.json();
+
+    if (!cur || Object.keys(cur).length === 0) {
+      setStatus('На сервере пока пусто. Откройте админку и сохраните.', 'err');
+      return;
+    }
+
+    scheduleData = cur.schedule || {};
+    mainScheduleData = main.schedule || cur.schedule || {};
+    namesData = cur.names || { vanya: '3а', masha: '5а' };
+    timesData = cur.times || timesData;
+
+    renderSchedule();
+    setStatus('✅ Загружено с сервера', 'ok');
+  } catch (e) {
+    setStatus('Ошибка загрузки: ' + e.message, 'err');
+  }
+}
+
+// ============ СОХРАНЕНИЕ ============
+async function saveToServer(schedule, names, times, pin) {
+  const resp = await fetch(WORKER + '/?action=save-main', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin, schedule, names, times })
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
+  return data;
+}
+
+async function saveCurrent(schedule, names, times) {
+  const resp = await fetch(WORKER + '/?action=save-current', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ schedule, names, times })
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
+  return data;
+}
+
+async function resetToMain(pin) {
+  const resp = await fetch(WORKER + '/?action=reset-to-main', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin })
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || ('HTTP ' + resp.status));
+  return data;
+}
+
+// ============ PIN ============
+function askPin() {
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinModal').classList.add('active');
+  setTimeout(() => document.getElementById('pinInput').focus(), 100);
+}
+function closePin() { document.getElementById('pinModal').classList.remove('active'); }
+async function checkPin() {
+  const entered = document.getElementById('pinInput').value;
+  if (!entered) {
+    document.getElementById('pinError').textContent = 'Введите PIN';
+    return;
+  }
+  try {
+    const resp = await fetch(WORKER + '/?action=verify-pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: entered })
+    });
+    if (resp.ok) {
+      currentPin = entered;
+      closePin();
+      openAdmin();
+    } else {
+      document.getElementById('pinError').textContent = '❌ Неверный PIN-код';
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  } catch (e) {
+    document.getElementById('pinError').textContent = 'Ошибка: ' + e.message;
+  }
+}
+
+// ============ АДМИНКА ============
+function openAdmin() {
+  tempData = JSON.parse(JSON.stringify(scheduleData));
+  tempTimes = JSON.parse(JSON.stringify(timesData));
+  tempNames = JSON.parse(JSON.stringify(namesData));
+  currentAdmin = { student: 'vanya', day: 'Пн' };
+  activeTab = 'lessons';
+  renderModalTabs();
+  renderAdminContent();
+  renderAdminActions();
+  document.getElementById('adminModal').classList.add('active');
+}
+function closeAdmin() {
+  document.getElementById('adminModal').classList.remove('active');
+  tempData = null; tempTimes = null; tempNames = null;
+}
+
+function renderModalTabs() {
+  const tabs = document.getElementById('modalTabs');
+  tabs.innerHTML = '';
+
+  if (activeTab === 'lessons') {
+    STUDENTS.forEach(st => {
+      const btn = document.createElement('button');
+      btn.textContent = tempNames[st.id] || st.name;
+      btn.className = currentAdmin.student === st.id ? 'active' : '';
+      btn.onclick = () => { currentAdmin.student = st.id; renderModalTabs(); renderAdminContent(); };
+      tabs.appendChild(btn);
+    });
+    const sep = document.createElement('span');
+    sep.style.margin = '0 8px'; sep.style.color = '#aaa'; sep.textContent = '|';
+    tabs.appendChild(sep);
+    DAYS.forEach(day => {
+      const btn = document.createElement('button');
+      btn.textContent = day;
+      btn.className = currentAdmin.day === day ? 'active' : '';
+      btn.onclick = () => { currentAdmin.day = day; renderModalTabs(); renderAdminContent(); };
+      tabs.appendChild(btn);
+    });
+  }
+
+  const namesBtn = document.createElement('button');
+  namesBtn.textContent = '✏️ Имена';
+  namesBtn.className = 'names-tab' + (activeTab === 'names' ? ' active' : '');
+  namesBtn.onclick = () => {
+    activeTab = activeTab === 'names' ? 'lessons' : 'names';
+    renderModalTabs();
+    renderAdminContent();
+    renderAdminActions();
+  };
+  tabs.appendChild(namesBtn);
+}
+
+function renderAdminContent() {
+  const content = document.getElementById('adminContent');
+  content.innerHTML = '';
+  if (activeTab === 'names') renderNamesTab(content);
+  else renderLessonsTab(content);
+}
+
+function renderNamesTab(content) {
+  const form = document.createElement('div');
+  form.className = 'names-form';
+  const info = document.createElement('div');
+  info.style.fontSize = '13px'; info.style.color = '#888';
+  info.style.textAlign = 'center'; info.style.marginBottom = '15px';
+  info.textContent = 'Введите названия таблиц.';
+  form.appendChild(info);
+  STUDENTS.forEach(st => {
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    const label = document.createElement('label');
+    label.textContent = (st.id === 'vanya' ? 'Таблица 1:' : 'Таблица 2:');
+    row.appendChild(label);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = tempNames[st.id] || '';
+    input.placeholder = st.name;
+    input.oninput = (e) => { tempNames[st.id] = e.target.value; };
+    row.appendChild(input);
+    form.appendChild(row);
+  });
+  content.appendChild(form);
+}
+
+function renderLessonsTab(content) {
+  if (!tempData[currentAdmin.student]) tempData[currentAdmin.student] = {};
+  if (!tempData[currentAdmin.student][currentAdmin.day]) {
+    tempData[currentAdmin.student][currentAdmin.day] = ['','','','','','','','',''];
+  }
+  const lessons = tempData[currentAdmin.student][currentAdmin.day];
+
+  const table = document.createElement('table');
+  table.className = 'admin-table';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `
+    <tr>
+      <th style="width:60px;">№</th>
+      <th>Название предмета</th>
+      <th style="width:170px;">Время (после 7-го)</th>
+      <th style="width:60px;">Удалить</th>
+    </tr>`;
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+
+  lessons.forEach((subj, idx) => {
+    const lessonNum = idx + 1;
+    const tr = document.createElement('tr');
+
+    const tdNum = document.createElement('td');
+    const inputNum = document.createElement('input');
+    inputNum.type = 'number'; inputNum.className = 'num-input';
+    inputNum.value = lessonNum; inputNum.min = 1; inputNum.max = 20;
+    inputNum.onchange = (e) => {
+      const newNum = parseInt(e.target.value);
+      if (newNum >= 1 && newNum <= lessons.length) {
+        const moved = lessons.splice(idx, 1)[0];
+        lessons.splice(newNum - 1, 0, moved);
+        renderAdminContent();
+      } else e.target.value = lessonNum;
+    };
+    tdNum.appendChild(inputNum); tr.appendChild(tdNum);
+
+    const tdName = document.createElement('td');
+    const inputName = document.createElement('input');
+    inputName.type = 'text'; inputName.value = subj;
+    inputName.placeholder = 'Пусто';
+    inputName.oninput = (e) => { lessons[idx] = e.target.value; };
+    tdName.appendChild(inputName); tr.appendChild(tdName);
+
+    const tdTime = document.createElement('td');
+    if (lessonNum >= TIME_FROM_LESSON) {
+      const tIndex = lessonNum - TIME_FROM_LESSON;
+      const t = tempTimes[tIndex] || { start: '', end: '' };
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;align-items:center;gap:4px;justify-content:center;';
+      const inputStart = document.createElement('input');
+      inputStart.type = 'text'; inputStart.className = 'time-input';
+      inputStart.placeholder = '14:00'; inputStart.value = t.start || '';
+      inputStart.maxLength = 5;
+      inputStart.oninput = (e) => {
+        if (!tempTimes[tIndex]) tempTimes[tIndex] = { start: '', end: '' };
+        tempTimes[tIndex].start = e.target.value;
+      };
+      const dash = document.createElement('span');
+      dash.textContent = '–'; dash.style.color = '#999';
+      const inputEnd = document.createElement('input');
+      inputEnd.type = 'text'; inputEnd.className = 'time-input';
+      inputEnd.placeholder = '14:40'; inputEnd.value = t.end || '';
+      inputEnd.maxLength = 5;
+      inputEnd.oninput = (e) => {
+        if (!tempTimes[tIndex]) tempTimes[tIndex] = { start: '', end: '' };
+        tempTimes[tIndex].end = e.target.value;
+      };
+      wrap.appendChild(inputStart); wrap.appendChild(dash); wrap.appendChild(inputEnd);
+      tdTime.appendChild(wrap);
+    } else {
+      tdTime.innerHTML = '<span style="color:#bbb;font-size:12px;">номер урока</span>';
+    }
+    tr.appendChild(tdTime);
+
+    const tdDel = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del-btn'; delBtn.textContent = '✕';
+    delBtn.onclick = () => { lessons.splice(idx, 1); renderAdminContent(); };
+    tdDel.appendChild(delBtn); tr.appendChild(tdDel);
+
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  content.appendChild(table);
+
+  const hint = document.createElement('div');
+  hint.style.cssText = 'font-size:12px;color:#888;text-align:center;margin-top:8px;';
+  hint.textContent = '⏰ Время показывается вместо номера для уроков с ' + TIME_FROM_LESSON + '-го и далее.';
+  content.appendChild(hint);
+}
+
+function renderAdminActions() {
+  const actions = document.getElementById('adminActions');
+  actions.innerHTML = '';
+
+  if (activeTab === 'lessons') {
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn-add'; addBtn.textContent = '+ Добавить урок';
+    addBtn.onclick = addLesson; actions.appendChild(addBtn);
+  }
+
+  const saveMainBtn = document.createElement('button');
+  saveMainBtn.className = 'btn-save';
+  saveMainBtn.textContent = '💾 Сохранить как основное';
+  saveMainBtn.title = 'Постоянное расписание. Автосброс в понедельник НЕ затронет.';
+  saveMainBtn.onclick = saveAsMain;
+  actions.appendChild(saveMainBtn);
+
+  const saveCurrentBtn = document.createElement('button');
+  saveCurrentBtn.className = 'btn-current';
+  saveCurrentBtn.textContent = '📌 Сохранить замены';
+  saveCurrentBtn.title = 'Временные изменения. Слетят в понедельник.';
+  saveCurrentBtn.onclick = saveAsCurrent;
+  actions.appendChild(saveCurrentBtn);
+
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'btn-reset';
+  resetBtn.textContent = '🔄 Сбросить к основному';
+  resetBtn.onclick = doResetToMain;
+  actions.appendChild(resetBtn);
+
+  const pinBtn = document.createElement('button');
+  pinBtn.className = 'btn-pin'; pinBtn.textContent = '🔑 Сменить PIN';
+  pinBtn.onclick = openChangePin; actions.appendChild(pinBtn);
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'btn-cancel'; cancelBtn.textContent = 'Отмена';
+  cancelBtn.onclick = closeAdmin; actions.appendChild(cancelBtn);
+}
+
+function addLesson() {
+  const lessons = tempData[currentAdmin.student][currentAdmin.day];
+  if (lessons.length >= 20) { alert('Максимум 20 уроков'); return; }
+  lessons.push('');
+  const newIdx = lessons.length - TIME_FROM_LESSON;
+  if (newIdx >= 0 && !tempTimes[newIdx]) tempTimes[newIdx] = { start: '', end: '' };
+  renderAdminContent();
+  const modal = document.querySelector('#adminModal .modal');
+  setTimeout(() => modal.scrollTop = modal.scrollHeight, 50);
+}
+
+async function saveAsMain() {
+  try {
+    setStatus('Сохранение как основное...');
+    await saveToServer(tempData, tempNames, tempTimes, currentPin);
+    scheduleData = JSON.parse(JSON.stringify(tempData));
+    mainScheduleData = JSON.parse(JSON.stringify(tempData));
+    namesData = JSON.parse(JSON.stringify(tempNames));
+    timesData = JSON.parse(JSON.stringify(tempTimes));
+    renderSchedule();
+    closeAdmin();
+    setStatus('✅ Сохранено как основное (main + current)!', 'ok');
+  } catch (e) {
+    setStatus('Ошибка сохранения: ' + e.message, 'err');
+  }
+}
+
+async function saveAsCurrent() {
+  try {
+    setStatus('Сохранение замен...');
+    await saveCurrent(tempData, tempNames, tempTimes);
+    scheduleData = JSON.parse(JSON.stringify(tempData));
+    namesData = JSON.parse(JSON.stringify(tempNames));
+    timesData = JSON.parse(JSON.stringify(tempTimes));
+    renderSchedule();
+    closeAdmin();
+    setStatus('✅ Замены сохранены (только current). Слетят в понедельник.', 'ok');
+  } catch (e) {
+    setStatus('Ошибка сохранения: ' + e.message, 'err');
+  }
+}
+
+async function doResetToMain() {
+  if (!confirm('Убрать все замены и вернуть основное расписание?')) return;
+  try {
+    setStatus('Сброс к основному...');
+    await resetToMain(currentPin);
+    closeAdmin();
+    await reloadFromServer();
+    setStatus('✅ Сброшено к основному расписанию!', 'ok');
+  } catch (e) {
+    setStatus('Ошибка сброса: ' + e.message, 'err');
+  }
+}
+
+async function quickReset() {
+  if (!currentPin) {
+    const entered = prompt('Введите PIN для сброса замен:');
+    if (!entered) return;
+    try {
+      const resp = await fetch(WORKER + '/?action=verify-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: entered })
+      });
+      if (!resp.ok) { setStatus('❌ Неверный PIN', 'err'); return; }
+      currentPin = entered;
+    } catch (e) {
+      setStatus('Ошибка: ' + e.message, 'err');
+      return;
+    }
+  }
+
+  if (!confirm('Убрать все замены и вернуть основное расписание?')) return;
+  try {
+    setStatus('Сброс к основному...');
+    await resetToMain(currentPin);
+    await reloadFromServer();
+    setStatus('✅ Сброшено к основному расписанию!', 'ok');
+  } catch (e) {
+    setStatus('Ошибка сброса: ' + e.message, 'err');
+  }
+}
+
+function openChangePin() {
+  document.getElementById('oldPin').value = '';
+  document.getElementById('newPin').value = '';
+  document.getElementById('newPin2').value = '';
+  document.getElementById('changePinError').textContent = '';
+  document.getElementById('changePinModal').classList.add('active');
+}
+function closeChangePin() { document.getElementById('changePinModal').classList.remove('active'); }
+async function changePin() {
+  const oldPin = document.getElementById('oldPin').value;
+  const newPin = document.getElementById('newPin').value;
+  const newPin2 = document.getElementById('newPin2').value;
+  const err = document.getElementById('changePinError');
+
+  if (oldPin !== currentPin) { err.textContent = '❌ Неверный текущий PIN'; return; }
+  if (newPin.length < 4) { err.textContent = '❌ PIN минимум 4 символа'; return; }
+  if (newPin !== newPin2) { err.textContent = '❌ PIN-коды не совпадают'; return; }
+
+  try {
+    const resp = await fetch(WORKER + '/?action=change-pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldPin, newPin })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { err.textContent = '❌ ' + (data.error || resp.status); return; }
+    currentPin = newPin;
+    err.style.color = '#27ae60';
+    err.textContent = '✅ PIN изменён!';
+    setTimeout(() => { closeChangePin(); err.style.color = '#c0392b'; }, 1000);
+  } catch (e) {
+    err.textContent = '❌ Ошибка: ' + e.message;
+  }
+}
+
+// ============ РЕНДЕР РАСПИСАНИЯ ============
+function getTimeFor(idx) {
+  return timesData[idx - TIME_FROM_LESSON] || null;
+}
+
+function renderSchedule(changedMap) {
+  const container = document.getElementById('scheduleContainer');
+  container.innerHTML = '';
+
+  STUDENTS.forEach(st => {
+    const studentDiv = document.createElement('div');
+    studentDiv.className = 'student ' + st.cls;
+
+    const h2 = document.createElement('h2');
+    h2.textContent = namesData[st.id] || st.name;
+    studentDiv.appendChild(h2);
+
+    const daysDiv = document.createElement('div');
+    daysDiv.className = 'days';
+
+    DAYS.forEach(day => {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'day';
+
+      const h3 = document.createElement('h3');
+      h3.textContent = day;
+      dayDiv.appendChild(h3);
+
+      const lessons = (scheduleData[st.id] && scheduleData[st.id][day]) || [];
+      const changedArr = changedMap && changedMap[st.id] && changedMap[st.id][day];
+
+      lessons.forEach((subj, idx) => {
+        const lessonNum = idx + 1;
+        const isChanged = changedArr && changedArr[idx];
+        const lessonDiv = document.createElement('div');
+        lessonDiv.className = 'lesson' + (subj ? '' : ' empty') + (isChanged ? ' changed' : '');
+
+        if (lessonNum >= TIME_FROM_LESSON) {
+          const t = getTimeFor(lessonNum);
+          const timeSpan = document.createElement('span');
+          timeSpan.className = 'time';
+          timeSpan.textContent = t ? (t.start + '–' + t.end) : '--:--';
+          lessonDiv.appendChild(timeSpan);
+        } else {
+          const numSpan = document.createElement('span');
+          numSpan.className = 'num';
+          numSpan.textContent = lessonNum;
+          lessonDiv.appendChild(numSpan);
+        }
+
+        lessonDiv.appendChild(document.createTextNode(subj || '—'));
+        dayDiv.appendChild(lessonDiv);
+      });
+
+      daysDiv.appendChild(dayDiv);
+    });
+
+    studentDiv.appendChild(daysDiv);
+    container.appendChild(studentDiv);
+  });
+}
+
+// ============ ОПРЕДЕЛЕНИЕ ДНЯ ИЗ PDF ============
+function detectDay(text) {
+  const header = text.split('\n').slice(0, 5).join(' ').toLowerCase();
+  for (const [ru, code] of Object.entries(DAY_MAP)) {
+    const stem = ru.slice(0, ru.length - 2);
+    if (header.includes('на ' + stem)) return code;
+  }
+  return null;
+}
+
+// ============ ИЗВЛЕЧЕНИЕ ДАТЫ ИЗ PDF ============
+function extractDateFromPdf(text) {
+  const header = text.split('\n').slice(0, 5).join(' ').toLowerCase();
+
+  // Вариант 1: "25 сентября"
+  const m1 = header.match(/(\d{1,2})\s+([а-яё]+)/);
+  if (m1) {
+    const day = m1[1];
+    const monthWord = m1[2];
+    const monthStems = ['январ','феврал','март','апрел','мая','май','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+    if (monthStems.some(s => monthWord.startsWith(s))) {
+      return day + ' ' + monthWord;
+    }
+  }
+
+  // Вариант 2: "25.09" или "25/09"
+  const m2 = header.match(/(\d{1,2})[.\/](\d{1,2})/);
+  if (m2) {
+    return m2[1] + '.' + m2[2];
+  }
+
+  return null;
+}
+
+// ============ ПАРСИНГ PDF ============
+function parseScheduleFromText(fullText) {
+  const lines = fullText.split('\n').map(l => l.trim()).filter(l => l);
+  const classRegex = /^(\d+[а-яё]{0,3}|\d+\s*\([А-ЯЁ]\))\s*(.*)$/i;
+  const parsed = {};
+  let inMainSchool = false;
+
+  lines.forEach(line => {
+    if (/^Основная школа/i.test(line)) { inMainSchool = true; return; }
+    if (/^(Начальная школа|Индивидуальное обучение)/i.test(line)) { inMainSchool = false; return; }
+    if (!inMainSchool) return;
+    if (/^(ИЗМЕНЕНИЯ|на |Чётная|Класс|за |нет$)/i.test(line)) return;
+
+    const match = line.match(classRegex);
+    if (match) {
+      const className = match[1].trim().toLowerCase().replace(/\s+/g, '');
+      const rest = match[2].trim();
+      const tokens = rest ? rest.split(/\s+/).filter(t => t) : [];
+      if (!parsed[className]) parsed[className] = [];
+      parsed[className].push(...tokens);
+    }
+  });
+  return parsed;
+}
+
+// ============ ЗАГРУЗКА ИЗ PDF ============
+async function loadFromPdf() {
+  setStatus('Загрузка PDF...');
+  try {
+    const url = WORKER + '/?action=parse&public_url=' + encodeURIComponent(PDF_URL);
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (!data.success) {
+      setStatus('Ошибка PDF: ' + JSON.stringify(data), 'err');
+      return;
+    }
+
+    const fullText = data.fullText;
+    const dayCode = detectDay(fullText);
+    if (!dayCode) {
+      setStatus('Не удалось определить день недели в PDF. Проверьте заголовок.', 'err');
+      return;
+    }
+    console.log('День из PDF:', dayCode);
+
+    // Извлекаем и показываем дату
+    const dateStr = extractDateFromPdf(fullText);
+    showDateBanner(dateStr);
+
+    const parsed = parseScheduleFromText(fullText);
+    console.log('Распарсенные классы:', parsed);
+
+    // Загружаем main для сравнения, если ещё не загружен
+    let mainSchedule = mainScheduleData;
+    if (!mainSchedule || Object.keys(mainSchedule).length === 0) {
+      const mainResp = await fetch(WORKER + '/?action=get-main');
+      const mainData = await mainResp.json();
+      mainSchedule = mainData.schedule || {};
+      mainScheduleData = mainSchedule;
+    }
+
+    const changedMap = {};
+    let replaced = 0;
+    let changesCount = 0;
+
+    Object.keys(parsed).forEach(className => {
+      const student = Array.from(document.querySelectorAll('.student')).find(s => {
+        const dc = (s.getAttribute('data-class') || '').toLowerCase().replace(/\s+/g, '');
+        return dc === className;
+      });
+      if (!student) return;
+
+      const studentId = student.classList.contains('vanya') ? 'vanya' :
+                        student.classList.contains('masha') ? 'masha' : null;
+      if (!studentId) return;
+
+      const tokens = parsed[className];
+      const dayBlock = student.querySelector('.day[data-day="' + dayCode + '"]');
+      if (!dayBlock) return;
+
+      const oldLessons = (scheduleData[studentId] && scheduleData[studentId][dayCode]) || [];
+      const newLessons = [...oldLessons];
+
+      tokens.forEach((tok, i) => {
+        newLessons[i] = tok;
+      });
+
+      if (!changedMap[studentId]) changedMap[studentId] = {};
+      changedMap[studentId][dayCode] = newLessons.map((_, i) => i < tokens.length);
+
+      if (!scheduleData[studentId]) scheduleData[studentId] = {};
+      scheduleData[studentId][dayCode] = newLessons;
+
+      changesCount += tokens.length;
+      replaced++;
+    });
+
+    if (replaced === 0) {
+      setStatus('Замен в PDF для отображаемых классов нет. День: ' + dayCode, 'err');
+      return;
+    }
+
+    renderSchedule(changedMap);
+    await saveCurrent(scheduleData, namesData, timesData);
+
+    setStatus('✅ PDF загружен. День: ' + dayCode + '. Заменено уроков: ' + changesCount + '. Сохранено в current.', 'ok');
+  } catch (e) {
+    setStatus('Ошибка: ' + e.message, 'err');
+  }
+}
+
+// ============ СТАРТ ============
+renderSchedule();
+reloadFromServer();
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closePin(); closeAdmin(); closeChangePin(); }
+  if (e.key === 'Enter' && document.getElementById('pinModal').classList.contains('active')) checkPin();
+});
+['pinModal','adminModal','changePinModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', (e) => {
+    if (e.target.id === id) {
+      if (id === 'pinModal') closePin();
+      if (id === 'adminModal') closeAdmin();
+      if (id === 'changePinModal') closeChangePin();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
