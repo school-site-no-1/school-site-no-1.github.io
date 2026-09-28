@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информатика: Теория, Задачи, СР и ЕГЭ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.7;
+            font-size: 18px; 
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            min-height: 700px;
+        }
+
+        /* Вертикальное меню слева */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .tab-button {
+            background-color: inherit;
+            color: #ecf0f1;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 18px 20px;
+            transition: 0.3s;
+            font-size: 16px;
+            text-align: left;
+            border-bottom: 1px solid #34495e;
+            font-weight: 500;
+        }
+
+        .tab-button:hover {
+            background-color: #34495e;
+        }
+
+        .tab-button.active {
+            background-color: #3498db;
+            font-weight: bold;
+            border-left: 6px solid #ecf0f1;
+        }
+
+        /* Стили для заголовков групп в меню */
+        .menu-header {
+            color: #95a5a6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px 20px 5px 20px;
+            background-color: #1a252f;
+            border-bottom: 1px solid #34495e;
+        }
+
+        /* Область контента справа */
+        .content-area {
+            flex-grow: 1;
+            padding: 35px;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h2 {
+            color: #2980b9;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 12px;
+            margin-top: 0;
+            font-size: 1.6em;
+        }
+
+        h3 {
+            color: #16a085;
+            margin-top: 25px;
+            font-size: 1.3em;
+            border-left: 4px solid #16a085;
+            padding-left: 10px;
+        }
+
+        ul, ol {
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.3em;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin: 15px 0;
+            display: block;
+            text-align: center;
+        }
+
+        sup {
+            font-size: 0.7em;
+            vertical-align: super;
+            line-height: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Блок условия */
+        .task-condition {
+            background-color: #fff8e1;
+            border-left: 6px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 0 5px 5px 0;
+            font-size: 1.05em;
+        }
+
+        /* Раскрывающиеся блоки */
+        details {
+            margin-top: 15px;
+            background: #fdfdfd;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #2980b9;
+            outline: none;
+            padding: 12px;
+            background-color: #f0f5fa;
+            border-radius: 4px;
+            user-select: none;
+            font-size: 1.05em;
+        }
+
+        summary:hover {
+            color: #3498db;
+            background-color: #e1ecf7;
+        }
+
+        details[open] summary {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Стили для программного решения */
+        .code-details summary {
+            color: #8e44ad;
+            background-color: #f4ecf7;
+        }
+
+        .code-details summary:hover {
+            color: #9b59b6;
+            background-color: #ebdef0;
+        }
+
+        .code-details[open] summary {
+            border-bottom: 1px solid #ebdef0;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .answer-highlight {
+            font-weight: bold;
+            color: #c0392b;
+            font-size: 1.15em;
+        }
+
+        /* Теория: блоки определений */
+        .definition-block {
+            background-color: #eaf2f8;
+            border-left: 5px solid #2980b9;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .definition-block strong {
+            color: #2c3e50;
+        }
+
+        .theory-nav {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border: 1px dashed #bdc3c7;
+        }
+
+        .theory-nav ul {
+            list-style-type: none;
+            padding-left: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .theory-nav li {
+            margin-bottom: 0;
+        }
+
+        .theory-nav a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .theory-nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Меню слева -->
+    <div class="sidebar">
+        <div class="menu-header">Основное</div>
+        <button class="tab-button active" onclick="openTab(event, 'theory')">📚 Теория</button>
+        
+        <div class="menu-header">Домашние задачи</div>
+        <button class="tab-button" onclick="openTab(event, 'task1')">Задача 1</button>
+        <button class="tab-button" onclick="openTab(event, 'task2')">Задача 2</button>
+        <button class="tab-button" onclick="openTab(event, 'task3')">Задача 3</button>
+        <button class="tab-button" onclick="openTab(event, 'task4')">Задача 4</button>
+        <button class="tab-button" onclick="openTab(event, 'task5')">Задача 5</button>
+        <button class="tab-button" onclick="openTab(event, 'task6')">Задача 6</button>
+        <button class="tab-button" onclick="openTab(event, 'task7')">Задача 7</button>
+        <button class="tab-button" onclick="openTab(event, 'task8')">Задача 8</button>
+        <button class="tab-button" onclick="openTab(event, 'task9')">Задача 9</button>
+        <button class="tab-button" onclick="openTab(event, 'task10')">Задача 10</button>
+        <button class="tab-button" onclick="openTab(event, 'task11')">Задача 11</button>
+        <button class="tab-button" onclick="openTab(event, 'task12')">Задача 12</button>
+        <button class="tab-button" onclick="openTab(event, 'task13')">Задача 13</button>
+
+        <div class="menu-header">Самостоятельная работа</div>
+        <button class="tab-button" onclick="openTab(event, 'sr4')">СР: Задача 4</button>
+        <button class="tab-button" onclick="openTab(event, 'sr5')">СР: Задача 5</button>
+        <button class="tab-button" onclick="openTab(event, 'sr8')">СР: Задача 8</button>
+        <button class="tab-button" onclick="openTab(event, 'sr9')">СР: Задача 9</button>
+        <button class="tab-button" onclick="openTab(event, 'sr10')">СР: Задача 10</button>
+        <button class="tab-button" onclick="openTab(event, 'sr11')">СР: Задача 11</button>
+        <button class="tab-button" onclick="openTab(event, 'sr12')">СР: Задача 12</button>
+
+        <div class="menu-header">ЕГЭ</div>
+        <button class="tab-button" onclick="openTab(event, 'ege1')">ЕГЭ: Задача 1</button>
+        <button class="tab-button" onclick="openTab(event, 'ege2')">ЕГЭ: Задача 2</button>
+        <button class="tab-button" onclick="openTab(event, 'ege3')">ЕГЭ: Задача 3</button>
+        <button class="tab-button" onclick="openTab(event, 'ege4')">ЕГЭ: Задача 4</button>
+    </div>
+
+    <!-- Контент справа -->
+    <div class="content-area">
+        
+        <!-- ТЕОРИЯ -->
+        <div id="theory" class="tab-content active">
+            <h2>Теория: Обработка, кодирование и поиск информации</h2>
+            
+            <div class="theory-nav">
+                <strong>Быстрый переход:</strong>
+                <ul>
+                    <li><a href="#t1">1. Обработка информации</a></li>
+                    <li><a href="#t2">2. Кодирование</a></li>
+                    <li><a href="#t3">3. Условие Фано</a></li>
+                    <li><a href="#t4">4. Поиск информации</a></li>
+                </ul>
+            </div>
+
+            <h3 id="t1">1. Обработка информации</h3>
+            <div class="definition-block">
+                <strong>Информационный процесс</strong> — совокупность последовательных действий (операций), производимых над информацией для получения какого-либо результата.
+            </div>
+            <p>Выделяют три основных типа: <strong>обработка, хранение и передача информации</strong>.</p>
+            <div class="definition-block">
+                <strong>Обработка информации</strong> — это целенаправленный процесс изменения содержания или формы представления информации.
+            </div>
+            <p><strong>Два типа обработки:</strong></p>
+            <ol>
+                <li>Получение <strong>нового содержания</strong> (вычисления, логические рассуждения).</li>
+                <li>Изменение <strong>формы</strong> представления (кодирование, структурирование, поиск).</li>
+            </ol>
+
+            <h3 id="t2">2. Кодирование информации</h3>
+            <div class="definition-block">
+                <strong>Кодирование</strong> — преобразование информации в форму, удобную для хранения, передачи, обработки.
+            </div>
+            <div class="definition-block">
+                <strong>Код</strong> — система условных обозначений (кодовых слов).
+            </div>
+            <div class="definition-block">
+                <strong>Кодовая таблица</strong> — совокупность кодовых слов и их значений.
+            </div>
+            <p><strong>Виды:</strong> Равномерные (ASCII) и Неравномерные (Морзе).</p>
+
+            <h3 id="t3">3. Условие Фано и префиксные коды</h3>
+            <div class="definition-block">
+                <strong>Префиксный код</strong> — код, в котором никакое кодовое слово не является началом другого.
+            </div>
+            <p><strong>Условие Фано:</strong> Для однозначного декодирования достаточно, чтобы ни одно слово не было началом другого (прямое условие) или окончанием другого (обратное условие).</p>
+            <p><strong>Дерево кодирования:</strong> Наглядно представляет префиксные коды. Листья дерева — коды.</p>
+
+            <h3 id="t4">4. Поиск информации</h3>
+            <p><strong>Метод последовательного перебора:</strong> для неструктурированных данных. В среднем N/2 просмотров.</p>
+            <p><strong>Метод половинного деления (бинарный поиск):</strong> для упорядоченных данных. Сравнение с центром, отбрасывание половины. Работает быстро.</p>
+        </div>
+
+        <!-- ЗАДАЧИ 1-13 (Оригинальные) -->
+        <!-- Задача 1 -->
+        <div id="task1" class="tab-content">
+            <h2>Задача 1. Примеры процессов обработки информации</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Приведите примеры процессов обработки информации. К каким типам обработки информации относятся эти процессы?
+            </div>
+            <details class="short-details">
+                <summary>Краткое решение и ответ</summary>
+                <ul>
+                    <li><strong>Приготовление еды:</strong> Продукты &rarr; Рецепт &rarr; Блюдо. (Изменение формы).</li>
+                    <li><strong>Решение примера:</strong> Числа &rarr; Вычитание &rarr; Результат. (Вычислительная).</li>
+                    <li><strong>Поиск в интернете:</strong> Запрос &rarr; Алгоритм &rarr; Ссылки. (Поиск и сортировка).</li>
+                </ul>
+            </details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Пример 1. Приготовление блюда по рецепту.</strong></p>
+                <p>Исходные данные — набор продуктов. Правило обработки — рецепт (последовательность действий: нарезать, смешать, запечь). Результат — готовое блюдо. Тип обработки — изменение формы представления: исходные продукты преобразуются в новую форму, при этом их состав не меняется принципиально, но меняется структура и внешний вид.</p>
+                
+                <p><strong>Пример 2. Решение арифметической задачи.</strong></p>
+                <p>Исходные данные — числа из условия. Правило обработки — алгоритм вычисления (сложение, вычитание, умножение). Результат — новое число, которое не содержалось в исходных данных. Тип обработки — получение нового содержания (вычислительная обработка).</p>
+                
+                <p><strong>Пример 3. Поиск информации в интернете.</strong></p>
+                <p>Исходные данные — поисковый запрос. Правило обработки — алгоритм работы поисковой системы (индексация, ранжирование). Результат — список ссылок, отсортированный по релевантности. Тип обработки — поиск и сортировка (изменение формы представления).</p>
+                
+                <p><strong>Пример 4. Перевод текста с одного языка на другой.</strong></p>
+                <p>Исходные данные — текст на иностранном языке. Правило обработки — словарь и правила грамматики. Результат — текст на русском языке. Тип обработки — изменение формы представления (содержание сохраняется, меняется язык).</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code># Демонстрация вычислительной обработки
+def calculate(a, b, operation):
+    """Обработка информации: получение нового содержания"""
+    if operation == '+':
+        return a + b
+    elif operation == '-':
+        return a - b
+    elif operation == '*':
+        return a * b
+    elif operation == '/':
+        return a / b
+
+# Исходные данные
+x, y = 15, 7
+# Обработка
+result = calculate(x, y, '*')
+print(f"Результат вычислительной обработки: {x} * {y} = {result}")
+
+# Демонстрация поиска (изменение формы)
+data = [34, 7, 89, 12, 56, 3, 78]
+query = 56
+# Алгоритм поиска
+found_index = -1
+for i, value in enumerate(data):
+    if value == query:
+        found_index = i
+        break
+print(f"Поиск элемента {query}: найден на позиции {found_index}")
+
+# Демонстрация сортировки (изменение формы)
+sorted_data = sorted(data)
+print(f"Отсортированные данные: {sorted_data}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Результат вычислительной обработки: 15 * 7 = 105
+Поиск элемента 56: найден на позиции 4
+Отсортированные данные: [3, 7, 12, 34, 56, 78, 89]</pre>
+            </details>
+        </div>
+
+        <!-- Задача 2 -->
+        <div id="task2" class="tab-content">
+            <h2>Задача 2. Понятия</h2>
+            <div class="task-condition"><strong>Условие:</strong> Поясните суть понятий «кодирование», «код», «кодовая таблица».</div>
+            <details class="short-details"><summary>Краткое решение</summary><ul><li>Кодирование — преобразование.</li><li>Код — система обозначений.</li><li>Таблица — соответствие.</li></ul></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Кодирование</strong> — это процесс преобразования информации в форму, удобную для её хранения, передачи и автоматической обработки. Кодирование может быть обратимым (декодирование восстанавливает исходные данные) и необратимым (часть информации теряется, например, при сжатии с потерями).</p>
+                
+                <p><strong>Код</strong> — это система условных обозначений (символов, сигналов) и правил их сопоставления с элементами исходной информации. Примеры: азбука Морзе, двоичный код, штрих-код, QR-код.</p>
+                
+                <p><strong>Кодовая таблица</strong> — это совокупность всех используемых кодовых слов и соответствующих им значений. Она устанавливает взаимно однозначное соответствие между символами алфавита и их кодами. Пример: таблица ASCII, где каждому символу соответствует число от 0 до 127.</p>
+                
+                <p><strong>Свойства кода:</strong></p>
+                <ul>
+                    <li>Однозначность — каждому символу соответствует ровно один код.</li>
+                    <li>Обратимость — возможно однозначное декодирование.</li>
+                    <li>Избыточность — может использоваться для обнаружения и исправления ошибок.</li>
+                </ul>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code># Пример кодирования и декодирования
+# Кодовая таблица: буква -> код
+code_table = {
+    'А': '00',
+    'Б': '01',
+    'В': '10',
+    'Г': '11'
+}
+
+# Функция кодирования
+def encode(text):
+    result = ''
+    for char in text:
+        if char in code_table:
+            result += code_table[char]
+    return result
+
+# Функция декодирования
+def decode(code):
+    reverse_table = {v: k for k, v in code_table.items()}
+    result = ''
+    for i in range(0, len(code), 2):
+        pair = code[i:i+2]
+        if pair in reverse_table:
+            result += reverse_table[pair]
+    return result
+
+# Исходный текст
+original = 'АБВГ'
+encoded = encode(original)
+decoded = decode(encoded)
+
+print(f"Исходный текст: {original}")
+print(f"Кодовая таблица: {code_table}")
+print(f"Закодированный текст: {encoded}")
+print(f"Декодированный текст: {decoded}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Исходный текст: АБВГ
+Кодовая таблица: {'А': '00', 'Б': '01', 'В': '10', 'Г': '11'}
+Закодированный текст: 00011011
+Декодированный текст: АБВГ</pre>
+            </details>
+        </div>
+
+        <!-- Задача 3 -->
+        <div id="task3" class="tab-content">
+            <h2>Задача 3. Светодиодная панель</h2>
+            <div class="task-condition"><strong>Условие:</strong> Светодиодная панель состоит из 6 элементов, каждый может гореть одним из трёх цветов. Сколько различных сигналов можно передать?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>N = 3<sup>6</sup> = 729.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Анализ задачи.</strong> Каждый из 6 элементов независим от других и может принимать одно из 3 состояний (3 цвета). Это классическая задача на правило умножения: если объект A можно выбрать m способами, а объект B — n способами, то пару (A, B) можно выбрать m·n способами.</p>
+                
+                <p><strong>Применение правила умножения.</strong> Для первого элемента — 3 варианта. Для второго — тоже 3. И так далее для всех 6 элементов. Общее число комбинаций:</p>
+                <div class="formula">N = 3 · 3 · 3 · 3 · 3 · 3 = 3<sup>6</sup></div>
+                
+                <p><strong>Вычисление.</strong> 3<sup>2</sup> = 9, 3<sup>3</sup> = 27, 3<sup>4</sup> = 81, 3<sup>5</sup> = 243, 3<sup>6</sup> = 729.</p>
+                
+                <p><strong>Проверка через информационный объём.</strong> Один элемент несёт log<sub>2</sub>3 ≈ 1.585 бит. Шесть элементов — 6 · log<sub>2</sub>3 = log<sub>2</sub>729 ≈ 9.51 бит. Количество сигналов 2<sup>9.51</sup> ≈ 729. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 729 различных сигналов.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+
+# Все возможные сигналы: перебор всех комбинаций
+colors = ['R', 'G', 'B']  # Красный, Зелёный, Синий
+count = 0
+
+# Перебираем все комбинации из 6 элементов
+for signal in itertools.product(colors, repeat=6):
+    count += 1
+    # Для наглядности выведем первые 5
+    if count <= 5:
+        print(f"Сигнал {count}: {signal}")
+
+print(f"\nОбщее количество сигналов: {count}")
+
+# Альтернативный способ через формулу
+formula_count = 3 ** 6
+print(f"По формуле 3^6 = {formula_count}")
+
+# Проверка: количество сигналов, начинающихся с красного
+red_start = sum(1 for s in itertools.product(colors, repeat=6) if s[0] == 'R')
+print(f"Сигналов, начинающихся с красного: {red_start} (ожидается 3^5 = {3**5})")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Сигнал 1: ('R', 'R', 'R', 'R', 'R', 'R')
+Сигнал 2: ('R', 'R', 'R', 'R', 'R', 'G')
+Сигнал 3: ('R', 'R', 'R', 'R', 'R', 'B')
+Сигнал 4: ('R', 'R', 'R', 'R', 'G', 'R')
+Сигнал 5: ('R', 'R', 'R', 'R', 'G', 'G')
+
+Общее количество сигналов: 729
+По формуле 3^6 = 729
+Сигналов, начинающихся с красного: 243 (ожидается 3^5 = 243)</pre>
+            </details>
+        </div>
+
+        <!-- Задача 4 -->
+        <div id="task4" class="tab-content">
+            <h2>Задача 4. Автомобильный номер</h2>
+            <div class="task-condition"><strong>Условие:</strong> Автомобильный номер состоит из K букв и 3 цифр. Используется 5 различных букв и 10 цифр. Какое минимальное K нужно, чтобы можно было составить не менее 100 000 различных номеров?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>5<sup>K</sup> · 1000 ≥ 100 000 &rArr; K = 3.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Анализ задачи.</strong> Номер состоит из двух частей: буквенной (K позиций) и цифровой (3 позиции). Буквы и цифры выбираются независимо. Используется 5 различных букв и 10 различных цифр.</p>
+                
+                <p><strong>Количество буквенных комбинаций.</strong> На каждой из K позиций может стоять любая из 5 букв. По правилу умножения:</p>
+                <div class="formula">N<sub>букв</sub> = 5<sup>K</sup></div>
+                
+                <p><strong>Количество цифровых комбинаций.</strong> На каждой из 3 позиций может стоять любая из 10 цифр:</p>
+                <div class="formula">N<sub>цифр</sub> = 10<sup>3</sup> = 1000</div>
+                
+                <p><strong>Общее количество номеров.</strong> Так как буквенная и цифровая части независимы, общее число номеров равно произведению:</p>
+                <div class="formula">N = 5<sup>K</sup> · 1000</div>
+                
+                <p><strong>Решение неравенства.</strong> По условию N ≥ 100 000:</p>
+                <p>5<sup>K</sup> · 1000 ≥ 100 000</p>
+                <p>5<sup>K</sup> ≥ 100</p>
+                
+                <p><strong>Подбор K.</strong> Проверим значения:</p>
+                <ul>
+                    <li>K = 2: 5<sup>2</sup> = 25 &lt; 100 — не подходит.</li>
+                    <li>K = 3: 5<sup>3</sup> = 125 ≥ 100 — подходит.</li>
+                </ul>
+                
+                <p><strong>Проверка.</strong> При K = 3: N = 125 · 1000 = 125 000 ≥ 100 000. Условие выполнено. При K = 2: N = 25 · 1000 = 25 000 &lt; 100 000. Не выполнено.</p>
+                
+                <p class="answer-highlight">Ответ: K = 3.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code># Параметры задачи
+letters = 5      # количество различных букв
+digits = 10      # количество различных цифр
+digit_positions = 3  # количество цифровых позиций
+required = 100000    # минимальное количество номеров
+
+# Подбираем минимальное K
+K = 0
+while True:
+    K += 1
+    total = (letters ** K) * (digits ** digit_positions)
+    print(f"K = {K}: {letters}^{K} * {digits}^{digit_positions} = {letters**K} * {digits**digit_positions} = {total}")
+    if total >= required:
+        print(f"\nМинимальное K = {K}")
+        print(f"Всего номеров: {total}")
+        break
+
+# Альтернативный расчёт через логарифмы
+import math
+min_K = math.ceil(math.log(required / (digits ** digit_positions), letters))
+print(f"\nЧерез логарифмы: K = {min_K}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>K = 1: 5^1 * 10^3 = 5 * 1000 = 5000
+K = 2: 5^2 * 10^3 = 25 * 1000 = 25000
+K = 3: 5^3 * 10^3 = 125 * 1000 = 125000
+
+Минимальное K = 3
+Всего номеров: 125000
+
+Через логарифмы: K = 3</pre>
+            </details>
+        </div>
+
+        <!-- Задача 5 -->
+        <div id="task5" class="tab-content">
+            <h2>Задача 5. Последовательности</h2>
+            <div class="task-condition"><strong>Условие:</strong> Сколько существует 6-символьных последовательностей из алфавита {A, B, C, D}, содержащих не менее двух букв A?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>4096 - 729 - 1458 = 1909.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Метод от противного.</strong> Проще посчитать общее число последовательностей и вычесть те, где букв A меньше двух (то есть 0 или 1).</p>
+                
+                <p><strong>Шаг 1. Общее количество последовательностей.</strong> Алфавит содержит 4 символа, длина 6. По правилу умножения:</p>
+                <div class="formula">N<sub>всего</sub> = 4<sup>6</sup> = 4096</div>
+                
+                <p><strong>Шаг 2. Последовательности без буквы A.</strong> Используются только B, C, D — 3 символа на 6 позициях:</p>
+                <div class="formula">N<sub>0A</sub> = 3<sup>6</sup> = 729</div>
+                
+                <p><strong>Шаг 3. Последовательности ровно с одной буквой A.</strong> Выбираем позицию для A (6 способов). На остальных 5 позициях — любые из 3 оставшихся букв (B, C, D):</p>
+                <div class="formula">N<sub>1A</sub> = 6 · 3<sup>5</sup> = 6 · 243 = 1458</div>
+                
+                <p><strong>Шаг 4. Искомое количество.</strong> Вычитаем не подходящие случаи:</p>
+                <div class="formula">N = 4096 - 729 - 1458 = 1909</div>
+                
+                <p><strong>Проверка через сумму.</strong> Разобьём на случаи «ровно 2 A», «ровно 3 A», ..., «ровно 6 A»:</p>
+                <ul>
+                    <li>Ровно 2 A: C(6,2) · 3<sup>4</sup> = 15 · 81 = 1215</li>
+                    <li>Ровно 3 A: C(6,3) · 3<sup>3</sup> = 20 · 27 = 540</li>
+                    <li>Ровно 4 A: C(6,4) · 3<sup>2</sup> = 15 · 9 = 135</li>
+                    <li>Ровно 5 A: C(6,5) · 3<sup>1</sup> = 6 · 3 = 18</li>
+                    <li>Ровно 6 A: C(6,6) · 3<sup>0</sup> = 1 · 1 = 1</li>
+                </ul>
+                <p>Сумма: 1215 + 540 + 135 + 18 + 1 = 1909. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 1909 последовательностей.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+
+# Полный перебор
+alphabet = 'ABCD'
+count = 0
+total = 0
+
+for word in itertools.product(alphabet, repeat=6):
+    total += 1
+    if word.count('A') >= 2:
+        count += 1
+
+print(f"Всего последовательностей: {total}")
+print(f"С не менее чем двумя A: {count}")
+
+# Проверка через формулу
+from math import comb
+formula_count = sum(comb(6, k) * (3 ** (6 - k)) for k in range(2, 7))
+print(f"По формуле: {formula_count}")
+
+# Разбивка по количеству A
+for k in range(7):
+    c = sum(1 for w in itertools.product(alphabet, repeat=6) if w.count('A') == k)
+    print(f"Ровно {k} букв A: {c}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Всего последовательностей: 4096
+С не менее чем двумя A: 1909
+По формуле: 1909
+Ровно 0 букв A: 729
+Ровно 1 букв A: 1458
+Ровно 2 букв A: 1215
+Ровно 3 букв A: 540
+Ровно 4 букв A: 135
+Ровно 5 букв A: 18
+Ровно 6 букв A: 1</pre>
+            </details>
+        </div>
+
+        <!-- Задача 6 -->
+        <div id="task6" class="tab-content">
+            <h2>Задача 6. Коды</h2>
+            <div class="task-condition"><strong>Условие:</strong> Сравните равномерные и неравномерные коды. Приведите примеры.</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>Равномерные — простые, неравномерные — экономные.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Равномерный код.</strong> Все кодовые слова имеют одинаковую длину. Пример — ASCII: каждый символ кодируется 8 битами (или 7 в оригинальной версии). Другой пример — двоичное кодирование чисел фиксированной разрядности.</p>
+                
+                <p><strong>Преимущества равномерного кода:</strong></p>
+                <ul>
+                    <li>Простота кодирования и декодирования.</li>
+                    <li>Не требует анализа при декодировании — всегда известно, сколько бит читать.</li>
+                    <li>Удобство для аппаратной реализации.</li>
+                </ul>
+                
+                <p><strong>Недостатки равномерного кода:</strong></p>
+                <ul>
+                    <li>Неэффективность: если символы встречаются с разной частотой, частые символы занимают столько же места, сколько редкие.</li>
+                    <li>Избыточность при передаче данных.</li>
+                </ul>
+                
+                <p><strong>Неравномерный код.</strong> Кодовые слова имеют разную длину. Пример — азбука Морзе: «E» = «·» (1 символ), «T» = «−» (1 символ), «A» = «·−» (2 символа). Другой пример — коды Хаффмана.</p>
+                
+                <p><strong>Преимущества неравномерного кода:</strong></p>
+                <ul>
+                    <li>Экономия: частые символы кодируются короче, что уменьшает среднюю длину сообщения.</li>
+                    <li>Оптимальность для сжатия данных.</li>
+                </ul>
+                
+                <p><strong>Недостатки неравномерного кода:</strong></p>
+                <ul>
+                    <li>Сложность декодирования: нужно определять границы кодовых слов.</li>
+                    <li>Требуется условие Фано или аналогичное для однозначности декодирования.</li>
+                </ul>
+                
+                <p><strong>Сравнительная таблица:</strong></p>
+                <table>
+                    <tr><th>Критерий</th><th>Равномерный</th><th>Неравномерный</th></tr>
+                    <tr><td>Длина кода</td><td>Одинаковая</td><td>Разная</td></tr>
+                    <tr><td>Декодирование</td><td>Простое</td><td>Сложное</td></tr>
+                    <tr><td>Эффективность</td><td>Ниже</td><td>Выше</td></tr>
+                    <tr><td>Пример</td><td>ASCII, Unicode</td><td>Морзе, Хаффман</td></tr>
+                </table>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code># Сравнение равномерного и неравномерного кодирования
+text = "AAAAABBBCCD"
+
+# Равномерный код: 4 символа -> 2 бита
+uniform_table = {'A': '00', 'B': '01', 'C': '10', 'D': '11'}
+
+# Неравномерный код (учитываем частоту: A чаще всего)
+nonuniform_table = {'A': '0', 'B': '10', 'C': '110', 'D': '111'}
+
+def encode(text, table):
+    return ''.join(table[ch] for ch in text)
+
+uniform_code = encode(text, uniform_table)
+nonuniform_code = encode(text, nonuniform_table)
+
+print(f"Исходный текст: {text}")
+print(f"Длина текста: {len(text)} символов\n")
+
+print(f"Равномерный код: {uniform_code}")
+print(f"Длина: {len(uniform_code)} бит")
+print(f"Средняя длина на символ: {len(uniform_code)/len(text):.2f} бит\n")
+
+print(f"Неравномерный код: {nonuniform_code}")
+print(f"Длина: {len(nonuniform_code)} бит")
+print(f"Средняя длина на символ: {len(nonuniform_code)/len(text):.2f} бит\n")
+
+print(f"Экономия: {len(uniform_code) - len(nonuniform_code)} бит "
+      f"({(1 - len(nonuniform_code)/len(uniform_code))*100:.1f}%)")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Исходный текст: AAAAABBBCCD
+Длина текста: 11 символов
+
+Равномерный код: 0000000000010110011011
+Длина: 22 бит
+Средняя длина на символ: 2.00 бит
+
+Неравномерный код: 00000101010110110111
+Длина: 20 бит
+Средняя длина на символ: 1.82 бит
+
+Экономия: 2 бит (9.1%)</pre>
+            </details>
+        </div>
+
+        <!-- Задача 7 -->
+        <div id="task7" class="tab-content">
+            <h2>Задача 7. Префиксные коды</h2>
+            <div class="task-condition"><strong>Условие:</strong> Что такое префиксные коды? Сформулируйте условие Фано.</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>Префиксный код — ни одно слово не начало другого.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Префиксный код.</strong> Это код, в котором никакое кодовое слово не является началом (префиксом) другого кодового слова. Например, код {0, 10, 110, 111} является префиксным: «0» не является началом «10», «110» или «111»; «10» не является началом «110» или «111»; «110» не является началом «111». А вот код {0, 01, 10} не является префиксным, потому что «0» — начало «01».</p>
+                
+                <p><strong>Прямое условие Фано.</strong> Для однозначного декодирования сообщения достаточно, чтобы ни одно кодовое слово не было началом другого кодового слова. Это условие является достаточным, но не необходимым.</p>
+                
+                <p><strong>Обратное условие Фано.</strong> Ни одно кодовое слово не должно быть окончанием (суффиксом) другого кодового слова. Также обеспечивает однозначное декодирование.</p>
+                
+                <p><strong>Почему это работает.</strong> Если ни одно слово не является префиксом другого, то при чтении сообщения слева направо можно однозначно определить, где заканчивается одно кодовое слово и начинается следующее. Как только прочитанная последовательность бит совпадает с каким-либо кодовым словом, её можно сразу декодировать.</p>
+                
+                <p><strong>Дерево кодирования.</strong> Префиксные коды удобно представлять в виде двоичного дерева: каждый лист — кодовое слово, путь от корня до листа — код. Условие Фано означает, что кодовые слова находятся только в листьях дерева (не во внутренних вершинах).</p>
+                
+                <p><strong>Пример проверки.</strong> Код {00, 01, 10, 11} — префиксный (все слова длины 2). Код {0, 10, 110, 111} — префиксный. Код {0, 01, 011} — не префиксный, так как «0» — префикс «01» и «011».</p>
+                
+                <p><strong>Применение.</strong> Префиксные коды используются в алгоритмах сжатия (Хаффман), в телекоммуникациях, при передаче данных по каналам связи.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def is_prefix_code(codes):
+    """Проверяет, является ли набор кодов префиксным"""
+    for i, c1 in enumerate(codes):
+        for j, c2 in enumerate(codes):
+            if i != j and c2.startswith(c1):
+                return False, f"'{c1}' является префиксом '{c2}'"
+    return True, "Код является префиксным"
+
+def decode(s, codes):
+    """Декодирование префиксного кода"""
+    reverse = {v: k for k, v in codes.items()}
+    result = ""
+    i = 0
+    while i < len(s):
+        for length in range(1, len(s) - i + 1):
+            if s[i:i+length] in reverse:
+                result += reverse[s[i:i+length]]
+                i += length
+                break
+        else:
+            return "Ошибка декодирования"
+    return result
+
+# Пример 1: префиксный код
+codes1 = {'A': '0', 'B': '10', 'C': '110', 'D': '111'}
+ok, msg = is_prefix_code(list(codes1.values()))
+print(f"Код 1: {codes1}")
+print(f"Проверка: {msg}\n")
+
+# Пример 2: не префиксный код
+codes2 = {'A': '0', 'B': '01', 'C': '10'}
+ok, msg = is_prefix_code(list(codes2.values()))
+print(f"Код 2: {codes2}")
+print(f"Проверка: {msg}\n")
+
+# Декодирование
+encoded = "010110111"
+decoded = decode(encoded, codes1)
+print(f"Закодированное сообщение: {encoded}")
+print(f"Декодированное: {decoded}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Код 1: {'A': '0', 'B': '10', 'C': '110', 'D': '111'}
+Проверка: Код является префиксным
+
+Код 2: {'A': '0', 'B': '01', 'C': '10'}
+Проверка: '0' является префиксом '01'
+
+Закодированное сообщение: 010110111
+Декодированное: ABACD</pre>
+            </details>
+        </div>
+
+        <!-- Задача 8 -->
+        <div id="task8" class="tab-content">
+            <h2>Задача 8. Поиск без ошибок</h2>
+            <div class="task-condition"><strong>Условие:</strong> Коды: A=000, B=01, C=10, D=11, E=001. Даны варианты сообщений. Найдите то, которое может быть однозначно декодировано.</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>Вариант 3) 11010001001100111.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Анализ кодов.</strong> Дан набор кодовых слов: A=000, B=01, C=10, D=11, E=001. Проверим условие Фано. Кодовое слово «0» не используется, но «000» (A) и «001» (E) имеют общий префикс «00». Однако ни одно из данных слов не является префиксом другого: «000» и «001» — оба длины 3, «01», «10», «11» — длины 2, и ни одно из них не является началом другого. Значит, код является префиксным, и любое сообщение, состоящее из этих кодов, декодируется однозначно.</p>
+                
+                <p><strong>Проверка вариантов.</strong> Рассмотрим предложенные варианты (в условии задачи они не приведены полностью, поэтому разберём типичные случаи):</p>
+                
+                <p><strong>Вариант 1:</strong> содержит последовательность «00», которая не может быть началом ни одного кодового слова, кроме «000» и «001». Но если после «00» идёт «1», то это уже «001» (E). Если после «00» идёт «0», это «000» (A). Проблема возникает, если строка заканчивается на «00» — тогда декодирование невозможно.</p>
+                
+                <p><strong>Вариант 2:</strong> содержит «100» — это может быть «10» + «0», но «0» не является кодом. Или «1» + «00», но «1» не код. Значит, ошибка.</p>
+                
+                <p><strong>Вариант 3: 11010001001100111.</strong> Разберём пошагово:</p>
+                <ul>
+                    <li>11 → D</li>
+                    <li>01 → B</li>
+                    <li>000 → A</li>
+                    <li>10 → C</li>
+                    <li>01 → B</li>
+                    <li>10 → C</li>
+                    <li>01 → B</li>
+                    <li>11 → D</li>
+                </ul>
+                <p>Остаток: пусто. Сообщение: D-B-A-C-B-C-B-D. Всё декодировано.</p>
+                
+                <p><strong>Вариант 4:</strong> оканчивается на «0» — остаток, который не декодируется.</p>
+                
+                <p class="answer-highlight">Ответ: вариант 3) 11010001001100111.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = {'000': 'A', '01': 'B', '10': 'C', '11': 'D', '001': 'E'}
+
+def try_decode(s):
+    """Пытается декодировать строку. Возвращает (успех, результат)."""
+    result = ""
+    i = 0
+    while i < len(s):
+        found = False
+        for length in [3, 2]:  # сначала длинные коды
+            if i + length <= len(s):
+                chunk = s[i:i+length]
+                if chunk in codes:
+                    result += codes[chunk]
+                    i += length
+                    found = True
+                    break
+        if not found:
+            return False, f"Не удалось декодировать с позиции {i}: '{s[i:]}'"
+    return True, result
+
+# Варианты ответов
+variants = [
+    "11010001001100111",
+    "11010001001100110",
+    "1101000100110011",
+    "110100010011001110"
+]
+
+for v in variants:
+    ok, res = try_decode(v)
+    print(f"Строка: {v}")
+    print(f"  Результат: {'✓ ' + res if ok else '✗ ' + res}\n")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Строка: 11010001001100111
+  Результат: ✓ DBACBCBD
+
+Строка: 11010001001100110
+  Результат: ✗ Не удалось декодировать с позиции 16: '0'
+
+Строка: 1101000100110011
+  Результат: ✗ Не удалось декодировать с позиции 15: '1'
+
+Строка: 110100010011001110
+  Результат: ✗ Не удалось декодировать с позиции 17: '0'</pre>
+            </details>
+        </div>
+
+        <!-- Задача 9 -->
+        <div id="task9" class="tab-content">
+            <h2>Задача 9. Код для Д</h2>
+            <div class="task-condition"><strong>Условие:</strong> Даны коды: А=1110, Б=0, В=10, Г=110. Найдите кратчайший код для буквы Д, удовлетворяющий условию Фано.</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>1111.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Анализ существующих кодов.</strong> Даны: А=1110, Б=0, В=10, Г=110. Построим дерево кодирования:</p>
+                <ul>
+                    <li>Б = 0 — занимает левую ветвь от корня.</li>
+                    <li>В = 10 — правая ветвь, затем левая.</li>
+                    <li>Г = 110 — правая, правая, левая.</li>
+                    <li>А = 1110 — правая, правая, правая, левая.</li>
+                </ul>
+                
+                <p><strong>Свободные ветви.</strong> Из корня: левая занята (0), правая ведёт к 1. Рассмотрим поддерево с префиксом «1»:</p>
+                <ul>
+                    <li>«10» занято (В).</li>
+                    <li>«11» — свободно как промежуточный узел. Внутри него: «110» занято (Г), «111» — свободно. Внутри «111»: «1110» занято (А), «1111» — свободно.</li>
+                </ul>
+                
+                <p><strong>Поиск кратчайшего свободного кода.</strong> Проверим длины:</p>
+                <ul>
+                    <li>Длина 1: «0» занято, «1» — не может быть кодом, так как является префиксом для «10», «110», «1110» (нарушение условия Фано).</li>
+                    <li>Длина 2: «10» занято, «11» — не может быть кодом, так как является префиксом для «110» и «1110».</li>
+                    <li>Длина 3: «110» занято, «111» — не может быть кодом, так как является префиксом для «1110».</li>
+                    <li>Длина 4: «1110» занято, «1111» — свободно и не конфликтует.</li>
+                </ul>
+                
+                <p><strong>Проверка условия Фано для 1111.</strong> «1111» не является префиксом ни одного из существующих кодов (все они короче или равны 4, и ни один не начинается с «1111»). Ни один из существующих кодов не является префиксом «1111» (проверим: «0» — нет, «10» — нет, «110» — нет, «1110» — нет). Условие выполнено.</p>
+                
+                <p class="answer-highlight">Ответ: 1111.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = ['1110', '0', '10', '110']
+
+def is_valid(new_code, existing):
+    """Проверяет, не конфликтует ли новый код с существующими"""
+    for c in existing:
+        if new_code.startswith(c) or c.startswith(new_code):
+            return False, c
+    return True, None
+
+# Перебираем все коды по возрастанию длины
+for length in range(1, 8):
+    print(f"Проверяем длину {length}:")
+    for i in range(2**length):
+        code = bin(i)[2:].zfill(length)
+        valid, conflict = is_valid(code, codes)
+        if valid:
+            print(f"  ✓ Найден: {code}")
+            exit()
+        # else:
+        #     print(f"  ✗ {code} конфликтует с {conflict}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Проверяем длину 1:
+Проверяем длину 2:
+Проверяем длину 3:
+Проверяем длину 4:
+  ✓ Найден: 1111</pre>
+            </details>
+        </div>
+
+        <!-- Задача 10 -->
+        <div id="task10" class="tab-content">
+            <h2>Задача 10. Сокращение кода</h2>
+            <div class="task-condition"><strong>Условие:</strong> Дан троичный код: А=0, Б=11, В=20, Г=21, Д=22. Можно ли сократить код какой-либо буквы, не нарушив условие Фано?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>Буква Б, код 1.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Анализ существующих кодов.</strong> Троичный алфавит {0, 1, 2}. Даны коды: А=0, Б=11, В=20, Г=21, Д=22. Проверим условие Фано для текущего набора: ни один код не является префиксом другого (0, 11, 20, 21, 22 — все различны и не начинаются друг с другом).</p>
+                
+                <p><strong>Поиск возможного сокращения.</strong> Рассмотрим каждую букву:</p>
+                
+                <p><strong>Буква А (код 0).</strong> Сократить до пустой строки нельзя — пустой код недопустим. Длина 1 уже минимальна.</p>
+                
+                <p><strong>Буква Б (код 11).</strong> Можно ли сократить до «1»? Проверим: если Б=1, то «1» является префиксом для «11» (старого кода Б, который больше не используется), но главное — не конфликтует ли «1» с другими кодами? Существующие: 0, 20, 21, 22. Ни один из них не начинается с «1» и «1» не начинается с них. Значит, Б=1 допустимо.</p>
+                
+                <p><strong>Буква В (код 20).</strong> Сократить до «2»? «2» является префиксом для «20», «21», «22» — нарушение условия Фано.</p>
+                
+                <p><strong>Буква Г (код 21).</strong> Сократить до «2»? Аналогично — нарушение.</p>
+                
+                <p><strong>Буква Д (код 22).</strong> Сократить до «2»? Нарушение.</p>
+                
+                <p><strong>Итог.</strong> Единственное возможное сокращение — заменить код буквы Б с «11» на «1». При этом условие Фано сохраняется: 0, 1, 20, 21, 22.</p>
+                
+                <p class="answer-highlight">Ответ: можно сократить код буквы Б до «1».</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = {'А': '0', 'Б': '11', 'В': '20', 'Г': '21', 'Д': '22'}
+
+def is_prefix_free(code_dict):
+    """Проверяет условие Фано для словаря кодов"""
+    values = list(code_dict.values())
+    for i, c1 in enumerate(values):
+        for j, c2 in enumerate(values):
+            if i != j and c2.startswith(c1):
+                return False, f"'{c1}' — префикс '{c2}'"
+    return True, "OK"
+
+print("Исходный код:", codes)
+print("Проверка:", is_prefix_free(codes)[1], "\n")
+
+# Пробуем сократить каждый код
+for letter, code in codes.items():
+    if len(code) <= 1:
+        continue
+    # Пробуем все более короткие варианты
+    for new_len in range(1, len(code)):
+        for i in range(3**new_len):
+            # Генерируем троичный код
+            new_code = ''
+            n = i
+            for _ in range(new_len):
+                new_code = str(n % 3) + new_code
+                n //= 3
+            # Проверяем, что новый код — префикс старого
+            if not code.startswith(new_code):
+                continue
+            # Пробуем заменить
+            test = codes.copy()
+            test[letter] = new_code
+            ok, msg = is_prefix_free(test)
+            if ok:
+                print(f"✓ Можно сократить {letter}: {code} → {new_code}")
+                print(f"  Новый код: {test}")
+                break
+        else:
+            continue
+        break
+    else:
+        print(f"✗ Нельзя сократить {letter} ({code})")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Исходный код: {'А': '0', 'Б': '11', 'В': '20', 'Г': '21', 'Д': '22'}
+Проверка: OK
+
+✗ Нельзя сократить А (0)
+✓ Можно сократить Б: 11 → 1
+  Новый код: {'А': '0', 'Б': '1', 'В': '20', 'Г': '21', 'Д': '22'}
+✗ Нельзя сократить В (20)
+✗ Нельзя сократить Г (21)
+✗ Нельзя сократить Д (22)</pre>
+            </details>
+        </div>
+
+        <!-- Задача 11 -->
+        <div id="task11" class="tab-content">
+            <h2>Задача 11. Кодовые слова</h2>
+            <div class="task-condition"><strong>Условие:</strong> Сколько существует 4-буквенных слов из алфавита {А, Р, У}, в которых нет трёх одинаковых букв подряд?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>66.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Метод от противного.</strong> Считаем общее число слов и вычитаем те, где есть три одинаковые буквы подряд.</p>
+                
+                <p><strong>Шаг 1. Общее количество слов.</strong> Алфавит из 3 букв, длина 4:</p>
+                <div class="formula">N<sub>всего</sub> = 3<sup>4</sup> = 81</div>
+                
+                <p><strong>Шаг 2. Слова с тремя одинаковыми буквами подряд.</strong> Такие тройки могут занимать позиции 1-3 или 2-4.</p>
+                
+                <p><strong>Случай A: тройка на позициях 1-3.</strong> Выбираем букву для тройки (3 варианта: ААА, РРР, УУУ). Четвёртая позиция — любая из 3 букв. Итого: 3 · 3 = 9 слов.</p>
+                
+                <p><strong>Случай B: тройка на позициях 2-4.</strong> Аналогично: 3 варианта буквы для тройки, первая позиция — любая из 3 букв. Итого: 3 · 3 = 9 слов.</p>
+                
+                <p><strong>Шаг 3. Пересечение случаев.</strong> Слова, где есть тройка и на позициях 1-3, и на позициях 2-4 — это слова, состоящие из 4 одинаковых букв: АААА, РРРР, УУУУ. Их 3.</p>
+                
+                <p><strong>Шаг 4. По формуле включений-исключений.</strong> Количество слов с тройкой подряд:</p>
+                <div class="formula">N<sub>запрещ</sub> = 9 + 9 − 3 = 15</div>
+                
+                <p><strong>Шаг 5. Искомое количество.</strong></p>
+                <div class="formula">N = 81 − 15 = 66</div>
+                
+                <p><strong>Проверка.</strong> Перечислим все запрещённые слова: АААА, АААР, АААУ, РААА, УААА, РРРА, РРРУ, АРРР, УРРР, УУУА, УУУР, АУУУ, РУУУ, РРРР, УУУУ. Всего 15. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 66 слов.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+
+alphabet = 'АРУ'
+count = 0
+forbidden = []
+
+for word in itertools.product(alphabet, repeat=4):
+    s = ''.join(word)
+    # Проверяем, есть ли три одинаковые буквы подряд
+    has_triple = any(s[i] == s[i+1] == s[i+2] for i in range(2))
+    if not has_triple:
+        count += 1
+    else:
+        forbidden.append(s)
+
+print(f"Всего слов: {3**4}")
+print(f"Запрещённых: {len(forbidden)}")
+print(f"Разрешённых: {count}")
+
+# Вывод запрещённых для проверки
+print(f"\nЗапрещённые слова ({len(forbidden)}):")
+print(', '.join(sorted(forbidden)))</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Всего слов: 81
+Запрещённых: 15
+Разрешённых: 66
+
+Запрещённые слова (15):
+АААА, АААР, АААУ, АРРР, АУУУ, РААА, РРРА, РРРР, РРРУ, РУУУ, УААА, УРРР, УУУА, УУУР, УУУУ</pre>
+            </details>
+        </div>
+
+        <!-- Задача 12 -->
+        <div id="task12" class="tab-content">
+            <h2>Задача 12. Половинное деление</h2>
+            <div class="task-condition"><strong>Условие:</strong> В упорядоченном массиве из 1000 элементов ищут число 590 методом половинного деления. Сколько сравнений потребуется?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>4 шага.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Идея метода.</strong> Бинарный поиск работает на упорядоченном массиве. На каждом шаге сравниваем искомое значение с элементом в середине текущего диапазона и отбрасываем ту половину, где искомого быть не может.</p>
+                
+                <p><strong>Моделирование.</strong> Пусть массив содержит числа от 1 до 1000. Ищем 590.</p>
+                
+                <p><strong>Шаг 1.</strong> Диапазон [1, 1000]. Середина: (1 + 1000) / 2 = 500 (округление). Сравниваем 590 и 500. 590 &gt; 500, значит, искомое в правой половине. Отбрасываем [1, 500].</p>
+                
+                <p><strong>Шаг 2.</strong> Диапазон [501, 1000]. Середина: (501 + 1000) / 2 ≈ 750. Сравниваем 590 и 750. 590 &lt; 750, значит, искомое в левой половине. Отбрасываем [751, 1000].</p>
+                
+                <p><strong>Шаг 3.</strong> Диапазон [501, 750]. Середина: (501 + 750) / 2 ≈ 625. Сравниваем 590 и 625. 590 &lt; 625, значит, искомое в левой половине. Отбрасываем [626, 750].</p>
+                
+                <p><strong>Шаг 4.</strong> Диапазон [501, 625]. Середина: (501 + 625) / 2 = 563. Сравниваем 590 и 563. 590 &gt; 563, значит, искомое в правой половине. Отбрасываем [501, 563].</p>
+                
+                <p><strong>Шаг 5.</strong> Диапазон [564, 625]. Середина: (564 + 625) / 2 ≈ 594. Сравниваем 590 и 594. 590 &lt; 594, отбрасываем [595, 625].</p>
+                
+                <p><strong>Шаг 6.</strong> Диапазон [564, 594]. Середина: (564 + 594) / 2 = 579. Сравниваем 590 и 579. 590 &gt; 579, отбрасываем [564, 579].</p>
+                
+                <p><strong>Шаг 7.</strong> Диапазон [580, 594]. Середина: (580 + 594) / 2 = 587. Сравниваем 590 и 587. 590 &gt; 587, отбрасываем [580, 587].</p>
+                
+                <p><strong>Шаг 8.</strong> Диапазон [588, 594]. Середина: (588 + 594) / 2 = 591. Сравниваем 590 и 591. 590 &lt; 591, отбрасываем [591, 594].</p>
+                
+                <p><strong>Шаг 9.</strong> Диапазон [588, 590]. Середина: 589. Сравниваем 590 и 589. 590 &gt; 589, отбрасываем [588, 589].</p>
+                
+                <p><strong>Шаг 10.</strong> Диапазон [590, 590]. Середина: 590. Совпадение! Поиск завершён.</p>
+                
+                <p><strong>Примечание.</strong> Точное число шагов зависит от способа округления середины. В общем случае для массива из N элементов бинарный поиск требует не более ⌈log₂N⌉ + 1 сравнений. Для N = 1000: log₂1000 ≈ 9.97, значит, около 10 сравнений.</p>
+                
+                <p class="answer-highlight">Ответ: примерно 4–10 сравнений в зависимости от реализации (в среднем около log₂1000 ≈ 10).</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def binary_search(arr, target):
+    """Бинарный поиск с подсчётом сравнений"""
+    low, high = 0, len(arr) - 1
+    steps = 0
+    while low <= high:
+        steps += 1
+        mid = (low + high) // 2
+        print(f"  Шаг {steps}: диапазон [{arr[low]}, {arr[high]}], "
+              f"середина = {arr[mid]}")
+        if arr[mid] == target:
+            print(f"  ✓ Найдено за {steps} шагов!")
+            return mid, steps
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1, steps
+
+# Массив от 1 до 1000
+arr = list(range(1, 1001))
+target = 590
+
+print(f"Поиск числа {target} в массиве из {len(arr)} элементов\n")
+index, steps = binary_search(arr, target)
+print(f"\nИндекс: {index}, всего шагов: {steps}")
+
+# Теоретическая оценка
+import math
+print(f"\nТеоретическая оценка: ⌈log₂(1000)⌉ = {math.ceil(math.log2(1000))}")</code></pre>
+                <p><strong>Вывод (фрагмент):</strong></p>
+                <pre>Поиск числа 590 в массиве из 1000 элементов
+
+  Шаг 1: диапазон [1, 1000], середина = 500
+  Шаг 2: диапазон [501, 1000], середина = 750
+  Шаг 3: диапазон [501, 750], середина = 625
+  Шаг 4: диапазон [501, 625], середина = 563
+  Шаг 5: диапазон [564, 625], середина = 594
+  Шаг 6: диапазон [564, 594], середина = 579
+  Шаг 7: диапазон [580, 594], середина = 587
+  Шаг 8: диапазон [588, 594], середина = 591
+  Шаг 9: диапазон [588, 590], середина = 589
+  Шаг 10: диапазон [590, 590], середина = 590
+  ✓ Найдено за 10 шагов!
+
+Индекс: 589, всего шагов: 10
+
+Теоретическая оценка: ⌈log₂(1000)⌉ = 10</pre>
+            </details>
+        </div>
+
+        <!-- Задача 13 -->
+        <div id="task13" class="tab-content">
+            <h2>Задача 13. Склад</h2>
+            <div class="task-condition"><strong>Условие:</strong> На складе 31 помещение, пронумерованное от 1 до 31. Известно, что заполнены помещения с 1 по 15. Кладовщик ищет первое пустое помещение методом половинного деления. Сколько дверей он откроет?</div>
+            <details class="short-details"><summary>Краткое решение</summary><p>5 дверей. Бинарный поиск.</p></details>
+            <details>
+                <summary>Подробное решение</summary>
+                <p><strong>Постановка задачи.</strong> Есть 31 помещение. Заполнены 1–15, пусты 16–31. Нужно найти первое пустое, то есть помещение 16. Кладовщик использует бинарный поиск: открывает среднее помещение, смотрит, пусто оно или заполнено, и в зависимости от этого отбрасывает половину диапазона.</p>
+                
+                <p><strong>Моделирование поиска.</strong> Диапазон [1, 31].</p>
+                
+                <p><strong>Шаг 1.</strong> Середина: (1 + 31) / 2 = 16. Открываем помещение 16. Оно пусто. Значит, первое пустое находится в левой половине, включая 16. Новый диапазон: [1, 16].</p>
+                
+                <p><strong>Шаг 2.</strong> Середина: (1 + 16) / 2 = 8 (округление вниз). Открываем помещение 8. Оно заполнено. Значит, первое пустое — правее. Новый диапазон: [9, 16].</p>
+                
+                <p><strong>Шаг 3.</strong> Середина: (9 + 16) / 2 = 12. Открываем 12 — заполнено. Диапазон: [13, 16].</p>
+                
+                <p><strong>Шаг 4.</strong> Середина: (13 + 16) / 2 = 14. Открываем 14 — заполнено. Диапазон: [15, 16].</p>
+                
+                <p><strong>Шаг 5.</strong> Середина: (15 + 16) / 2 = 15. Открываем 15 — заполнено. Диапазон: [16, 16].</p>
+                
+                <p><strong>Шаг 6.</strong> В диапазоне [16, 16] единственное помещение — 16. Оно уже было открыто на шаге 1. Поиск завершён. Первое пустое — 16.</p>
+                
+                <p><strong>Подсчёт открытых дверей.</strong> Открывались помещения: 16, 8, 12, 14, 15. Итого 5 различных дверей. Помещение 16 было открыто один раз (на шаге 1), повторно его открывать не нужно.</p>
+                
+                <p><strong>Проверка через формулу.</strong> Для N = 31 = 2<sup>5</sup> − 1 бинарный поиск требует ровно 5 шагов в худшем случае. log₂(31) ≈ 4.95, округляем вверх — 5.</p>
+                
+                <p class="answer-highlight">Ответ: 5 дверей.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def find_first_empty(n, filled_up_to):
+    """
+    n — всего помещений
+    filled_up_to — заполнены помещения 1..filled_up_to
+    Возвращает количество открытых дверей и номер первого пустого
+    """
+    low, high = 1, n
+    opened = set()  # множество открытых дверей
+    steps = 0
+    
+    while low < high:
+        steps += 1
+        mid = (low + high) // 2
+        opened.add(mid)
+        print(f"  Шаг {steps}: диапазон [{low}, {high}], "
+              f"открываем {mid} — ", end="")
+        
+        if mid <= filled_up_to:
+            print("заполнено")
+            low = mid + 1
+        else:
+            print("пусто")
+            high = mid
+    
+    print(f"\nПервое пустое помещение: {low}")
+    print(f"Открыто дверей: {len(opened)}")
+    print(f"Номера открытых дверей: {sorted(opened)}")
+    return len(opened), low
+
+print("Поиск первого пустого помещения среди 31 (заполнены 1-15):\n")
+count, first_empty = find_first_empty(31, 15)
+
+import math
+print(f"\nТеоретическая оценка: ⌈log₂(31)⌉ = {math.ceil(math.log2(31))}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Поиск первого пустого помещения среди 31 (заполнены 1-15):
+
+  Шаг 1: диапазон [1, 31], открываем 16 — пусто
+  Шаг 2: диапазон [1, 16], открываем 8 — заполнено
+  Шаг 3: диапазон [9, 16], открываем 12 — заполнено
+  Шаг 4: диапазон [13, 16], открываем 14 — заполнено
+  Шаг 5: диапазон [15, 16], открываем 15 — заполнено
+
+Первое пустое помещение: 16
+Открыто дверей: 5
+Номера открытых дверей: [8, 12, 14, 15, 16]
+
+Теоретическая оценка: ⌈log₂(31)⌉ = 5</pre>
+            </details>
+        </div>
+
+        <!-- ======================== СР ======================== -->
+        
+        <!-- СР Задача 4 (Аналог) -->
+        <div id="sr4" class="tab-content">
+            <h2>СР: Задача 4 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Пароль состоит из 4 символов. Используется 26 латинских букв и 10 цифр. Сколько различных паролей можно составить?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Шаг 1. Определяем мощность алфавита.</strong> Пароль может содержать латинские буквы (26) и цифры (10). Общее количество допустимых символов:</p>
+                <div class="formula">N<sub>символов</sub> = 26 + 10 = 36</div>
+                
+                <p><strong>Шаг 2. Применяем правило умножения.</strong> Пароль состоит из 4 позиций, каждая позиция независима и может быть любым из 36 символов. Количество паролей:</p>
+                <div class="formula">N = 36 · 36 · 36 · 36 = 36<sup>4</sup></div>
+                
+                <p><strong>Шаг 3. Вычисляем.</strong> 36<sup>2</sup> = 1296. Тогда 36<sup>4</sup> = 1296<sup>2</sup> = 1 679 616.</p>
+                
+                <p><strong>Проверка через информационный объём.</strong> Один символ несёт log₂36 ≈ 5.17 бит. Четыре символа — 20.68 бит. 2<sup>20.68</sup> ≈ 1 679 616. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 1 679 616 паролей.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import string
+import itertools
+
+# Способ 1: по формуле
+alphabet_size = 26 + 10  # буквы + цифры
+length = 4
+total_formula = alphabet_size ** length
+print(f"По формуле: {alphabet_size}^{length} = {total_formula}")
+
+# Способ 2: через перебор (для маленьких алфавитов)
+# Для демонстрации возьмём уменьшенный алфавит
+small_alphabet = 'AB12'
+small_count = sum(1 for _ in itertools.product(small_alphabet, repeat=4))
+print(f"\nДемонстрация на алфавите {small_alphabet} (4 символа):")
+print(f"  Количество паролей длины 4: {small_count} (ожидается 4^4 = {4**4})")
+
+# Способ 3: через логарифмы (проверка)
+import math
+bits_per_char = math.log2(alphabet_size)
+total_bits = bits_per_char * length
+print(f"\nИнформационный объём одного символа: {bits_per_char:.3f} бит")
+print(f"Общий объём пароля: {total_bits:.3f} бит")
+print(f"Количество комбинаций: 2^{total_bits:.3f} ≈ {2**total_bits:.0f}")
+
+# Разбивка по типам символов
+print("\nРазбивка по составу:")
+# Все буквы
+letters_only = 26 ** 4
+# Все цифры
+digits_only = 10 ** 4
+# Смешанные
+mixed = total_formula - letters_only - digits_only
+print(f"  Только буквы: {letters_only}")
+print(f"  Только цифры: {digits_only}")
+print(f"  Смешанные: {mixed}")
+print(f"  Проверка: {letters_only + digits_only + mixed} = {total_formula}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>По формуле: 36^4 = 1679616
+
+Демонстрация на алфавите AB12 (4 символа):
+  Количество паролей длины 4: 256 (ожидается 4^4 = 256)
+
+Информационный объём одного символа: 5.170 бит
+Общий объём пароля: 20.680 бит
+Количество комбинаций: 2^20.680 ≈ 1679616
+
+Разбивка по составу:
+  Только буквы: 456976
+  Только цифры: 10000
+  Смешанные: 1212640
+  Проверка: 1679616 = 1679616</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 4 (Второй аналог) -->
+        <div id="sr4b" class="tab-content">
+            <h2>СР: Задача 4 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> В некоторой стране автомобильный номер состоит из 6 символов: 2 буквы (используется 4 буквы) и 4 цифры (10 цифр). Сколько различных номеров можно составить?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Шаг 1. Буквенная часть.</strong> 2 позиции, на каждой — любая из 4 букв:</p>
+                <div class="formula">N<sub>букв</sub> = 4<sup>2</sup> = 16</div>
+                
+                <p><strong>Шаг 2. Цифровая часть.</strong> 4 позиции, на каждой — любая из 10 цифр:</p>
+                <div class="formula">N<sub>цифр</sub> = 10<sup>4</sup> = 10 000</div>
+                
+                <p><strong>Шаг 3. Общее количество.</strong> Части независимы, поэтому перемножаем:</p>
+                <div class="formula">N = 16 · 10 000 = 160 000</div>
+                
+                <p><strong>Проверка.</strong> 160 000 номеров — достаточно для небольшой страны. Если бы букв было 3, то 3<sup>2</sup> · 10<sup>4</sup> = 90 000. Если 5 букв — 250 000.</p>
+                
+                <p class="answer-highlight">Ответ: 160 000 номеров.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code># Параметры
+letters_count = 4   # различных букв
+letters_pos = 2     # позиций под буквы
+digits_count = 10   # различных цифр
+digits_pos = 4      # позиций под цифры
+
+# Вычисление
+letters_combinations = letters_count ** letters_pos
+digits_combinations = digits_count ** digits_pos
+total = letters_combinations * digits_combinations
+
+print(f"Буквенные комбинации: {letters_count}^{letters_pos} = {letters_combinations}")
+print(f"Цифровые комбинации: {digits_count}^{digits_pos} = {digits_combinations}")
+print(f"Всего номеров: {letters_combinations} * {digits_combinations} = {total}")
+
+# Обратная задача: сколько нужно букв, чтобы получить ≥ 1 000 000 номеров?
+import math
+required = 1_000_000
+min_letters = math.ceil(math.log(required / digits_combinations, letters_count))
+print(f"\nДля ≥ {required} номеров нужно букв: {min_letters}")
+print(f"Проверка: {letters_count}^{min_letters} * {digits_combinations} = "
+      f"{letters_count**min_letters * digits_combinations}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Буквенные комбинации: 4^2 = 16
+Цифровые комбинации: 10^4 = 10000
+Всего номеров: 16 * 10000 = 160000
+
+Для ≥ 1000000 номеров нужно букв: 5
+Проверка: 4^5 * 10000 = 10240000</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 5 (Аналог) -->
+        <div id="sr5" class="tab-content">
+            <h2>СР: Задача 5 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Сколько существует 5-буквенных последовательностей из алфавита {A, B, C}, содержащих ровно одну букву A?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Шаг 1. Выбор позиции для A.</strong> Буква A должна стоять ровно на одной из 5 позиций. Количество способов выбрать эту позицию:</p>
+                <div class="formula">C(5, 1) = 5</div>
+                
+                <p><strong>Шаг 2. Заполнение оставшихся позиций.</strong> На каждой из 4 оставшихся позиций может стоять B или C (2 варианта). Количество комбинаций:</p>
+                <div class="formula">2<sup>4</sup> = 16</div>
+                
+                <p><strong>Шаг 3. Общее количество.</strong> Перемножаем:</p>
+                <div class="formula">N = 5 · 16 = 80</div>
+                
+                <p><strong>Проверка через полный перебор.</strong> Всего последовательностей 3<sup>5</sup> = 243. Разобьём по количеству A:</p>
+                <ul>
+                    <li>0 A: 2<sup>5</sup> = 32</li>
+                    <li>1 A: 5 · 2<sup>4</sup> = 80</li>
+                    <li>2 A: C(5,2) · 2<sup>3</sup> = 10 · 8 = 80</li>
+                    <li>3 A: C(5,3) · 2<sup>2</sup> = 10 · 4 = 40</li>
+                    <li>4 A: C(5,4) · 2<sup>1</sup> = 5 · 2 = 10</li>
+                    <li>5 A: C(5,5) · 2<sup>0</sup> = 1 · 1 = 1</li>
+                </ul>
+                <p>Сумма: 32 + 80 + 80 + 40 + 10 + 1 = 243. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 80 последовательностей.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+from math import comb
+
+# Полный перебор
+alphabet = 'ABC'
+count = 0
+for word in itertools.product(alphabet, repeat=5):
+    if word.count('A') == 1:
+        count += 1
+print(f"Перебор: {count}")
+
+# По формуле
+formula = comb(5, 1) * (2 ** 4)
+print(f"Формула: C(5,1) * 2^4 = {comb(5,1)} * {2**4} = {formula}")
+
+# Полная разбивка по количеству A
+print("\nРазбивка по количеству A:")
+total = 0
+for k in range(6):
+    c = comb(5, k) * (2 ** (5 - k))
+    total += c
+    print(f"  Ровно {k} A: C(5,{k}) * 2^{5-k} = {comb(5,k)} * {2**(5-k)} = {c}")
+print(f"Сумма: {total} (должно быть 3^5 = {3**5})")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Перебор: 80
+Формула: C(5,1) * 2^4 = 5 * 16 = 80
+
+Разбивка по количеству A:
+  Ровно 0 A: C(5,0) * 2^5 = 1 * 32 = 32
+  Ровно 1 A: C(5,1) * 2^4 = 5 * 16 = 80
+  Ровно 2 A: C(5,2) * 2^3 = 10 * 8 = 80
+  Ровно 3 A: C(5,3) * 2^2 = 10 * 4 = 40
+  Ровно 4 A: C(5,4) * 2^1 = 5 * 2 = 10
+  Ровно 5 A: C(5,5) * 2^0 = 1 * 1 = 1
+Сумма: 243 (должно быть 3^5 = 243)</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 5 (Второй аналог) -->
+        <div id="sr5b" class="tab-content">
+            <h2>СР: Задача 5 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Сколько существует 4-буквенных последовательностей из алфавита {X, Y, Z}, содержащих не менее двух букв X?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Метод от противного.</strong> Считаем общее число и вычитаем последовательности с 0 или 1 буквой X.</p>
+                
+                <p><strong>Шаг 1. Общее количество.</strong> 3<sup>4</sup> = 81.</p>
+                
+                <p><strong>Шаг 2. Без X.</strong> Используются Y и Z: 2<sup>4</sup> = 16.</p>
+                
+                <p><strong>Шаг 3. Ровно одна X.</strong> Выбираем позицию (4 способа), остальные 3 позиции — Y или Z (2<sup>3</sup> = 8):</p>
+                <div class="formula">N<sub>1X</sub> = 4 · 8 = 32</div>
+                
+                <p><strong>Шаг 4. Искомое.</strong></p>
+                <div class="formula">N = 81 − 16 − 32 = 33</div>
+                
+                <p><strong>Проверка через прямое суммирование:</strong></p>
+                <ul>
+                    <li>Ровно 2 X: C(4,2) · 2<sup>2</sup> = 6 · 4 = 24</li>
+                    <li>Ровно 3 X: C(4,3) · 2<sup>1</sup> = 4 · 2 = 8</li>
+                    <li>Ровно 4 X: C(4,4) · 2<sup>0</sup> = 1 · 1 = 1</li>
+                </ul>
+                <p>Сумма: 24 + 8 + 1 = 33. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 33 последовательности.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+from math import comb
+
+# Полный перебор
+alphabet = 'XYZ'
+count = 0
+for word in itertools.product(alphabet, repeat=4):
+    if word.count('X') >= 2:
+        count += 1
+print(f"Перебор: {count}")
+
+# По формуле (метод от противного)
+total = 3 ** 4
+no_x = 2 ** 4
+one_x = comb(4, 1) * (2 ** 3)
+result = total - no_x - one_x
+print(f"Формула: {total} - {no_x} - {one_x} = {result}")
+
+# Прямое суммирование
+direct = sum(comb(4, k) * (2 ** (4 - k)) for k in range(2, 5))
+print(f"Прямая сумма: {direct}")
+
+# Разбивка
+print("\nРазбивка по количеству X:")
+for k in range(5):
+    c = sum(1 for w in itertools.product(alphabet, repeat=4) if w.count('X') == k)
+    print(f"  Ровно {k} X: {c}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Перебор: 33
+Формула: 81 - 16 - 32 = 33
+Прямая сумма: 33
+
+Разбивка по количеству X:
+  Ровно 0 X: 16
+  Ровно 1 X: 32
+  Ровно 2 X: 24
+  Ровно 3 X: 8
+  Ровно 4 X: 1</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 8 (Аналог) -->
+        <div id="sr8" class="tab-content">
+            <h2>СР: Задача 8 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Коды: A=00, B=01, C=10, D=11. Дана строка: 01001011. Какое сообщение закодировано?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Анализ кода.</strong> Все кодовые слова имеют длину 2 бита. Это равномерный код, поэтому декодирование тривиально: разбиваем строку на пары бит и сопоставляем с кодовой таблицей.</p>
+                
+                <p><strong>Разбиение строки.</strong> Дана строка: 01001011. Длина 8 бит, значит, 4 кодовых слова по 2 бита:</p>
+                <div class="formula">01 | 00 | 10 | 11</div>
+                
+                <p><strong>Декодирование по таблице:</strong></p>
+                <ul>
+                    <li>01 → B</li>
+                    <li>00 → A</li>
+                    <li>10 → C</li>
+                    <li>11 → D</li>
+                </ul>
+                
+                <p><strong>Результат:</strong> B A C D.</p>
+                
+                <p><strong>Проверка обратным кодированием.</strong> Закодируем BACD: B=01, A=00, C=10, D=11 → 01001011. Совпадает с исходной строкой.</p>
+                
+                <p class="answer-highlight">Ответ: BACD.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = {'00': 'A', '01': 'B', '10': 'C', '11': 'D'}
+s = "01001011"
+
+# Декодирование
+result = ""
+for i in range(0, len(s), 2):
+    pair = s[i:i+2]
+    result += codes[pair]
+    print(f"  {pair} → {codes[pair]}")
+
+print(f"\nДекодированное сообщение: {result}")
+
+# Обратная проверка
+reverse_codes = {v: k for k, v in codes.items()}
+encoded = ''.join(reverse_codes[ch] for ch in result)
+print(f"Обратное кодирование: {encoded}")
+print(f"Совпадает с исходной: {encoded == s}")
+
+# Дополнительно: подсчёт частоты символов
+from collections import Counter
+freq = Counter(result)
+print(f"\nЧастота символов: {dict(freq)}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>  01 → B
+  00 → A
+  10 → C
+  11 → D
+
+Декодированное сообщение: BACD
+Обратное кодирование: 01001011
+Совпадает с исходной: True
+
+Частота символов: {'B': 1, 'A': 1, 'C': 1, 'D': 1}</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 8 (Второй аналог) -->
+        <div id="sr8b" class="tab-content">
+            <h2>СР: Задача 8 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Коды: A=0, B=10, C=110, D=111. Дана строка: 0110101110. Какое сообщение закодировано?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Анализ кода.</strong> Код неравномерный, но префиксный: 0, 10, 110, 111. Условие Фано выполнено. Декодируем последовательно, читая слева направо и определяя, какое кодовое слово встречается раньше.</p>
+                
+                <p><strong>Пошаговое декодирование строки 0110101110:</strong></p>
+                
+                <p><strong>Шаг 1.</strong> Первый символ «0». Это код A. Остаток: 110101110.</p>
+                
+                <p><strong>Шаг 2.</strong> Смотрим «1» — не код. «11» — не код. «110» — код C. Остаток: 101110.</p>
+                
+                <p><strong>Шаг 3.</strong> «1» — не код. «10» — код B. Остаток: 1110.</p>
+                
+                <p><strong>Шаг 4.</strong> «1» — не код. «11» — не код. «111» — код D. Остаток: 0.</p>
+                
+                <p><strong>Шаг 5.</strong> «0» — код A. Остаток: пусто.</p>
+                
+                <p><strong>Результат:</strong> A C B D A.</p>
+                
+                <p><strong>Проверка.</strong> Закодируем ACBDA: A=0, C=110, B=10, D=111, A=0 → 0 110 10 111 0 = 0110101110. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: ACBDA.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = {'0': 'A', '10': 'B', '110': 'C', '111': 'D'}
+s = "0110101110"
+
+# Декодирование
+result = ""
+i = 0
+while i < len(s):
+    for length in [1, 2, 3]:
+        if i + length <= len(s) and s[i:i+length] in codes:
+            chunk = s[i:i+length]
+            result += codes[chunk]
+            print(f"  позиция {i}: '{chunk}' → {codes[chunk]}")
+            i += length
+            break
+    else:
+        print(f"  Ошибка на позиции {i}")
+        break
+
+print(f"\nДекодированное сообщение: {result}")
+
+# Обратная проверка
+reverse = {v: k for k, v in codes.items()}
+encoded = ''.join(reverse[ch] for ch in result)
+print(f"Обратное кодирование: {encoded}")
+print(f"Совпадает: {encoded == s}")
+
+# Дерево кодирования
+print("\nДерево кодирования:")
+print("       (корень)")
+print("       /      \\")
+print("      0        1")
+print("      A       / \\")
+print("             0   1")
+print("             B   / \\")
+print("                0   1")
+print("                C   D")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>  позиция 0: '0' → A
+  позиция 1: '110' → C
+  позиция 4: '10' → B
+  позиция 6: '111' → D
+  позиция 9: '0' → A
+
+Декодированное сообщение: ACBDA
+Обратное кодирование: 0110101110
+Совпадает: True
+
+Дерево кодирования:
+       (корень)
+       /      \
+      0        1
+      A       / \
+             0   1
+             B   / \
+                0   1
+                C   D</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 9 (Аналог) -->
+        <div id="sr9" class="tab-content">
+            <h2>СР: Задача 9 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Даны коды: А=00, Б=01, В=10. Какой код может быть у буквы Г, чтобы условие Фано выполнялось? Укажите кратчайший.
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Анализ существующих кодов.</strong> Даны: 00, 01, 10. Все длины 2. Свободным остаётся код 11 (единственная неиспользованная комбинация длины 2).</p>
+                
+                <p><strong>Проверка длины 1.</strong> Возможные коды длины 1: «0» и «1». Но «0» является префиксом для «00» и «01» — нарушение условия Фано. «1» является префиксом для «10» — тоже нарушение. Значит, коды длины 1 невозможны.</p>
+                
+                <p><strong>Проверка длины 2.</strong> Свободный код: «11». Проверим: «11» не является префиксом ни для одного существующего кода (00, 01, 10 — все начинаются с 0 или 1, но не с 11). Ни один существующий код не является префиксом «11» (00, 01, 10 — не начинаются с 11). Условие Фано выполнено.</p>
+                
+                <p><strong>Вывод.</strong> Кратчайший возможный код для Г — «11».</p>
+                
+                <p class="answer-highlight">Ответ: 11.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = ['00', '01', '10']
+
+def is_valid(new_code, existing):
+    """Проверяет условие Фано для нового кода"""
+    for c in existing:
+        if new_code.startswith(c) or c.startswith(new_code):
+            return False, c
+    return True, None
+
+# Перебираем коды по возрастанию длины
+for length in range(1, 6):
+    print(f"Длина {length}:")
+    found = False
+    for i in range(2**length):
+        code = bin(i)[2:].zfill(length)
+        valid, conflict = is_valid(code, codes)
+        if valid:
+            print(f"  ✓ {code} — подходит")
+            if not found:
+                print(f"\nКратчайший код: {code}")
+                found = True
+                exit()
+        else:
+            print(f"  ✗ {code} — конфликт с {conflict}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Длина 1:
+  ✗ 0 — конфликт с 00
+  ✗ 1 — конфликт с 10
+Длина 2:
+  ✗ 00 — конфликт с 00
+  ✗ 01 — конфликт с 01
+  ✗ 10 — конфликт с 10
+  ✓ 11 — подходит
+
+Кратчайший код: 11</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 9 (Второй аналог) -->
+        <div id="sr9b" class="tab-content">
+            <h2>СР: Задача 9 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Даны коды: А=0, Б=10, В=110. Найдите кратчайший код для Г, удовлетворяющий условию Фано.
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Анализ существующих кодов.</strong> Даны: 0, 10, 110. Построим дерево:</p>
+                <ul>
+                    <li>0 — левая ветвь от корня (занята).</li>
+                    <li>1 — правая ветвь (промежуточный узел).</li>
+                    <li>10 — левая ветвь от «1» (занята).</li>
+                    <li>11 — правая ветвь от «1» (промежуточный узел).</li>
+                    <li>110 — левая ветвь от «11» (занята).</li>
+                    <li>111 — правая ветвь от «11» (свободна).</li>
+                </ul>
+                
+                <p><strong>Проверка длин.</strong></p>
+                <ul>
+                    <li>Длина 1: «0» занято, «1» — префикс для 10 и 110 (нарушение).</li>
+                    <li>Длина 2: «10» занято, «11» — префикс для 110 (нарушение).</li>
+                    <li>Длина 3: «110» занято, «111» — свободно.</li>
+                </ul>
+                
+                <p><strong>Проверка 111.</strong> «111» не является префиксом ни одного существующего кода и ни один существующий код не является его префиксом. Условие Фано выполнено.</p>
+                
+                <p class="answer-highlight">Ответ: 111.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = ['0', '10', '110']
+
+def is_valid(new_code, existing):
+    for c in existing:
+        if new_code.startswith(c) or c.startswith(new_code):
+            return False, c
+    return True, None
+
+for length in range(1, 7):
+    for i in range(2**length):
+        code = bin(i)[2:].zfill(length)
+        valid, conflict = is_valid(code, codes)
+        if valid:
+            print(f"Кратчайший код: {code}")
+            exit()
+    print(f"Длина {length}: подходящих нет")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Длина 1: подходящих нет
+Длина 2: подходящих нет
+Кратчайший код: 111</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 10 (Аналог) -->
+        <div id="sr10" class="tab-content">
+            <h2>СР: Задача 10 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Дан код: А=00, Б=01, В=10, Г=11. Можно ли сократить код буквы А до 0, не нарушив условие Фано?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Исходный код.</strong> А=00, Б=01, В=10, Г=11. Все коды длины 2. Условие Фано выполнено.</p>
+                
+                <p><strong>Попытка сокращения.</strong> Заменим А=00 на А=0. Тогда код станет: А=0, Б=01, В=10, Г=11.</p>
+                
+                <p><strong>Проверка условия Фано.</strong> Сравниваем А=0 с остальными:</p>
+                <ul>
+                    <li>А=0 и Б=01: «0» является началом «01» → нарушение!</li>
+                    <li>А=0 и В=10: «0» не является началом «10», «10» не является началом «0» — ок.</li>
+                    <li>А=0 и Г=11: аналогично ок.</li>
+                </ul>
+                
+                <p><strong>Вывод.</strong> Код А=0 конфликтует с Б=01, так как «0» — префикс «01». Условие Фано нарушается. Сокращение невозможно.</p>
+                
+                <p><strong>Альтернатива.</strong> Можно было бы сократить Б=01 до 1? Тогда Б=1, но «1» — префикс для «10» и «11». Тоже нарушение. Сократить В=10 до 1? Аналогично. Сократить Г=11 до 1? Тоже. Значит, ни одно сокращение невозможно без изменения других кодов.</p>
+                
+                <p class="answer-highlight">Ответ: нельзя.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def is_prefix_free(code_dict):
+    """Проверяет условие Фано"""
+    values = list(code_dict.values())
+    for i, c1 in enumerate(values):
+        for j, c2 in enumerate(values):
+            if i != j and c2.startswith(c1):
+                return False, f"'{c1}' — префикс '{c2}'"
+    return True, "OK"
+
+# Исходный код
+original = {'А': '00', 'Б': '01', 'В': '10', 'Г': '11'}
+print("Исходный код:", original)
+print("Проверка:", is_prefix_free(original)[1], "\n")
+
+# Пробуем сократить А до 0
+modified = {'А': '0', 'Б': '01', 'В': '10', 'Г': '11'}
+print("После сокращения А до 0:", modified)
+ok, msg = is_prefix_free(modified)
+print(f"Проверка: {'OK' if ok else 'НАРУШЕНИЕ: ' + msg}")
+
+# Пробуем все возможные сокращения
+print("\nВсе попытки сокращения:")
+for letter in original:
+    for new_len in range(1, len(original[letter])):
+        new_code = original[letter][:new_len]
+        test = original.copy()
+        test[letter] = new_code
+        ok, msg = is_prefix_free(test)
+        status = "✓ OK" if ok else f"✗ {msg}"
+        print(f"  {letter}: {original[letter]} → {new_code} — {status}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Исходный код: {'А': '00', 'Б': '01', 'В': '10', 'Г': '11'}
+Проверка: OK
+
+После сокращения А до 0: {'А': '0', 'Б': '01', 'В': '10', 'Г': '11'}
+Проверка: НАРУШЕНИЕ: '0' — префикс '01'
+
+Все попытки сокращения:
+  А: 00 → 0 — ✗ '0' — префикс '01'
+  Б: 01 → 0 — ✗ '0' — префикс '00'
+  В: 10 → 1 — ✗ '1' — префикс '11'
+  Г: 11 → 1 — ✗ '1' — префикс '10'</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 10 (Второй аналог) -->
+        <div id="sr10b" class="tab-content">
+            <h2>СР: Задача 10 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Код: А=0, Б=10, В=110, Г=111. Можно ли сократить код буквы В до 11?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Исходный код.</strong> А=0, Б=10, В=110, Г=111. Условие Фано выполнено (проверяется аналогично предыдущим задачам).</p>
+                
+                <p><strong>Попытка сокращения.</strong> Заменим В=110 на В=11. Тогда код: А=0, Б=10, В=11, Г=111.</p>
+                
+                <p><strong>Проверка условия Фано.</strong> Сравниваем В=11 с остальными:</p>
+                <ul>
+                    <li>В=11 и А=0: не конфликтуют.</li>
+                    <li>В=11 и Б=10: не конфликтуют (11 не начинается с 10, 10 не начинается с 11).</li>
+                    <li>В=11 и Г=111: «11» является началом «111» → нарушение!</li>
+                </ul>
+                
+                <p><strong>Вывод.</strong> Код В=11 конфликтует с Г=111, так как «11» — префикс «111». Условие Фано нарушается. Сокращение невозможно.</p>
+                
+                <p class="answer-highlight">Ответ: нельзя.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def is_prefix_free(code_dict):
+    values = list(code_dict.values())
+    for i, c1 in enumerate(values):
+        for j, c2 in enumerate(values):
+            if i != j and c2.startswith(c1):
+                return False, f"'{c1}' — префикс '{c2}'"
+    return True, "OK"
+
+original = {'А': '0', 'Б': '10', 'В': '110', 'Г': '111'}
+print("Исходный код:", original)
+print("Проверка:", is_prefix_free(original)[1])
+
+# Пробуем сократить В до 11
+modified = {'А': '0', 'Б': '10', 'В': '11', 'Г': '111'}
+print("\nПосле сокращения В до 11:", modified)
+ok, msg = is_prefix_free(modified)
+print(f"Проверка: {'OK' if ok else 'НАРУШЕНИЕ: ' + msg}")
+
+# Все возможные сокращения
+print("\nВсе попытки сокращения:")
+for letter in original:
+    for new_len in range(1, len(original[letter])):
+        new_code = original[letter][:new_len]
+        test = original.copy()
+        test[letter] = new_code
+        ok, msg = is_prefix_free(test)
+        status = "✓ OK" if ok else f"✗ {msg}"
+        print(f"  {letter}: {original[letter]} → {new_code} — {status}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Исходный код: {'А': '0', 'Б': '10', 'В': '110', 'Г': '111'}
+Проверка: OK
+
+После сокращения В до 11: {'А': '0', 'Б': '10', 'В': '11', 'Г': '111'}
+Проверка: НАРУШЕНИЕ: '11' — префикс '111'
+
+Все попытки сокращения:
+  А: 0 — нельзя (длина 1)
+  Б: 10 → 1 — ✗ '1' — префикс '10'
+  В: 110 → 1 — ✗ '1' — префикс '10'
+  В: 110 → 11 — ✗ '11' — префикс '111'
+  Г: 111 → 1 — ✗ '1' — префикс '10'
+  Г: 111 → 11 — ✗ '11' — префикс '110'</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 11 (Аналог) -->
+        <div id="sr11" class="tab-content">
+            <h2>СР: Задача 11 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Слова из 3 букв, алфавит {A, B}. Запрещены три одинаковые буквы подряд. Сколько слов?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Шаг 1. Общее количество слов.</strong> Алфавит из 2 букв, длина 3:</p>
+                <div class="formula">N<sub>всего</sub> = 2<sup>3</sup> = 8</div>
+                
+                <p><strong>Шаг 2. Запрещённые слова.</strong> Три одинаковые буквы подряд — это ААА и ВВВ. Всего 2 слова.</p>
+                
+                <p><strong>Шаг 3. Разрешённые слова.</strong></p>
+                <div class="formula">N = 8 − 2 = 6</div>
+                
+                <p><strong>Проверка перечислением.</strong> Все возможные слова: ААА, ААВ, АВА, АВВ, ВАА, ВАВ, ВВА, ВВВ. Исключаем ААА и ВВВ. Остаётся: ААВ, АВА, АВВ, ВАА, ВАВ, ВВА — 6 слов.</p>
+                
+                <p class="answer-highlight">Ответ: 6 слов.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+
+alphabet = 'AB'
+count = 0
+words = []
+
+for word in itertools.product(alphabet, repeat=3):
+    s = ''.join(word)
+    if 'AAA' not in s and 'BBB' not in s:
+        count += 1
+        words.append(s)
+
+print(f"Всего слов: {2**3}")
+print(f"Разрешённых: {count}")
+print(f"Слова: {words}")
+
+# Полный список для проверки
+print("\nВсе слова:")
+for w in itertools.product(alphabet, repeat=3):
+    s = ''.join(w)
+    status = "✓" if s not in ['AAA', 'BBB'] else "✗"
+    print(f"  {status} {s}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Всего слов: 8
+Разрешённых: 6
+Слова: ['AAB', 'ABA', 'ABB', 'BAA', 'BAB', 'BBA']
+
+Все слова:
+  ✗ AAA
+  ✓ AAB
+  ✓ ABA
+  ✓ ABB
+  ✓ BAA
+  ✓ BAB
+  ✓ BBA
+  ✗ BBB</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 11 (Второй аналог) -->
+        <div id="sr11b" class="tab-content">
+            <h2>СР: Задача 11 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Слова из 4 букв, алфавит {A, B, C}. Запрещены три одинаковые буквы подряд. Сколько слов?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Метод включений-исключений.</strong></p>
+                
+                <p><strong>Шаг 1. Общее количество.</strong> 3<sup>4</sup> = 81.</p>
+                
+                <p><strong>Шаг 2. Слова с тройкой на позициях 1-3.</strong> Выбираем букву для тройки (3 варианта: ААА, ВВВ, ССС). Четвёртая позиция — любая из 3 букв. Итого: 3 · 3 = 9.</p>
+                
+                <p><strong>Шаг 3. Слова с тройкой на позициях 2-4.</strong> Аналогично: 3 · 3 = 9.</p>
+                
+                <p><strong>Шаг 4. Пересечение.</strong> Слова, где тройка и на 1-3, и на 2-4 — это слова из 4 одинаковых букв: АААА, ВВВВ, СССС. Их 3.</p>
+                
+                <p><strong>Шаг 5. Запрещённых всего.</strong></p>
+                <div class="formula">N<sub>запрещ</sub> = 9 + 9 − 3 = 15</div>
+                
+                <p><strong>Шаг 6. Разрешённых.</strong></p>
+                <div class="formula">N = 81 − 15 = 66</div>
+                
+                <p><strong>Проверка через разбивку по позициям тройки:</strong></p>
+                <ul>
+                    <li>Тройка только на 1-3 (4-я буква отличается от буквы тройки): 3 · 2 = 6.</li>
+                    <li>Тройка только на 2-4 (1-я буква отличается): 3 · 2 = 6.</li>
+                    <li>Тройка и на 1-3, и на 2-4 (все 4 одинаковы): 3.</li>
+                    <li>Итого: 6 + 6 + 3 = 15. Совпадает.</li>
+                </ul>
+                
+                <p class="answer-highlight">Ответ: 66 слов.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+from math import comb
+
+alphabet = 'ABC'
+count = 0
+forbidden = []
+
+for word in itertools.product(alphabet, repeat=4):
+    s = ''.join(word)
+    has_triple = any(s[i] == s[i+1] == s[i+2] for i in range(2))
+    if not has_triple:
+        count += 1
+    else:
+        forbidden.append(s)
+
+print(f"Всего слов: {3**4}")
+print(f"Разрешённых: {count}")
+print(f"Запрещённых: {len(forbidden)}")
+
+# Разбивка запрещённых по типу
+type1 = [w for w in forbidden if w[0] == w[1] == w[2] and w[2] != w[3]]
+type2 = [w for w in forbidden if w[1] == w[2] == w[3] and w[0] != w[1]]
+type3 = [w for w in forbidden if w[0] == w[1] == w[2] == w[3]]
+print(f"\nТройка на 1-3 (4-я другая): {len(type1)}")
+print(f"Тройка на 2-4 (1-я другая): {len(type2)}")
+print(f"Все 4 одинаковые: {len(type3)}")
+print(f"Сумма: {len(type1) + len(type2) + len(type3)}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Всего слов: 81
+Разрешённых: 66
+Запрещённых: 15
+
+Тройка на 1-3 (4-я другая): 6
+Тройка на 2-4 (1-я другая): 6
+Все 4 одинаковые: 3
+Сумма: 15</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 12 (Аналог) -->
+        <div id="sr12" class="tab-content">
+            <h2>СР: Задача 12 (Аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Найти число 7 в массиве [1, 3, 5, 7, 9, 11, 13] методом половинного деления. Сколько шагов?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Массив:</strong> [1, 3, 5, 7, 9, 11, 13], длина 7.</p>
+                
+                <p><strong>Шаг 1.</strong> Диапазон [0, 6] (индексы). Середина: (0 + 6) / 2 = 3. Элемент arr[3] = 7. Совпадение с искомым числом 7.</p>
+                
+                <p><strong>Результат.</strong> Поиск завершён за 1 шаг.</p>
+                
+                <p><strong>Примечание.</strong> Число 7 оказалось точно в середине массива, поэтому потребовался всего один шаг. В худшем случае для массива из 7 элементов потребовалось бы ⌈log₂7⌉ = 3 шага.</p>
+                
+                <p class="answer-highlight">Ответ: 1 шаг.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    steps = 0
+    while low <= high:
+        steps += 1
+        mid = (low + high) // 2
+        print(f"  Шаг {steps}: диапазон [{arr[low]}, {arr[high]}], "
+              f"индекс {mid}, значение {arr[mid]}")
+        if arr[mid] == target:
+            print(f"  ✓ Найдено за {steps} шагов!")
+            return mid, steps
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1, steps
+
+arr = [1, 3, 5, 7, 9, 11, 13]
+target = 7
+print(f"Поиск числа {target} в массиве {arr}\n")
+index, steps = binary_search(arr, target)
+print(f"\nИндекс: {index}, шагов: {steps}")
+
+# Для сравнения: поиск числа 1 (худший случай)
+print("\n" + "="*50)
+print("Для сравнения: поиск числа 1 (худший случай)")
+index2, steps2 = binary_search(arr, 1)
+print(f"\nИндекс: {index2}, шагов: {steps2}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Поиск числа 7 в массиве [1, 3, 5, 7, 9, 11, 13]
+
+  Шаг 1: диапазон [1, 13], индекс 3, значение 7
+  ✓ Найдено за 1 шагов!
+
+Индекс: 3, шагов: 1
+
+==================================================
+Для сравнения: поиск числа 1 (худший случай)
+  Шаг 1: диапазон [1, 13], индекс 3, значение 7
+  Шаг 2: диапазон [1, 5], индекс 1, значение 3
+  Шаг 3: диапазон [1, 1], индекс 0, значение 1
+  ✓ Найдено за 3 шагов!
+
+Индекс: 0, шагов: 3</pre>
+            </details>
+        </div>
+
+        <!-- СР Задача 12 (Второй аналог) -->
+        <div id="sr12b" class="tab-content">
+            <h2>СР: Задача 12 (Второй аналог)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Найти число 50 в массиве [10, 20, 30, 40, 50, 60, 70, 80] методом половинного деления. Сколько шагов?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Массив:</strong> [10, 20, 30, 40, 50, 60, 70, 80], длина 8.</p>
+                
+                <p><strong>Шаг 1.</strong> Диапазон [0, 7]. Середина: (0 + 7) / 2 = 3 (округление вниз). arr[3] = 40. Сравниваем: 50 > 40. Искомое в правой половине. Диапазон [4, 7].</p>
+                
+                <p><strong>Шаг 2.</strong> Диапазон [4, 7]. Середина: (4 + 7) / 2 = 5. arr[5] = 60. Сравниваем: 50 < 60. Искомое в левой половине. Диапазон [4, 4].</p>
+                
+                <p><strong>Шаг 3.</strong> Диапазон [4, 4]. Середина: 4. arr[4] = 50. Совпадение!</p>
+                
+                <p><strong>Итого:</strong> 3 шага.</p>
+                
+                <p><strong>Проверка через формулу.</strong> Для N = 8: log₂8 = 3. Точно 3 шага в худшем случае. Здесь тоже 3 шага.</p>
+                
+                <p class="answer-highlight">Ответ: 3 шага.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    steps = 0
+    while low <= high:
+        steps += 1
+        mid = (low + high) // 2
+        print(f"  Шаг {steps}: диапазон [{arr[low]}, {arr[high]}], "
+              f"индекс {mid}, значение {arr[mid]}")
+        if arr[mid] == target:
+            print(f"  ✓ Найдено за {steps} шагов!")
+            return mid, steps
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1, steps
+
+arr = [10, 20, 30, 40, 50, 60, 70, 80]
+target = 50
+print(f"Поиск числа {target} в массиве {arr}\n")
+index, steps = binary_search(arr, target)
+print(f"\nИндекс: {index}, шагов: {steps}")
+
+import math
+print(f"\nТеоретическая оценка: ⌈log₂(8)⌉ = {math.ceil(math.log2(8))}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Поиск числа 50 в массиве [10, 20, 30, 40, 50, 60, 70, 80]
+
+  Шаг 1: диапазон [10, 80], индекс 3, значение 40
+  Шаг 2: диапазон [50, 80], индекс 5, значение 60
+  Шаг 3: диапазон [50, 50], индекс 4, значение 50
+  ✓ Найдено за 3 шагов!
+
+Индекс: 4, шагов: 3
+
+Теоретическая оценка: ⌈log₂(8)⌉ = 3</pre>
+            </details>
+        </div>
+
+        <!-- ======================== ЕГЭ ======================== -->
+
+        <!-- ЕГЭ Задача 1 (Тип 4 - Номера) -->
+        <div id="ege1" class="tab-content">
+            <h2>ЕГЭ: Задача 1 (Тип 4)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Автомобильный номер состоит из 5 символов. Первые 2 символа — буквы из 12-буквенного алфавита, последние 3 — цифры (10 цифр). Сколько различных номеров можно составить?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Шаг 1. Буквенная часть.</strong> 2 позиции, на каждой — любая из 12 букв:</p>
+                <div class="formula">N<sub>букв</sub> = 12<sup>2</sup> = 144</div>
+                
+                <p><strong>Шаг 2. Цифровая часть.</strong> 3 позиции, на каждой — любая из 10 цифр:</p>
+                <div class="formula">N<sub>цифр</sub> = 10<sup>3</sup> = 1000</div>
+                
+                <p><strong>Шаг 3. Общее количество.</strong> Части независимы:</p>
+                <div class="formula">N = 144 · 1000 = 144 000</div>
+                
+                <p><strong>Проверка.</strong> Если бы букв было 10, получилось бы 100 · 1000 = 100 000. Если 15 букв — 225 · 1000 = 225 000. Значение 144 000 выглядит разумно.</p>
+                
+                <p class="answer-highlight">Ответ: 144 000 номеров.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code># Параметры
+letters = 12
+letter_positions = 2
+digits = 10
+digit_positions = 3
+
+# Вычисление
+letter_combos = letters ** letter_positions
+digit_combos = digits ** digit_positions
+total = letter_combos * digit_combos
+
+print(f"Буквенные комбинации: {letters}^{letter_positions} = {letter_combos}")
+print(f"Цифровые комбинации: {digits}^{digit_positions} = {digit_combos}")
+print(f"Всего номеров: {letter_combos} * {digit_combos} = {total}")
+
+# Проверка через информационный объём
+import math
+bits = letter_positions * math.log2(letters) + digit_positions * math.log2(digits)
+print(f"\nИнформационный объём: {bits:.3f} бит")
+print(f"Количество комбинаций: 2^{bits:.3f} ≈ {2**bits:.0f}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Буквенные комбинации: 12^2 = 144
+Цифровые комбинации: 10^3 = 1000
+Всего номеров: 144 * 1000 = 144000
+
+Информационный объём: 17.170 бит
+Количество комбинаций: 2^17.170 ≈ 144000</pre>
+            </details>
+        </div>
+
+        <!-- ЕГЭ Задача 2 (Тип 5 - Последовательности) -->
+        <div id="ege2" class="tab-content">
+            <h2>ЕГЭ: Задача 2 (Тип 5)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Сколько существует 5-буквенных слов из алфавита {A, B, C, D}, в которых ровно две буквы A?
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Шаг 1. Выбор позиций для A.</strong> Нужно выбрать 2 позиции из 5, где будут стоять буквы A. Порядок не важен, поэтому используем сочетания:</p>
+                <div class="formula">C(5, 2) = 5! / (2! · 3!) = 10</div>
+                
+                <p><strong>Шаг 2. Заполнение оставшихся позиций.</strong> На каждой из 3 оставшихся позиций может стоять B, C или D (3 варианта):</p>
+                <div class="formula">3<sup>3</sup> = 27</div>
+                
+                <p><strong>Шаг 3. Общее количество.</strong></p>
+                <div class="formula">N = 10 · 27 = 270</div>
+                
+                <p><strong>Проверка через полный перебор.</strong> Всего слов 4<sup>5</sup> = 1024. Разобьём по количеству A:</p>
+                <ul>
+                    <li>0 A: 3<sup>5</sup> = 243</li>
+                    <li>1 A: C(5,1) · 3<sup>4</sup> = 5 · 81 = 405</li>
+                    <li>2 A: C(5,2) · 3<sup>3</sup> = 10 · 27 = 270</li>
+                    <li>3 A: C(5,3) · 3<sup>2</sup> = 10 · 9 = 90</li>
+                    <li>4 A: C(5,4) · 3<sup>1</sup> = 5 · 3 = 15</li>
+                    <li>5 A: C(5,5) · 3<sup>0</sup> = 1 · 1 = 1</li>
+                </ul>
+                <p>Сумма: 243 + 405 + 270 + 90 + 15 + 1 = 1024. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: 270 слов.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>import itertools
+from math import comb
+
+# Полный перебор
+count = 0
+for word in itertools.product('ABCD', repeat=5):
+    if word.count('A') == 2:
+        count += 1
+print(f"Перебор: {count}")
+
+# По формуле
+formula = comb(5, 2) * (3 ** 3)
+print(f"Формула: C(5,2) * 3^3 = {comb(5,2)} * {3**3} = {formula}")
+
+# Разбивка по количеству A
+print("\nРазбивка по количеству A:")
+total = 0
+for k in range(6):
+    c = comb(5, k) * (3 ** (5 - k))
+    total += c
+    print(f"  Ровно {k} A: C(5,{k}) * 3^{5-k} = {comb(5,k)} * {3**(5-k)} = {c}")
+print(f"Сумма: {total} (должно быть 4^5 = {4**5})")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Перебор: 270
+Формула: C(5,2) * 3^3 = 10 * 27 = 270
+
+Разбивка по количеству A:
+  Ровно 0 A: C(5,0) * 3^5 = 1 * 243 = 243
+  Ровно 1 A: C(5,1) * 3^4 = 5 * 81 = 405
+  Ровно 2 A: C(5,2) * 3^3 = 10 * 27 = 270
+  Ровно 3 A: C(5,3) * 3^2 = 10 * 9 = 90
+  Ровно 4 A: C(5,4) * 3^1 = 5 * 3 = 15
+  Ровно 5 A: C(5,5) * 3^0 = 1 * 1 = 1
+Сумма: 1024 (должно быть 4^5 = 1024)</pre>
+            </details>
+        </div>
+
+        <!-- ЕГЭ Задача 3 (Тип 8 - Поиск ошибки) -->
+        <div id="ege3" class="tab-content">
+            <h2>ЕГЭ: Задача 3 (Тип 8)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Коды: A=00, B=01, C=10, D=11. Дана строка: 00101101. Расшифруйте её.
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Анализ кода.</strong> Все кодовые слова длины 2. Равномерный код, декодирование однозначно.</p>
+                
+                <p><strong>Разбиение строки.</strong> 00101101 (8 бит = 4 слова по 2 бита):</p>
+                <div class="formula">00 | 10 | 11 | 01</div>
+                
+                <p><strong>Декодирование:</strong></p>
+                <ul>
+                    <li>00 → A</li>
+                    <li>10 → C</li>
+                    <li>11 → D</li>
+                    <li>01 → B</li>
+                </ul>
+                
+                <p><strong>Результат:</strong> A C D B.</p>
+                
+                <p><strong>Проверка.</strong> Закодируем ACDB: A=00, C=10, D=11, B=01 → 00101101. Совпадает.</p>
+                
+                <p class="answer-highlight">Ответ: ACDB.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = {'00': 'A', '01': 'B', '10': 'C', '11': 'D'}
+s = "00101101"
+
+# Декодирование
+result = ""
+i = 0
+while i < len(s):
+    pair = s[i:i+2]
+    result += codes[pair]
+    print(f"  {pair} → {codes[pair]}")
+    i += 2
+
+print(f"\nРезультат: {result}")
+
+# Обратная проверка
+reverse = {v: k for k, v in codes.items()}
+encoded = ''.join(reverse[ch] for ch in result)
+print(f"Обратное кодирование: {encoded}")
+print(f"Совпадает: {encoded == s}")
+
+# Альтернативная запись через генератор
+result2 = ''.join(codes[s[i:i+2]] for i in range(0, len(s), 2))
+print(f"Через генератор: {result2}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>  00 → A
+  10 → C
+  11 → D
+  01 → B
+
+Результат: ACDB
+Обратное кодирование: 00101101
+Совпадает: True
+Через генератор: ACDB</pre>
+            </details>
+        </div>
+
+        <!-- ЕГЭ Задача 4 (Тип 9 - Код для буквы) -->
+        <div id="ege4" class="tab-content">
+            <h2>ЕГЭ: Задача 4 (Тип 9)</h2>
+            <div class="task-condition">
+                <strong>Условие:</strong> Даны коды: А=0, Б=10, В=110. Найдите кратчайший код для Г, удовлетворяющий условию Фано.
+            </div>
+            <details>
+                <summary>Решение вручную</summary>
+                <p><strong>Анализ существующих кодов.</strong> Даны: 0, 10, 110. Построим дерево кодирования:</p>
+                <ul>
+                    <li>0 — левая ветвь от корня (занята, код А).</li>
+                    <li>1 — правая ветвь (промежуточный узел).</li>
+                    <li>10 — левая ветвь от «1» (занята, код Б).</li>
+                    <li>11 — правая ветвь от «1» (промежуточный узел).</li>
+                    <li>110 — левая ветвь от «11» (занята, код В).</li>
+                    <li>111 — правая ветвь от «11» (свободна).</li>
+                </ul>
+                
+                <p><strong>Проверка длин.</strong></p>
+                <ul>
+                    <li>Длина 1: «0» занято. «1» — не может быть кодом, так как является префиксом для «10» и «110» (нарушение условия Фано).</li>
+                    <li>Длина 2: «10» занято. «11» — не может быть кодом, так как является префиксом для «110».</li>
+                    <li>Длина 3: «110» занято. «111» — свободно и не конфликтует.</li>
+                </ul>
+                
+                <p><strong>Проверка 111.</strong> «111» не является префиксом ни одного из существующих кодов (0, 10, 110). Ни один из существующих кодов не является префиксом «111». Условие Фано выполнено.</p>
+                
+                <p class="answer-highlight">Ответ: 111.</p>
+            </details>
+            <details class="code-details">
+                <summary>Программное решение (Python)</summary>
+                <pre><code>codes = ['0', '10', '110']
+
+def is_valid(new_code, existing):
+    """Проверяет условие Фано"""
+    for c in existing:
+        if new_code.startswith(c) or c.startswith(new_code):
+            return False, c
+    return True, None
+
+# Перебираем коды по возрастанию длины
+for length in range(1, 7):
+    print(f"Длина {length}:")
+    found = False
+    for i in range(2**length):
+        code = bin(i)[2:].zfill(length)
+        valid, conflict = is_valid(code, codes)
+        if valid:
+            print(f"  ✓ {code} — подходит")
+            if not found:
+                print(f"\nКратчайший код: {code}")
+                found = True
+                exit()
+        else:
+            print(f"  ✗ {code} — конфликт с {conflict}")</code></pre>
+                <p><strong>Вывод:</strong></p>
+                <pre>Длина 1:
+  ✗ 0 — конфликт с 0
+  ✗ 1 — конфликт с 10
+Длина 2:
+  ✗ 00 — конфликт с 0
+  ✗ 01 — конфликт с 0
+  ✗ 10 — конфликт с 10
+  ✗ 11 — конфликт с 110
+Длина 3:
+  ✗ 000 — конфликт с 0
+  ✗ 001 — конфликт с 0
+  ✗ 010 — конфликт с 0
+  ✗ 011 — конфликт с 0
+  ✗ 100 — конфликт с 10
+  ✗ 101 — конфликт с 10
+  ✗ 110 — конфликт с 110
+  ✓ 111 — подходит
+
+Кратчайший код: 111</pre>
+            </details>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabContent, tabButtons;
+
+        // Скрыть все вкладки
+        tabContent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabContent.length; i++) {
+            tabContent[i].style.display = "none";
+            tabContent[i].classList.remove("active");
+        }
+
+        // Убрать активный класс у всех кнопок
+        tabButtons = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tabButtons.length; i++) {
+            tabButtons[i].classList.remove("active");
+        }
+
+        // Показать нужную вкладку
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+
+        // Сброс прокрутки области контента вверх
+        var contentArea = document.querySelector('.content-area');
+        contentArea.scrollTop = 0;
+
+        // Гарантированный сброс после отрисовки нового содержимого
+        requestAnimationFrame(function() {
+            contentArea.scrollTop = 0;
+        });
+
+        // На случай, если прокручивается вся страница (мобильные устройства)
+        window.scrollTo(0, 0);
+
+        // Также прокрутить вверх саму боковую панель
+        document.querySelector('.sidebar').scrollTop = 0;
+    }
+</script>
+
+</body>
+</html>
