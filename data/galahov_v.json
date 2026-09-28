@@ -9,6 +9,12 @@
   ],
   "ВТ": [
     {
+      "lesson": 1,
+      "class": "7Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
       "lesson": 2,
       "class": "11Б",
       "subject": "Физ-ра",
@@ -17,12 +23,6 @@
     {
       "lesson": 3,
       "class": "7В",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 4,
-      "class": "7Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
@@ -63,18 +63,18 @@
   ],
   "ПТ": [
     {
-      "lesson": 3,
-      "class": "11Б",
+      "lesson": 7,
+      "class": "8Б",
       "subject": "Физ-ра",
       "room": "с/з"
     },
     {
-      "lesson": 7,
-      "class": "8Б",
+      "lesson": 8,
+      "class": "11Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-26 14:25:07"
+  "last_update": "2026-09-28 12:55:06"
 }
