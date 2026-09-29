@@ -171,8 +171,10 @@
         
         /* ТАБЛИЦА */
         table{width:auto;border-collapse:collapse;font-size:1.1em;margin:0 auto;min-width:280px}
+        
+        /* ГОЛУБАЯ ШАПКА ТАБЛИЦЫ */
         thead th{
-            background:#4a5568;
+            background: linear-gradient(180deg, #63b3ed 0%, #4299e1 100%);
             color:#fff;
             padding:8px 3px;
             text-align:center;
@@ -181,8 +183,9 @@
             white-space:nowrap;
             letter-spacing:.3px;
             text-transform:uppercase;
-            border-bottom:2px solid #2d3748;
-            border-right:1px solid #718096;
+            border-bottom:2px solid #2b6cb0;
+            border-right:1px solid #90cdf4;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.15);
         }
         thead th:last-child{
             border-right:none;
@@ -202,63 +205,93 @@
             border-right:none;
         }
         
-        /* ПОДСВЕТКА ТЕКУЩЕГО УРОКА — тёмно-серый */
+        /* ПОДСВЕТКА ТЕКУЩЕГО УРОКА — СВЕТЛЫЙ ФОН */
         tbody tr.current-lesson {
-            background: #4a5568 !important;
+            background: #cbd5e0 !important;
             font-weight: 700;
-            border-left: 4px solid #2d3748;
-            border-right: 4px solid #2d3748;
+            border-left: 4px solid #4299e1;
+            border-right: 4px solid #4299e1;
         }
         tbody tr.current-lesson td {
-            color: #f7fafc;
-            border-right-color: #718096;
+            color: #1a202c;
+            border-right-color: #a0aec0;
         }
         tbody tr.current-lesson td.num {
-            color: #e2e8f0;
+            color: #2b6cb0;
             font-weight: 800;
         }
         tbody tr.current-lesson td.period .time-start {
-            color: #e2e8f0;
+            color: #2b6cb0;
             font-weight: 800;
         }
         tbody tr.current-lesson td.period .time-end {
-            color: #a0aec0;
+            color: #4a5568;
             font-weight: 700;
         }
         tbody tr.current-lesson td.class {
-            color: #e2e8f0;
+            color: #2d3748;
         }
         tbody tr.current-lesson td.subject {
-            color: #f7fafc;
+            color: #1a202c;
+            font-weight: 700;
         }
         tbody tr.current-lesson td.room {
-            color: #f6ad55;
+            color: #c05621;
+            font-weight: 700;
         }
 
-        /* ЗАТЕМНЕНИЕ ПРОШЕДШИХ УРОКОВ */
+        /* ЗАТЕМНЕНИЕ ПРОШЕДШИХ УРОКОВ — чуть виднее */
         tbody tr.past-lesson {
-            background: #f7fafc;
-            opacity: 0.55;
+            background: #e2e8f0;
+            opacity: 0.7;
         }
         tbody tr.past-lesson td {
-            color: #a0aec0 !important;
+            color: #718096 !important;
         }
         tbody tr.past-lesson td.num {
-            color: #a0aec0 !important;
+            color: #718096 !important;
         }
         tbody tr.past-lesson td.period .time-start {
-            color: #a0aec0 !important;
+            color: #718096 !important;
         }
         tbody tr.past-lesson td.period .time-end {
-            color: #cbd5e0 !important;
+            color: #a0aec0 !important;
         }
         tbody tr.past-lesson td.class {
-            color: #a0aec0 !important;
+            color: #718096 !important;
         }
         tbody tr.past-lesson td.subject {
-            color: #a0aec0 !important;
+            color: #718096 !important;
         }
         tbody tr.past-lesson td.room {
+            color: #a0aec0 !important;
+        }
+
+        /* ПУСТЫЕ (ОТСУТСТВУЮЩИЕ) УРОКИ — заглушка чуть виднее */
+        tbody tr.empty-lesson {
+            background: #edf2f7;
+            opacity: 0.7;
+        }
+        tbody tr.empty-lesson td {
+            color: #a0aec0 !important;
+            font-style: italic;
+        }
+        tbody tr.empty-lesson td.num {
+            color: #cbd5e0 !important;
+        }
+        tbody tr.empty-lesson td.period .time-start {
+            color: #a0aec0 !important;
+        }
+        tbody tr.empty-lesson td.period .time-end {
+            color: #cbd5e0 !important;
+        }
+        tbody tr.empty-lesson td.class {
+            color: #a0aec0 !important;
+        }
+        tbody tr.empty-lesson td.subject {
+            color: #a0aec0 !important;
+        }
+        tbody tr.empty-lesson td.room {
             color: #cbd5e0 !important;
         }
         
@@ -840,12 +873,15 @@
 
             const isCurrentLesson = (i === currentLessonNum && !isEmpty && isToday);
             const isPastLesson = (!isEmpty && isToday && i <= lastFinished && i !== currentLessonNum);
+            const isEmptyLesson = isEmpty;
             
             let rowClass = '';
             if (isCurrentLesson) {
                 rowClass = ' class="current-lesson"';
             } else if (isPastLesson) {
                 rowClass = ' class="past-lesson"';
+            } else if (isEmptyLesson) {
+                rowClass = ' class="empty-lesson"';
             }
 
             const classesDisplay = isEmpty ? '—' : item.classes.join(', ');
