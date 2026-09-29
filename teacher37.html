@@ -271,13 +271,13 @@
         tbody td.subject{text-align:center;padding-left:4px;font-weight:500;font-size:0.7em;min-width:80px;width:110px;max-width:140px}
         tbody td.room{font-weight:600;color:#9a3412;font-size:0.6em;white-space:normal;line-height:1.2;min-width:20px;width:28px;max-width:40px}
         
-        /* Строка перемены — пастельные оранжевые тона */
+        /* Строка перемены — пастельные оранжевые тона (компактная по умолчанию) */
         .break-row {
             background: #fffaf0;
             border-bottom: 1.5px solid #e2e8f0;
         }
         .break-row td {
-            padding: 3px 6px !important;
+            padding: 1px 6px !important;
             color: #975a16;
             font-weight: 600;
             font-size: 0.6em !important;
@@ -285,8 +285,6 @@
             text-align: left !important;
             position: relative;
             line-height: 1.0;
-            min-height: 30px;
-            height: 30px;
         }
         .break-row td:last-child {
             border-right: none;
@@ -300,17 +298,6 @@
             color: #975a16;
             position: relative;
             z-index: 2;
-        }
-        .break-row td .break-label .break-icon {
-            font-size: 0.6em;
-            display: inline-block;
-            transform: scaleX(-1);
-        }
-        .break-row td .break-label .break-text {
-            font-weight: 800;
-            font-size: 0.55em;
-            color: #975a16;
-            letter-spacing: 0.5px;
         }
         
         /* ПРОГРЕСС-БАР ДЛЯ ПЕРЕМЕНЫ */
@@ -337,23 +324,27 @@
             color: #7b341e;
             border-right-color: #f6ad55;
         }
-        .break-row.current-break td .break-label .break-text {
-            color: #7b341e;
-            font-size: 0.6em;
+        
+        /* УВЕЛИЧЕНИЕ ВЫСОТЫ ТОЛЬКО ВО ВРЕМЯ ТЕКУЩЕЙ ПЕРЕМЕНЫ (в 3 раза) */
+        .break-row.current-break td {
+            padding: 12px 6px !important;
+            min-height: 45px;
+            height: 45px;
         }
-        .break-row.current-break td .break-label .break-icon {
-            color: #c05621;
-        }
+        
+        /* ТАЙМЕР ОБРАТНОГО ОТСЧЁТА — УВЕЛИЧЕН В 3 РАЗА */
         .break-row.current-break td .break-label .break-time-left {
             color: #7b341e;
             font-weight: 800;
-            font-size: 0.5em;
-            padding: 0px 4px;
+            font-size: 1.8em !important;
+            padding: 0 6px;
             border-radius: 12px;
             white-space: nowrap;
             margin-left: 2px;
             background: none;
             border: none;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
         }
         .break-row.current-break .break-progress-bar {
             background: rgba(221, 107, 32, 0.25);
