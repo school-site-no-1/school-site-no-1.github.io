@@ -169,8 +169,8 @@
         
         .table-wrap{overflow-x:auto}
         
-        /* ТАБЛИЦА */
-        table{width:auto;border-collapse:collapse;font-size:1.1em;margin:0 auto;min-width:280px}
+        /* ТАБЛИЦА — ширина увеличена на 20px */
+        table{width:auto;border-collapse:collapse;font-size:1.1em;margin:0 auto;min-width:300px}
         
         /* ГОЛУБАЯ ШАПКА ТАБЛИЦЫ */
         thead th{
@@ -267,7 +267,7 @@
             color: #a0aec0 !important;
         }
 
-        /* ПУСТЫЕ (ОТСУТСТВУЮЩИЕ) УРОКИ — заглушка чуть виднее */
+        /* ПУСТЫЕ (ОТСУТСТВУЮЩИЕ) УРОКИ — затеняются только после того, как прошли */
         tbody tr.empty-lesson {
             background: #edf2f7;
             opacity: 0.7;
@@ -295,18 +295,18 @@
             color: #cbd5e0 !important;
         }
         
-        /* Узкие столбцы */
-        tbody td.num{font-weight:800;color:#2d3748;font-size:0.7em;text-align:center;vertical-align:middle;width:18px;min-width:14px;max-width:22px}
-        tbody td.period{padding:8px 4px;vertical-align:middle;text-align:center;white-space:nowrap;width:60px;min-width:50px;max-width:70px}
+        /* Узкие столбцы — ширина увеличена */
+        tbody td.num{font-weight:800;color:#2d3748;font-size:0.7em;text-align:center;vertical-align:middle;width:22px;min-width:18px;max-width:28px}
+        tbody td.period{padding:8px 4px;vertical-align:middle;text-align:center;white-space:nowrap;width:66px;min-width:56px;max-width:76px}
         tbody td.period .time-start{font-weight:700;color:#2d3748;font-size:0.95em;line-height:1.2}
         tbody td.period .time-end{color:#718096;font-size:0.75em;line-height:1.2;margin-top:0px}
-        tbody td.class{font-weight:600;color:#2d3748;font-size:0.6em;white-space:normal;line-height:1.2;min-width:20px;width:30px;max-width:45px}
-        tbody td.subject{text-align:center;padding-left:4px;font-weight:500;font-size:0.7em;min-width:80px;width:110px;max-width:140px}
-        tbody td.room{font-weight:600;color:#9a3412;font-size:0.6em;white-space:normal;line-height:1.2;min-width:20px;width:28px;max-width:40px}
+        tbody td.class{font-weight:600;color:#2d3748;font-size:0.6em;white-space:normal;line-height:1.2;min-width:24px;width:36px;max-width:52px}
+        tbody td.subject{text-align:center;padding-left:4px;font-weight:500;font-size:0.7em;min-width:90px;width:120px;max-width:150px}
+        tbody td.room{font-weight:600;color:#9a3412;font-size:0.6em;white-space:normal;line-height:1.2;min-width:24px;width:34px;max-width:48px}
         
-        /* Строка перемены — пастельные оранжевые тона (компактная по умолчанию) */
+        /* Строка перемены — БЕЗ ФОНА, только прогресс-бар во время перемены */
         .break-row {
-            background: #fffaf0;
+            background: transparent;
             border-bottom: 1.5px solid #e2e8f0;
         }
         .break-row td {
@@ -318,6 +318,7 @@
             text-align: left !important;
             position: relative;
             line-height: 1.0;
+            background: transparent;
         }
         .break-row td:last-child {
             border-right: none;
@@ -333,7 +334,7 @@
             z-index: 2;
         }
         
-        /* ПРОГРЕСС-БАР ДЛЯ ПЕРЕМЕНЫ */
+        /* ПРОГРЕСС-БАР ДЛЯ ПЕРЕМЕНЫ — появляется только во время перемены */
         .break-progress-bar {
             position: absolute;
             left: 0;
@@ -346,7 +347,7 @@
             pointer-events: none;
         }
         
-        /* ПОДСВЕТКА ТЕКУЩЕЙ ПЕРЕМЕНЫ — пастельный оранжевый */
+        /* ПОДСВЕТКА ТЕКУЩЕЙ ПЕРЕМЕНЫ — пастельный оранжевый (только во время перемены) */
         .break-row.current-break {
             background: #feebc8 !important;
             border-left: 4px solid #dd6b20;
@@ -873,14 +874,15 @@
 
             const isCurrentLesson = (i === currentLessonNum && !isEmpty && isToday);
             const isPastLesson = (!isEmpty && isToday && i <= lastFinished && i !== currentLessonNum);
-            const isEmptyLesson = isEmpty;
+            // Пустой урок затеняется только если его время уже прошло
+            const isEmptyPast = (isEmpty && isToday && i <= lastFinished && i !== currentLessonNum);
             
             let rowClass = '';
             if (isCurrentLesson) {
                 rowClass = ' class="current-lesson"';
             } else if (isPastLesson) {
                 rowClass = ' class="past-lesson"';
-            } else if (isEmptyLesson) {
+            } else if (isEmptyPast) {
                 rowClass = ' class="empty-lesson"';
             }
 
