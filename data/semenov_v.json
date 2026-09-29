@@ -53,7 +53,7 @@
       "room": "с/з"
     },
     {
-      "lesson": 8,
+      "lesson": 5,
       "class": "9А",
       "subject": "Физ-ра",
       "room": "с/з"
@@ -61,14 +61,14 @@
   ],
   "ЧТ": [
     {
-      "lesson": 2,
-      "class": "9Б",
+      "lesson": 1,
+      "class": "9А",
       "subject": "Физ-ра",
       "room": "с/з"
     },
     {
-      "lesson": 3,
-      "class": "9А",
+      "lesson": 2,
+      "class": "9Б",
       "subject": "Физ-ра",
       "room": "с/з"
     }
@@ -100,5 +100,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-09-28 12:55:06"
+  "last_update": "2026-09-29 11:44:36"
 }
