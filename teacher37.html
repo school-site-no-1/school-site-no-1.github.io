@@ -234,6 +234,33 @@
         tbody tr.current-lesson td.room {
             color: #f6ad55;
         }
+
+        /* ЗАТЕМНЕНИЕ ПРОШЕДШИХ УРОКОВ */
+        tbody tr.past-lesson {
+            background: #f7fafc;
+            opacity: 0.55;
+        }
+        tbody tr.past-lesson td {
+            color: #a0aec0 !important;
+        }
+        tbody tr.past-lesson td.num {
+            color: #a0aec0 !important;
+        }
+        tbody tr.past-lesson td.period .time-start {
+            color: #a0aec0 !important;
+        }
+        tbody tr.past-lesson td.period .time-end {
+            color: #cbd5e0 !important;
+        }
+        tbody tr.past-lesson td.class {
+            color: #a0aec0 !important;
+        }
+        tbody tr.past-lesson td.subject {
+            color: #a0aec0 !important;
+        }
+        tbody tr.past-lesson td.room {
+            color: #cbd5e0 !important;
+        }
         
         /* Узкие столбцы */
         tbody td.num{font-weight:800;color:#2d3748;font-size:0.7em;text-align:center;vertical-align:middle;width:18px;min-width:14px;max-width:22px}
@@ -250,7 +277,7 @@
             border-bottom: 1.5px solid #e2e8f0;
         }
         .break-row td {
-            padding: 1px 6px !important;
+            padding: 3px 6px !important;
             color: #975a16;
             font-weight: 600;
             font-size: 0.6em !important;
@@ -258,6 +285,8 @@
             text-align: left !important;
             position: relative;
             line-height: 1.0;
+            min-height: 30px;
+            height: 30px;
         }
         .break-row td:last-child {
             border-right: none;
@@ -517,6 +546,20 @@
         }
         return 0;
     }
+
+    // Возвращает номер последнего завершённого урока
+    function getLastFinishedLessonNum() {
+        const now = new Date();
+        const totalMin = now.getHours() * 60 + now.getMinutes();
+        let lastFinished = 0;
+        for (let i = 0; i < LESSON_PERIODS.length; i++) {
+            const end = parseTime(LESSON_PERIODS[i].end);
+            if (totalMin >= end) {
+                lastFinished = i + 1;
+            }
+        }
+        return lastFinished;
+    }
     
     function getCurrentBreak() {
         const now = new Date();
@@ -534,7 +577,7 @@
     function getBreakTimeLeft(breakInfo) {
         if (!breakInfo) return 0;
         const now = new Date();
-        const totalMin = now.getHours() * 60 + now.getMinutes();
+        const totalMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
         const endMin = parseTime(breakInfo.end);
         return Math.max(0, endMin - totalMin);
     }
@@ -775,6 +818,7 @@
         });
 
         const currentLessonNum = getCurrentLessonNum();
+        const lastFinished = getLastFinishedLessonNum();
         const currentBreak = getCurrentBreak();
         const todayInfo = getScheduleDay();
         const isToday = day === todayInfo.targetDay;
@@ -804,7 +848,14 @@
             if (!isEmpty) totalLessons++;
 
             const isCurrentLesson = (i === currentLessonNum && !isEmpty && isToday);
-            const rowClass = isCurrentLesson ? ' class="current-lesson"' : '';
+            const isPastLesson = (!isEmpty && isToday && i <= lastFinished && i !== currentLessonNum);
+            
+            let rowClass = '';
+            if (isCurrentLesson) {
+                rowClass = ' class="current-lesson"';
+            } else if (isPastLesson) {
+                rowClass = ' class="past-lesson"';
+            }
 
             const classesDisplay = isEmpty ? '—' : item.classes.join(', ');
             const subjectsDisplay = isEmpty ? '—' : item.subjects.join(', ');
@@ -838,9 +889,7 @@
                             <td colspan="5" style="position: relative; overflow: hidden;">
                                 <div class="break-progress-bar" style="width: ${progress}%;"></div>
                                 <div class="break-label">
-                                    <span class="break-icon">🏃</span>
-                                    <span class="break-text">Перемена</span>
-                                    ${isBreakNow ? ` <span class="break-time-left">${timeText}</span>` : ''}
+                                    ${isBreakNow ? `<span class="break-time-left">${timeText}</span>` : ''}
                                 </div>
                             </td>
                         </tr>
