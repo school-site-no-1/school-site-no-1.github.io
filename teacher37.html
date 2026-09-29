@@ -169,8 +169,8 @@
         
         .table-wrap{overflow-x:auto}
         
-        /* ТАБЛИЦА — ширина увеличена на 20px */
-        table{width:auto;border-collapse:collapse;font-size:1.1em;margin:0 auto;min-width:300px}
+        /* ТАБЛИЦА — ширина увеличена ещё на 10px */
+        table{width:auto;border-collapse:collapse;font-size:1.1em;margin:0 auto;min-width:310px}
         
         /* ГОЛУБАЯ ШАПКА ТАБЛИЦЫ */
         thead th{
@@ -240,7 +240,7 @@
             font-weight: 700;
         }
 
-        /* ЗАТЕМНЕНИЕ ПРОШЕДШИХ УРОКОВ — чуть виднее */
+        /* ЗАТЕМНЕНИЕ ПРОШЕДШИХ УРОКОВ (только для сегодняшнего дня) */
         tbody tr.past-lesson {
             background: #e2e8f0;
             opacity: 0.7;
@@ -267,7 +267,7 @@
             color: #a0aec0 !important;
         }
 
-        /* ПУСТЫЕ (ОТСУТСТВУЮЩИЕ) УРОКИ — затеняются только после того, как прошли */
+        /* ПУСТЫЕ (ОТСУТСТВУЮЩИЕ) УРОКИ — затеняются только после того, как прошли (и только сегодня) */
         tbody tr.empty-lesson {
             background: #edf2f7;
             opacity: 0.7;
@@ -296,13 +296,13 @@
         }
         
         /* Узкие столбцы — ширина увеличена */
-        tbody td.num{font-weight:800;color:#2d3748;font-size:0.7em;text-align:center;vertical-align:middle;width:22px;min-width:18px;max-width:28px}
-        tbody td.period{padding:8px 4px;vertical-align:middle;text-align:center;white-space:nowrap;width:66px;min-width:56px;max-width:76px}
+        tbody td.num{font-weight:800;color:#2d3748;font-size:0.7em;text-align:center;vertical-align:middle;width:23px;min-width:19px;max-width:29px}
+        tbody td.period{padding:8px 4px;vertical-align:middle;text-align:center;white-space:nowrap;width:68px;min-width:58px;max-width:78px}
         tbody td.period .time-start{font-weight:700;color:#2d3748;font-size:0.95em;line-height:1.2}
         tbody td.period .time-end{color:#718096;font-size:0.75em;line-height:1.2;margin-top:0px}
-        tbody td.class{font-weight:600;color:#2d3748;font-size:0.6em;white-space:normal;line-height:1.2;min-width:24px;width:36px;max-width:52px}
-        tbody td.subject{text-align:center;padding-left:4px;font-weight:500;font-size:0.7em;min-width:90px;width:120px;max-width:150px}
-        tbody td.room{font-weight:600;color:#9a3412;font-size:0.6em;white-space:normal;line-height:1.2;min-width:24px;width:34px;max-width:48px}
+        tbody td.class{font-weight:600;color:#2d3748;font-size:0.6em;white-space:normal;line-height:1.2;min-width:25px;width:38px;max-width:54px}
+        tbody td.subject{text-align:center;padding-left:4px;font-weight:500;font-size:0.7em;min-width:92px;width:122px;max-width:152px}
+        tbody td.room{font-weight:600;color:#9a3412;font-size:0.6em;white-space:normal;line-height:1.2;min-width:25px;width:36px;max-width:50px}
         
         /* Строка перемены — БЕЗ ФОНА, только прогресс-бар во время перемены */
         .break-row {
@@ -557,6 +557,15 @@
             isTomorrow: totalMin >= threshold,
             dayIndex: dayNum - 1
         };
+    }
+
+    // Определяет, является ли выбранный день сегодняшним (для затенения)
+    function isSelectedDayToday(day) {
+        const now = new Date();
+        let dayNum = now.getDay();
+        if (dayNum === 0) dayNum = 7;
+        const todayCode = DAYS[dayNum - 1];
+        return day === todayCode;
     }
 
     function getCurrentLessonNum() {
@@ -845,8 +854,8 @@
         const currentLessonNum = getCurrentLessonNum();
         const lastFinished = getLastFinishedLessonNum();
         const currentBreak = getCurrentBreak();
-        const todayInfo = getScheduleDay();
-        const isToday = day === todayInfo.targetDay;
+        // Затенение/подсветка только для СЕГОДНЯШНЕГО дня
+        const isToday = isSelectedDayToday(day);
 
         let html = `
             <table>
@@ -872,10 +881,10 @@
 
             if (!isEmpty) totalLessons++;
 
-            const isCurrentLesson = (i === currentLessonNum && !isEmpty && isToday);
-            const isPastLesson = (!isEmpty && isToday && i <= lastFinished && i !== currentLessonNum);
-            // Пустой урок затеняется только если его время уже прошло
-            const isEmptyPast = (isEmpty && isToday && i <= lastFinished && i !== currentLessonNum);
+            // Все подсветки/затенения — только для сегодняшнего дня
+            const isCurrentLesson = (isToday && i === currentLessonNum && !isEmpty);
+            const isPastLesson = (isToday && !isEmpty && i <= lastFinished && i !== currentLessonNum);
+            const isEmptyPast = (isToday && isEmpty && i <= lastFinished && i !== currentLessonNum);
             
             let rowClass = '';
             if (isCurrentLesson) {
@@ -906,7 +915,8 @@
             if (i < maxLessons) {
                 const breakInfo = BREAKS.find(b => b.after === i);
                 if (breakInfo) {
-                    const isBreakNow = (currentBreak && currentBreak.after === i && isToday);
+                    // Перемена подсвечивается только если сегодня и сейчас идёт перемена
+                    const isBreakNow = (isToday && currentBreak && currentBreak.after === i);
                     const breakRowClass = isBreakNow ? ' class="break-row current-break"' : ' class="break-row"';
                     const timeLeft = isBreakNow ? getBreakTimeLeft(breakInfo) : 0;
                     const timeText = isBreakNow ? `⏳ ${formatTimeWithSeconds(timeLeft)}` : '';
