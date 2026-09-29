@@ -5,7 +5,7 @@
       "lesson": 1,
       "class": "8А",
       "subject": "ДКП",
-      "room": "206"
+      "room": "310"
     },
     {
       "lesson": 5,
@@ -46,8 +46,33 @@
       "room": "310"
     }
   ],
-  "ЧТ": [],
+  "ЧТ": [
+    {
+      "lesson": 1,
+      "class": "7В",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 5,
+      "class": "5Б",
+      "subject": "ДКП",
+      "room": "310"
+    },
+    {
+      "lesson": 7,
+      "class": "7А",
+      "subject": "ДКП",
+      "room": "310"
+    }
+  ],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-09-28 12:55:06"
+  "last_update": "2026-09-29 11:44:11"
 }
