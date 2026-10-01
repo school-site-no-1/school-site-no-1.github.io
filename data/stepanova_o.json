@@ -1,28 +1,28 @@
 {
   "ПН": [
     {
-      "lesson": 3,
-      "class": "4Б",
+      "lesson": 6,
+      "class": "7А",
       "subject": "Музыка",
       "room": "110"
     },
     {
-      "lesson": 4,
-      "class": "4В",
-      "subject": "Музыка",
-      "room": "110"
-    },
-    {
-      "lesson": 5,
-      "class": "2А",
+      "lesson": 7,
+      "class": "6В",
       "subject": "Музыка",
       "room": "110"
     }
   ],
   "ВТ": [
     {
-      "lesson": 4,
-      "class": "1А",
+      "lesson": 1,
+      "class": "8В",
+      "subject": "Музыка",
+      "room": "110"
+    },
+    {
+      "lesson": 6,
+      "class": "8А",
       "subject": "Музыка",
       "room": "110"
     }
@@ -30,37 +30,18 @@
   "СР": [
     {
       "lesson": 1,
-      "class": "3А",
+      "class": "6Б",
       "subject": "Музыка",
       "room": "110"
     },
     {
-      "lesson": 3,
-      "class": "1В",
-      "subject": "Музыка",
-      "room": ""
-    },
-    {
-      "lesson": 3,
-      "class": "3В",
+      "lesson": 6,
+      "class": "6А",
       "subject": "Музыка",
       "room": "110"
     }
   ],
-  "ЧТ": [
-    {
-      "lesson": 2,
-      "class": "2Б",
-      "subject": "Музыка",
-      "room": "110"
-    },
-    {
-      "lesson": 4,
-      "class": "1Б",
-      "subject": "Музыка",
-      "room": "110"
-    }
-  ],
+  "ЧТ": [],
   "ПТ": [
     {
       "lesson": 1,
@@ -81,12 +62,6 @@
       "room": "110"
     },
     {
-      "lesson": 4,
-      "class": "2В",
-      "subject": "Музыка",
-      "room": "110"
-    },
-    {
       "lesson": 5,
       "class": "7Б",
       "subject": "Музыка",
@@ -100,5 +75,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-01 07:17:08"
+  "last_update": "2026-10-01 09:13:41"
 }
