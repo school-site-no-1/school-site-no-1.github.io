@@ -357,7 +357,8 @@
            ========================================== */
         .tiles-break-row {
             display: flex;
-            gap: 4px;
+            flex-direction: column;
+            gap: 2px;
             flex-shrink: 0;
             min-height: 9px;
             max-height: 9px;
@@ -368,87 +369,59 @@
             margin: 0;
             overflow: hidden;
             position: relative;
+            padding: 0;
             transition: min-height 0.35s ease, max-height 0.35s ease, opacity 0.2s;
         }
 
         /* Активная перемена — увеличенная высота */
         .tiles-break-row.current-break-row {
-            min-height: 26px;
-            max-height: 26px;
+            min-height: 30px;
+            max-height: 30px;
             border-radius: 6px;
             background: rgba(113, 128, 150, 0.08);
             box-shadow: 0 0 0 1.5px rgba(113, 128, 150, 0.35) inset;
             margin: 2px 0;
+            padding: 2px 6px 4px;
         }
 
-        /* Метка слева (⏸) */
-        .break-label {
-            flex: 0 0 36px;
-            min-width: 36px;
-            max-width: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 7px;
-            color: #4a5568;
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            padding: 0;
-            line-height: 1;
-            z-index: 1;
-            transition: font-size 0.35s ease;
-        }
-
-        /* Основное содержимое статусбара */
-        .break-content {
-            flex: 1 1 0;
-            min-width: 0;
+        /* Верхняя строка: слева время/статус, справа проценты */
+        .break-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 6px;
-            border-radius: 0;
-            color: #4a5568;
-            font-weight: 600;
-            font-size: 7px;
-            letter-spacing: 0.2px;
-            z-index: 1;
             gap: 4px;
-            flex-wrap: nowrap;
+            width: 100%;
+            min-width: 0;
             line-height: 1;
+            z-index: 1;
             transition: font-size 0.35s ease;
         }
-        .break-content .break-left {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            min-width: 0;
+        .break-top .break-time {
+            font-weight: 700;
+            color: #4a5568;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 7px;
         }
-        .break-content .break-title { font-weight: 700; color: #4a5568; white-space: nowrap; }
-        .break-content .break-time { font-weight: 600; color: #718096; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 0.95em; }
-        .break-content .break-right { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
-        .break-content .break-duration { font-weight: 700; color: #718096; background: transparent; padding: 0; border-radius: 0; font-size: 0.9em; white-space: nowrap; }
-        .break-content .break-status { font-size: 0.85em; font-weight: 700; padding: 0; border-radius: 0; white-space: nowrap; }
-        .break-content .break-status.status-past { color: #cbd5e0; }
-        .break-content .break-status.status-now { color: #4a5568; }
-        .break-content .break-status.status-future { color: #a0aec0; }
+        .break-top .break-percent {
+            font-weight: 700;
+            color: #4a5568;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 7px;
+        }
 
-        /* ==========================================
-           СЕГМЕНТИРОВАННЫЙ ПРОГРЕСС ПЕРЕМЕНЫ
-           ========================================== */
+        /* Сегменты — на всю ширину */
         .break-segments {
             display: flex;
             gap: 2px;
             align-items: center;
+            width: 100%;
             flex: 1 1 auto;
             min-width: 0;
-            height: 100%;
-            padding: 0 4px;
             z-index: 1;
         }
         .break-seg {
@@ -465,21 +438,10 @@
             border-color: #4a5568;
             box-shadow: 0 0 4px rgba(74, 85, 104, 0.35);
         }
-        /* Прошедшие сегменты — приглушённые, но всё ещё видимые */
-        .tiles-break-row.past-break-row .break-seg.on {
-            background: #cbd5e0;
-            border-color: #cbd5e0;
-            box-shadow: none;
-        }
 
-        /* Текущая перемена — акценты */
-        .tiles-break-row.current-break-row .break-label { color: #2d3748; font-size: 10px; }
-        .tiles-break-row.current-break-row .break-content { color: #2d3748; font-size: 9px; }
-        .tiles-break-row.current-break-row .break-title { color: #2d3748; }
-        .tiles-break-row.current-break-row .break-time { color: #4a5568; }
-        .tiles-break-row.current-break-row .break-duration { color: #4a5568; }
-        .tiles-break-row.current-break-row .break-status.status-now { color: #2d3748; animation: none; }
-        .tiles-break-row.current-break-row .break-segments { height: 12px; }
+        /* Активная перемена — акценты */
+        .tiles-break-row.current-break-row .break-top .break-time { color: #2d3748; font-size: 8px; }
+        .tiles-break-row.current-break-row .break-top .break-percent { color: #2d3748; font-size: 9px; }
         .tiles-break-row.current-break-row .break-seg { height: 10px; }
         .tiles-break-row.current-break-row .break-seg.on {
             background: linear-gradient(180deg, #4a5568, #2d3748);
@@ -489,11 +451,13 @@
 
         /* Прошедшая перемена */
         .tiles-break-row.past-break-row { opacity: 0.55; }
-        .tiles-break-row.past-break-row .break-label { color: #a0aec0; }
-        .tiles-break-row.past-break-row .break-content { color: #a0aec0; }
-        .tiles-break-row.past-break-row .break-title { color: #a0aec0; }
-        .tiles-break-row.past-break-row .break-time { color: #a0aec0; }
-        .tiles-break-row.past-break-row .break-duration { color: #a0aec0; }
+        .tiles-break-row.past-break-row .break-top .break-time { color: #a0aec0; }
+        .tiles-break-row.past-break-row .break-top .break-percent { color: #a0aec0; }
+        .tiles-break-row.past-break-row .break-seg.on {
+            background: #cbd5e0;
+            border-color: #cbd5e0;
+            box-shadow: none;
+        }
 
         /* Мобильная адаптация */
         @media (max-width: 700px) {
@@ -505,18 +469,14 @@
             .tile-subject .subject-room { font-size: 6px; }
             .tiles-grid { gap: 2px; }
             .tiles-row { gap: 2px; }
-            .tiles-break-row { gap: 2px; min-height: 7px; max-height: 7px; }
-            .tiles-break-row.current-break-row { min-height: 22px; max-height: 22px; margin: 1.5px 0; }
-            .break-label { flex: 0 0 28px; min-width: 28px; max-width: 28px; font-size: 6px; }
-            .tiles-break-row.current-break-row .break-label { font-size: 9px; }
-            .break-content { font-size: 6px; padding: 0 4px; gap: 2px; }
-            .tiles-break-row.current-break-row .break-content { font-size: 8px; }
-            .break-content .break-time { font-size: 0.9em; }
-            .break-content .break-duration { font-size: 0.85em; }
-            .break-content .break-status { font-size: 0.8em; }
-            .break-segments { gap: 1px; padding: 0 2px; }
+            .tiles-break-row { min-height: 7px; max-height: 7px; }
+            .tiles-break-row.current-break-row { min-height: 26px; max-height: 26px; margin: 1.5px 0; padding: 2px 4px 3px; }
+            .break-top .break-time,
+            .break-top .break-percent { font-size: 6px; }
+            .tiles-break-row.current-break-row .break-top .break-time { font-size: 7px; }
+            .tiles-break-row.current-break-row .break-top .break-percent { font-size: 8px; }
+            .break-segments { gap: 1px; }
             .break-seg { height: 6px; }
-            .tiles-break-row.current-break-row .break-segments { height: 10px; }
             .tiles-break-row.current-break-row .break-seg { height: 8px; }
         }
 
@@ -529,17 +489,12 @@
             .tile-subject .subject-room { font-size: 5.5px; }
             .tiles-row.current-lesson-row { box-shadow: 0 0 0 1.5px #2d3748 inset; }
             .tiles-break-row { min-height: 6px; max-height: 6px; }
-            .tiles-break-row.current-break-row { min-height: 20px; max-height: 20px; margin: 1px 0; }
-            .break-label { flex: 0 0 22px; min-width: 22px; max-width: 22px; font-size: 5px; }
-            .tiles-break-row.current-break-row .break-label { font-size: 8px; }
-            .break-content { font-size: 5px; padding: 0 2px; gap: 2px; }
-            .tiles-break-row.current-break-row .break-content { font-size: 7px; }
-            .break-content .break-title { display: none; }
-            .break-content .break-status { font-size: 0.7em; }
-            .break-content .break-duration { font-size: 0.7em; }
-            .break-segments { gap: 1px; padding: 0 1px; }
+            .tiles-break-row.current-break-row { min-height: 22px; max-height: 22px; margin: 1px 0; padding: 1px 3px 2px; }
+            .break-top .break-time,
+            .break-top .break-percent { font-size: 5.5px; }
+            .tiles-break-row.current-break-row .break-top .break-time { font-size: 6.5px; }
+            .tiles-break-row.current-break-row .break-top .break-percent { font-size: 7px; }
             .break-seg { height: 5px; }
-            .tiles-break-row.current-break-row .break-segments { height: 9px; }
             .tiles-break-row.current-break-row .break-seg { height: 7px; }
         }
 
@@ -664,7 +619,7 @@
             .tiles-grid { overflow: visible !important; height: auto !important; }
             .tiles-row.past-lesson-row { opacity: 1 !important; filter: none !important; }
             .period.past-period { opacity: 1 !important; filter: none !important; }
-            .tiles-break-row.current-break-row { min-height: 9px !important; max-height: 9px !important; background: transparent !important; box-shadow: none !important; margin: 0 !important; }
+            .tiles-break-row.current-break-row { min-height: 9px !important; max-height: 9px !important; background: transparent !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
         }
     </style>
 </head>
@@ -753,7 +708,7 @@
         ];
 
         var MAX_LESSONS = 9;
-        var BREAK_SEGMENTS = 20; // количество сегментов прогресса перемены
+        var BREAK_SEGMENTS = 20;
         var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
@@ -1156,7 +1111,24 @@
             if (status === 'past') filled = BREAK_SEGMENTS;
             if (status === 'future') filled = 0;
 
-            var html = '<div class="break-segments" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(progress) + '" aria-label="Прогресс перемены">';
+            // Текст слева: во время перемены — "Идёт загрузка урока...", иначе — время перемены
+            var leftText;
+            if (status === 'now') {
+                leftText = 'Идёт загрузка урока…';
+            } else {
+                leftText = breakInfo.start + '–' + breakInfo.end;
+            }
+
+            var percent = Math.round(progress);
+            if (status === 'past') percent = 100;
+            if (status === 'future') percent = 0;
+
+            var html = '';
+            html += '<div class="break-top">';
+            html += '<span class="break-time" title="' + breakInfo.start + '–' + breakInfo.end + '">' + leftText + '</span>';
+            html += '<span class="break-percent">' + percent + '%</span>';
+            html += '</div>';
+            html += '<div class="break-segments" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '" aria-label="Прогресс перемены">';
             for (var i = 0; i < BREAK_SEGMENTS; i++) {
                 var on = (i < filled) ? ' on' : '';
                 html += '<div class="break-seg' + on + '"></div>';
@@ -1227,9 +1199,7 @@
                 var isCurrent = (lessonStatus === 'now');
                 var isPast = (lessonStatus === 'past');
 
-                // ⭐ ВАЖНО: во время перемены текущий урок (который только что закончился)
-                // не должен подсвечиваться как active. Он уже past, поэтому isCurrent = false.
-                // Дополнительная защита: если идёт перемена, принудительно снимаем current со всех.
+                // ⭐ Во время перемены / до начала / после уроков текущий урок не подсвечиваем
                 if (info.type === 'break' || info.type === 'before' || info.type === 'after') {
                     isCurrent = false;
                 }
@@ -1271,38 +1241,13 @@
                     if (breakInfo) {
                         var status = getBreakStatus(breakInfo);
                         var progress = getBreakProgress(breakInfo);
-                        var isCurrentBreak = (status === 'now');
 
                         var rowClass = 'tiles-break-row';
                         if (status === 'now') rowClass += ' current-break-row';
                         else if (status === 'past') rowClass += ' past-break-row';
 
-                        var statusText = '';
-                        var statusClass = '';
-                        if (status === 'past') {
-                            statusText = 'завершена';
-                            statusClass = 'status-past';
-                        } else if (status === 'now') {
-                            statusText = 'идёт';
-                            statusClass = 'status-now';
-                        } else {
-                            statusText = 'впереди';
-                            statusClass = 'status-future';
-                        }
-
                         bodyHTML += '<div class="' + rowClass + '" role="row" aria-label="Перемена ' + breakInfo.start + '–' + breakInfo.end + '">';
-                        bodyHTML += '<div class="break-label" role="rowheader">⏸</div>';
                         bodyHTML += renderBreakSegments(breakInfo, status, progress);
-                        bodyHTML += '<div class="break-content" role="cell">';
-                        bodyHTML += '<div class="break-left">';
-                        bodyHTML += '<span class="break-title">Перемена</span>';
-                        bodyHTML += '<span class="break-time">' + breakInfo.start + '–' + breakInfo.end + '</span>';
-                        bodyHTML += '</div>';
-                        bodyHTML += '<div class="break-right">';
-                        bodyHTML += '<span class="break-duration">' + breakInfo.duration + ' мин</span>';
-                        bodyHTML += '<span class="break-status ' + statusClass + '">' + statusText + '</span>';
-                        bodyHTML += '</div>';
-                        bodyHTML += '</div>';
                         bodyHTML += '</div>';
                     }
                 }
@@ -1365,8 +1310,10 @@
             var breakInfo = getBreakInfo(info.breakIndex);
             if (!breakInfo) return;
             var progress = getBreakProgress(breakInfo);
-            var segments = document.querySelectorAll('.tiles-break-row.current-break-row .break-segments .break-seg');
-            if (!segments.length) return;
+            var row = document.querySelector('.tiles-break-row.current-break-row');
+            if (!row) return;
+
+            var segments = row.querySelectorAll('.break-segments .break-seg');
             var filled = Math.round((progress / 100) * BREAK_SEGMENTS);
             for (var i = 0; i < segments.length; i++) {
                 if (i < filled) {
@@ -1375,6 +1322,12 @@
                     segments[i].classList.remove('on');
                 }
             }
+
+            var percentEl = row.querySelector('.break-top .break-percent');
+            if (percentEl) percentEl.textContent = Math.round(progress) + '%';
+
+            var timeEl = row.querySelector('.break-top .break-time');
+            if (timeEl) timeEl.textContent = 'Идёт загрузка урока…';
         }
 
         function updatePastLessons() {
