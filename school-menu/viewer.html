@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#386BA8">
+    <title>Меню — Шаховская СОШ №1</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            margin: 0; padding: 0;
+            background: linear-gradient(180deg, #eef2f7 0%, #e0e8f2 100%);
+            color: #2c3e50;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 16px; line-height: 1.5;
+            overscroll-behavior-y: contain;
+        }
+        body { min-height: 100vh; padding-bottom: env(safe-area-inset-bottom); }
+
+        /* ===== ШАПКА ===== */
+        header {
+            background: linear-gradient(135deg, #386BA8, #2a5285);
+            color: #fff; padding: 14px 16px;
+            padding-top: calc(14px + env(safe-area-inset-top));
+            box-shadow: 0 4px 12px rgba(56,107,168,0.25);
+            position: relative; overflow: hidden;
+        }
+        header::after {
+            content: ''; position: absolute;
+            bottom: -20px; right: -20px;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.08); border-radius: 50%;
+        }
+        header::before {
+            content: ''; position: absolute;
+            top: -30px; left: -30px;
+            width: 100px; height: 100px;
+            background: rgba(255,255,255,0.06); border-radius: 50%;
+        }
+        .header-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; position: relative; z-index: 2;
+        }
+        .header-left {
+            display: flex; align-items: center; gap: 12px;
+            min-width: 0; flex: 1;
+        }
+        .header-left .logo {
+            font-size: 42px; line-height: 1;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+        }
+        .header-text { min-width: 0; }
+        .header-text h1 {
+            margin: 0 0 2px; font-size: 20px; font-weight: 700;
+            letter-spacing: 0.3px; line-height: 1.15;
+        }
+        .header-text p {
+            margin: 0; font-size: 11px; opacity: 0.85;
+            line-height: 1.3;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* ✅ Кликабельная карточка даты */
+        .header-date {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px; padding: 8px 14px;
+            text-align: center; flex-shrink: 0;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+            position: relative;
+        }
+        .header-date:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .header-date:active {
+            transform: scale(0.97);
+        }
+        .header-date.open {
+            background: #fff;
+            color: #386BA8;
+        }
+        .header-date.open .weekday { color: #4caf50; }
+        .header-date.open .date { color: #2a5285; }
+        .header-date.open .cycle-day { color: #999; }
+        .header-date .weekday {
+            font-size: 11px; font-weight: 700;
+            color: rgba(255,255,255,0.85);
+            text-transform: uppercase;
+            letter-spacing: 0.8px; margin-bottom: 2px;
+        }
+        .header-date .date {
+            font-size: 15px; font-weight: 800; color: #fff;
+            line-height: 1.15; white-space: nowrap;
+        }
+        .header-date .cycle-day {
+            font-size: 10px; color: rgba(255,255,255,0.75);
+            margin-top: 2px; font-style: italic; white-space: nowrap;
+        }
+        .header-date .arrow {
+            position: absolute;
+            top: 4px; right: 6px;
+            font-size: 10px;
+            opacity: 0.6;
+        }
+
+        /* ===== КАЛЕНДАРЬ (раскрывается под шапкой) ===== */
+        .calendar-card {
+            background: #fff;
+            border-radius: 0 0 16px 16px;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 5;
+        }
+        .calendar-card.open {
+            max-height: 500px;
+            padding: 14px 12px;
+        }
+        .calendar-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px; padding: 0 6px;
+        }
+        .calendar-title {
+            font-size: 16px; font-weight: 800; color: #2a5285;
+            text-transform: capitalize;
+        }
+        .calendar-nav { display: flex; gap: 6px; }
+        .calendar-nav button {
+            width: 32px; height: 32px;
+            border: 1px solid #e0e7ef; background: #fff;
+            border-radius: 8px; color: #386BA8;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; font-family: inherit;
+            transition: all 0.15s;
+        }
+        .calendar-nav button:hover {
+            background: #386BA8; color: #fff; border-color: #386BA8;
+        }
+        .calendar-nav button:active {
+            transform: scale(0.95);
+        }
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+        }
+        .calendar-weekday {
+            text-align: center; font-size: 11px; font-weight: 700;
+            color: #999; padding: 6px 0; text-transform: uppercase;
+        }
+        .calendar-weekday.weekend { color: #e53935; }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: #2c3e50;
+            border-radius: 10px; cursor: pointer;
+            border: 2px solid transparent; background: transparent;
+            font-family: inherit; padding: 0;
+            transition: all 0.15s;
+        }
+        .calendar-day:hover {
+            background: #f0f5fb; border-color: #d0e0f0;
+        }
+        .calendar-day.today {
+            background: #e8f0fa; color: #386BA8; border-color: #386BA8;
+        }
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #386BA8, #2a5285);
+            color: #fff; border-color: #386BA8;
+            box-shadow: 0 4px 10px rgba(56,107,168,0.3);
+        }
+        .calendar-day.selected.today {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            border-color: #4caf50;
+        }
+        .calendar-day.weekend { color: #e53935; }
+        .calendar-day.selected.weekend { color: #fff; }
+        .calendar-day.empty { cursor: default; }
+
+        /* ===== ФРАЗА ДНЯ ===== */
+        .phrase-card {
+            margin: 16px;
+            background: linear-gradient(135deg, #fff8e1, #fff3c4);
+            border-left: 5px solid #f0ad4e;
+            border-radius: 12px; padding: 16px 18px;
+            box-shadow: 0 3px 10px rgba(240,173,78,0.15);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .phrase-card .phrase-icon { font-size: 28px; flex-shrink: 0; }
+        .phrase-card .phrase-text {
+            font-size: 16px; font-weight: 700; color: #b8860b;
+            font-style: italic; line-height: 1.4;
+        }
+
+        .container { padding: 0 16px; padding-bottom: 40px; }
+
+        .meal-card {
+            background: #fff; border-radius: 16px;
+            padding: 20px; margin-bottom: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            position: relative; overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .meal-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; width: 6px; height: 100%;
+            background: linear-gradient(180deg, #386BA8, #2a5285);
+        }
+        .meal-card.breakfast::before {
+            background: linear-gradient(180deg, #ffb74d, #f57c00);
+        }
+        .meal-card.lunch::before {
+            background: linear-gradient(180deg, #66bb6a, #2e7d32);
+        }
+        .meal-card .meal-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+        }
+        .meal-card .meal-icon { font-size: 26px; flex-shrink: 0; }
+        .meal-card .meal-title {
+            font-size: 20px; font-weight: 800; color: #2a5285;
+        }
+        .meal-card .meal-dishes {
+            font-size: 15px; color: #444; line-height: 1.6; margin: 0;
+        }
+
+        .weekend-card {
+            background: linear-gradient(135deg, #fff, #f0f5fb);
+            border-radius: 20px; padding: 48px 24px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            margin: 16px 0;
+        }
+        .weekend-card .icon { font-size: 80px; margin-bottom: 16px; }
+        .weekend-card .text {
+            font-size: 22px; font-weight: 800; color: #386BA8;
+            margin-bottom: 8px;
+        }
+        .weekend-card .hint { font-size: 14px; color: #999; }
+
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #888;
+        }
+        .empty-state .icon { font-size: 72px; margin-bottom: 16px; }
+        .empty-state .text { font-size: 18px; margin-bottom: 8px; font-weight: 700; }
+        .empty-state .hint { font-size: 14px; color: #aaa; }
+
+        .error-state {
+            background: #ffebee; color: #c62828;
+            border-left: 4px solid #c62828;
+            padding: 14px 18px; border-radius: 12px;
+            margin-bottom: 16px; font-size: 14px; font-weight: 600;
+        }
+
+        .refresh-btn {
+            display: block; margin: 24px auto 0;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #386BA8, #2a5285);
+            color: #fff; border: none; border-radius: 14px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 14px rgba(56,107,168,0.3);
+            font-family: inherit; min-height: 50px;
+        }
+        .refresh-btn:active { transform: scale(0.97); }
+
+        .footer {
+            text-align: center; padding: 24px 16px;
+            color: #999; font-size: 12px;
+        }
+        .footer .update-time {
+            margin-top: 4px; font-size: 11px; color: #bbb;
+        }
+
+        @media (max-width: 480px) {
+            .header-left .logo { font-size: 34px; }
+            .header-text h1 { font-size: 17px; }
+            .header-text p { font-size: 10px; }
+            .header-date { padding: 6px 10px; }
+            .header-date .weekday { font-size: 9px; }
+            .header-date .date { font-size: 13px; }
+            .header-date .cycle-day { font-size: 9px; }
+            .calendar-title { font-size: 14px; }
+            .calendar-day { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-row">
+            <div class="header-left">
+                <div class="logo">🍽</div>
+                <div class="header-text">
+                    <h1>Меню школы</h1>
+                    <p>МБОУ «Шаховская СОШ № 1»</p>
+                </div>
+            </div>
+            <!-- ✅ Кликабельная карточка даты -->
+            <div class="header-date" id="headerDate" onclick="toggleCalendar()">
+                <span class="arrow" id="headerDateArrow">▼</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ✅ Календарь под шапкой -->
+    <div class="calendar-card" id="calendarCard">
+        <div class="calendar-header">
+            <div class="calendar-title" id="calendarTitle"></div>
+            <div class="calendar-nav">
+                <button onclick="changeMonth(-1)">◀</button>
+                <button onclick="changeMonth(1)">▶</button>
+            </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <div id="phraseCard"></div>
+
+    <div class="container">
+        <div id="status"></div>
+        <div id="content"></div>
+        <button class="refresh-btn" onclick="loadMenu()">🔄 Обновить</button>
+    </div>
+
+    <div class="footer">
+        Данные предоставлены официальным сайтом школы
+        <div class="update-time" id="updateTime"></div>
+    </div>
+
+    <script>
+    const MENU_FILE = 'menu_shool.json';
+
+    const contentEl = document.getElementById('content');
+    const statusEl = document.getElementById('status');
+    const phraseCardEl = document.getElementById('phraseCard');
+    const headerDateEl = document.getElementById('headerDate');
+    const headerDateArrow = document.getElementById('headerDateArrow');
+    const calendarCardEl = document.getElementById('calendarCard');
+    const calendarTitleEl = document.getElementById('calendarTitle');
+    const calendarGridEl = document.getElementById('calendarGrid');
+    const updateTimeEl = document.getElementById('updateTime');
+
+    let menuData = null;
+    let selectedDate = new Date();
+    let calendarMonth = new Date();
+    let isCalendarOpen = false;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadMenu();
+    });
+
+    async function loadMenu() {
+        try {
+            const isFlask = location.protocol === 'http:' &&
+                (location.port === '5000' || location.pathname === '/viewer');
+            const url = isFlask
+                ? '/api/menu?_=' + Date.now()
+                : MENU_FILE + '?_=' + Date.now();
+            const res = await fetch(url, { cache: 'no-store' });
+            if (!res.ok) throw new Error('Файл menu_shool.json не найден');
+            const data = await res.json();
+            processData(data);
+        } catch (e) {
+            showError('Ошибка: ' + e.message);
+            showEmpty('Нет данных', 'Файл menu_shool.json не найден');
+        }
+    }
+
+    function processData(data) {
+        menuData = {
+            parsed_at: data.parsed_at,
+            anchor: data.anchor,
+            phrases: data.phrases || [],
+            groups: data.groups || {},
+        };
+        render();
+    }
+
+    function render() {
+        renderHeaderDate(selectedDate);
+        renderCalendar();
+        renderContent();
+        renderUpdateTime();
+    }
+
+    // ===== ШАПКА =====
+    function renderHeaderDate(date) {
+        const weekdays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда',
+                         'Четверг', 'Пятница', 'Суббота'];
+        const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                       'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+        const weekday = weekdays[date.getDay()];
+        const dateFormatted = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+
+        const dayIndex = getCycleDayForDate(date);
+        const cycleText = dayIndex ? `${dayIndex}-й день цикла` : '';
+
+        headerDateEl.innerHTML = `
+            <span class="arrow" id="headerDateArrow">${isCalendarOpen ? '▲' : '▼'}</span>
+            <div class="weekday">${esc(weekday)}</div>
+            <div class="date">${esc(dateFormatted)}</div>
+            ${cycleText ? `<div class="cycle-day">${esc(cycleText)}</div>` : ''}
+        `;
+    }
+
+    // ===== КАЛЕНДАРЬ =====
+    function toggleCalendar() {
+        isCalendarOpen = !isCalendarOpen;
+        calendarCardEl.classList.toggle('open', isCalendarOpen);
+        headerDateEl.classList.toggle('open', isCalendarOpen);
+        renderHeaderDate(selectedDate); // обновить стрелку
+    }
+
+    function closeCalendar() {
+        isCalendarOpen = false;
+        calendarCardEl.classList.remove('open');
+        headerDateEl.classList.remove('open');
+        renderHeaderDate(selectedDate);
+    }
+
+    function renderCalendar() {
+        const year = calendarMonth.getFullYear();
+        const month = calendarMonth.getMonth();
+        const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                       'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+        calendarTitleEl.textContent = `${months[month]} ${year}`;
+
+        const firstDay = new Date(year, month, 1);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let startWeekday = firstDay.getDay() - 1;
+        if (startWeekday < 0) startWeekday = 6;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let html = '';
+        // Пустые клетки
+        for (let i = 0; i < startWeekday; i++) {
+            html += `<div class="calendar-day empty"></div>`;
+        }
+        // Дни месяца
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            date.setHours(0, 0, 0, 0);
+
+            const dayOfWeek = date.getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const isToday = date.getTime() === today.getTime();
+            const isSelected = date.getTime() === selectedDate.getTime();
+
+            let classes = 'calendar-day';
+            if (isWeekend) classes += ' weekend';
+            if (isToday) classes += ' today';
+            if (isSelected) classes += ' selected';
+
+            html += `<button class="${classes}" onclick="selectDate(${year}, ${month}, ${day})">${day}</button>`;
+        }
+        calendarGridEl.innerHTML = html;
+    }
+
+    function changeMonth(offset) {
+        calendarMonth.setMonth(calendarMonth.getMonth() + offset);
+        renderCalendar();
+    }
+
+    function selectDate(year, month, day) {
+        selectedDate = new Date(year, month, day);
+        selectedDate.setHours(0, 0, 0, 0);
+        closeCalendar();
+        render();
+    }
+
+    // ===== КОНТЕНТ =====
+    function renderContent() {
+        const date = selectedDate;
+        const weekday = date.getDay();
+
+        if (weekday === 0 || weekday === 6) {
+            phraseCardEl.innerHTML = '';
+            contentEl.innerHTML = renderWeekend(weekday);
+            return;
+        }
+
+        renderPhraseCard(date);
+        renderMenu(date);
+    }
+
+    // ===== РАСЧЁТ ДНЯ ЦИКЛА ОТ ANCHOR =====
+    function getCycleDayForDate(date) {
+        if (!menuData || !menuData.anchor) return null;
+
+        const anchor = menuData.anchor;
+        const anchorDate = parseDateRu(anchor.date);
+        if (!anchorDate) return null;
+
+        anchorDate.setHours(0, 0, 0, 0);
+        const dateCopy = new Date(date);
+        dateCopy.setHours(0, 0, 0, 0);
+
+        const dow = dateCopy.getDay();
+        if (dow === 0 || dow === 6) return null;
+
+        const cycleLen = anchor.cycle_length || 10;
+
+        let studyDays = 0;
+        if (dateCopy >= anchorDate) {
+            const cursor = new Date(anchorDate);
+            while (cursor < dateCopy) {
+                cursor.setDate(cursor.getDate() + 1);
+                const d = cursor.getDay();
+                if (d !== 0 && d !== 6) studyDays++;
+            }
+        } else {
+            const cursor = new Date(dateCopy);
+            while (cursor < anchorDate) {
+                cursor.setDate(cursor.getDate() + 1);
+                const d = cursor.getDay();
+                if (d !== 0 && d !== 6) studyDays--;
+            }
+        }
+
+        let idx = ((anchor.day_index - 1 + studyDays) % cycleLen + cycleLen) % cycleLen + 1;
+        return idx;
+    }
+
+    // ===== ФРАЗА ДНЯ =====
+    function renderPhraseCard(date) {
+        const phrase = getPhraseForDate(date);
+        if (!phrase) { phraseCardEl.innerHTML = ''; return; }
+        phraseCardEl.innerHTML = `
+            <div class="phrase-card">
+                <div class="phrase-icon">💬</div>
+                <div class="phrase-text">${esc(phrase)}</div>
+            </div>
+        `;
+    }
+
+    function getPhraseForDate(date) {
+        const phrases = menuData.phrases || [];
+        if (!phrases.length) return '';
+        const startOfYear = new Date(date.getFullYear(), 0, 0);
+        const dayOfYear = Math.floor((date - startOfYear) / 86400000);
+        return phrases[dayOfYear % phrases.length];
+    }
+
+    // ===== МЕНЮ =====
+    function renderMenu(date) {
+        const keys = Object.keys(menuData.groups);
+        if (!keys.length) {
+            contentEl.innerHTML = '<div class="empty-state"><div class="icon">📁</div>Нет данных</div>';
+            return;
+        }
+
+        const groupKey = '5-11';
+        const g = menuData.groups[groupKey] || menuData.groups[keys[0]];
+
+        const dayIndex = getCycleDayForDate(date);
+
+        if (!dayIndex) {
+            contentEl.innerHTML = `<div class="empty-state">
+                <div class="icon">📅</div>
+                <div class="text">Дата вне цикла</div>
+                <div class="hint">Выберите другую дату</div>
+            </div>`;
+            return;
+        }
+
+        if (g.cycle_menu && g.cycle_menu[dayIndex - 1]) {
+            const day = g.cycle_menu[dayIndex - 1];
+            if (day.meals && day.meals.length) {
+                let html = '';
+                day.meals.forEach(meal => {
+                    html += renderMealCard(meal);
+                });
+                contentEl.innerHTML = html;
+            } else {
+                contentEl.innerHTML = renderEmptyMenu();
+            }
+        } else {
+            contentEl.innerHTML = renderEmptyMenu();
+        }
+    }
+
+    function renderMealCard(meal) {
+        const title = (meal.title || '').toLowerCase();
+        let mealClass = '';
+        let icon = '🍽';
+        if (title.includes('завтрак')) { mealClass = 'breakfast'; icon = '🌅'; }
+        else if (title.includes('обед')) { mealClass = 'lunch'; icon = '☀️'; }
+        else if (title.includes('полдник')) { icon = '🍎'; }
+        else if (title.includes('ужин')) { icon = '🌙'; }
+
+        return `<div class="meal-card ${mealClass}">
+            <div class="meal-header">
+                <span class="meal-icon">${icon}</span>
+                <span class="meal-title">${esc(meal.title || '')}</span>
+            </div>
+            ${meal.dishes ? `<p class="meal-dishes">${esc(meal.dishes)}</p>` : ''}
+        </div>`;
+    }
+
+    function renderWeekend(weekday) {
+        const isSat = weekday === 6;
+        return `<div class="weekend-card">
+            <div class="icon">${isSat ? '🎉' : '☀️'}</div>
+            <div class="text">${isSat ? 'Суббота' : 'Воскресенье'}</div>
+            <div class="hint">Выходной — меню нет. Хорошего отдыха! 🌿</div>
+        </div>`;
+    }
+
+    function renderEmptyMenu() {
+        return `<div class="empty-state">
+            <div class="icon">🍽</div>
+            <div class="text">Меню отсутствует</div>
+            <div class="hint">Попробуйте выбрать другую дату</div>
+        </div>`;
+    }
+
+    function renderUpdateTime() {
+        if (!menuData.parsed_at) { updateTimeEl.textContent = ''; return; }
+        const dt = new Date(menuData.parsed_at);
+        updateTimeEl.textContent = 'Обновлено: ' + dt.toLocaleString('ru-RU');
+    }
+
+    // ===== СЕРВИС =====
+    function showEmpty(text, hint) {
+        headerDateEl.innerHTML = '';
+        phraseCardEl.innerHTML = '';
+        contentEl.innerHTML = `<div class="empty-state">
+            <div class="icon">📁</div>
+            <div class="text">${esc(text)}</div>
+            <div class="hint">${esc(hint)}</div>
+        </div>`;
+    }
+
+    function showError(text) {
+        statusEl.innerHTML = `<div class="error-state">❌ ${esc(text)}</div>`;
+        setTimeout(() => { statusEl.innerHTML = ''; }, 5000);
+    }
+
+    function parseDateRu(str) {
+        if (!str) return null;
+        const parts = str.split('.');
+        if (parts.length !== 3) return null;
+        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    }
+
+    function esc(t) {
+        if (t === null || t === undefined) return '';
+        const d = document.createElement('div'); d.textContent = String(t); return d.innerHTML;
+    }
+
+    // Клик вне календаря — закрыть
+    document.addEventListener('click', (e) => {
+        if (!isCalendarOpen) return;
+        if (calendarCardEl.contains(e.target)) return;
+        if (headerDateEl.contains(e.target)) return;
+        closeCalendar();
+    });
+    </script>
+</body>
+</html>
