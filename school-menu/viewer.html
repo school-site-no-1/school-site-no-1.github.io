@@ -55,8 +55,9 @@
             margin: 0 0 2px; font-size: 20px; font-weight: 700;
             letter-spacing: 0.3px; line-height: 1.15;
         }
+        /* ✅ Название школы уменьшено с 11px до 10px */
         .header-text p {
-            margin: 0; font-size: 11px; opacity: 0.85;
+            margin: 0; font-size: 10px; opacity: 0.85;
             line-height: 1.3;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -284,7 +285,7 @@
         @media (max-width: 480px) {
             .header-left .logo { font-size: 34px; }
             .header-text h1 { font-size: 17px; }
-            .header-text p { font-size: 10px; }
+            .header-text p { font-size: 9px; }   /* ✅ было 10px, стало 9px */
             .header-date { padding: 6px 10px; }
             .header-date .weekday { font-size: 9px; }
             .header-date .date { font-size: 13px; }
@@ -304,14 +305,12 @@
                     <p>МБОУ «Шаховская СОШ № 1»</p>
                 </div>
             </div>
-            <!-- ✅ Кликабельная карточка даты -->
             <div class="header-date" id="headerDate" onclick="toggleCalendar()">
                 <span class="arrow" id="headerDateArrow">▼</span>
             </div>
         </div>
     </header>
 
-    <!-- ✅ Календарь под шапкой -->
     <div class="calendar-card" id="calendarCard">
         <div class="calendar-header">
             <div class="calendar-title" id="calendarTitle"></div>
@@ -343,7 +342,6 @@
     const statusEl = document.getElementById('status');
     const phraseCardEl = document.getElementById('phraseCard');
     const headerDateEl = document.getElementById('headerDate');
-    const headerDateArrow = document.getElementById('headerDateArrow');
     const calendarCardEl = document.getElementById('calendarCard');
     const calendarTitleEl = document.getElementById('calendarTitle');
     const calendarGridEl = document.getElementById('calendarGrid');
@@ -392,7 +390,6 @@
         renderUpdateTime();
     }
 
-    // ===== ШАПКА =====
     function renderHeaderDate(date) {
         const weekdays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда',
                          'Четверг', 'Пятница', 'Суббота'];
@@ -413,12 +410,11 @@
         `;
     }
 
-    // ===== КАЛЕНДАРЬ =====
     function toggleCalendar() {
         isCalendarOpen = !isCalendarOpen;
         calendarCardEl.classList.toggle('open', isCalendarOpen);
         headerDateEl.classList.toggle('open', isCalendarOpen);
-        renderHeaderDate(selectedDate); // обновить стрелку
+        renderHeaderDate(selectedDate);
     }
 
     function closeCalendar() {
@@ -446,11 +442,9 @@
         today.setHours(0, 0, 0, 0);
 
         let html = '';
-        // Пустые клетки
         for (let i = 0; i < startWeekday; i++) {
             html += `<div class="calendar-day empty"></div>`;
         }
-        // Дни месяца
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             date.setHours(0, 0, 0, 0);
@@ -482,7 +476,6 @@
         render();
     }
 
-    // ===== КОНТЕНТ =====
     function renderContent() {
         const date = selectedDate;
         const weekday = date.getDay();
@@ -497,7 +490,6 @@
         renderMenu(date);
     }
 
-    // ===== РАСЧЁТ ДНЯ ЦИКЛА ОТ ANCHOR =====
     function getCycleDayForDate(date) {
         if (!menuData || !menuData.anchor) return null;
 
@@ -535,7 +527,6 @@
         return idx;
     }
 
-    // ===== ФРАЗА ДНЯ =====
     function renderPhraseCard(date) {
         const phrase = getPhraseForDate(date);
         if (!phrase) { phraseCardEl.innerHTML = ''; return; }
@@ -555,7 +546,6 @@
         return phrases[dayOfYear % phrases.length];
     }
 
-    // ===== МЕНЮ =====
     function renderMenu(date) {
         const keys = Object.keys(menuData.groups);
         if (!keys.length) {
@@ -634,7 +624,6 @@
         updateTimeEl.textContent = 'Обновлено: ' + dt.toLocaleString('ru-RU');
     }
 
-    // ===== СЕРВИС =====
     function showEmpty(text, hint) {
         headerDateEl.innerHTML = '';
         phraseCardEl.innerHTML = '';
@@ -662,7 +651,6 @@
         const d = document.createElement('div'); d.textContent = String(t); return d.innerHTML;
     }
 
-    // Клик вне календаря — закрыть
     document.addEventListener('click', (e) => {
         if (!isCalendarOpen) return;
         if (calendarCardEl.contains(e.target)) return;
