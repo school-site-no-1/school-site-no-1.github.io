@@ -212,11 +212,10 @@
             font-size: 15px; color: #444; line-height: 1.6; margin: 0;
         }
 
-        /* ✅ Смайлики — привязаны к верху, не смещаются */
         .side-panel {
             position: fixed;
             right: 20px;
-            top: 180px;              /* ← было 130px, теперь 180px (опущено на 50px) */
+            top: 180px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -451,7 +450,7 @@
             .side-panel {
                 right: 14px;
                 gap: 8px;
-                top: 160px;       /* ← опущено на 50px и на мобильном */
+                top: 160px;
             }
             .vote-panel { gap: 6px; }
             .vote-btn { width: 42px; padding: 3px 0; gap: 5px; }
@@ -543,8 +542,8 @@
     </div>
 
     <script>
-    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ИЗ GOOGLE APPS SCRIPT
-    const GAS_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
+    // ✅ ВАШ URL Google Apps Script
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIzAwrwwLkPqNi7hzGT4tYjfzfnFMJX6WBDfowL7Ef_OCng_EAgr7I0W83B0icxgQG/exec';
 
     const MENU_FILE = 'menu_shool.json';
     const USE_SERVER = true;
@@ -594,7 +593,6 @@
         }
 
         try {
-            // Обновляем голоса и меню параллельно
             await Promise.all([loadVotes(), loadMenu()]);
         } catch (e) {
             console.warn('Ошибка обновления', e);
@@ -612,16 +610,20 @@
             const res = await fetch(`${GAS_URL}?action=getVotes&_=${Date.now()}`, {
                 cache: 'no-store'
             });
+            console.log('📊 getVotes статус:', res.status);
             if (res.ok) {
                 const votes = await res.json();
+                console.log('📊 Голоса:', votes);
                 ['love', 'like', 'meh', 'bad'].forEach(k => {
                     const el = document.getElementById('count-' + k);
                     if (el) el.textContent = votes[k] || 0;
                 });
                 updateBest(votes);
+            } else {
+                console.warn('❌ Ответ не OK:', res.status);
             }
         } catch (e) {
-            console.warn('Не удалось загрузить голоса', e);
+            console.error('❌ Ошибка загрузки голосов:', e);
         }
     }
 
@@ -634,6 +636,7 @@
                 body: JSON.stringify({ action: 'vote', type })
             });
             const votes = await res.json();
+            console.log('📊 Голос отправлен:', votes);
 
             ['love', 'like', 'meh', 'bad'].forEach(k => {
                 const el = document.getElementById('count-' + k);
@@ -647,7 +650,7 @@
             }
             updateBest(votes);
         } catch (e) {
-            console.warn('Ошибка отправки голоса', e);
+            console.error('❌ Ошибка отправки голоса:', e);
         }
         flyEmoji(type);
     }
@@ -701,6 +704,7 @@
                 body: JSON.stringify({ action: 'message', text, name: '' })
             });
             const data = await res.json();
+            console.log('💬 Ответ:', data);
 
             if (!data.success) {
                 statusEl.textContent = '❌ ' + (data.error || 'Ошибка');
@@ -712,6 +716,7 @@
             statusEl.textContent = '✅ Отправлено. Спасибо!';
             statusEl.className = 'msg-status';
         } catch (e) {
+            console.error('❌ Ошибка отправки сообщения:', e);
             statusEl.textContent = '❌ Сервер недоступен';
             statusEl.className = 'msg-status error';
             return;
