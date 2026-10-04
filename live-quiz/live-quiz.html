@@ -28,6 +28,18 @@
       display: block;
     }
 
+    /* === Сдвиги строк вопроса ===
+       Если «Остановись на минуту» и «Что сегодня стало понятнее?» —
+       отдельные элементы, добавьте им классы .line-1 и .line-2.
+       Если это одна картинка — настройте transform у .stage .fg
+       или разрежьте картинку на две. */
+    :root {
+      --line1-shift: 40px;
+      --line2-shift: 20px;
+    }
+    .line-1 { transform: translateY(var(--line1-shift)); }
+    .line-2 { transform: translateY(var(--line2-shift)); }
+
     .online {
       position: fixed;
       top: calc(12px + env(safe-area-inset-top));
@@ -80,8 +92,9 @@
       100% { transform: translateY(-70vh) scale(1.5) rotate(20deg); opacity: 0; }
     }
 
+    /* === Блок с ответом поднят на 20px вверх === */
     .chat-overlay {
-      position: fixed; left: 0; right: 0; bottom: 0; height: 62.5vh;   /* было 50vh — увеличено на 25% */
+      position: fixed; left: 0; right: 0; bottom: 20px; height: 62.5vh;
       display: flex; flex-direction: column;
       background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,0) 100%);
       z-index: 20; padding-bottom: env(safe-area-inset-bottom); pointer-events: none;
