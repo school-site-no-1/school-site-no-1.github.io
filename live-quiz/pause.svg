@@ -8,8 +8,8 @@
     </linearGradient>
 
     <!-- Свечение вокруг текста (верхняя часть) -->
-    <radialGradient id="glow-top" cx="50%" cy="10%" r="50%">
-      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.30"/>
+    <radialGradient id="glow-top" cx="50%" cy="30%" r="40%">
+      <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.20"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
 
@@ -23,7 +23,7 @@
   <rect width="800" height="1000" fill="url(#bg)"/>
   <rect width="800" height="1000" fill="url(#glow-top)"/>
 
-  <!-- Декоративные звезды (точки) -->
+  <!-- Декоративные звезды (точки) - распределены по всему холсту -->
   <g fill="#e2e8f0" opacity="0.4">
     <circle cx="90" cy="120" r="2"/>
     <circle cx="160" cy="210" r="1.5"/>
@@ -44,21 +44,21 @@
     <circle cx="400" cy="650" r="240"/>
   </g>
 
-  <!-- ТЕКСТ В САМОМ ВЕРХУ -->
+  <!-- ТЕКСТ РАСПОЛОЖЕН НАВЕРХУ -->
 
   <!-- Заголовок: "Остановись на минуту." -->
-  <text x="400" y="120" text-anchor="middle"
+  <text x="400" y="320" text-anchor="middle"
         font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
         font-size="48" font-weight="600" fill="#e2e8f0" letter-spacing="0.5">
     Остановись на минуту.
   </text>
 
   <!-- Разделительная линия между текстами -->
-  <line x1="350" y1="170" x2="450" y2="170"
+  <line x1="350" y1="370" x2="450" y2="370"
         stroke="#64748b" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
 
   <!-- Подзаголовок: "Что сегодня стало понятнее?" -->
-  <text x="400" y="240" text-anchor="middle"
+  <text x="400" y="440" text-anchor="middle"
         font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
         font-size="32" fill="#94a3b8" letter-spacing="0.2">
     Что сегодня стало понятнее?

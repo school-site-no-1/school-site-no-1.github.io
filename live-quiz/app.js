@@ -142,6 +142,18 @@ textEl.addEventListener('paste', (e) => {
   }
 });
 
+// ==== Отправка по Enter (Shift+Enter — перенос строки) ====
+textEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (form.requestSubmit) {
+      form.requestSubmit();
+    } else {
+      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  }
+});
+
 updateCharCounter();
 
 // ==== 9. Приветствие нового ученика (приватное) ====
