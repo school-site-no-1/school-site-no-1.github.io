@@ -70,6 +70,8 @@
             align-items: center;
             flex: 1 1 auto;
             min-width: 0;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         .header-center .day-indicator { display: none !important; }
         .header-center .divider { display: none !important; }
@@ -89,14 +91,13 @@
         .period .line2 { font-size: 13px; display: block; font-weight: 500; color: #D4B896; }
 
         /* ============================
-           КНОПКА "ШКОЛЬНОЕ МЕНЮ"
+           КНОПКИ В ШАПКЕ
            ============================ */
-        .school-menu-btn {
+        .header-btn {
             display: inline-flex;
             align-items: center;
             gap: 5px;
             flex-shrink: 0;
-            margin-left: 12px;
             padding: 6px 12px;
             border: 1px solid #3D5A73;
             border-radius: 8px;
@@ -109,21 +110,24 @@
             white-space: nowrap;
             transition: background 0.15s, color 0.15s, box-shadow 0.15s;
         }
-        .school-menu-btn:hover,
-        .school-menu-btn:focus-visible {
+        .header-btn:hover,
+        .header-btn:focus-visible {
             background: #3D5A73;
             color: #F5E6D3;
             outline: none;
             box-shadow: 0 2px 6px rgba(61, 90, 115, 0.25);
         }
-        .school-menu-btn:focus-visible {
+        .header-btn:focus-visible {
             outline: 3px solid #D4B896;
             outline-offset: 2px;
         }
-        .school-menu-btn .icon {
+        .header-btn .icon {
             font-size: 15px;
             line-height: 1;
         }
+
+        .school-menu-btn { margin-left: 12px; }
+        .live-quiz-btn { margin-left: 6px; }
 
         .header-right {
             text-align: right;
@@ -665,13 +669,14 @@
             .mobile-controls { padding: 4px 8px; font-size: 12px; }
             .mobile-controls select { font-size: 12px; min-height: 30px; padding: 4px 6px; }
             .footer { font-size: 10px; }
-            .school-menu-btn {
-                margin-left: 8px;
+            .header-btn {
                 padding: 5px 8px;
                 font-size: 11px;
             }
-            .school-menu-btn .icon { font-size: 13px; }
-            .school-menu-btn .label { display: none; }
+            .header-btn .icon { font-size: 13px; }
+            .header-btn .label { display: none; }
+            .school-menu-btn { margin-left: 8px; }
+            .live-quiz-btn { margin-left: 4px; }
         }
 
         @media (max-width: 350px) {
@@ -680,7 +685,7 @@
             #clockContainer svg { width: 24px; height: 24px; }
             .break-content .break-duration { display: none; }
             .tile-subject .lesson-meta { font-size: 7px; }
-            .school-menu-btn { padding: 4px 6px; font-size: 10px; }
+            .header-btn { padding: 4px 6px; font-size: 10px; }
         }
 
         /* ============================
@@ -705,13 +710,21 @@
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
-                <a class="school-menu-btn"
+                <a class="header-btn school-menu-btn"
                    href="https://school-site-no-1.github.io/school-menu/viewer.html"
                    target="_blank"
                    rel="noopener noreferrer"
                    aria-label="Открыть школьное меню в новой вкладке">
                     <span class="icon" aria-hidden="true">🍽</span>
                     <span class="label">Школьное меню</span>
+                </a>
+                <a class="header-btn live-quiz-btn"
+                   href="https://school-site-no-1.github.io/live-quiz/live-quiz.html"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Открыть Остановись на минутку в новой вкладке">
+                    <span class="icon" aria-hidden="true">⏸</span>
+                    <span class="label">Остановись на минутку</span>
                 </a>
             </div>
 
