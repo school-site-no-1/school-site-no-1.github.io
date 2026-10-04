@@ -17,13 +17,13 @@
         }
         body { min-height: 100vh; padding-bottom: env(safe-area-inset-bottom); }
 
-        /* ===== ШАПКА ===== */
         header {
             background: linear-gradient(135deg, #386BA8, #2a5285);
             color: #fff; padding: 14px 16px;
             padding-top: calc(14px + env(safe-area-inset-top));
             box-shadow: 0 4px 12px rgba(56,107,168,0.25);
             position: relative; overflow: hidden;
+            z-index: 10;
         }
         header::after {
             content: ''; position: absolute;
@@ -55,14 +55,12 @@
             margin: 0 0 2px; font-size: 20px; font-weight: 700;
             letter-spacing: 0.3px; line-height: 1.15;
         }
-        /* ✅ Название школы уменьшено с 11px до 10px */
         .header-text p {
             margin: 0; font-size: 10px; opacity: 0.85;
             line-height: 1.3;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* ✅ Кликабельная карточка даты */
         .header-date {
             background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.2);
@@ -74,16 +72,9 @@
             user-select: none;
             position: relative;
         }
-        .header-date:hover {
-            background: rgba(255,255,255,0.25);
-        }
-        .header-date:active {
-            transform: scale(0.97);
-        }
-        .header-date.open {
-            background: #fff;
-            color: #386BA8;
-        }
+        .header-date:hover { background: rgba(255,255,255,0.25); }
+        .header-date:active { transform: scale(0.97); }
+        .header-date.open { background: #fff; color: #386BA8; }
         .header-date.open .weekday { color: #4caf50; }
         .header-date.open .date { color: #2a5285; }
         .header-date.open .cycle-day { color: #999; }
@@ -108,7 +99,6 @@
             opacity: 0.6;
         }
 
-        /* ===== КАЛЕНДАРЬ (раскрывается под шапкой) ===== */
         .calendar-card {
             background: #fff;
             border-radius: 0 0 16px 16px;
@@ -120,10 +110,7 @@
             position: relative;
             z-index: 5;
         }
-        .calendar-card.open {
-            max-height: 500px;
-            padding: 14px 12px;
-        }
+        .calendar-card.open { max-height: 500px; padding: 14px 12px; }
         .calendar-header {
             display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 12px; padding: 0 6px;
@@ -146,9 +133,6 @@
         .calendar-nav button:hover {
             background: #386BA8; color: #fff; border-color: #386BA8;
         }
-        .calendar-nav button:active {
-            transform: scale(0.95);
-        }
         .calendar-grid {
             display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
         }
@@ -166,26 +150,18 @@
             font-family: inherit; padding: 0;
             transition: all 0.15s;
         }
-        .calendar-day:hover {
-            background: #f0f5fb; border-color: #d0e0f0;
-        }
+        .calendar-day:hover { background: #f0f5fb; border-color: #d0e0f0; }
         .calendar-day.today {
             background: #e8f0fa; color: #386BA8; border-color: #386BA8;
         }
         .calendar-day.selected {
             background: linear-gradient(135deg, #386BA8, #2a5285);
             color: #fff; border-color: #386BA8;
-            box-shadow: 0 4px 10px rgba(56,107,168,0.3);
-        }
-        .calendar-day.selected.today {
-            background: linear-gradient(135deg, #4caf50, #2e7d32);
-            border-color: #4caf50;
         }
         .calendar-day.weekend { color: #e53935; }
         .calendar-day.selected.weekend { color: #fff; }
         .calendar-day.empty { cursor: default; }
 
-        /* ===== ФРАЗА ДНЯ ===== */
         .phrase-card {
             margin: 16px;
             background: linear-gradient(135deg, #fff8e1, #fff3c4);
@@ -200,14 +176,16 @@
             font-style: italic; line-height: 1.4;
         }
 
-        .container { padding: 0 16px; padding-bottom: 40px; }
+        .container { padding: 0 16px; padding-bottom: 120px; }
 
+        /* ✅ Блоки меню — шире на 50px (было -140px, стало -90px) */
         .meal-card {
             background: #fff; border-radius: 16px;
             padding: 20px; margin-bottom: 14px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.07);
             position: relative; overflow: hidden;
             animation: fadeIn 0.3s ease;
+            max-width: calc(100% - 90px);   /* ← шире на 50px */
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -235,12 +213,189 @@
             font-size: 15px; color: #444; line-height: 1.6; margin: 0;
         }
 
+        /* ✅ Смайлики — выше на 20px (было -70px, стало -90px) */
+        .side-panel {
+            position: fixed;
+            right: 20px;
+            top: calc(50% - 90px);       /* ← выше на 20px */
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            z-index: 50;
+        }
+
+        .vote-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+        .vote-btn {
+            width: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 4px 0;
+            cursor: pointer;
+            transition: transform 0.15s;
+            font-family: inherit;
+            position: relative;
+            overflow: visible;
+        }
+        .vote-btn:hover { transform: scale(1.15); }
+        .vote-btn:active { transform: scale(0.95); }
+        .vote-btn .emoji {
+            font-size: 28px;
+            line-height: 1;
+            filter: none;
+        }
+        .vote-btn .count {
+            font-size: 12px;
+            font-weight: 800;
+            color: #386BA8;
+            line-height: 1;
+            min-height: 12px;
+            text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+        }
+        .vote-btn.best .count { color: #2e7d32; }
+
+        .msg-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .msg-toggle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #386BA8, #2a5285);
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(56,107,168,0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            font-family: inherit;
+        }
+        .msg-toggle:hover { transform: scale(1.1); }
+        .msg-toggle:active { transform: scale(0.95); }
+
+        .msg-body {
+            display: none;
+            margin-top: 8px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            width: 220px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .msg-body.open { display: block; animation: fadeIn 0.2s ease; }
+        .msg-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #2a5285;
+            margin-bottom: 8px;
+        }
+        .msg-text {
+            width: 100%;
+            min-height: 80px;
+            max-height: 200px;
+            padding: 8px 10px;
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+            line-height: 1.4;
+        }
+        .msg-text:focus {
+            outline: none;
+            border-color: #386BA8;
+            box-shadow: 0 0 0 3px rgba(56,107,168,0.15);
+        }
+        .msg-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        .msg-send {
+            padding: 7px 14px;
+            background: linear-gradient(135deg, #386BA8, #2a5285);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+        .msg-send:hover { transform: scale(1.03); }
+        .msg-send:active { transform: scale(0.97); }
+        .msg-status {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #4caf50;
+            min-height: 14px;
+            text-align: right;
+        }
+        .msg-status.error { color: #e53935; }
+
+        .fly-emoji {
+            position: fixed;
+            bottom: -60px;
+            left: 75%;
+            font-size: 56px;
+            pointer-events: none;
+            z-index: 100;
+            animation: flyUp 1.6s ease-out forwards;
+            opacity: 0;
+            transform: translateX(-50%);
+        }
+        @keyframes flyUp {
+            0% {
+                bottom: -60px;
+                transform: translateX(-50%) scale(0.6) rotate(-10deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotate(0deg);
+            }
+            100% {
+                bottom: 100vh;
+                transform: translateX(-50%) scale(1.6) rotate(15deg);
+                opacity: 0;
+            }
+        }
+
+        .count-bump { animation: bump 0.4s ease; }
+        @keyframes bump {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); color: #4caf50; }
+        }
+
         .weekend-card {
             background: linear-gradient(135deg, #fff, #f0f5fb);
             border-radius: 20px; padding: 48px 24px;
             text-align: center;
             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             margin: 16px 0;
+            max-width: calc(100% - 90px);   /* ✅ тоже шире на 50px */
         }
         .weekend-card .icon { font-size: 80px; margin-bottom: 16px; }
         .weekend-card .text {
@@ -272,7 +427,6 @@
             box-shadow: 0 4px 14px rgba(56,107,168,0.3);
             font-family: inherit; min-height: 50px;
         }
-        .refresh-btn:active { transform: scale(0.97); }
 
         .footer {
             text-align: center; padding: 24px 16px;
@@ -285,13 +439,30 @@
         @media (max-width: 480px) {
             .header-left .logo { font-size: 34px; }
             .header-text h1 { font-size: 17px; }
-            .header-text p { font-size: 9px; }   /* ✅ было 10px, стало 9px */
+            .header-text p { font-size: 9px; }
             .header-date { padding: 6px 10px; }
             .header-date .weekday { font-size: 9px; }
             .header-date .date { font-size: 13px; }
             .header-date .cycle-day { font-size: 9px; }
-            .calendar-title { font-size: 14px; }
-            .calendar-day { font-size: 13px; }
+
+            .side-panel {
+                right: 14px;
+                gap: 8px;
+                top: calc(50% - 90px);   /* ✅ тоже выше */
+            }
+            .vote-panel { gap: 6px; }
+            .vote-btn { width: 42px; padding: 3px 0; gap: 5px; }
+            .vote-btn .emoji { font-size: 24px; }
+            .vote-btn .count { font-size: 11px; min-height: 11px; }
+
+            .msg-toggle { width: 42px; height: 42px; font-size: 20px; }
+            .msg-body { width: 200px; padding: 10px; }
+
+            .fly-emoji { font-size: 44px; left: 75%; }
+
+            /* На мобильном — 30px, иначе не влезет */
+            .meal-card { max-width: calc(100% - 30px); padding: 16px; }
+            .weekend-card { max-width: calc(100% - 30px); }
         }
     </style>
 </head>
@@ -322,6 +493,39 @@
         <div class="calendar-grid" id="calendarGrid"></div>
     </div>
 
+    <div class="side-panel">
+        <div class="vote-panel" id="votePanel">
+            <button class="vote-btn" data-vote="love" onclick="vote('love', event)">
+                <span class="emoji">😍</span>
+                <span class="count" id="count-love">0</span>
+            </button>
+            <button class="vote-btn" data-vote="like" onclick="vote('like', event)">
+                <span class="emoji">😊</span>
+                <span class="count" id="count-like">0</span>
+            </button>
+            <button class="vote-btn" data-vote="meh" onclick="vote('meh', event)">
+                <span class="emoji">😐</span>
+                <span class="count" id="count-meh">0</span>
+            </button>
+            <button class="vote-btn" data-vote="bad" onclick="vote('bad', event)">
+                <span class="emoji">😕</span>
+                <span class="count" id="count-bad">0</span>
+            </button>
+        </div>
+
+        <div class="msg-panel">
+            <button class="msg-toggle" onclick="toggleMsgPanel()" title="Оставить сообщение">💬</button>
+            <div class="msg-body" id="msgBody">
+                <div class="msg-title">💬 Оставить сообщение</div>
+                <textarea id="msgText" class="msg-text" placeholder="Ваш отзыв, пожелание, замечание..." maxlength="500"></textarea>
+                <div class="msg-actions">
+                    <button class="msg-send" onclick="sendMessage()">Отправить</button>
+                </div>
+                <div class="msg-status" id="msgStatus"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="phraseCard"></div>
 
     <div class="container">
@@ -337,6 +541,8 @@
 
     <script>
     const MENU_FILE = 'menu_shool.json';
+    const USE_SERVER = location.protocol === 'http:' &&
+                       (location.port === '5000' || location.pathname === '/viewer');
 
     const contentEl = document.getElementById('content');
     const statusEl = document.getElementById('status');
@@ -352,15 +558,165 @@
     let calendarMonth = new Date();
     let isCalendarOpen = false;
 
+    const VOTE_KEY = 'school_menu_votes';
+    const MSG_KEY = 'school_menu_messages';
+    const VOTE_LABELS = {
+        love: '😍', like: '😊', meh: '😐', bad: '😕'
+    };
+
     window.addEventListener('DOMContentLoaded', () => {
+        loadVotes();
         loadMenu();
     });
 
+    async function loadVotes() {
+        if (USE_SERVER) {
+            try {
+                const res = await fetch('/api/votes', { cache: 'no-store' });
+                if (res.ok) {
+                    const votes = await res.json();
+                    ['love', 'like', 'meh', 'bad'].forEach(k => {
+                        const el = document.getElementById('count-' + k);
+                        if (el) el.textContent = votes[k] || 0;
+                    });
+                    updateBest(votes);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Сервер недоступен, используем localStorage');
+            }
+        }
+        try {
+            const data = JSON.parse(localStorage.getItem(VOTE_KEY) || '{}');
+            ['love', 'like', 'meh', 'bad'].forEach(k => {
+                const el = document.getElementById('count-' + k);
+                if (el) el.textContent = data[k] || 0;
+            });
+            updateBest(data);
+        } catch (e) {}
+    }
+
+    async function vote(type, event) {
+        if (USE_SERVER) {
+            try {
+                const res = await fetch('/api/vote', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({type})
+                });
+                const data = await res.json();
+                if (data.success !== false) {
+                    const votes = data.votes || data;
+                    ['love', 'like', 'meh', 'bad'].forEach(k => {
+                        const el = document.getElementById('count-' + k);
+                        if (el) el.textContent = votes[k] || 0;
+                    });
+                    const countEl = document.getElementById('count-' + type);
+                    if (countEl) {
+                        countEl.classList.add('count-bump');
+                        setTimeout(() => countEl.classList.remove('count-bump'), 400);
+                    }
+                    updateBest(votes);
+                }
+            } catch (e) {
+                console.warn('Ошибка отправки голоса', e);
+            }
+        } else {
+            const data = JSON.parse(localStorage.getItem(VOTE_KEY) || '{}');
+            data[type] = (data[type] || 0) + 1;
+            localStorage.setItem(VOTE_KEY, JSON.stringify(data));
+            const countEl = document.getElementById('count-' + type);
+            if (countEl) {
+                countEl.textContent = data[type];
+                countEl.classList.add('count-bump');
+                setTimeout(() => countEl.classList.remove('count-bump'), 400);
+            }
+            updateBest(data);
+        }
+
+        flyEmoji(type);
+    }
+
+    function flyEmoji(type) {
+        const emoji = VOTE_LABELS[type] || '👍';
+        const el = document.createElement('div');
+        el.className = 'fly-emoji';
+        el.textContent = emoji;
+
+        const randomShift = (Math.random() - 0.5) * 60;
+        el.style.marginLeft = randomShift + 'px';
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1700);
+    }
+
+    function updateBest(votes) {
+        let max = 0;
+        Object.values(votes || {}).forEach(v => { if (v > max) max = v; });
+        document.querySelectorAll('.vote-btn').forEach(btn => {
+            const type = btn.dataset.vote;
+            btn.classList.toggle('best', max > 0 && (votes[type] || 0) === max);
+        });
+    }
+
+    function toggleMsgPanel() {
+        const body = document.getElementById('msgBody');
+        body.classList.toggle('open');
+        if (body.classList.contains('open')) {
+            setTimeout(() => document.getElementById('msgText').focus(), 100);
+        }
+    }
+
+    async function sendMessage() {
+        const textEl = document.getElementById('msgText');
+        const statusEl = document.getElementById('msgStatus');
+        const text = textEl.value.trim();
+
+        if (!text) {
+            statusEl.textContent = 'Введите сообщение';
+            statusEl.className = 'msg-status error';
+            return;
+        }
+
+        if (USE_SERVER) {
+            try {
+                const res = await fetch('/api/message', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text, name: ''})
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    statusEl.textContent = '❌ ' + (data.error || 'Ошибка');
+                    statusEl.className = 'msg-status error';
+                    return;
+                }
+            } catch (e) {
+                statusEl.textContent = '❌ Сервер недоступен';
+                statusEl.className = 'msg-status error';
+                return;
+            }
+        } else {
+            try {
+                const messages = JSON.parse(localStorage.getItem(MSG_KEY) || '[]');
+                messages.push({text, date: new Date().toISOString()});
+                localStorage.setItem(MSG_KEY, JSON.stringify(messages));
+            } catch (e) {}
+        }
+
+        textEl.value = '';
+        statusEl.textContent = '✅ Отправлено. Спасибо!';
+        statusEl.className = 'msg-status';
+
+        setTimeout(() => {
+            document.getElementById('msgBody').classList.remove('open');
+            statusEl.textContent = '';
+        }, 2000);
+    }
+
     async function loadMenu() {
         try {
-            const isFlask = location.protocol === 'http:' &&
-                (location.port === '5000' || location.pathname === '/viewer');
-            const url = isFlask
+            const url = USE_SERVER
                 ? '/api/menu?_=' + Date.now()
                 : MENU_FILE + '?_=' + Date.now();
             const res = await fetch(url, { cache: 'no-store' });
