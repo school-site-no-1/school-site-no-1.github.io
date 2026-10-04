@@ -212,11 +212,11 @@
             font-size: 15px; color: #444; line-height: 1.6; margin: 0;
         }
 
+        /* ✅ Смайлики — привязаны к верху, не смещаются */
         .side-panel {
             position: fixed;
             right: 20px;
-            top: calc(50% - 90px);
-            transform: translateY(-50%);
+            top: 130px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -327,8 +327,13 @@
         }
         .msg-actions {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 8px;
+        }
+        .msg-hint {
+            font-size: 10px;
+            color: #999;
         }
         .msg-send {
             padding: 7px 14px;
@@ -446,7 +451,7 @@
             .side-panel {
                 right: 14px;
                 gap: 8px;
-                top: calc(50% - 90px);
+                top: 110px;
             }
             .vote-panel { gap: 6px; }
             .vote-btn { width: 42px; padding: 3px 0; gap: 5px; }
@@ -516,6 +521,7 @@
                 <div class="msg-title">💬 Оставить сообщение</div>
                 <textarea id="msgText" class="msg-text" placeholder="Ваш отзыв, пожелание, замечание..." maxlength="500"></textarea>
                 <div class="msg-actions">
+                    <div class="msg-hint">Enter — отправить</div>
                     <button class="msg-send" onclick="sendMessage()">Отправить</button>
                 </div>
                 <div class="msg-status" id="msgStatus"></div>
@@ -538,10 +544,10 @@
 
     <script>
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ИЗ GOOGLE APPS SCRIPT
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIzAwrwwLkPqNi7hzGT4tYjfzfnFMJX6WBDfowL7Ef_OCng_EAgr7I0W83B0icxgQG/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
 
     const MENU_FILE = 'menu_shool.json';
-    const USE_SERVER = true;  // Всегда используем Google Apps Script
+    const USE_SERVER = true;
 
     const contentEl = document.getElementById('content');
     const statusEl = document.getElementById('status');
@@ -564,7 +570,22 @@
     window.addEventListener('DOMContentLoaded', () => {
         loadVotes();
         loadMenu();
+        setupEnterKey();
     });
+
+    // ✅ Отправка по Enter, новая строка по Shift+Enter
+    function setupEnterKey() {
+        const textEl = document.getElementById('msgText');
+        if (!textEl) return;
+
+        textEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+            // Shift+Enter → обычное поведение (новая строка)
+        });
+    }
 
     // ===== ЗАГРУЗКА ГОЛОСОВ =====
     async function loadVotes() {
@@ -592,12 +613,12 @@
                 body: JSON.stringify({ action: 'vote', type })
             });
             const votes = await res.json();
-            
+
             ['love', 'like', 'meh', 'bad'].forEach(k => {
                 const el = document.getElementById('count-' + k);
                 if (el) el.textContent = votes[k] || 0;
             });
-            
+
             const countEl = document.getElementById('count-' + type);
             if (countEl) {
                 countEl.classList.add('count-bump');
@@ -659,13 +680,13 @@
                 body: JSON.stringify({ action: 'message', text, name: '' })
             });
             const data = await res.json();
-            
+
             if (!data.success) {
                 statusEl.textContent = '❌ ' + (data.error || 'Ошибка');
                 statusEl.className = 'msg-status error';
                 return;
             }
-            
+
             textEl.value = '';
             statusEl.textContent = '✅ Отправлено. Спасибо!';
             statusEl.className = 'msg-status';
