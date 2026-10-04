@@ -216,7 +216,7 @@
         .side-panel {
             position: fixed;
             right: 20px;
-            top: 130px;
+            top: 180px;              /* ← было 130px, теперь 180px (опущено на 50px) */
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -451,7 +451,7 @@
             .side-panel {
                 right: 14px;
                 gap: 8px;
-                top: 110px;
+                top: 160px;       /* ← опущено на 50px и на мобильном */
             }
             .vote-panel { gap: 6px; }
             .vote-btn { width: 42px; padding: 3px 0; gap: 5px; }
@@ -534,7 +534,7 @@
     <div class="container">
         <div id="status"></div>
         <div id="content"></div>
-        <button class="refresh-btn" onclick="loadMenu()">🔄 Обновить</button>
+        <button class="refresh-btn" onclick="refreshAll()">🔄 Обновить</button>
     </div>
 
     <div class="footer">
@@ -544,7 +544,7 @@
 
     <script>
     // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ИЗ GOOGLE APPS SCRIPT
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIzAwrwwLkPqNi7hzGT4tYjfzfnFMJX6WBDfowL7Ef_OCng_EAgr7I0W83B0icxgQG/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
 
     const MENU_FILE = 'menu_shool.json';
     const USE_SERVER = true;
@@ -577,20 +577,41 @@
     function setupEnterKey() {
         const textEl = document.getElementById('msgText');
         if (!textEl) return;
-
         textEl.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
-            // Shift+Enter → обычное поведение (новая строка)
         });
+    }
+
+    // ✅ Кнопка "Обновить" — обновляет И голоса, И меню
+    async function refreshAll() {
+        const btn = document.querySelector('.refresh-btn');
+        if (btn) {
+            btn.textContent = '⏳ Обновляю...';
+            btn.disabled = true;
+        }
+
+        try {
+            // Обновляем голоса и меню параллельно
+            await Promise.all([loadVotes(), loadMenu()]);
+        } catch (e) {
+            console.warn('Ошибка обновления', e);
+        }
+
+        if (btn) {
+            btn.textContent = '🔄 Обновить';
+            btn.disabled = false;
+        }
     }
 
     // ===== ЗАГРУЗКА ГОЛОСОВ =====
     async function loadVotes() {
         try {
-            const res = await fetch(`${GAS_URL}?action=getVotes`, { cache: 'no-store' });
+            const res = await fetch(`${GAS_URL}?action=getVotes&_=${Date.now()}`, {
+                cache: 'no-store'
+            });
             if (res.ok) {
                 const votes = await res.json();
                 ['love', 'like', 'meh', 'bad'].forEach(k => {
