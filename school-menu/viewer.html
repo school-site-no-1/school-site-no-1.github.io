@@ -178,14 +178,13 @@
 
         .container { padding: 0 16px; padding-bottom: 120px; }
 
-        /* ✅ Блоки меню — шире на 50px (было -140px, стало -90px) */
         .meal-card {
             background: #fff; border-radius: 16px;
             padding: 20px; margin-bottom: 14px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.07);
             position: relative; overflow: hidden;
             animation: fadeIn 0.3s ease;
-            max-width: calc(100% - 90px);   /* ← шире на 50px */
+            max-width: calc(100% - 90px);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -213,11 +212,10 @@
             font-size: 15px; color: #444; line-height: 1.6; margin: 0;
         }
 
-        /* ✅ Смайлики — выше на 20px (было -70px, стало -90px) */
         .side-panel {
             position: fixed;
             right: 20px;
-            top: calc(50% - 90px);       /* ← выше на 20px */
+            top: calc(50% - 90px);
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
@@ -395,7 +393,7 @@
             text-align: center;
             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
             margin: 16px 0;
-            max-width: calc(100% - 90px);   /* ✅ тоже шире на 50px */
+            max-width: calc(100% - 90px);
         }
         .weekend-card .icon { font-size: 80px; margin-bottom: 16px; }
         .weekend-card .text {
@@ -448,7 +446,7 @@
             .side-panel {
                 right: 14px;
                 gap: 8px;
-                top: calc(50% - 90px);   /* ✅ тоже выше */
+                top: calc(50% - 90px);
             }
             .vote-panel { gap: 6px; }
             .vote-btn { width: 42px; padding: 3px 0; gap: 5px; }
@@ -460,7 +458,6 @@
 
             .fly-emoji { font-size: 44px; left: 75%; }
 
-            /* На мобильном — 30px, иначе не влезет */
             .meal-card { max-width: calc(100% - 30px); padding: 16px; }
             .weekend-card { max-width: calc(100% - 30px); }
         }
@@ -540,9 +537,11 @@
     </div>
 
     <script>
+    // ⚠️ ЗАМЕНИТЕ НА ВАШ URL ИЗ GOOGLE APPS SCRIPT
+    const GAS_URL = 'https://script.google.com/macros/s/ВАШ_ID/exec';
+
     const MENU_FILE = 'menu_shool.json';
-    const USE_SERVER = location.protocol === 'http:' &&
-                       (location.port === '5000' || location.pathname === '/viewer');
+    const USE_SERVER = true;  // Всегда используем Google Apps Script
 
     const contentEl = document.getElementById('content');
     const statusEl = document.getElementById('status');
@@ -558,8 +557,6 @@
     let calendarMonth = new Date();
     let isCalendarOpen = false;
 
-    const VOTE_KEY = 'school_menu_votes';
-    const MSG_KEY = 'school_menu_messages';
     const VOTE_LABELS = {
         love: '😍', like: '😊', meh: '😐', bad: '😕'
     };
@@ -569,71 +566,47 @@
         loadMenu();
     });
 
+    // ===== ЗАГРУЗКА ГОЛОСОВ =====
     async function loadVotes() {
-        if (USE_SERVER) {
-            try {
-                const res = await fetch('/api/votes', { cache: 'no-store' });
-                if (res.ok) {
-                    const votes = await res.json();
-                    ['love', 'like', 'meh', 'bad'].forEach(k => {
-                        const el = document.getElementById('count-' + k);
-                        if (el) el.textContent = votes[k] || 0;
-                    });
-                    updateBest(votes);
-                    return;
-                }
-            } catch (e) {
-                console.warn('Сервер недоступен, используем localStorage');
-            }
-        }
         try {
-            const data = JSON.parse(localStorage.getItem(VOTE_KEY) || '{}');
-            ['love', 'like', 'meh', 'bad'].forEach(k => {
-                const el = document.getElementById('count-' + k);
-                if (el) el.textContent = data[k] || 0;
-            });
-            updateBest(data);
-        } catch (e) {}
+            const res = await fetch(`${GAS_URL}?action=getVotes`, { cache: 'no-store' });
+            if (res.ok) {
+                const votes = await res.json();
+                ['love', 'like', 'meh', 'bad'].forEach(k => {
+                    const el = document.getElementById('count-' + k);
+                    if (el) el.textContent = votes[k] || 0;
+                });
+                updateBest(votes);
+            }
+        } catch (e) {
+            console.warn('Не удалось загрузить голоса', e);
+        }
     }
 
+    // ===== ГОЛОС =====
     async function vote(type, event) {
-        if (USE_SERVER) {
-            try {
-                const res = await fetch('/api/vote', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({type})
-                });
-                const data = await res.json();
-                if (data.success !== false) {
-                    const votes = data.votes || data;
-                    ['love', 'like', 'meh', 'bad'].forEach(k => {
-                        const el = document.getElementById('count-' + k);
-                        if (el) el.textContent = votes[k] || 0;
-                    });
-                    const countEl = document.getElementById('count-' + type);
-                    if (countEl) {
-                        countEl.classList.add('count-bump');
-                        setTimeout(() => countEl.classList.remove('count-bump'), 400);
-                    }
-                    updateBest(votes);
-                }
-            } catch (e) {
-                console.warn('Ошибка отправки голоса', e);
-            }
-        } else {
-            const data = JSON.parse(localStorage.getItem(VOTE_KEY) || '{}');
-            data[type] = (data[type] || 0) + 1;
-            localStorage.setItem(VOTE_KEY, JSON.stringify(data));
+        try {
+            const res = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'vote', type })
+            });
+            const votes = await res.json();
+            
+            ['love', 'like', 'meh', 'bad'].forEach(k => {
+                const el = document.getElementById('count-' + k);
+                if (el) el.textContent = votes[k] || 0;
+            });
+            
             const countEl = document.getElementById('count-' + type);
             if (countEl) {
-                countEl.textContent = data[type];
                 countEl.classList.add('count-bump');
                 setTimeout(() => countEl.classList.remove('count-bump'), 400);
             }
-            updateBest(data);
+            updateBest(votes);
+        } catch (e) {
+            console.warn('Ошибка отправки голоса', e);
         }
-
         flyEmoji(type);
     }
 
@@ -659,6 +632,7 @@
         });
     }
 
+    // ===== СООБЩЕНИЯ =====
     function toggleMsgPanel() {
         const body = document.getElementById('msgBody');
         body.classList.toggle('open');
@@ -678,35 +652,28 @@
             return;
         }
 
-        if (USE_SERVER) {
-            try {
-                const res = await fetch('/api/message', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({text, name: ''})
-                });
-                const data = await res.json();
-                if (!data.success) {
-                    statusEl.textContent = '❌ ' + (data.error || 'Ошибка');
-                    statusEl.className = 'msg-status error';
-                    return;
-                }
-            } catch (e) {
-                statusEl.textContent = '❌ Сервер недоступен';
+        try {
+            const res = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'message', text, name: '' })
+            });
+            const data = await res.json();
+            
+            if (!data.success) {
+                statusEl.textContent = '❌ ' + (data.error || 'Ошибка');
                 statusEl.className = 'msg-status error';
                 return;
             }
-        } else {
-            try {
-                const messages = JSON.parse(localStorage.getItem(MSG_KEY) || '[]');
-                messages.push({text, date: new Date().toISOString()});
-                localStorage.setItem(MSG_KEY, JSON.stringify(messages));
-            } catch (e) {}
+            
+            textEl.value = '';
+            statusEl.textContent = '✅ Отправлено. Спасибо!';
+            statusEl.className = 'msg-status';
+        } catch (e) {
+            statusEl.textContent = '❌ Сервер недоступен';
+            statusEl.className = 'msg-status error';
+            return;
         }
-
-        textEl.value = '';
-        statusEl.textContent = '✅ Отправлено. Спасибо!';
-        statusEl.className = 'msg-status';
 
         setTimeout(() => {
             document.getElementById('msgBody').classList.remove('open');
@@ -714,11 +681,10 @@
         }, 2000);
     }
 
+    // ===== МЕНЮ =====
     async function loadMenu() {
         try {
-            const url = USE_SERVER
-                ? '/api/menu?_=' + Date.now()
-                : MENU_FILE + '?_=' + Date.now();
+            const url = MENU_FILE + '?_=' + Date.now();
             const res = await fetch(url, { cache: 'no-store' });
             if (!res.ok) throw new Error('Файл menu_shool.json не найден');
             const data = await res.json();
