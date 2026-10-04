@@ -353,7 +353,7 @@
         .tiles-row.current-lesson-row .tile-subject.empty-tile { background: #edf2f7; border-color: #a0aec0; }
 
         /* ==========================================
-           СТАТУСБАР ПЕРЕМЕНЫ — ПАКМАН
+           СТАТУСБАР ПЕРЕМЕНЫ — 100 СЕГМЕНТОВ
            ========================================== */
         .tiles-break-row {
             display: flex;
@@ -414,88 +414,51 @@
             font-size: 7px;
         }
 
-        /* Дорожка с точками и Пакманом — отступ 2px от верхней строки */
-        .break-pacman-track {
-            position: relative;
+        /* Сегменты — 100 штук, на всю ширину, отступ 2px от верхней строки */
+        .break-segments {
+            display: flex;
+            gap: 1px;
+            align-items: center;
             width: 100%;
             flex: 1 1 auto;
             min-width: 0;
-            height: 10px;
-            margin-top: 2px;
+            margin-top: 2px; /* ⭐ отступ 2px от «Идёт загрузка урока…» */
             z-index: 1;
-            overflow: hidden;
         }
-
-        /* Точки — по одной на каждые 30 секунд перемены */
-        .break-pacman-dots {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 12px; /* место для Пакмана */
-            height: 100%;
-            transform: translateY(-50%);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            pointer-events: none;
+        .break-seg {
+            flex: 1 1 0;
+            min-width: 0;
+            height: 8px;
+            background: rgba(113, 128, 150, 0.10);
+            border: 1px solid rgba(113, 128, 150, 0.18);
+            border-radius: 1px;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
-        .break-dot {
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            background: #cbd5e0;
-            flex-shrink: 0;
-            transition: opacity 0.25s ease, transform 0.25s ease;
-        }
-        .break-dot.eaten {
-            opacity: 0;
-            transform: scale(0.2);
-        }
-
-        /* Пакман — жёлтый кружок с вырезанным «ртом» */
-        .break-pacman {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 10px;
-            height: 10px;
-            transform: translateY(-50%);
-            background: #ecc94b;
-            border-radius: 50%;
-            box-shadow: 0 0 3px rgba(214, 158, 46, 0.55);
-            /* «Рот» через conic-gradient — направлен вправо */
-            clip-path: polygon(100% 50%, 50% 50%, 60% 0%, 0% 0%, 0% 100%, 60% 100%);
-            transition: left 0.5s linear;
-            z-index: 2;
-            will-change: left;
-        }
-        /* Анимация жевания */
-        @keyframes pacman-chomp {
-            0%   { clip-path: polygon(100% 50%, 50% 50%, 60% 0%, 0% 0%, 0% 100%, 60% 100%); }
-            50%  { clip-path: polygon(100% 50%, 50% 50%, 100% 0%, 0% 0%, 0% 100%, 100% 100%); }
-            100% { clip-path: polygon(100% 50%, 50% 50%, 60% 0%, 0% 0%, 0% 100%, 60% 100%); }
-        }
-        .tiles-break-row.current-break-row .break-pacman {
-            animation: pacman-chomp 0.35s infinite;
+        .break-seg.on {
+            background: linear-gradient(180deg, #718096, #4a5568);
+            border-color: #4a5568;
+            box-shadow: 0 0 2px rgba(74, 85, 104, 0.30);
         }
 
         /* Активная перемена — акценты */
         .tiles-break-row.current-break-row .break-top .break-time { color: #2d3748; font-size: 8px; }
         .tiles-break-row.current-break-row .break-top .break-percent { color: #2d3748; font-size: 9px; }
-        .tiles-break-row.current-break-row .break-pacman-track { height: 12px; }
-        .tiles-break-row.current-break-row .break-pacman { width: 12px; height: 12px; }
-        .tiles-break-row.current-break-row .break-dot { background: #718096; }
+        .tiles-break-row.current-break-row .break-seg { height: 10px; }
+        .tiles-break-row.current-break-row .break-seg.on {
+            background: linear-gradient(180deg, #4a5568, #2d3748);
+            border-color: #2d3748;
+            box-shadow: 0 0 3px rgba(45, 55, 72, 0.40);
+        }
 
         /* Прошедшая перемена */
         .tiles-break-row.past-break-row { opacity: 0.55; }
         .tiles-break-row.past-break-row .break-top .break-time { color: #a0aec0; }
         .tiles-break-row.past-break-row .break-top .break-percent { color: #a0aec0; }
-        .tiles-break-row.past-break-row .break-pacman {
+        .tiles-break-row.past-break-row .break-seg.on {
             background: #cbd5e0;
+            border-color: #cbd5e0;
             box-shadow: none;
-            animation: none;
         }
-        .tiles-break-row.past-break-row .break-dot { background: #e2e8f0; }
 
         /* Мобильная адаптация */
         @media (max-width: 700px) {
@@ -513,11 +476,9 @@
             .break-top .break-percent { font-size: 6px; }
             .tiles-break-row.current-break-row .break-top .break-time { font-size: 7px; }
             .tiles-break-row.current-break-row .break-top .break-percent { font-size: 8px; }
-            .break-pacman-track { margin-top: 2px; height: 8px; }
-            .tiles-break-row.current-break-row .break-pacman-track { height: 10px; }
-            .break-pacman { width: 8px; height: 8px; }
-            .tiles-break-row.current-break-row .break-pacman { width: 10px; height: 10px; }
-            .break-dot { width: 2px; height: 2px; }
+            .break-segments { gap: 0.5px; margin-top: 2px; }
+            .break-seg { height: 6px; border-radius: 1px; }
+            .tiles-break-row.current-break-row .break-seg { height: 8px; }
         }
 
         @media (max-width: 480px) {
@@ -534,11 +495,9 @@
             .break-top .break-percent { font-size: 5.5px; }
             .tiles-break-row.current-break-row .break-top .break-time { font-size: 6.5px; }
             .tiles-break-row.current-break-row .break-top .break-percent { font-size: 7px; }
-            .break-pacman-track { margin-top: 2px; height: 7px; }
-            .tiles-break-row.current-break-row .break-pacman-track { height: 9px; }
-            .break-pacman { width: 7px; height: 7px; }
-            .tiles-break-row.current-break-row .break-pacman { width: 9px; height: 9px; }
-            .break-dot { width: 2px; height: 2px; }
+            .break-segments { gap: 0.5px; margin-top: 2px; }
+            .break-seg { height: 5px; border-radius: 1px; }
+            .tiles-break-row.current-break-row .break-seg { height: 7px; }
         }
 
         /* ============================
@@ -751,9 +710,7 @@
         ];
 
         var MAX_LESSONS = 9;
-        // Одна точка = 30 секунд. 10 мин = 20 точек, 15 мин = 30 точек.
-        var DOT_SECONDS = 30;
-
+        var BREAK_SEGMENTS = 100; // ⭐ 100 сегментов
         var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
@@ -828,9 +785,7 @@
                 end: end,
                 duration: duration,
                 startMin: parseTime(start),
-                endMin: parseTime(end),
-                // Количество точек на дорожке
-                dotsCount: Math.max(1, Math.round((duration * 60) / DOT_SECONDS))
+                endMin: parseTime(end)
             };
         }
 
@@ -1151,9 +1106,13 @@
         }
 
         // ================================================================
-        // ОТРИСОВКА ПАКМАНА НА ПЕРЕМЕНЕ
+        // ОТРИСОВКА ПЛИТОК
         // ================================================================
-        function renderBreakPacman(breakInfo, status, progress) {
+        function renderBreakSegments(breakInfo, status, progress) {
+            var filled = Math.round((progress / 100) * BREAK_SEGMENTS);
+            if (status === 'past') filled = BREAK_SEGMENTS;
+            if (status === 'future') filled = 0;
+
             // Текст слева: во время перемены — "Идёт загрузка урока...", иначе — время перемены
             var leftText;
             if (status === 'now') {
@@ -1166,20 +1125,16 @@
             if (status === 'past') percent = 100;
             if (status === 'future') percent = 0;
 
-            var totalDots = breakInfo.dotsCount;
-            var dotsHtml = '';
-            for (var i = 0; i < totalDots; i++) {
-                dotsHtml += '<div class="break-dot"></div>';
-            }
-
             var html = '';
             html += '<div class="break-top">';
             html += '<span class="break-time" title="' + breakInfo.start + '–' + breakInfo.end + '">' + leftText + '</span>';
             html += '<span class="break-percent">' + percent + '%</span>';
             html += '</div>';
-            html += '<div class="break-pacman-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '" aria-label="Прогресс перемены">';
-            html += '<div class="break-pacman-dots">' + dotsHtml + '</div>';
-            html += '<div class="break-pacman" style="left:calc(' + percent + '% - ' + (percent / 100 * 12).toFixed(1) + 'px)"></div>';
+            html += '<div class="break-segments" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + percent + '" aria-label="Прогресс перемены">';
+            for (var i = 0; i < BREAK_SEGMENTS; i++) {
+                var on = (i < filled) ? ' on' : '';
+                html += '<div class="break-seg' + on + '"></div>';
+            }
             html += '</div>';
             return html;
         }
@@ -1237,6 +1192,7 @@
 
             // Тело
             var bodyHTML = '';
+            var currentBreakIndex = (info.type === 'break') ? info.breakIndex : -1;
 
             for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
                 var idx = lessonNum - 1;
@@ -1245,7 +1201,7 @@
                 var isCurrent = (lessonStatus === 'now');
                 var isPast = (lessonStatus === 'past');
 
-                // Во время перемены / до начала / после уроков текущий урок не подсвечиваем
+                // ⭐ Во время перемены / до начала / после уроков текущий урок не подсвечиваем
                 if (info.type === 'break' || info.type === 'before' || info.type === 'after') {
                     isCurrent = false;
                 }
@@ -1281,7 +1237,7 @@
                 });
                 bodyHTML += '</div>';
 
-                // --- Статусбар перемены с Пакманом ---
+                // --- Статусбар перемены с сегментированным прогрессом ---
                 if (lessonNum < MAX_LESSONS) {
                     var breakInfo = getBreakInfo(idx);
                     if (breakInfo) {
@@ -1293,7 +1249,7 @@
                         else if (status === 'past') rowClass += ' past-break-row';
 
                         bodyHTML += '<div class="' + rowClass + '" role="row" aria-label="Перемена ' + breakInfo.start + '–' + breakInfo.end + '">';
-                        bodyHTML += renderBreakPacman(breakInfo, status, progress);
+                        bodyHTML += renderBreakSegments(breakInfo, status, progress);
                         bodyHTML += '</div>';
                     }
                 }
@@ -1359,22 +1315,13 @@
             var row = document.querySelector('.tiles-break-row.current-break-row');
             if (!row) return;
 
-            // Двигаем Пакмана
-            var pacman = row.querySelector('.break-pacman');
-            if (pacman) {
-                var offset = (progress / 100) * 12;
-                pacman.style.left = 'calc(' + progress.toFixed(2) + '% - ' + offset.toFixed(1) + 'px)';
-            }
-
-            // «Съедаем» точки, которые Пакман уже прошёл
-            var dots = row.querySelectorAll('.break-dot');
-            var totalDots = dots.length;
-            var eaten = Math.floor((progress / 100) * totalDots);
-            for (var i = 0; i < dots.length; i++) {
-                if (i < eaten) {
-                    dots[i].classList.add('eaten');
+            var segments = row.querySelectorAll('.break-segments .break-seg');
+            var filled = Math.round((progress / 100) * BREAK_SEGMENTS);
+            for (var i = 0; i < segments.length; i++) {
+                if (i < filled) {
+                    segments[i].classList.add('on');
                 } else {
-                    dots[i].classList.remove('eaten');
+                    segments[i].classList.remove('on');
                 }
             }
 
@@ -1464,7 +1411,7 @@
                 }
             });
 
-            console.log('✅ Расписание v' + APP_VERSION + ' (Пакман на перемене) загружено!');
+            console.log('✅ Расписание v' + APP_VERSION + ' (100 сегментов перемены, отступ 2px) загружено!');
             console.log('ℹ️ Автообновление данных: только в 16:00');
         });
     </script>
