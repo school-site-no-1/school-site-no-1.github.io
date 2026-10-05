@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.20">
+<html lang="ru" data-version="v4.3.21">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -130,7 +130,7 @@
         .period.past-period .line2 { color: #a0aec0; }
 
         /* ==========================================
-           НОВЫЕ ЧАСЫ — справа вверху
+           НОВЫЕ ЧАСЫ — справа вверху (без поворота)
            ========================================== */
         .header-clock {
             flex: 0 0 auto;
@@ -142,12 +142,12 @@
             padding-top: 2px;
         }
 
-        /* Аналоговый циферблат со стрелками (повёрнут на 90°) */
+        /* Аналоговый циферблат со стрелками (без поворота) */
         .analog-clock {
             width: 38px;
             height: 38px;
             flex-shrink: 0;
-            transform: rotate(90deg);
+            transform: none;
             transform-origin: center;
         }
         .analog-clock .face {
@@ -773,7 +773,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.20';
+        var APP_VERSION = '4.3.21';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -820,7 +820,7 @@
         }
 
         // ================================================================
-        // НОВЫЕ ЧАСЫ (собственный рендер, без clock.js)
+        // НОВЫЕ ЧАСЫ (без поворота, собственный рендер)
         // ================================================================
         var CLOCK_TICKS_DRAWN = false;
 
@@ -875,7 +875,7 @@
                 dayEl.textContent = dayFull;
             }
 
-            // Стрелки
+            // Стрелки (стандартное положение: 12 сверху)
             var hourAngle = ((h % 12) + m / 60 + s / 3600) * 30;
             var minuteAngle = (m + s / 60) * 6;
             var secondAngle = s * 6;
@@ -1542,7 +1542,7 @@
                 }
             });
 
-            console.log('✅ Расписание v' + APP_VERSION + ' (новые часы справа вверху) загружено!');
+            console.log('✅ Расписание v' + APP_VERSION + ' (часы без поворота) загружено!');
             console.log('ℹ️ Автообновление данных: только в 16:00');
         });
     </script>
