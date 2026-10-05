@@ -51,25 +51,26 @@
         }
 
         /* ============================
-           УВЕДОМЛЕНИЕ СВЕРХУ
+           УВЕДОМЛЕНИЕ СВЕРХУ (уменьшено в 2 раза)
            ============================ */
         .top-notification {
             position: fixed;
-            top: 10px;
+            top: 8px;
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
             background: #38a169;
             color: #ffffff;
-            padding: 8px 24px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 5px;
+            font-size: 7px;
             font-weight: 600;
             z-index: 9999;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
             opacity: 0;
             pointer-events: none;
             white-space: nowrap;
+            line-height: 1.2;
         }
         .top-notification.show {
             transform: translateX(-50%) translateY(0);
@@ -79,7 +80,7 @@
         .top-notification.warning { background: #d69e2e; }
 
         /* ============================
-           ШАПКА — часы встроены в строку
+           ШАПКА — часы прижаты вправо
            ============================ */
         .header {
             flex-shrink: 0;
@@ -87,8 +88,8 @@
             align-items: center;
             justify-content: space-between;
             gap: 6px;
-            min-height: 34px;
-            max-height: 34px;
+            min-height: 42px;
+            max-height: 42px;
             padding: 2px 4px;
             border-bottom: 1px solid #e2e8f0;
             background: #ffffff;
@@ -98,11 +99,10 @@
         .header-banner { display: none !important; }
         .mobile-banner-text { display: none !important; }
 
-        /* Центральный блок: период + часы — в одну строку */
         .header-center {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             flex: 1 1 auto;
             min-width: 0;
             justify-content: flex-start;
@@ -128,18 +128,17 @@
         .period.past-period .line1 { color: #a0aec0; }
         .period.past-period .line2 { color: #a0aec0; }
 
-        /* Часы — прямо в шапке, без масштабирования, по центру */
+        /* Часы — прижаты к правому краю шапки */
         #clockContainer {
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex: 1 1 auto;
-            min-width: 0;
-            margin: 0;
+            justify-content: flex-end;
+            flex: 0 0 auto;
+            margin-left: auto;
+            margin-right: 4px;
             padding: 0;
             transform: none;
-            transform-origin: center;
-            overflow: hidden;
+            overflow: visible;
         }
         .clock-wrapper {
             display: flex;
@@ -147,49 +146,49 @@
             gap: 5px;
             line-height: 1;
         }
+        /* Аналоговые часы (SVG) — повёрнуты на 90° */
         .clock-wrapper svg {
-            width: 22px;
-            height: 22px;
+            width: 30px;
+            height: 30px;
             flex-shrink: 0;
-            transform: rotate(0deg) !important;
+            transform: rotate(90deg) !important;
             transform-origin: center;
         }
+        /* Текстовый блок: время сверху, дата и день недели — под часами */
         .clock-text {
             display: flex;
-            flex-direction: row;
-            align-items: baseline;
-            gap: 6px;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
             white-space: nowrap;
+            line-height: 1.05;
         }
         .clock-text .digital-time {
             font-size: 13px;
             color: #2d3748;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
-            line-height: 1;
+            line-height: 1.05;
         }
         .clock-text .date {
-            font-size: 11px;
+            font-size: 9px;
             color: #4a5568;
             font-weight: 600;
-            line-height: 1;
+            line-height: 1.05;
         }
         .clock-text .countdown { display: none !important; }
         .clock-day-row {
-            font-size: 10px;
+            font-size: 9px;
             color: #4a5568;
             font-weight: 600;
-            line-height: 1;
+            line-height: 1.05;
             white-space: nowrap;
         }
         .clock-day-row .day-name { color: #2d3748; font-weight: 700; }
 
-        /* Правый блок шапки (пустой, оставлен для совместимости) */
         .header-right {
-            display: flex;
-            align-items: center;
-            flex-shrink: 0;
-            margin-left: 4px;
+            display: none !important;
         }
 
         /* ============================
@@ -380,7 +379,7 @@
         .tiles-row.current-lesson-row .tile-subject.empty-tile { background: #edf2f7; border-color: #a0aec0; }
 
         /* ==========================================
-           СТАТУСБАР ПЕРЕМЕНЫ — 100 СЕГМЕНТОВ (поджат)
+           СТАТУСБАР ПЕРЕМЕНЫ — 100 СЕГМЕНТОВ
            ========================================== */
         .tiles-break-row {
             display: flex;
@@ -484,14 +483,13 @@
 
         /* Мобильная адаптация */
         @media (max-width: 700px) {
-            .header { min-height: 30px; max-height: 30px; gap: 4px; padding: 1px 3px; }
-            .header-center { gap: 6px; }
+            .header { min-height: 36px; max-height: 36px; gap: 4px; padding: 1px 3px; }
+            .header-center { gap: 4px; }
             .period .line1 { font-size: 9px; }
             .period .line2 { font-size: 8px; }
-            #clockContainer { transform: scale(0.85); transform-origin: center; }
-            .clock-wrapper svg { width: 18px; height: 18px; }
+            .clock-wrapper svg { width: 26px; height: 26px; }
             .clock-text .digital-time { font-size: 11px; }
-            .clock-text .date { font-size: 9px; }
+            .clock-text .date { font-size: 8px; }
             .clock-day-row { font-size: 8px; }
 
             .tiles-header-row .tile-header { font-size: 7px; padding: 2px 1px; }
@@ -511,14 +509,15 @@
             .break-segments { gap: 0.5px; margin-top: 2px; }
             .break-seg { height: 5px; border-radius: 1px; }
             .tiles-break-row.current-break-row .break-seg { height: 7px; }
+
+            .top-notification { font-size: 6px; padding: 3px 10px; }
         }
 
         @media (max-width: 480px) {
-            .header { min-height: 28px; max-height: 28px; }
+            .header { min-height: 32px; max-height: 32px; }
             .period .line1 { font-size: 8px; }
             .period .line2 { font-size: 7px; }
-            #clockContainer { transform: scale(0.72); }
-            .clock-wrapper svg { width: 16px; height: 16px; }
+            .clock-wrapper svg { width: 22px; height: 22px; }
             .clock-text .digital-time { font-size: 10px; }
             .clock-text .date { display: none; }
             .clock-day-row { font-size: 7px; }
@@ -539,6 +538,8 @@
             .break-segments { gap: 0.5px; margin-top: 2px; }
             .break-seg { height: 4px; border-radius: 1px; }
             .tiles-break-row.current-break-row .break-seg { height: 6px; }
+
+            .top-notification { font-size: 6px; padding: 3px 8px; }
         }
 
         /* ============================
@@ -1445,7 +1446,7 @@
                 }
             });
 
-            console.log('✅ Расписание v' + APP_VERSION + ' (часы встроены в шапку) загружено!');
+            console.log('✅ Расписание v' + APP_VERSION + ' (часы повернуты, уведомление уменьшено) загружено!');
             console.log('ℹ️ Автообновление данных: только в 16:00');
         });
     </script>
