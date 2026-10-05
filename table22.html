@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.19">
+<html lang="ru" data-version="v4.3.20">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,16 +80,16 @@
         .top-notification.warning { background: #d69e2e; }
 
         /* ============================
-           ШАПКА — часы прижаты вправо
+           ШАПКА — новые часы справа вверху
            ============================ */
         .header {
             flex-shrink: 0;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 6px;
-            min-height: 42px;
-            max-height: 42px;
+            min-height: 48px;
+            max-height: 48px;
             padding: 2px 4px;
             border-bottom: 1px solid #e2e8f0;
             background: #ffffff;
@@ -107,6 +107,7 @@
             min-width: 0;
             justify-content: flex-start;
             overflow: hidden;
+            align-self: center;
         }
         .header-center .day-indicator { display: none !important; }
         .header-center .divider { display: none !important; }
@@ -128,68 +129,91 @@
         .period.past-period .line1 { color: #a0aec0; }
         .period.past-period .line2 { color: #a0aec0; }
 
-        /* Часы — прижаты к правому краю шапки */
-        #clockContainer {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+        /* ==========================================
+           НОВЫЕ ЧАСЫ — справа вверху
+           ========================================== */
+        .header-clock {
             flex: 0 0 auto;
-            margin-left: auto;
-            margin-right: 4px;
-            padding: 0;
-            transform: none;
-            overflow: visible;
-        }
-        .clock-wrapper {
             display: flex;
-            align-items: center;
-            gap: 5px;
-            line-height: 1;
+            align-items: flex-start;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-left: auto;
+            padding-top: 2px;
         }
-        /* Аналоговые часы (SVG) — повёрнуты на 90° */
-        .clock-wrapper svg {
-            width: 30px;
-            height: 30px;
+
+        /* Аналоговый циферблат со стрелками (повёрнут на 90°) */
+        .analog-clock {
+            width: 38px;
+            height: 38px;
             flex-shrink: 0;
-            transform: rotate(90deg) !important;
+            transform: rotate(90deg);
             transform-origin: center;
         }
+        .analog-clock .face {
+            fill: #ffffff;
+            stroke: #4a5568;
+            stroke-width: 1.5;
+        }
+        .analog-clock .tick {
+            stroke: #a0aec0;
+            stroke-width: 1;
+            stroke-linecap: round;
+        }
+        .analog-clock .tick-major {
+            stroke: #4a5568;
+            stroke-width: 1.6;
+        }
+        .analog-clock .hand-hour {
+            stroke: #2d3748;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+        }
+        .analog-clock .hand-minute {
+            stroke: #2d3748;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+        }
+        .analog-clock .hand-second {
+            stroke: #e53e3e;
+            stroke-width: 1;
+            stroke-linecap: round;
+        }
+        .analog-clock .center-dot {
+            fill: #2d3748;
+        }
+
         /* Текстовый блок: время сверху, дата и день недели — под часами */
-        .clock-text {
+        .clock-info {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            justify-content: center;
-            gap: 0;
-            white-space: nowrap;
+            justify-content: flex-start;
             line-height: 1.05;
+            white-space: nowrap;
+            padding-top: 1px;
         }
-        .clock-text .digital-time {
+        .clock-info .digital-time {
             font-size: 13px;
             color: #2d3748;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             line-height: 1.05;
         }
-        .clock-text .date {
+        .clock-info .date {
             font-size: 9px;
             color: #4a5568;
             font-weight: 600;
             line-height: 1.05;
         }
-        .clock-text .countdown { display: none !important; }
-        .clock-day-row {
+        .clock-info .day-name {
             font-size: 9px;
-            color: #4a5568;
-            font-weight: 600;
+            color: #2d3748;
+            font-weight: 700;
             line-height: 1.05;
-            white-space: nowrap;
         }
-        .clock-day-row .day-name { color: #2d3748; font-weight: 700; }
 
-        .header-right {
-            display: none !important;
-        }
+        .header-right { display: none !important; }
 
         /* ============================
            ОСНОВНАЯ ЧАСТЬ
@@ -483,14 +507,14 @@
 
         /* Мобильная адаптация */
         @media (max-width: 700px) {
-            .header { min-height: 36px; max-height: 36px; gap: 4px; padding: 1px 3px; }
+            .header { min-height: 42px; max-height: 42px; gap: 4px; padding: 1px 3px; }
             .header-center { gap: 4px; }
             .period .line1 { font-size: 9px; }
             .period .line2 { font-size: 8px; }
-            .clock-wrapper svg { width: 26px; height: 26px; }
-            .clock-text .digital-time { font-size: 11px; }
-            .clock-text .date { font-size: 8px; }
-            .clock-day-row { font-size: 8px; }
+            .analog-clock { width: 32px; height: 32px; }
+            .clock-info .digital-time { font-size: 11px; }
+            .clock-info .date { font-size: 8px; }
+            .clock-info .day-name { font-size: 8px; }
 
             .tiles-header-row .tile-header { font-size: 7px; padding: 2px 1px; }
             .tiles-header-row .tile-header:first-child { flex: 0 0 26px; min-width: 26px; max-width: 26px; font-size: 7px; }
@@ -514,13 +538,13 @@
         }
 
         @media (max-width: 480px) {
-            .header { min-height: 32px; max-height: 32px; }
+            .header { min-height: 38px; max-height: 38px; }
             .period .line1 { font-size: 8px; }
             .period .line2 { font-size: 7px; }
-            .clock-wrapper svg { width: 22px; height: 22px; }
-            .clock-text .digital-time { font-size: 10px; }
-            .clock-text .date { display: none; }
-            .clock-day-row { font-size: 7px; }
+            .analog-clock { width: 28px; height: 28px; }
+            .clock-info .digital-time { font-size: 10px; }
+            .clock-info .date { display: none; }
+            .clock-info .day-name { font-size: 7px; }
 
             .tiles-header-row .tile-header { font-size: 6px; padding: 2px 0; }
             .tiles-header-row .tile-header:first-child { flex: 0 0 22px; min-width: 22px; max-width: 22px; font-size: 6px; }
@@ -677,13 +701,27 @@
             <div class="header-left"></div>
 
             <div class="header-center">
-                <span class="day-indicator" id="dayIndicator">ПН</span>
-                <span class="divider">|</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
-                <div id="clockContainer"></div>
             </div>
 
-            <div class="header-right"></div>
+            <!-- ===== НОВЫЕ ЧАСЫ — СПРАВА ВВЕРХУ ===== -->
+            <div class="header-clock" id="headerClock" aria-label="Текущее время">
+                <svg class="analog-clock" viewBox="0 0 40 40" role="img" aria-hidden="true">
+                    <circle class="face" cx="20" cy="20" r="18"/>
+                    <!-- Метки часов -->
+                    <g id="clockTicks"></g>
+                    <!-- Стрелки -->
+                    <line class="hand-hour"   id="handHour"   x1="20" y1="20" x2="20" y2="11"/>
+                    <line class="hand-minute" id="handMinute" x1="20" y1="20" x2="20" y2="7"/>
+                    <line class="hand-second" id="handSecond" x1="20" y1="20" x2="20" y2="6"/>
+                    <circle class="center-dot" cx="20" cy="20" r="1.6"/>
+                </svg>
+                <div class="clock-info">
+                    <span class="digital-time" id="digitalTime">--:--</span>
+                    <span class="date" id="clockDate">--.--.----</span>
+                    <span class="day-name" id="clockDay">—</span>
+                </div>
+            </div>
         </header>
 
         <div id="pwaNotification">
@@ -714,8 +752,6 @@
         <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
     </div>
 
-    <script src="clock.js"></script>
-
     <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
     <script type="text/javascript">
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -737,7 +773,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.19';
+        var APP_VERSION = '4.3.20';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -784,7 +820,76 @@
         }
 
         // ================================================================
-        // ЛОГИКА ВРЕМЕНИ
+        // НОВЫЕ ЧАСЫ (собственный рендер, без clock.js)
+        // ================================================================
+        var CLOCK_TICKS_DRAWN = false;
+
+        function drawClockTicks() {
+            if (CLOCK_TICKS_DRAWN) return;
+            var g = document.getElementById('clockTicks');
+            if (!g) return;
+            var svgNS = 'http://www.w3.org/2000/svg';
+            for (var i = 0; i < 12; i++) {
+                var angle = (i * 30) * Math.PI / 180;
+                var isMajor = (i % 3 === 0);
+                var r1 = isMajor ? 13.5 : 14.5;
+                var r2 = 17;
+                var x1 = 20 + Math.sin(angle) * r1;
+                var y1 = 20 - Math.cos(angle) * r1;
+                var x2 = 20 + Math.sin(angle) * r2;
+                var y2 = 20 - Math.cos(angle) * r2;
+                var line = document.createElementNS(svgNS, 'line');
+                line.setAttribute('x1', x1.toFixed(2));
+                line.setAttribute('y1', y1.toFixed(2));
+                line.setAttribute('x2', x2.toFixed(2));
+                line.setAttribute('y2', y2.toFixed(2));
+                line.setAttribute('class', isMajor ? 'tick tick-major' : 'tick');
+                g.appendChild(line);
+            }
+            CLOCK_TICKS_DRAWN = true;
+        }
+
+        function updateClock() {
+            var now = new Date();
+            var h = now.getHours();
+            var m = now.getMinutes();
+            var s = now.getSeconds();
+
+            // Цифровое время
+            var dt = document.getElementById('digitalTime');
+            if (dt) dt.textContent = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
+
+            // Дата
+            var dateEl = document.getElementById('clockDate');
+            if (dateEl) {
+                var dd = now.getDate();
+                var mm = now.getMonth() + 1;
+                var yyyy = now.getFullYear();
+                dateEl.textContent = (dd < 10 ? '0' + dd : dd) + '.' + (mm < 10 ? '0' + mm : mm) + '.' + yyyy;
+            }
+
+            // День недели
+            var dayEl = document.getElementById('clockDay');
+            if (dayEl) {
+                var dayFull = DAYS_FULL[now.getDay()] || '';
+                dayEl.textContent = dayFull;
+            }
+
+            // Стрелки
+            var hourAngle = ((h % 12) + m / 60 + s / 3600) * 30;
+            var minuteAngle = (m + s / 60) * 6;
+            var secondAngle = s * 6;
+
+            var handHour = document.getElementById('handHour');
+            var handMinute = document.getElementById('handMinute');
+            var handSecond = document.getElementById('handSecond');
+            if (handHour)   handHour.setAttribute('transform',   'rotate(' + hourAngle.toFixed(2) + ' 20 20)');
+            if (handMinute) handMinute.setAttribute('transform', 'rotate(' + minuteAngle.toFixed(2) + ' 20 20)');
+            if (handSecond) handSecond.setAttribute('transform', 'rotate(' + secondAngle.toFixed(2) + ' 20 20)');
+        }
+
+        // ================================================================
+        // ЛОГИКА ВРЕМЕНИ (расписание)
         // ================================================================
         function parseTime(timeStr) {
             var parts = timeStr.split(':');
@@ -1195,12 +1300,6 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
-            var dayDisplay = displayDay.full;
-            if (displayDay.isTomorrow) {
-                dayDisplay = 'Завтра, ' + dayDisplay;
-            }
-            document.getElementById('dayIndicator').textContent = dayDisplay;
-
             var periodEl = document.getElementById('currentPeriod');
             periodEl.innerHTML = getPeriodName();
             if (isPeriodPast()) {
@@ -1411,14 +1510,10 @@
         // ИНИЦИАЛИЗАЦИЯ
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            if (typeof initClock === 'function') {
-                initClock('clockContainer');
-            } else {
-                console.warn('clock.js не загружен!');
-                if (typeof initRotatedClock === 'function') {
-                    initRotatedClock('clockContainer');
-                }
-            }
+            // Рисуем метки циферблата и запускаем новые часы
+            drawClockTicks();
+            updateClock();
+            setInterval(updateClock, 1000);
 
             window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
@@ -1443,10 +1538,11 @@
             document.addEventListener('visibilitychange', function() {
                 if (!document.hidden) {
                     refreshAll();
+                    updateClock();
                 }
             });
 
-            console.log('✅ Расписание v' + APP_VERSION + ' (часы повернуты, уведомление уменьшено) загружено!');
+            console.log('✅ Расписание v' + APP_VERSION + ' (новые часы справа вверху) загружено!');
             console.log('ℹ️ Автообновление данных: только в 16:00');
         });
     </script>
