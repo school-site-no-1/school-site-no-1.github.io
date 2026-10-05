@@ -79,31 +79,34 @@
         .top-notification.warning { background: #d69e2e; }
 
         /* ============================
-           ШАПКА
+           ШАПКА — часы встроены в строку
            ============================ */
         .header {
             flex-shrink: 0;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: none !important;
-            padding-bottom: 1px;
-            flex-wrap: nowrap;
-            gap: 4px;
-            min-height: 35px;
-            max-height: 35px;
+            justify-content: space-between;
+            gap: 6px;
+            min-height: 34px;
+            max-height: 34px;
+            padding: 2px 4px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #ffffff;
+            overflow: hidden;
         }
         .header-left { display: none !important; }
         .header-banner { display: none !important; }
         .mobile-banner-text { display: none !important; }
 
+        /* Центральный блок: период + часы — в одну строку */
         .header-center {
             display: flex;
             align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
+            gap: 10px;
             flex: 1 1 auto;
+            min-width: 0;
             justify-content: flex-start;
+            overflow: hidden;
         }
         .header-center .day-indicator { display: none !important; }
         .header-center .divider { display: none !important; }
@@ -111,61 +114,83 @@
         .period {
             color: #2d3748;
             font-weight: 600;
-            min-height: 1.4em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            line-height: 1.1;
+            line-height: 1.05;
+            flex-shrink: 0;
             transition: opacity 0.2s;
         }
-        .period .line1 { font-size: 10px; line-height: 1.1; color: #2d3748; }
+        .period .line1 { font-size: 10px; line-height: 1.05; color: #2d3748; }
         .period .line2 { font-size: 9px; font-weight: 500; color: #4a5568; }
 
         .period.past-period { opacity: 0.45; filter: grayscale(0.4); }
         .period.past-period .line1 { color: #a0aec0; }
         .period.past-period .line2 { color: #a0aec0; }
 
-        .header-right {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 1px;
-            flex-shrink: 0;
-            margin-left: auto;
-        }
-        .header-right .schedule-updated {
-            color: #718096;
-            font-weight: 500;
-            background: #edf2f7;
-            padding: 0 6px;
-            border-radius: 8px;
-            font-size: 8px;
-            margin-top: 0px;
-        }
-        .header-right .schedule-updated.error {
-            color: #e53e3e;
-            background: #fff5f5;
-        }
-
-        /* ============================
-           ЧАСЫ (в шапке)
-           ============================ */
+        /* Часы — прямо в шапке, без масштабирования, по центру */
         #clockContainer {
-            transform: scale(0.55);
-            transform-origin: left center;
-            margin-top: 0;
-            margin-left: 0;
-            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1 1 auto;
+            min-width: 0;
+            margin: 0;
+            padding: 0;
+            transform: none;
+            transform-origin: center;
+            overflow: hidden;
         }
-        .clock-wrapper { display: flex; align-items: center; gap: 3px; }
-        .clock-wrapper svg { width: 19px; height: 19px; transform: rotate(0deg) !important; transform-origin: center; }
-        .clock-text { display: flex; flex-direction: column; align-items: flex-start; white-space: nowrap; }
-        .clock-text .digital-time { font-size: 0.45em; color: #2d3748; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
-        .clock-text .date { font-size: 0.55em; color: #2d3748; font-weight: 600; line-height: 1.1; }
+        .clock-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            line-height: 1;
+        }
+        .clock-wrapper svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            transform: rotate(0deg) !important;
+            transform-origin: center;
+        }
+        .clock-text {
+            display: flex;
+            flex-direction: row;
+            align-items: baseline;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .clock-text .digital-time {
+            font-size: 13px;
+            color: #2d3748;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        .clock-text .date {
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 600;
+            line-height: 1;
+        }
         .clock-text .countdown { display: none !important; }
-        .clock-day-row { font-size: 0.4em; color: #4a5568; font-weight: 600; line-height: 1.1; }
+        .clock-day-row {
+            font-size: 10px;
+            color: #4a5568;
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
+        }
         .clock-day-row .day-name { color: #2d3748; font-weight: 700; }
+
+        /* Правый блок шапки (пустой, оставлен для совместимости) */
+        .header-right {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
 
         /* ============================
            ОСНОВНАЯ ЧАСТЬ
@@ -375,7 +400,6 @@
             transition: min-height 0.35s ease, max-height 0.35s ease, opacity 0.2s;
         }
 
-        /* Активная перемена — увеличенная высота */
         .tiles-break-row.current-break-row {
             min-height: 26px;
             max-height: 26px;
@@ -386,7 +410,6 @@
             padding: 2px 6px 3px;
         }
 
-        /* Верхняя строка: слева время/статус, справа проценты */
         .break-top {
             display: flex;
             align-items: center;
@@ -416,7 +439,6 @@
             font-size: 7px;
         }
 
-        /* Сегменты — 100 штук, на всю ширину, отступ 2px от верхней строки */
         .break-segments {
             display: flex;
             gap: 1px;
@@ -442,7 +464,6 @@
             box-shadow: 0 0 2px rgba(74, 85, 104, 0.30);
         }
 
-        /* Активная перемена — акценты */
         .tiles-break-row.current-break-row .break-top .break-time { color: #2d3748; font-size: 8px; }
         .tiles-break-row.current-break-row .break-top .break-percent { color: #2d3748; font-size: 9px; }
         .tiles-break-row.current-break-row .break-seg { height: 8px; }
@@ -452,7 +473,6 @@
             box-shadow: 0 0 3px rgba(45, 55, 72, 0.40);
         }
 
-        /* Прошедшая перемена */
         .tiles-break-row.past-break-row { opacity: 0.55; }
         .tiles-break-row.past-break-row .break-top .break-time { color: #a0aec0; }
         .tiles-break-row.past-break-row .break-top .break-percent { color: #a0aec0; }
@@ -464,6 +484,16 @@
 
         /* Мобильная адаптация */
         @media (max-width: 700px) {
+            .header { min-height: 30px; max-height: 30px; gap: 4px; padding: 1px 3px; }
+            .header-center { gap: 6px; }
+            .period .line1 { font-size: 9px; }
+            .period .line2 { font-size: 8px; }
+            #clockContainer { transform: scale(0.85); transform-origin: center; }
+            .clock-wrapper svg { width: 18px; height: 18px; }
+            .clock-text .digital-time { font-size: 11px; }
+            .clock-text .date { font-size: 9px; }
+            .clock-day-row { font-size: 8px; }
+
             .tiles-header-row .tile-header { font-size: 7px; padding: 2px 1px; }
             .tiles-header-row .tile-header:first-child { flex: 0 0 26px; min-width: 26px; max-width: 26px; font-size: 7px; }
             .tile-number { flex: 0 0 26px; min-width: 26px; max-width: 26px; font-size: 9px; }
@@ -484,6 +514,15 @@
         }
 
         @media (max-width: 480px) {
+            .header { min-height: 28px; max-height: 28px; }
+            .period .line1 { font-size: 8px; }
+            .period .line2 { font-size: 7px; }
+            #clockContainer { transform: scale(0.72); }
+            .clock-wrapper svg { width: 16px; height: 16px; }
+            .clock-text .digital-time { font-size: 10px; }
+            .clock-text .date { display: none; }
+            .clock-day-row { font-size: 7px; }
+
             .tiles-header-row .tile-header { font-size: 6px; padding: 2px 0; }
             .tiles-header-row .tile-header:first-child { flex: 0 0 22px; min-width: 22px; max-width: 22px; font-size: 6px; }
             .tile-number { flex: 0 0 22px; min-width: 22px; max-width: 22px; font-size: 8px; }
@@ -643,8 +682,7 @@
                 <div id="clockContainer"></div>
             </div>
 
-            <div class="header-right">
-            </div>
+            <div class="header-right"></div>
         </header>
 
         <div id="pwaNotification">
@@ -712,7 +750,7 @@
         ];
 
         var MAX_LESSONS = 9;
-        var BREAK_SEGMENTS = 100; // ⭐ 100 сегментов
+        var BREAK_SEGMENTS = 100;
         var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
@@ -1184,14 +1222,12 @@
             if (classes.length === 0) classes = PRIMARY_CLASSES;
             classes = sortClasses(classes);
 
-            // Заголовок
             var headerHTML = '<div class="tile-header" aria-hidden="true"></div>';
             classes.forEach(function(cls) {
                 headerHTML += '<div class="tile-header" role="columnheader">' + escapeHTML(cls) + '</div>';
             });
             tilesHeader.innerHTML = headerHTML;
 
-            // Тело
             var bodyHTML = '';
             var currentBreakIndex = (info.type === 'break') ? info.breakIndex : -1;
 
@@ -1214,7 +1250,6 @@
                 if (isCurrent) ariaLabel = ' aria-label="Текущий урок"';
                 else if (isPast) ariaLabel = ' aria-label="Прошедший урок"';
 
-                // --- Строка урока ---
                 bodyHTML += '<div class="' + rowClasses + '"' + ariaLabel + ' role="row">';
                 bodyHTML += '<div class="tile-number" role="rowheader">' + lessonNum + '</div>';
 
@@ -1237,7 +1272,6 @@
                 });
                 bodyHTML += '</div>';
 
-                // --- Статусбар перемены ---
                 if (lessonNum < MAX_LESSONS) {
                     var breakInfo = getBreakInfo(idx);
                     if (breakInfo) {
@@ -1411,7 +1445,7 @@
                 }
             });
 
-            console.log('✅ Расписание v' + APP_VERSION + ' (часы в шапке, поджатая сетка) загружено!');
+            console.log('✅ Расписание v' + APP_VERSION + ' (часы встроены в шапку) загружено!');
             console.log('ℹ️ Автообновление данных: только в 16:00');
         });
     </script>
