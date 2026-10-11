@@ -101,11 +101,6 @@
       "scheduleFile": "shipunova_s.json"
     },
     {
-      "id": "gorbachev_a",
-      "name": "Горбачев А.А.",
-      "scheduleFile": "gorbachev_a.json"
-    },
-    {
       "id": "ivanova_e",
       "name": "Иванова Е.В.",
       "scheduleFile": "ivanova_e.json"
@@ -206,5 +201,5 @@
       "scheduleFile": "trofimova_o.json"
     }
   ],
-  "last_update": "2026-10-11 13:12:40"
+  "last_update": "2026-10-11 14:04:19"
 }
