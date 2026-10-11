@@ -194,7 +194,17 @@
       "id": "mihalitsyn_a",
       "name": "Михалицын А.В.",
       "scheduleFile": "mihalitsyn_a.json"
+    },
+    {
+      "id": "pyrkov_p",
+      "name": "Пырков П.М.",
+      "scheduleFile": "pyrkov_p.json"
+    },
+    {
+      "id": "trofimova_o",
+      "name": "Трофимова О.В.",
+      "scheduleFile": "trofimova_o.json"
     }
   ],
-  "last_update": "2026-10-01 15:38:22"
+  "last_update": "2026-10-11 08:52:21"
 }
