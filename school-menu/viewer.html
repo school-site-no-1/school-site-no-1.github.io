@@ -215,7 +215,7 @@
         .side-panel {
             position: fixed;
             right: 20px;
-            top: 180px;
+            top: 200px;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
@@ -450,7 +450,7 @@
             .side-panel {
                 right: 14px;
                 gap: 8px;
-                top: 160px;
+                top: 180px;
             }
             .vote-panel { gap: 6px; }
             .vote-btn { width: 42px; padding: 3px 0; gap: 5px; }
@@ -542,8 +542,8 @@
     </div>
 
     <script>
-    // ✅ ВАШ URL Google Apps Script
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIzAwrwwLkPqNi7hzGT4tYjfzfnFMJX6WBDfowL7Ef_OCng_EAgr7I0W83B0icxgQG/exec';
+    // ✅ ВАШ URL Google Apps Script (замените, если перезадеплоили)
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyenmpTvLjE5-xoxvgr5yrCbM_5UQ9-cTSRi8kjDUFgOSMrgtK0a12-7Vq14qpbah_4/exec';
 
     const MENU_FILE = 'menu_shool.json';
     const USE_SERVER = true;
@@ -572,7 +572,6 @@
         setupEnterKey();
     });
 
-    // ✅ Отправка по Enter, новая строка по Shift+Enter
     function setupEnterKey() {
         const textEl = document.getElementById('msgText');
         if (!textEl) return;
@@ -584,7 +583,6 @@
         });
     }
 
-    // ✅ Кнопка "Обновить" — обновляет И голоса, И меню
     async function refreshAll() {
         const btn = document.querySelector('.refresh-btn');
         if (btn) {
@@ -610,20 +608,16 @@
             const res = await fetch(`${GAS_URL}?action=getVotes&_=${Date.now()}`, {
                 cache: 'no-store'
             });
-            console.log('📊 getVotes статус:', res.status);
             if (res.ok) {
                 const votes = await res.json();
-                console.log('📊 Голоса:', votes);
                 ['love', 'like', 'meh', 'bad'].forEach(k => {
                     const el = document.getElementById('count-' + k);
                     if (el) el.textContent = votes[k] || 0;
                 });
                 updateBest(votes);
-            } else {
-                console.warn('❌ Ответ не OK:', res.status);
             }
         } catch (e) {
-            console.error('❌ Ошибка загрузки голосов:', e);
+            console.warn('Не удалось загрузить голоса', e);
         }
     }
 
@@ -636,7 +630,6 @@
                 body: JSON.stringify({ action: 'vote', type })
             });
             const votes = await res.json();
-            console.log('📊 Голос отправлен:', votes);
 
             ['love', 'like', 'meh', 'bad'].forEach(k => {
                 const el = document.getElementById('count-' + k);
@@ -650,7 +643,7 @@
             }
             updateBest(votes);
         } catch (e) {
-            console.error('❌ Ошибка отправки голоса:', e);
+            console.warn('Ошибка отправки голоса', e);
         }
         flyEmoji(type);
     }
@@ -704,7 +697,6 @@
                 body: JSON.stringify({ action: 'message', text, name: '' })
             });
             const data = await res.json();
-            console.log('💬 Ответ:', data);
 
             if (!data.success) {
                 statusEl.textContent = '❌ ' + (data.error || 'Ошибка');
@@ -716,7 +708,6 @@
             statusEl.textContent = '✅ Отправлено. Спасибо!';
             statusEl.className = 'msg-status';
         } catch (e) {
-            console.error('❌ Ошибка отправки сообщения:', e);
             statusEl.textContent = '❌ Сервер недоступен';
             statusEl.className = 'msg-status error';
             return;
@@ -736,9 +727,39 @@
             if (!res.ok) throw new Error('Файл menu_shool.json не найден');
             const data = await res.json();
             processData(data);
+
+            // ✅ Загружаем настройки из Google Таблицы поверх anchor
+            await loadSettings();
+
+            render();
         } catch (e) {
             showError('Ошибка: ' + e.message);
             showEmpty('Нет данных', 'Файл menu_shool.json не найден');
+        }
+    }
+
+    // ✅ Загрузка якоря из Google Таблицы
+    async function loadSettings() {
+        try {
+            const res = await fetch(`${GAS_URL}?action=getSettings&_=${Date.now()}`, {
+                cache: 'no-store'
+            });
+            if (!res.ok) return;
+
+            const s = await res.json();
+            console.log('⚙️ Settings из Google Таблицы:', s);
+
+            // Если в таблице есть якорь — используем его вместо JSON
+            if (s.anchor_date && s.anchor_day_index) {
+                menuData.anchor = {
+                    date: s.anchor_date,
+                    day_index: parseInt(s.anchor_day_index),
+                    cycle_length: parseInt(s.cycle_length) || 10
+                };
+                console.log('⚙️ Использую якорь из Google:', menuData.anchor);
+            }
+        } catch (e) {
+            console.warn('Не удалось загрузить настройки', e);
         }
     }
 
@@ -749,7 +770,6 @@
             phrases: data.phrases || [],
             groups: data.groups || {},
         };
-        render();
     }
 
     function render() {
