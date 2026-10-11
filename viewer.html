@@ -542,8 +542,8 @@
     </div>
 
     <script>
-    // ✅ ВАШ URL Google Apps Script
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbx6xJ9ncD7vi9zjU3i5IqjAuF4wwA6xn7ZJ2hZnnGYBNzbCyVQwH5Ur5feR7XN8h1dE/exec';
+    // ✅ ВАШ URL Google Apps Script (замените, если перезадеплоили)
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIzAwrwwLkPqNi7hzGT4tYjfzfnFMJX6WBDfowL7Ef_OCng_EAgr7I0W83B0icxgQG/exec';
 
     const MENU_FILE = 'menu_shool.json';
     const USE_SERVER = true;
@@ -749,6 +749,7 @@
             const s = await res.json();
             console.log('⚙️ Settings из Google Таблицы:', s);
 
+            // Если в таблице есть якорь — используем его вместо JSON
             if (s.anchor_date && s.anchor_day_index) {
                 menuData.anchor = {
                     date: s.anchor_date,
@@ -866,4 +867,185 @@
 
     function renderContent() {
         const date = selectedDate;
-        const weekday = date.get
+        const weekday = date.getDay();
+
+        if (weekday === 0 || weekday === 6) {
+            phraseCardEl.innerHTML = '';
+            contentEl.innerHTML = renderWeekend(weekday);
+            return;
+        }
+
+        renderPhraseCard(date);
+        renderMenu(date);
+    }
+
+    function getCycleDayForDate(date) {
+        if (!menuData || !menuData.anchor) return null;
+
+        const anchor = menuData.anchor;
+        const anchorDate = parseDateRu(anchor.date);
+        if (!anchorDate) return null;
+
+        anchorDate.setHours(0, 0, 0, 0);
+        const dateCopy = new Date(date);
+        dateCopy.setHours(0, 0, 0, 0);
+
+        const dow = dateCopy.getDay();
+        if (dow === 0 || dow === 6) return null;
+
+        const cycleLen = anchor.cycle_length || 10;
+
+        let studyDays = 0;
+        if (dateCopy >= anchorDate) {
+            const cursor = new Date(anchorDate);
+            while (cursor < dateCopy) {
+                cursor.setDate(cursor.getDate() + 1);
+                const d = cursor.getDay();
+                if (d !== 0 && d !== 6) studyDays++;
+            }
+        } else {
+            const cursor = new Date(dateCopy);
+            while (cursor < anchorDate) {
+                cursor.setDate(cursor.getDate() + 1);
+                const d = cursor.getDay();
+                if (d !== 0 && d !== 6) studyDays--;
+            }
+        }
+
+        let idx = ((anchor.day_index - 1 + studyDays) % cycleLen + cycleLen) % cycleLen + 1;
+        return idx;
+    }
+
+    function renderPhraseCard(date) {
+        const phrase = getPhraseForDate(date);
+        if (!phrase) { phraseCardEl.innerHTML = ''; return; }
+        phraseCardEl.innerHTML = `
+            <div class="phrase-card">
+                <div class="phrase-icon">💬</div>
+                <div class="phrase-text">${esc(phrase)}</div>
+            </div>
+        `;
+    }
+
+    function getPhraseForDate(date) {
+        const phrases = menuData.phrases || [];
+        if (!phrases.length) return '';
+        const startOfYear = new Date(date.getFullYear(), 0, 0);
+        const dayOfYear = Math.floor((date - startOfYear) / 86400000);
+        return phrases[dayOfYear % phrases.length];
+    }
+
+    function renderMenu(date) {
+        const keys = Object.keys(menuData.groups);
+        if (!keys.length) {
+            contentEl.innerHTML = '<div class="empty-state"><div class="icon">📁</div>Нет данных</div>';
+            return;
+        }
+
+        const groupKey = '5-11';
+        const g = menuData.groups[groupKey] || menuData.groups[keys[0]];
+
+        const dayIndex = getCycleDayForDate(date);
+
+        if (!dayIndex) {
+            contentEl.innerHTML = `<div class="empty-state">
+                <div class="icon">📅</div>
+                <div class="text">Дата вне цикла</div>
+                <div class="hint">Выберите другую дату</div>
+            </div>`;
+            return;
+        }
+
+        if (g.cycle_menu && g.cycle_menu[dayIndex - 1]) {
+            const day = g.cycle_menu[dayIndex - 1];
+            if (day.meals && day.meals.length) {
+                let html = '';
+                day.meals.forEach(meal => {
+                    html += renderMealCard(meal);
+                });
+                contentEl.innerHTML = html;
+            } else {
+                contentEl.innerHTML = renderEmptyMenu();
+            }
+        } else {
+            contentEl.innerHTML = renderEmptyMenu();
+        }
+    }
+
+    function renderMealCard(meal) {
+        const title = (meal.title || '').toLowerCase();
+        let mealClass = '';
+        let icon = '🍽';
+        if (title.includes('завтрак')) { mealClass = 'breakfast'; icon = '🌅'; }
+        else if (title.includes('обед')) { mealClass = 'lunch'; icon = '☀️'; }
+        else if (title.includes('полдник')) { icon = '🍎'; }
+        else if (title.includes('ужин')) { icon = '🌙'; }
+
+        return `<div class="meal-card ${mealClass}">
+            <div class="meal-header">
+                <span class="meal-icon">${icon}</span>
+                <span class="meal-title">${esc(meal.title || '')}</span>
+            </div>
+            ${meal.dishes ? `<p class="meal-dishes">${esc(meal.dishes)}</p>` : ''}
+        </div>`;
+    }
+
+    function renderWeekend(weekday) {
+        const isSat = weekday === 6;
+        return `<div class="weekend-card">
+            <div class="icon">${isSat ? '🎉' : '☀️'}</div>
+            <div class="text">${isSat ? 'Суббота' : 'Воскресенье'}</div>
+            <div class="hint">Выходной — меню нет. Хорошего отдыха! 🌿</div>
+        </div>`;
+    }
+
+    function renderEmptyMenu() {
+        return `<div class="empty-state">
+            <div class="icon">🍽</div>
+            <div class="text">Меню отсутствует</div>
+            <div class="hint">Попробуйте выбрать другую дату</div>
+        </div>`;
+    }
+
+    function renderUpdateTime() {
+        if (!menuData.parsed_at) { updateTimeEl.textContent = ''; return; }
+        const dt = new Date(menuData.parsed_at);
+        updateTimeEl.textContent = 'Обновлено: ' + dt.toLocaleString('ru-RU');
+    }
+
+    function showEmpty(text, hint) {
+        headerDateEl.innerHTML = '';
+        phraseCardEl.innerHTML = '';
+        contentEl.innerHTML = `<div class="empty-state">
+            <div class="icon">📁</div>
+            <div class="text">${esc(text)}</div>
+            <div class="hint">${esc(hint)}</div>
+        </div>`;
+    }
+
+    function showError(text) {
+        statusEl.innerHTML = `<div class="error-state">❌ ${esc(text)}</div>`;
+        setTimeout(() => { statusEl.innerHTML = ''; }, 5000);
+    }
+
+    function parseDateRu(str) {
+        if (!str) return null;
+        const parts = str.split('.');
+        if (parts.length !== 3) return null;
+        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    }
+
+    function esc(t) {
+        if (t === null || t === undefined) return '';
+        const d = document.createElement('div'); d.textContent = String(t); return d.innerHTML;
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!isCalendarOpen) return;
+        if (calendarCardEl.contains(e.target)) return;
+        if (headerDateEl.contains(e.target)) return;
+        closeCalendar();
+    });
+    </script>
+</body>
+</html>
