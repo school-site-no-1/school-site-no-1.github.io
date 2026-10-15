@@ -1,34 +1,146 @@
 {
-  "ПН": [],
-  "ВТ": [],
-  "СР": [],
-  "ЧТ": [],
+  "ПН": [
+    {
+      "lesson": 1,
+      "class": "8А",
+      "subject": "Разговор о важном",
+      "room": "112"
+    },
+    {
+      "lesson": 2,
+      "class": "6А",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 3,
+      "class": "6А",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 4,
+      "class": "6В",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 5,
+      "class": "6В",
+      "subject": "Труд",
+      "room": "210/204"
+    },
+    {
+      "lesson": 6,
+      "class": "6Б",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 7,
+      "class": "6Б",
+      "subject": "Труд",
+      "room": "112/204"
+    }
+  ],
+  "ВТ": [
+    {
+      "lesson": 2,
+      "class": "5А",
+      "subject": "Труд",
+      "room": "111/112"
+    },
+    {
+      "lesson": 3,
+      "class": "5А",
+      "subject": "Труд",
+      "room": "111/112"
+    },
+    {
+      "lesson": 6,
+      "class": "5Б",
+      "subject": "Труд",
+      "room": "111/112"
+    },
+    {
+      "lesson": 7,
+      "class": "5Б",
+      "subject": "Труд",
+      "room": "111/112"
+    }
+  ],
+  "СР": [
+    {
+      "lesson": 1,
+      "class": "8В",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 2,
+      "class": "9Б",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 3,
+      "class": "8Б",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 5,
+      "class": "9В",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 6,
+      "class": "8А",
+      "subject": "Труд",
+      "room": "112"
+    }
+  ],
+  "ЧТ": [
+    {
+      "lesson": 2,
+      "class": "7Б",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 3,
+      "class": "7Б",
+      "subject": "Труд",
+      "room": "112/204"
+    }
+  ],
   "ПТ": [
     {
       "lesson": 3,
       "class": "7В",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "112/204"
     },
     {
       "lesson": 4,
       "class": "7В",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "112/204"
     },
     {
       "lesson": 5,
       "class": "7А",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "112/204"
     },
     {
       "lesson": 6,
       "class": "7А",
       "subject": "Труд",
-      "room": "112/113"
+      "room": "112/204"
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-15 11:05:42"
+  "last_update": "2026-10-15 14:58:12"
 }
