@@ -1,80 +1,79 @@
 {
   "ПН": [
     {
-      "lesson": 7,
-      "class": "8Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    }
-  ],
-  "ВТ": [
-    {
-      "lesson": 1,
-      "class": "11Б",
-      "subject": "Физ-ра",
-      "room": "Док"
-    },
-    {
       "lesson": 2,
-      "class": "11Б",
+      "class": "3Б",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": "с/з"
     },
     {
-      "lesson": 3,
-      "class": "7В",
+      "lesson": 4,
+      "class": "2Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "2В",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
+  "ВТ": [],
   "СР": [
     {
-      "lesson": 1,
-      "class": "7В",
+      "lesson": 3,
+      "class": "3Б",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": "с/з"
     },
     {
-      "lesson": 2,
-      "class": "7В",
+      "lesson": 4,
+      "class": "2В",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": "с/з"
     },
     {
-      "lesson": 7,
-      "class": "7Б",
+      "lesson": 5,
+      "class": "2Б",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": "с/з"
     },
     {
-      "lesson": 8,
-      "class": "7Б",
+      "lesson": 6,
+      "class": "4В",
       "subject": "Физ-ра",
-      "room": "Док"
+      "room": "с/з"
     }
   ],
   "ЧТ": [
     {
-      "lesson": 7,
-      "class": "8Б",
-      "subject": "Физ-ра",
-      "room": "206"
-    }
-  ],
-  "ПТ": [
-    {
       "lesson": 3,
-      "class": "11Б",
+      "class": "4В",
       "subject": "Физ-ра",
       "room": "с/з"
     },
     {
-      "lesson": 7,
-      "class": "8Б",
+      "lesson": 5,
+      "class": "2В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "2Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    }
+  ],
+  "ПТ": [
+    {
+      "lesson": 4,
+      "class": "4В",
       "subject": "Физ-ра",
       "room": "с/з"
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-15 10:38:06"
+  "last_update": "2026-10-15 11:05:42"
 }
