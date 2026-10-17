@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="pageTitle">Расписание уроков</title>
     <style>
-        /* ============ БАЗА (светлая) ============ */
+        /* ============ БАЗА ============ */
         *{margin:0;padding:0;box-sizing:border-box}
         body{
             font-family:'Segoe UI',Arial,sans-serif;
@@ -24,7 +24,7 @@
             text-align:center;
         }
 
-        /* ============ ШАПКА (светлая) ============ */
+        /* ============ ШАПКА ============ */
         .header{
             display:flex;flex-direction:column;
             border-bottom:2px solid #4a5568;
@@ -64,15 +64,26 @@
         }
         .header-selector .refresh-btn:hover{background:#2d3748}
 
-        #clockContainer{display:flex;justify-content:flex-end;align-items:center;min-height:32px;width:100%}
+        #clockContainer{
+            display:flex;
+            justify-content:flex-end;
+            align-items:center;
+            min-height:32px;
+            width:100%;
+            padding-right:16px;
+        }
         #clockContainer .clock-wrapper{display:flex!important;align-items:center!important;gap:8px!important}
         #clockContainer svg{width:24px;height:24px;flex-shrink:0;stroke:#2d3748!important}
         #clockContainer .clock-text{display:flex;flex-direction:column;align-items:flex-end;white-space:nowrap}
         #clockContainer .clock-text .date{font-size:11px;color:#2d3748;font-weight:600}
         #clockContainer .clock-text .day{display:none}
         #clockContainer .clock-text .digital-time{
-            font-size:18px;color:#2d3748;font-weight:700;
-            font-variant-numeric:tabular-nums;font-family:'Courier New',monospace;letter-spacing:.5px;
+            font-size:18px;
+            color:#2d3748;
+            font-weight:700;
+            font-variant-numeric:tabular-nums;
+            font-family:'Roboto Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace;
+            letter-spacing:.3px;
         }
 
         /* ============ НАВИГАЦИЯ ДНЕЙ ============ */
@@ -108,9 +119,8 @@
 
         /* ============ ТАБЛИЦА ============ */
         .table-wrap{overflow-x:auto;border-radius:8px;width:100%}
-        table{width:auto;border-collapse:collapse;font-size:14px;margin:0 auto;min-width:340px}
+        table{width:auto;border-collapse:collapse;font-size:14px;margin:0 auto;min-width:348px}
 
-        /* ТЁМНАЯ ШАПКА ТАБЛИЦЫ */
         thead th{
             background:#2d3748;
             color:#63b3ed;
@@ -129,7 +139,8 @@
         tbody tr{border-bottom:1.5px solid #e2e8f0}
         tbody tr:last-child{border-bottom:none}
         tbody td{
-            padding:10px 6px;text-align:center;font-size:13px;
+            padding:10px 5px;
+            text-align:center;font-size:13px;
             vertical-align:middle;border-right:1px solid #e2e8f0;
             color:#2d3748;background:#fff;
         }
@@ -152,9 +163,8 @@
         tbody tr.current-lesson td.period .time-end{color:#4a5568 !important;font-weight:700}
         tbody tr.current-lesson td.class{color:#2d3748 !important}
         tbody tr.current-lesson td.subject{color:#1a202c !important;font-weight:700}
-        tbody tr.current-lesson td.subject .room-sub{color:#c05621 !important;font-weight:700}
+        tbody tr.current-lesson td.room{color:#c05621 !important;font-weight:700}
 
-        /* Прогресс-бар урока — тёмный, без мигания */
         tbody tr.current-lesson::after{
             content:'';
             position:absolute;
@@ -178,7 +188,7 @@
         tbody tr.past-lesson td.period .time-end{color:#cbd5e0 !important}
         tbody tr.past-lesson td.class{color:#a0aec0 !important}
         tbody tr.past-lesson td.subject{color:#a0aec0 !important}
-        tbody tr.past-lesson td.subject .room-sub{color:#cbd5e0 !important}
+        tbody tr.past-lesson td.room{color:#cbd5e0 !important}
 
         /* ============ ПУСТЫЕ ПРОШЕДШИЕ ============ */
         tbody tr.empty-lesson{background:transparent}
@@ -188,37 +198,33 @@
         tbody tr.empty-lesson td.period .time-end{color:#e2e8f0 !important}
         tbody tr.empty-lesson td.class{color:#cbd5e0 !important}
         tbody tr.empty-lesson td.subject{color:#cbd5e0 !important}
-        tbody tr.empty-lesson td.subject .room-sub{color:#e2e8f0 !important}
+        tbody tr.empty-lesson td.room{color:#e2e8f0 !important}
 
         /* ============ Колонки ============ */
-        tbody td.num{font-weight:800;color:#2d3748;font-size:13px;width:32px;min-width:28px}
-        tbody td.period{padding:8px 4px;white-space:nowrap;width:78px;min-width:68px}
+        tbody td.num{font-weight:800;color:#2d3748;font-size:13px;width:30px;min-width:26px}
+        tbody td.period{padding:8px 3px;white-space:nowrap;width:75px;min-width:65px}
         tbody td.period .time-start{
             font-weight:700;color:#2d3748;font-size:13px;line-height:1.2;
-            font-family:'Courier New',monospace;letter-spacing:.3px;
+            font-family:'Roboto Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace;
+            letter-spacing:.2px;
         }
         tbody td.period .time-end{
             color:#718096;font-size:11px;line-height:1.2;
-            font-family:'Courier New',monospace;
+            font-family:'Roboto Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace;
         }
         tbody td.class{
             font-weight:600;color:#2d3748;font-size:12px;
-            white-space:normal;line-height:1.2;min-width:40px;width:54px;max-width:70px;
+            white-space:normal;line-height:1.2;min-width:38px;width:51px;max-width:67px;
         }
-        /* Ячейка «Предмет» теперь включает кабинет снизу */
         tbody td.subject{
             text-align:center;font-weight:500;color:#2d3748;
-            font-size:13px;min-width:140px;width:180px;max-width:220px;line-height:1.25;
+            font-size:13px;min-width:108px;width:147px;max-width:187px;line-height:1.3;
         }
-        tbody td.subject .subject-name{display:block;font-weight:600}
-        tbody td.subject .room-sub{
-            display:block;
-            font-size:11px;
-            color:#9a3412;
-            font-weight:700;
-            margin-top:2px;
-            font-family:'Courier New',monospace;
-            letter-spacing:.2px;
+        tbody td.room{
+            font-weight:600;color:#9a3412;font-size:12px;
+            white-space:normal;line-height:1.2;
+            min-width:38px;width:51px;max-width:67px;
+            font-family:'Roboto Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace;
         }
 
         /* ============ ПЕРЕМЕНА ============ */
@@ -253,7 +259,7 @@
             color:#7b341e;font-weight:800;font-size:18px !important;
             padding:0 6px;border-radius:12px;white-space:nowrap;
             font-variant-numeric:tabular-nums;letter-spacing:.5px;
-            font-family:'Courier New',monospace;
+            font-family:'Roboto Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace;
         }
         .break-row td .break-label .break-lunch{
             display:inline-flex;align-items:center;gap:3px;
@@ -271,7 +277,6 @@
         }
         .break-row td .break-label .break-lunch:active{transform:translateY(0)}
 
-        /* Прогресс-бар перемены — во всю высоту */
         .break-progress-bar{
             position:absolute;
             left:0;top:0;
@@ -291,7 +296,7 @@
         .footer .version{color:#a0aec0}
         .footer .gen-time{color:#cbd5e0}
         .no-lessons-msg{
-            text-align:center;padding:24px 0;color:#a0aec0;font-size:14px;min-width:340px;
+            text-align:center;padding:24px 0;color:#a0aec0;font-size:14px;min-width:348px;
         }
     </style>
 </head>
@@ -339,7 +344,7 @@
     </div>
 
     <div class="footer">
-        <span class="version">🏷️ v7.6.0</span>
+        <span class="version">🏷️ v7.7.0</span>
         <span class="gen-time" id="genTime">📅 загрузка...</span>
     </div>
 </div>
@@ -519,7 +524,7 @@
 
     async function loadTeachersList() {
         try {
-            const r = await fetch('/data/teachers.json?_=' + Date.now());
+            const r = await fetch('data/teachers.json?_=' + Date.now());
             if (!r.ok) throw new Error('Не удалось загрузить список учителей');
             const data = await r.json();
             teachersList = data.teachers || [];
@@ -578,7 +583,7 @@
             const file = teacher.scheduleFile ||
                          teacher.fileName?.replace('.html', '.json') ||
                          `schedule_${teacher.id || 'default'}.json`;
-            const r = await fetch(`/data/${file}?_=${Date.now()}`);
+            const r = await fetch(`data/${file}?_=${Date.now()}`);
             if (!r.ok) throw new Error('Не удалось загрузить расписание: ' + file);
             currentScheduleData = await r.json();
             updateUI(teacher, currentScheduleData, currentDay);
@@ -609,11 +614,7 @@
         const container = document.getElementById('scheduleTable');
         const lessons   = data[day] || [];
 
-        if (!lessons.length) {
-            container.innerHTML = `<div class="no-lessons-msg">📌 Уроков нет на ${DAYS_RU[DAYS.indexOf(day)] || day}</div>`;
-            document.getElementById('lessonCount').textContent = '📚 0 уроков';
-            return;
-        }
+        // НЕТ раннего выхода — таблица строится всегда, даже если уроков нет
 
         const grouped = {};
         lessons.forEach(l => {
@@ -630,9 +631,8 @@
         const cb      = getCurrentBreak();
         const isToday = isSelectedDayToday(day);
 
-        // 4 колонки: № / Время / Класс / Предмет (кабинет под предметом)
         let html = `<table><thead><tr>
-            <th>№</th><th>Время</th><th>Класс</th><th>Предмет</th>
+            <th>№</th><th>Время</th><th>Класс</th><th>Предмет</th><th>Кабинет</th>
         </tr></thead><tbody>`;
 
         let total = 0;
@@ -661,19 +661,14 @@
 
             const cl = empty ? '—' : item.classes.join(', ');
             const sb = empty ? '—' : item.subjects.join(', ');
-            const rm = empty ? '' : item.rooms.join(', ');
-
-            // Кабинет — под предметом, только если есть
-            const subjectCell = empty
-                ? '—'
-                : `<span class="subject-name">${sb}</span>` +
-                  (rm ? `<span class="room-sub">${rm}</span>` : '');
+            const rm = empty ? '—' : item.rooms.join(', ');
 
             html += `<tr${cls}${styleAttr}>
                 <td class="num">${i}</td>
                 <td class="period"><div class="time-start">${period.start}</div><div class="time-end">${period.end}</div></td>
                 <td class="class">${cl}</td>
-                <td class="subject">${subjectCell}</td>
+                <td class="subject">${sb}</td>
+                <td class="room">${rm}</td>
             </tr>`;
 
             if (i < max) {
@@ -689,7 +684,7 @@
                         ? `<a class="break-lunch" href="${LUNCH_URL}" target="_blank" rel="noopener noreferrer" title="Меню школьной столовой">🍽 Обед</a>`
                         : '';
                     html += `<tr class="break-row">
-                        <td colspan="4" style="position:relative;overflow:hidden;">
+                        <td colspan="5" style="position:relative;overflow:hidden;">
                             <div class="break-progress-bar" style="width:${(prg*100).toFixed(2)}%;"></div>
                             <div class="break-label">
                                 <span class="break-time-left">${txt}</span>
