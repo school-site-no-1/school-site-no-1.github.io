@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Свободные кабинеты, учителя и классы</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #2d3748;
+            padding: 16px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #d0d7e0;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .header h1 { font-size: 1.5em; color: #1a365d; }
+        .header .status { font-size: 0.85em; color: #718096; text-align: right; }
+        .header .status.ok { color: #38a169; }
+        .header .status.err { color: #e53e3e; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+        .controls .group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .controls label {
+            font-size: 0.78em;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .controls select,
+        .controls button {
+            padding: 10px 14px;
+            font-size: 0.95em;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2d3748;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .controls select:focus { outline: none; border-color: #2b6cb0; box-shadow: 0 0 0 3px rgba(43,108,176,0.15); }
+        .controls button {
+            background: #2b6cb0;
+            color: #ffffff;
+            border-color: #2b6cb0;
+            font-weight: 500;
+        }
+        .controls button:hover { background: #1a4f8b; }
+        .controls button:disabled { background: #a0aec0; border-color: #a0aec0; cursor: not-allowed; }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            padding: 6px;
+            background: #f7fafc;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #4a5568;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { background: #edf2f7; }
+        .tab-btn.active {
+            background: #2b6cb0;
+            color: #ffffff;
+            border-color: #2b6cb0;
+        }
+
+        .day-summary {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .day-summary .card {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 14px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .day-summary .card .label { font-size: 0.72em; color: #718096; text-transform: uppercase; }
+        .day-summary .card .value { font-size: 1.3em; font-weight: 700; color: #2b6cb0; margin-top: 2px; }
+
+        .lessons { display: flex; flex-direction: column; gap: 12px; }
+
+        .lesson-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            background: #ffffff;
+            transition: all 0.2s;
+        }
+        .lesson-card.empty { background: #fffaf0; border-color: #f6e05e; }
+        .lesson-card.current {
+            border-color: #2b6cb0;
+            box-shadow: 0 0 0 3px rgba(43,108,176,0.15);
+            background: #ebf8ff;
+        }
+        .lesson-card .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .lesson-card .lesson-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #1a365d;
+            font-size: 1.05em;
+        }
+        .lesson-card .lesson-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2b6cb0;
+            color: #ffffff;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        .lesson-card.empty .lesson-num { background: #d69e2e; }
+        .lesson-card .lesson-time {
+            color: #718096;
+            font-size: 0.85em;
+            font-variant-numeric: tabular-nums;
+        }
+        .lesson-card .lesson-counts {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .lesson-card .count-chip {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 600;
+            background: #f0fff4;
+            color: #276749;
+        }
+        .lesson-card .count-chip.rooms { background: #ebf8ff; color: #2b6cb0; }
+        .lesson-card .count-chip.teachers { background: #f0fff4; color: #276749; }
+        .lesson-card .count-chip.classes { background: #faf5ff; color: #805ad5; }
+        .lesson-card.empty .count-chip { background: #fffaf0; color: #975a16; }
+
+        .lesson-card .section {
+            margin-top: 8px;
+        }
+        .lesson-card .section:first-of-type { margin-top: 0; }
+        .lesson-card .section-title {
+            font-size: 0.75em;
+            font-weight: 700;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .lesson-card .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .lesson-card .chip {
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+        .lesson-card .chip.room {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            border: 1px solid #bee3f8;
+        }
+        .lesson-card .chip.room.shared {
+            background: #faf5ff;
+            color: #805ad5;
+            border-color: #e9d5ff;
+        }
+        .lesson-card .chip.teacher {
+            background: #f0fff4;
+            color: #276749;
+            border: 1px solid #c6f6d5;
+            font-weight: 500;
+        }
+        .lesson-card .chip.teacher .tid {
+            font-size: 0.75em;
+            color: #a0aec0;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+        .lesson-card .chip.cls {
+            background: #faf5ff;
+            color: #805ad5;
+            border: 1px solid #e9d5ff;
+        }
+        .lesson-card .no-items {
+            color: #e53e3e;
+            font-weight: 500;
+            font-size: 0.88em;
+        }
+        .lesson-card .no-items.soft { color: #a0aec0; font-weight: 400; }
+
+        .message {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 0.95em;
+            text-align: center;
+        }
+        .message.info { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+        .message.error { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
+        .message.success { background: #f0fff4; color: #38a169; border: 1px solid #c6f6d5; }
+        .message.warning { background: #fffbeb; color: #975a16; border: 1px solid #fef3c7; }
+
+        .footer {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.75em;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            .container { padding: 12px; }
+            .header h1 { font-size: 1.15em; }
+            .controls { flex-direction: column; }
+            .controls .group { min-width: 100%; }
+            .tabs { flex-direction: column; }
+            .tab-btn { min-width: 100%; }
+            .day-summary .card { min-width: 100px; padding: 8px 10px; }
+            .day-summary .card .value { font-size: 1.05em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🟢 Свободные кабинеты, учителя и классы</h1>
+            <div class="status" id="status">—</div>
+        </div>
+
+        <div class="controls">
+            <div class="group">
+                <label for="modeSelect">Раздел</label>
+                <select id="modeSelect">
+                    <option value="by_day">Вся школа</option>
+                    <option value="by_day_primary">Только 5-11</option>
+                    <option value="by_day_elementary">Только 1-4</option>
+                </select>
+            </div>
+            <div class="group">
+                <label for="daySelect">День</label>
+                <select id="daySelect"></select>
+            </div>
+            <div class="group">
+                <label>&nbsp;</label>
+                <button id="refreshBtn" onclick="loadAll(true)">🔄 Обновить</button>
+            </div>
+        </div>
+
+        <div class="tabs" id="viewTabs">
+            <button class="tab-btn active" data-view="all" onclick="setView('all')">📋 Всё</button>
+            <button class="tab-btn" data-view="rooms" onclick="setView('rooms')">🏠 Кабинеты</button>
+            <button class="tab-btn" data-view="teachers" onclick="setView('teachers')">👨‍🏫 Учителя</button>
+            <button class="tab-btn" data-view="classes" onclick="setView('classes')">🎓 Классы</button>
+        </div>
+
+        <div id="messageBox"></div>
+
+        <div class="day-summary" id="daySummary" style="display:none;">
+            <div class="card"><div class="label">Уроков</div><div class="value" id="sumLessons">0</div></div>
+            <div class="card"><div class="label">Свободных кабинетов</div><div class="value" id="sumRooms">0</div></div>
+            <div class="card"><div class="label">Свободных учителей</div><div class="value" id="sumTeachers">0</div></div>
+            <div class="card"><div class="label">Свободных классов</div><div class="value" id="sumClasses">0</div></div>
+        </div>
+
+        <div class="lessons" id="lessons"></div>
+
+        <div class="footer">
+            <span id="footerInfo">Админка v6.2.2 · data/free_rooms.json</span>
+        </div>
+    </div>
+
+    <script>
+        // ===== НАСТРОЙКИ =====
+        var DEFAULT_FREE_URL = 'data/free_rooms.json';
+        var DEFAULT_PRIMARY_URL = 'schedule.primary.json';
+        var DEFAULT_ELEM_URL = 'data_elementary.json';
+        var CACHE_KEY = 'freeRoomsCache_v3';
+
+        var DAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+        var DAYS_RU = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        var LESSON_PERIODS = [
+            { start: '08:30', end: '09:10' },
+            { start: '09:20', end: '10:00' },
+            { start: '10:10', end: '10:50' },
+            { start: '11:05', end: '11:45' },
+            { start: '12:00', end: '12:40' },
+            { start: '12:55', end: '13:35' },
+            { start: '13:45', end: '14:25' },
+            { start: '14:35', end: '15:15' },
+            { start: '15:25', end: '16:05' }
+        ];
+        var SHARED_ROOMS = ['Док', 'с/з'];
+        var PRIMARY_MAX = 9;
+        var ELEM_MAX = 6;
+
+        // ===== СОСТОЯНИЕ =====
+        var state = {
+            free: null,          // data/free_rooms.json
+            primary: null,       // schedule.primary.json
+            elementary: null,    // data_elementary.json
+            source: '—',
+            updatedAt: null,
+            currentDay: null,
+            mode: 'by_day',
+            view: 'all'
+        };
+
+        // ===== URL-ПАРАМЕТРЫ =====
+        function getUrls() {
+            var p = new URLSearchParams(window.location.search);
+            return {
+                free: p.get('free') || p.get('url') || DEFAULT_FREE_URL,
+                primary: p.get('primary') || DEFAULT_PRIMARY_URL,
+                elementary: p.get('elementary') || DEFAULT_ELEM_URL
+            };
+        }
+
+        // ===== КЭШ =====
+        function readCache() {
+            try {
+                var raw = localStorage.getItem(CACHE_KEY);
+                if (!raw) return null;
+                var obj = JSON.parse(raw);
+                return obj;
+            } catch (e) { return null; }
+        }
+        function writeCache(data) {
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+        }
+
+        // ===== ЗАГРУЗКА =====
+        async function fetchJson(url) {
+            var sep = url.indexOf('?') >= 0 ? '&' : '?';
+            var resp = await fetch(url + sep + '_t=' + Date.now());
+            if (!resp.ok) throw new Error('HTTP ' + resp.status + ' — ' + url);
+            return await resp.json();
+        }
+
+        async function loadAll(force) {
+            var urls = getUrls();
+            var statusEl = document.getElementById('status');
+
+            if (force) {
+                localStorage.removeItem(CACHE_KEY);
+            } else {
+                var cached = readCache();
+                if (cached && cached.free) {
+                    state.free = cached.free;
+                    state.primary = cached.primary || null;
+                    state.elementary = cached.elementary || null;
+                    state.updatedAt = cached.savedAt;
+                    statusEl.textContent = '📦 Из кэша: ' + new Date(cached.savedAt).toLocaleString('ru-RU');
+                    statusEl.className = 'status ok';
+                    onLoaded();
+                    return;
+                }
+            }
+
+            statusEl.textContent = '⏳ Загрузка...';
+            statusEl.className = 'status';
+            showMessage('info', 'Загрузка данных...');
+
+            var free = null, primary = null, elementary = null;
+            var errors = [];
+
+            try {
+                free = await fetchJson(urls.free);
+            } catch (e) {
+                errors.push('free_rooms.json: ' + e.message);
+            }
+
+            // Остальные два — опционально
+            try { primary = await fetchJson(urls.primary); } catch (e) { errors.push('schedule.primary.json: ' + e.message); }
+            try { elementary = await fetchJson(urls.elementary); } catch (e) { errors.push('data_elementary.json: ' + e.message); }
+
+            if (free) {
+                state.free = free;
+                state.primary = primary;
+                state.elementary = elementary;
+                state.updatedAt = new Date().toISOString();
+                writeCache({ free: free, primary: primary, elementary: elementary, savedAt: state.updatedAt });
+                statusEl.textContent = '✅ Загружено: ' + new Date().toLocaleTimeString('ru-RU');
+                statusEl.className = 'status ok';
+                if (errors.length > 0) {
+                    showMessage('warning', 'Часть файлов недоступна: ' + errors.join('; ') + '. Блоки с этими данными будут скрыты.');
+                } else {
+                    hideMessage();
+                }
+                onLoaded();
+                return;
+            }
+
+            // free_rooms не загрузился — пробуем кэш
+            var cached2 = readCache();
+            if (cached2 && cached2.free) {
+                state.free = cached2.free;
+                state.primary = cached2.primary || null;
+                state.elementary = cached2.elementary || null;
+                state.updatedAt = cached2.savedAt;
+                statusEl.textContent = '⚠️ Сеть недоступна, показываю кэш';
+                statusEl.className = 'status err';
+                showMessage('error', 'Не удалось загрузить свежие данные: ' + errors.join('; ') + '. Показан кэш.');
+                onLoaded();
+                return;
+            }
+
+            statusEl.textContent = '❌ Ошибка';
+            statusEl.className = 'status err';
+            showMessage('error', 'Не удалось загрузить данные: ' + errors.join('; '));
+        }
+
+        // ===== ОБРАБОТКА ДАННЫХ =====
+        function onLoaded() {
+            var free = state.free;
+            if (!free) return;
+
+            // Заполняем дни
+            var daySelect = document.getElementById('daySelect');
+            daySelect.innerHTML = '';
+            DAYS.forEach(function (d, i) {
+                var opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = DAYS_RU[i] + ' (' + d + ')';
+                daySelect.appendChild(opt);
+            });
+
+            if (!state.currentDay) {
+                var todayNum = new Date().getDay();
+                if (todayNum === 0) todayNum = 7;
+                state.currentDay = DAYS[Math.min(todayNum - 1, DAYS.length - 1)] || 'ПН';
+            }
+            daySelect.value = state.currentDay;
+            daySelect.onchange = function () { state.currentDay = this.value; render(); };
+
+            document.getElementById('modeSelect').onchange = function () { state.mode = this.value; render(); };
+            document.getElementById('modeSelect').value = state.mode;
+
+            var upd = free.last_update || '—';
+            document.getElementById('footerInfo').textContent =
+                'Админка v6.2.2 · data/free_rooms.json · last_update: ' + upd +
+                (state.primary ? ' · расписание: ✓' : ' · расписание: —');
+
+            render();
+        }
+
+        // ===== ВЫЧИСЛЕНИЕ СВОБОДНЫХ КЛАССОВ =====
+        // По расписанию primary/elementary определяем, у каких классов
+        // в этот день на этом уроке нет занятия.
+        function buildFreeClasses() {
+            var res = {};
+            var primary = state.primary && state.primary.schedule && state.primary.schedule.primary;
+            var elem = state.elementary && state.elementary.schedule && state.elementary.schedule.elementary;
+            if (!primary && !elem) return res;
+
+            DAYS.forEach(function (day) {
+                res[day] = {};
+                var maxL = PRIMARY_MAX;
+
+                for (var ln = 1; ln <= maxL; ln++) {
+                    var busy = new Set();
+
+                    // primary — формат: schedule.primary[day][class] = [[subject, room], ...]
+                    if (primary && primary[day]) {
+                        Object.keys(primary[day]).forEach(function (cn) {
+                            var arr = primary[day][cn] || [];
+                            var lesson = arr[ln - 1];
+                            if (lesson && lesson[0] && lesson[0].trim() !== '') busy.add(cn);
+                        });
+                    }
+
+                    // elementary — тот же формат
+                    if (elem && elem[day]) {
+                        Object.keys(elem[day]).forEach(function (cn) {
+                            var arr = elem[day][cn] || [];
+                            var lesson = arr[ln - 1];
+                            if (lesson && lesson[0] && lesson[0].trim() !== '') busy.add(cn);
+                        });
+                    }
+
+                    // Все классы школы
+                    var allClasses = [];
+                    if (primary) Object.keys(primary[day] || {}).forEach(function (c) { if (allClasses.indexOf(c) < 0) allClasses.push(c); });
+                    if (elem) Object.keys(elem[day] || {}).forEach(function (c) { if (allClasses.indexOf(c) < 0) allClasses.push(c); });
+
+                    // Свободные — те, кого нет в busy
+                    res[day][String(ln)] = allClasses
+                        .filter(function (c) { return !busy.has(c); })
+                        .sort();
+                }
+            });
+
+            return res;
+        }
+
+        // Свободные классы для конкретного режима (primary/elementary/all)
+        function buildFreeClassesByMode() {
+            var primary = state.primary && state.primary.schedule && state.primary.schedule.primary;
+            var elem = state.elementary && state.elementary.schedule && state.elementary.schedule.elementary;
+            if (!primary && !elem) return null;
+
+            function calcSection(sectionData, maxL) {
+                var res = {};
+                DAYS.forEach(function (day) {
+                    res[day] = {};
+                    for (var ln = 1; ln <= maxL; ln++) {
+                        var busy = new Set();
+                        var allClasses = [];
+                        if (sectionData && sectionData[day]) {
+                            Object.keys(sectionData[day]).forEach(function (cn) {
+                                allClasses.push(cn);
+                                var arr = sectionData[day][cn] || [];
+                                var lesson = arr[ln - 1];
+                                if (lesson && lesson[0] && lesson[0].trim() !== '') busy.add(cn);
+                            });
+                        }
+                        res[day][String(ln)] = allClasses
+                            .filter(function (c) { return !busy.has(c); })
+                            .sort();
+                    }
+                });
+                return res;
+            }
+
+            return {
+                primary: primary ? calcSection(primary, PRIMARY_MAX) : null,
+                elementary: elem ? calcSection(elem, ELEM_MAX) : null
+            };
+        }
+
+        var freeClassesCache = null;
+
+        function getFreeClassesForMode() {
+            if (!freeClassesCache) freeClassesCache = buildFreeClassesByMode();
+            if (!freeClassesCache) return null;
+
+            var m = state.mode;
+            if (m === 'by_day_primary') return freeClassesCache.primary;
+            if (m === 'by_day_elementary') return freeClassesCache.elementary;
+
+            // by_day — объединяем оба раздела
+            var res = {};
+            DAYS.forEach(function (day) {
+                res[day] = {};
+                var maxL = PRIMARY_MAX;
+                for (var ln = 1; ln <= maxL; ln++) {
+                    var s = new Set();
+                    var p = freeClassesCache.primary && freeClassesCache.primary[day] && freeClassesCache.primary[day][String(ln)];
+                    var e = freeClassesCache.elementary && freeClassesCache.elementary[day] && freeClassesCache.elementary[day][String(ln)];
+                    (p || []).forEach(function (c) { s.add(c); });
+                    (e || []).forEach(function (c) { s.add(c); });
+                    res[day][String(ln)] = Array.from(s).sort();
+                }
+            });
+            return res;
+        }
+
+        // ===== ОТРИСОВКА =====
+        function setView(v) {
+            state.view = v;
+            document.querySelectorAll('#viewTabs .tab-btn').forEach(function (b) {
+                b.classList.toggle('active', b.dataset.view === v);
+            });
+            render();
+        }
+
+        function render() {
+            var free = state.free;
+            if (!free) return;
+
+            var day = state.currentDay;
+            var mode = state.mode;
+            var view = state.view;
+
+            var roomsByLesson = (free[mode] || {})[day] || {};
+            var teachersByLesson = (free.free_teachers || {})[day] || {};
+
+            var freeClassesMap = getFreeClassesForMode();
+            var classesByLesson = freeClassesMap ? (freeClassesMap[day] || {}) : null;
+
+            var lessons = document.getElementById('lessons');
+            lessons.innerHTML = '';
+
+            var lnSet = {};
+            Object.keys(roomsByLesson).forEach(function (k) { lnSet[k] = true; });
+            Object.keys(teachersByLesson).forEach(function (k) { lnSet[k] = true; });
+            if (classesByLesson) Object.keys(classesByLesson).forEach(function (k) { lnSet[k] = true; });
+            var lessonNumbers = Object.keys(lnSet).map(function (k) { return parseInt(k); }).sort(function (a, b) { return a - b; });
+
+            if (lessonNumbers.length === 0) {
+                lessons.innerHTML = '<div class="message info">Для этого дня нет данных</div>';
+                document.getElementById('daySummary').style.display = 'none';
+                return;
+            }
+
+            var currentLessonNum = getCurrentLessonNumber();
+
+            var totalRooms = 0, totalTeachers = 0, totalClasses = 0;
+
+            lessonNumbers.forEach(function (ln) {
+                var rooms = roomsByLesson[String(ln)] || [];
+                var freeTeachers = teachersByLesson[String(ln)] || [];
+                var freeClasses = classesByLesson ? (classesByLesson[String(ln)] || []) : [];
+
+                var showRooms = (view === 'all' || view === 'rooms');
+                var showTeachers = (view === 'all' || view === 'teachers');
+                var showClasses = (view === 'all' || view === 'classes') && !!classesByLesson;
+
+                totalRooms += rooms.length;
+                totalTeachers += freeTeachers.length;
+                totalClasses += freeClasses.length;
+
+                // Проверяем, есть ли что показывать
+                var hasContent =
+                    (showRooms && rooms.length > 0) ||
+                    (showTeachers && freeTeachers.length > 0) ||
+                    (showClasses && freeClasses.length > 0);
+
+                var card = document.createElement('div');
+                card.className = 'lesson-card';
+                if (!hasContent) card.classList.add('empty');
+                if (ln === currentLessonNum) card.classList.add('current');
+
+                var period = LESSON_PERIODS[ln - 1] || { start: '--:--', end: '--:--' };
+
+                // Шапка
+                var header = document.createElement('div');
+                header.className = 'lesson-header';
+
+                var counts = [];
+                if (showRooms) counts.push('<span class="count-chip rooms">🏠 ' + rooms.length + '</span>');
+                if (showTeachers) counts.push('<span class="count-chip teachers">👨‍🏫 ' + freeTeachers.length + '</span>');
+                if (showClasses) counts.push('<span class="count-chip classes">🎓 ' + freeClasses.length + '</span>');
+
+                header.innerHTML =
+                    '<div class="lesson-title">' +
+                        '<span class="lesson-num">' + ln + '</span>' +
+                        '<span>Урок ' + ln + '</span>' +
+                        '<span class="lesson-time">' + period.start + '–' + period.end + '</span>' +
+                    '</div>' +
+                    '<div class="lesson-counts">' + counts.join('') + '</div>';
+                card.appendChild(header);
+
+                // Кабинеты
+                if (showRooms) {
+                    var sec = document.createElement('div');
+                    sec.className = 'section';
+                    sec.innerHTML = '<div class="section-title">🏠 Свободные кабинеты</div>';
+                    var chips = document.createElement('div');
+                    chips.className = 'chips';
+                    if (rooms.length === 0) {
+                        chips.innerHTML = '<span class="no-items">Нет свободных кабинетов</span>';
+                    } else {
+                        rooms.forEach(function (r) {
+                            var chip = document.createElement('span');
+                            chip.className = 'chip room' + (SHARED_ROOMS.indexOf(r) >= 0 ? ' shared' : '');
+                            chip.textContent = r;
+                            chips.appendChild(chip);
+                        });
+                    }
+                    sec.appendChild(chips);
+                    card.appendChild(sec);
+                }
+
+                // Учителя
+                if (showTeachers) {
+                    var sec2 = document.createElement('div');
+                    sec2.className = 'section';
+                    sec2.innerHTML = '<div class="section-title">👨‍🏫 Свободные учителя</div>';
+                    var chips2 = document.createElement('div');
+                    chips2.className = 'chips';
+                    if (!free.free_teachers) {
+                        chips2.innerHTML = '<span class="no-items soft">В файле нет раздела free_teachers</span>';
+                    } else if (freeTeachers.length === 0) {
+                        chips2.innerHTML = '<span class="no-items">Нет свободных учителей</span>';
+                    } else {
+                        freeTeachers.forEach(function (t) {
+                            var chip = document.createElement('span');
+                            chip.className = 'chip teacher';
+                            chip.textContent = t.name;
+                            var tid = document.createElement('span');
+                            tid.className = 'tid';
+                            tid.textContent = t.id;
+                            chip.appendChild(tid);
+                            chips2.appendChild(chip);
+                        });
+                    }
+                    sec2.appendChild(chips2);
+                    card.appendChild(sec2);
+                }
+
+                // Классы
+                if (showClasses) {
+                    var sec3 = document.createElement('div');
+                    sec3.className = 'section';
+                    sec3.innerHTML = '<div class="section-title">🎓 Свободные классы</div>';
+                    var chips3 = document.createElement('div');
+                    chips3.className = 'chips';
+                    if (freeClasses.length === 0) {
+                        chips3.innerHTML = '<span class="no-items">Все классы заняты</span>';
+                    } else {
+                        freeClasses.forEach(function (c) {
+                            var chip = document.createElement('span');
+                            chip.className = 'chip cls';
+                            chip.textContent = c;
+                            chips3.appendChild(chip);
+                        });
+                    }
+                    sec3.appendChild(chips3);
+                    card.appendChild(sec3);
+                }
+
+                // Если классы недоступны — подсказка
+                if (view === 'classes' && !classesByLesson) {
+                    var hint = document.createElement('div');
+                    hint.className = 'message warning';
+                    hint.style.margin = '0';
+                    hint.textContent = 'Файлы расписания (schedule.primary.json / data_elementary.json) не загружены — блок «Свободные классы» недоступен.';
+                    lessons.appendChild(hint);
+                    return;
+                }
+
+                lessons.appendChild(card);
+            });
+
+            document.getElementById('daySummary').style.display = 'flex';
+            document.getElementById('sumLessons').textContent = lessonNumbers.length;
+            document.getElementById('sumRooms').textContent = totalRooms;
+            document.getElementById('sumTeachers').textContent = totalTeachers;
+            document.getElementById('sumClasses').textContent = classesByLesson ? totalClasses : '—';
+        }
+
+        // ===== УТИЛИТЫ =====
+        function getCurrentLessonNumber() {
+            var now = new Date();
+            var m = now.getHours() * 60 + now.getMinutes();
+            for (var i = 0; i < LESSON_PERIODS.length; i++) {
+                var p1 = LESSON_PERIODS[i].start.split(':');
+                var p2 = LESSON_PERIODS[i].end.split(':');
+                var s = parseInt(p1[0]) * 60 + parseInt(p1[1]);
+                var e = parseInt(p2[0]) * 60 + parseInt(p2[1]);
+                if (m >= s && m < e) return i + 1;
+            }
+            return 0;
+        }
+
+        function showMessage(type, text) {
+            document.getElementById('messageBox').innerHTML = '<div class="message ' + type + '">' + text + '</div>';
+        }
+        function hideMessage() { document.getElementById('messageBox').innerHTML = ''; }
+
+        // ===== СТАРТ =====
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAll(false);
+            // Автообновление раз в 5 минут, если вкладка активна
+            setInterval(function () {
+                if (document.visibilityState === 'visible') loadAll(true);
+            }, 5 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>
