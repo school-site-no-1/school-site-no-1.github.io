@@ -75,7 +75,7 @@
             font-variant-numeric:tabular-nums;font-family:'Courier New',monospace;letter-spacing:.5px;
         }
 
-        /* ============ НАВИГАЦИЯ ДНЕЙ (светлая) ============ */
+        /* ============ НАВИГАЦИЯ ДНЕЙ ============ */
         .day-navigation{
             display:flex;justify-content:center;gap:4px;
             padding:4px 0;margin-bottom:4px;flex-wrap:wrap;
@@ -106,11 +106,11 @@
         .info .count{color:#2d3748;font-weight:600}
         .info .update{color:#a0aec0;font-size:10px}
 
-        /* ============ ТАБЛИЦА (светлое тело) ============ */
+        /* ============ ТАБЛИЦА ============ */
         .table-wrap{overflow-x:auto;border-radius:8px;width:100%}
-        table{width:auto;border-collapse:collapse;font-size:14px;margin:0 auto;min-width:360px}
+        table{width:auto;border-collapse:collapse;font-size:14px;margin:0 auto;min-width:340px}
 
-        /* ТЁМНАЯ ШАПКА ТАБЛИЦЫ — единственное тёмное место */
+        /* ТЁМНАЯ ШАПКА ТАБЛИЦЫ */
         thead th{
             background:#2d3748;
             color:#63b3ed;
@@ -152,9 +152,9 @@
         tbody tr.current-lesson td.period .time-end{color:#4a5568 !important;font-weight:700}
         tbody tr.current-lesson td.class{color:#2d3748 !important}
         tbody tr.current-lesson td.subject{color:#1a202c !important;font-weight:700}
-        tbody tr.current-lesson td.room{color:#c05621 !important;font-weight:700}
+        tbody tr.current-lesson td.subject .room-sub{color:#c05621 !important;font-weight:700}
 
-        /* Прогресс-бар урока (тёмно-синий, без мигания) */
+        /* Прогресс-бар урока — тёмный, без мигания */
         tbody tr.current-lesson::after{
             content:'';
             position:absolute;
@@ -178,7 +178,7 @@
         tbody tr.past-lesson td.period .time-end{color:#cbd5e0 !important}
         tbody tr.past-lesson td.class{color:#a0aec0 !important}
         tbody tr.past-lesson td.subject{color:#a0aec0 !important}
-        tbody tr.past-lesson td.room{color:#cbd5e0 !important}
+        tbody tr.past-lesson td.subject .room-sub{color:#cbd5e0 !important}
 
         /* ============ ПУСТЫЕ ПРОШЕДШИЕ ============ */
         tbody tr.empty-lesson{background:transparent}
@@ -188,7 +188,7 @@
         tbody tr.empty-lesson td.period .time-end{color:#e2e8f0 !important}
         tbody tr.empty-lesson td.class{color:#cbd5e0 !important}
         tbody tr.empty-lesson td.subject{color:#cbd5e0 !important}
-        tbody tr.empty-lesson td.room{color:#e2e8f0 !important}
+        tbody tr.empty-lesson td.subject .room-sub{color:#e2e8f0 !important}
 
         /* ============ Колонки ============ */
         tbody td.num{font-weight:800;color:#2d3748;font-size:13px;width:32px;min-width:28px}
@@ -205,18 +205,23 @@
             font-weight:600;color:#2d3748;font-size:12px;
             white-space:normal;line-height:1.2;min-width:40px;width:54px;max-width:70px;
         }
+        /* Ячейка «Предмет» теперь включает кабинет снизу */
         tbody td.subject{
             text-align:center;font-weight:500;color:#2d3748;
-            font-size:13px;min-width:110px;width:150px;max-width:190px;line-height:1.3;
+            font-size:13px;min-width:140px;width:180px;max-width:220px;line-height:1.25;
         }
-        tbody td.room{
-            font-weight:600;color:#9a3412;font-size:12px;
-            white-space:normal;line-height:1.2;
-            min-width:40px;width:54px;max-width:70px;
+        tbody td.subject .subject-name{display:block;font-weight:600}
+        tbody td.subject .room-sub{
+            display:block;
+            font-size:11px;
+            color:#9a3412;
+            font-weight:700;
+            margin-top:2px;
             font-family:'Courier New',monospace;
+            letter-spacing:.2px;
         }
 
-        /* ============ ПЕРЕМЕНА (без боковых полос) ============ */
+        /* ============ ПЕРЕМЕНА ============ */
         .break-row{
             background:#feebc8 !important;
             border-bottom:1.5px solid #f6ad55;
@@ -286,7 +291,7 @@
         .footer .version{color:#a0aec0}
         .footer .gen-time{color:#cbd5e0}
         .no-lessons-msg{
-            text-align:center;padding:24px 0;color:#a0aec0;font-size:14px;min-width:360px;
+            text-align:center;padding:24px 0;color:#a0aec0;font-size:14px;min-width:340px;
         }
     </style>
 </head>
@@ -334,7 +339,7 @@
     </div>
 
     <div class="footer">
-        <span class="version">🏷️ v7.5.0</span>
+        <span class="version">🏷️ v7.6.0</span>
         <span class="gen-time" id="genTime">📅 загрузка...</span>
     </div>
 </div>
@@ -625,8 +630,9 @@
         const cb      = getCurrentBreak();
         const isToday = isSelectedDayToday(day);
 
+        // 4 колонки: № / Время / Класс / Предмет (кабинет под предметом)
         let html = `<table><thead><tr>
-            <th>№</th><th>Время</th><th>Класс</th><th>Предмет</th><th>Кабинет</th>
+            <th>№</th><th>Время</th><th>Класс</th><th>Предмет</th>
         </tr></thead><tbody>`;
 
         let total = 0;
@@ -655,14 +661,19 @@
 
             const cl = empty ? '—' : item.classes.join(', ');
             const sb = empty ? '—' : item.subjects.join(', ');
-            const rm = empty ? '—' : item.rooms.join(', ');
+            const rm = empty ? '' : item.rooms.join(', ');
+
+            // Кабинет — под предметом, только если есть
+            const subjectCell = empty
+                ? '—'
+                : `<span class="subject-name">${sb}</span>` +
+                  (rm ? `<span class="room-sub">${rm}</span>` : '');
 
             html += `<tr${cls}${styleAttr}>
                 <td class="num">${i}</td>
                 <td class="period"><div class="time-start">${period.start}</div><div class="time-end">${period.end}</div></td>
                 <td class="class">${cl}</td>
-                <td class="subject">${sb}</td>
-                <td class="room">${rm}</td>
+                <td class="subject">${subjectCell}</td>
             </tr>`;
 
             if (i < max) {
@@ -678,7 +689,7 @@
                         ? `<a class="break-lunch" href="${LUNCH_URL}" target="_blank" rel="noopener noreferrer" title="Меню школьной столовой">🍽 Обед</a>`
                         : '';
                     html += `<tr class="break-row">
-                        <td colspan="5" style="position:relative;overflow:hidden;">
+                        <td colspan="4" style="position:relative;overflow:hidden;">
                             <div class="break-progress-bar" style="width:${(prg*100).toFixed(2)}%;"></div>
                             <div class="break-label">
                                 <span class="break-time-left">${txt}</span>
