@@ -5,19 +5,43 @@
       "lesson": 1,
       "class": "8В",
       "subject": "ДКП",
-      "room": "205"
+      "room": "310"
+    },
+    {
+      "lesson": 2,
+      "class": "4В",
+      "subject": "ОПК",
+      "room": ""
+    },
+    {
+      "lesson": 3,
+      "class": "4А",
+      "subject": "ОПК",
+      "room": ""
+    },
+    {
+      "lesson": 4,
+      "class": "4Б",
+      "subject": "ОПК",
+      "room": ""
     },
     {
       "lesson": 5,
       "class": "5Б",
       "subject": "ДКП",
-      "room": "205"
+      "room": "310"
     },
     {
       "lesson": 6,
       "class": "7Б",
       "subject": "ДКП",
-      "room": "205"
+      "room": "310"
+    },
+    {
+      "lesson": 7,
+      "class": "8А",
+      "subject": "ДКП",
+      "room": "310"
     }
   ],
   "СР": [
@@ -25,25 +49,25 @@
       "lesson": 1,
       "class": "5А",
       "subject": "ДКП",
-      "room": "204"
+      "room": "310"
     },
     {
       "lesson": 2,
       "class": "6Б",
       "subject": "ДКП",
-      "room": "204"
+      "room": "310"
     },
     {
       "lesson": 5,
       "class": "8Б",
       "subject": "ДКП",
-      "room": "211"
+      "room": "310"
     },
     {
       "lesson": 6,
       "class": "6В",
       "subject": "ДКП",
-      "room": "301"
+      "room": "310"
     }
   ],
   "ЧТ": [
@@ -51,22 +75,22 @@
       "lesson": 1,
       "class": "7В",
       "subject": "ДКП",
-      "room": "204"
+      "room": "310"
     },
     {
       "lesson": 3,
       "class": "6А",
       "subject": "ДКП",
-      "room": "204"
+      "room": "310"
     },
     {
       "lesson": 7,
       "class": "7А",
       "subject": "ДКП",
-      "room": "212"
+      "room": "310"
     }
   ],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-10-16 05:14:41"
+  "last_update": "2026-10-18 08:27:36"
 }

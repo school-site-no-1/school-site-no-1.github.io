@@ -6,19 +6,25 @@
       "lesson": 1,
       "class": "8В",
       "subject": "Труд",
-      "room": "112"
+      "room": "112/302"
     },
     {
       "lesson": 2,
       "class": "9Б",
       "subject": "Труд",
-      "room": "112"
+      "room": "112/302"
     },
     {
       "lesson": 3,
       "class": "8Б",
       "subject": "Труд",
-      "room": "112"
+      "room": "112/302"
+    },
+    {
+      "lesson": 5,
+      "class": "9А",
+      "subject": "Труд",
+      "room": "112/302"
     },
     {
       "lesson": 5,
@@ -30,11 +36,11 @@
       "lesson": 6,
       "class": "8А",
       "subject": "Труд",
-      "room": "112"
+      "room": "112/302"
     }
   ],
   "ЧТ": [],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-10-16 05:14:41"
+  "last_update": "2026-10-18 08:27:36"
 }

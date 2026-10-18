@@ -1,6 +1,18 @@
 {
   "ПН": [
     {
+      "lesson": 5,
+      "class": "1В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "2А",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
       "lesson": 7,
       "class": "8А",
       "subject": "Физ-ра",
@@ -13,7 +25,50 @@
       "room": "Док"
     }
   ],
-  "ВТ": [],
+  "ВТ": [
+    {
+      "lesson": 1,
+      "class": "9В",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 2,
+      "class": "9В",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 4,
+      "class": "3А",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 5,
+      "class": "2А",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "6А",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 7,
+      "class": "6А",
+      "subject": "Физ-ра",
+      "room": "Док"
+    },
+    {
+      "lesson": 8,
+      "class": "9Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    }
+  ],
   "СР": [
     {
       "lesson": 1,
@@ -30,6 +85,18 @@
     {
       "lesson": 3,
       "class": "9Б",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 5,
+      "class": "1В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 6,
+      "class": "3А",
       "subject": "Физ-ра",
       "room": "с/з"
     },
@@ -52,6 +119,12 @@
       "class": "9Б",
       "subject": "Физ-ра",
       "room": "с/з"
+    },
+    {
+      "lesson": 4,
+      "class": "2А",
+      "subject": "Физ-ра",
+      "room": "с/з"
     }
   ],
   "ПТ": [
@@ -66,8 +139,20 @@
       "class": "6А",
       "subject": "Физ-ра",
       "room": "с/з"
+    },
+    {
+      "lesson": 4,
+      "class": "1В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 5,
+      "class": "3А",
+      "subject": "Физ-ра",
+      "room": "с/з"
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-16 05:14:41"
+  "last_update": "2026-10-18 08:27:36"
 }
