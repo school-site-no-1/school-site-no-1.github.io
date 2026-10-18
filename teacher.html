@@ -111,14 +111,14 @@
         .info .count{color:#2d3748;font-weight:600}
         .info .update{color:#a0aec0;font-size:10px}
 
-        /* ============ ТАБЛИЦА ============ */
+        /* ============ ТАБЛИЦА (уже на 40px) ============ */
         .table-wrap{overflow-x:auto;border-radius:8px;width:100%}
-        table{width:auto;border-collapse:collapse;font-size:14px;margin:0 auto;min-width:340px}
+        table{width:auto;border-collapse:collapse;font-size:14px;margin:0 auto;min-width:300px}
 
         thead th{
             background:#2d3748;
             color:#63b3ed;
-            padding:8px 6px;
+            padding:8px 5px;
             text-align:center;
             font-weight:700;
             font-size:11px;
@@ -133,7 +133,7 @@
         tbody tr{border-bottom:1.5px solid #e2e8f0}
         tbody tr:last-child{border-bottom:none}
         tbody td{
-            padding:10px 5px;
+            padding:10px 4px;
             text-align:center;font-size:13px;
             vertical-align:middle;border-right:1px solid #e2e8f0;
             color:#2d3748;background:#fff;
@@ -191,9 +191,9 @@
         tbody tr.empty-lesson td.class{color:#cbd5e0 !important}
         tbody tr.empty-lesson td.subject{color:#cbd5e0 !important}
 
-        /* ============ Колонки ============ */
-        tbody td.num{font-weight:800;color:#2d3748;font-size:13px;width:30px;min-width:26px}
-        tbody td.period{padding:8px 3px;white-space:nowrap;width:75px;min-width:65px}
+        /* ============ Колонки — суммарно −40px ============ */
+        tbody td.num{font-weight:800;color:#2d3748;font-size:13px;width:26px;min-width:22px}
+        tbody td.period{padding:8px 2px;white-space:nowrap;width:66px;min-width:58px}
         tbody td.period .time-start{
             font-weight:700;color:#2d3748;font-size:13px;line-height:1.2;
             font-family:'Roboto Mono','SF Mono',Consolas,'Liberation Mono',Menlo,monospace;
@@ -205,11 +205,11 @@
         }
         tbody td.class{
             font-weight:600;color:#2d3748;font-size:12px;
-            white-space:normal;line-height:1.2;min-width:38px;width:51px;max-width:67px;
+            white-space:normal;line-height:1.2;min-width:32px;width:42px;max-width:55px;
         }
         tbody td.subject{
             text-align:center;font-weight:500;color:#2d3748;
-            font-size:13px;min-width:150px;width:190px;max-width:230px;line-height:1.25;
+            font-size:13px;min-width:138px;width:172px;max-width:210px;line-height:1.25;
         }
         /* Кабинет под предметом */
         tbody td.subject .room-inline{
@@ -293,7 +293,7 @@
         .footer .version{color:#a0aec0}
         .footer .gen-time{color:#cbd5e0}
         .no-lessons-msg{
-            text-align:center;padding:24px 0;color:#a0aec0;font-size:14px;min-width:340px;
+            text-align:center;padding:24px 0;color:#a0aec0;font-size:14px;min-width:300px;
         }
     </style>
 </head>
@@ -341,7 +341,7 @@
     </div>
 
     <div class="footer">
-        <span class="version">🏷️ v7.8.0</span>
+        <span class="version">🏷️ v7.9.0</span>
         <span class="gen-time" id="genTime">📅 загрузка...</span>
     </div>
 </div>
@@ -658,7 +658,6 @@
             const sb = empty ? '—' : item.subjects.join(', ');
             const rm = empty ? '—' : item.rooms.join(', ');
 
-            // кабинет — под предметом
             const subjectHtml = empty
                 ? '—'
                 : `${sb}${rm !== '—' ? `<div class="room-inline">${rm}</div>` : ''}`;
