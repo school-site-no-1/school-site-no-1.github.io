@@ -63,42 +63,6 @@
       "class": "10А",
       "subject": "ОБЗР",
       "room": "206"
-    },
-    {
-      "lesson": 2,
-      "class": "6В",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 3,
-      "class": "9В",
-      "subject": "ОБЗР",
-      "room": "211"
-    },
-    {
-      "lesson": 4,
-      "class": "10Б",
-      "subject": "ОБЗР",
-      "room": "205"
-    },
-    {
-      "lesson": 5,
-      "class": "6Б",
-      "subject": "Физ-ра",
-      "room": "304"
-    },
-    {
-      "lesson": 6,
-      "class": "8В",
-      "subject": "ОБЗР",
-      "room": "201"
-    },
-    {
-      "lesson": 7,
-      "class": "8А",
-      "subject": "ОБЗР",
-      "room": "204"
     }
   ],
   "ЧТ": [
@@ -190,5 +154,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-20 06:29:53"
+  "last_update": "2026-10-20 13:03:18"
 }
