@@ -163,26 +163,8 @@
       "class": "1Б",
       "subject": "Физ-ра",
       "room": "с/з"
-    },
-    {
-      "lesson": 6,
-      "class": "4Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 7,
-      "class": "8В",
-      "subject": "Физ-ра",
-      "room": "с/з"
-    },
-    {
-      "lesson": 8,
-      "class": "10Б",
-      "subject": "Физ-ра",
-      "room": "с/з"
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-22 08:01:14"
+  "last_update": "2026-10-22 13:03:50"
 }
