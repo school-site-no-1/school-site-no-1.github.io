@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Программа по физике</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #3182ce;
+    --accent-soft: #ebf4ff;
+    --success: #2f855a;
+    --danger: #c53030;
+    --warning: #c05621;
+    --purple: #6b46c1;
+    --border: #e2e8f0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --text-soft: #718096;
+    --tap: 44px;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px 16px 60px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ===== ВКЛАДКИ ===== */
+  .tabs-nav {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0;
+    flex-wrap: wrap;
+  }
+  .tabs-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tabs-nav .schedule-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    margin-left: auto;
+  }
+  .tabs-nav .schedule-toolbar .schedule-select {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    min-width: 180px;
+  }
+  .tabs-nav .schedule-toolbar .btn-export {
+    padding: 7px 12px;
+    font-size: 0.85rem;
+  }
+
+  .tab-btn {
+    padding: 10px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-soft);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+    border-radius: 8px 8px 0 0;
+    min-height: var(--tap);
+  }
+  .tab-btn:hover { color: var(--primary); background: var(--accent-soft); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); background: #fff; }
+
+  .tab-content { display: none; animation: fadeInTab 0.3s ease; }
+  .tab-content.active { display: block; }
+  @keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Прогресс ===== */
+  .progress-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  }
+  .progress-info { flex: 1; min-width: 220px; }
+  .progress-label {
+    font-size: 0.85rem; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .progress-count { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+  .progress-count .of { color: var(--text-soft); font-weight: 500; font-size: 1rem; }
+  .progress-bar {
+    flex: 2; min-width: 200px; height: 10px;
+    background: var(--border); border-radius: 999px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .per-class { display: flex; gap: 20px; flex-wrap: wrap; }
+  .class-stat { text-align: center; min-width: 60px; }
+  .class-stat .name {
+    font-size: 0.75rem; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .class-stat .num { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+  .class-stat .num.done { color: var(--success); }
+
+  /* ===== Панель управления ===== */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  button, .btn-file {
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+    min-height: 38px;
+  }
+  button:hover, .btn-file:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  }
+  button:active, .btn-file:active { transform: translateY(0); }
+
+  .btn-reset { background: var(--danger); }
+  .btn-class { background: var(--success); }
+  .btn-uncheck { background: var(--warning); }
+  .btn-export { background: var(--accent); }
+  .btn-import { background: var(--purple); }
+  .btn-expand { background: var(--primary-light); }
+  .btn-collapse { background: #4a5568; }
+
+  /* ===== Таблица ===== */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--primary);
+    color: #fff;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+    position: sticky; top: 0; z-index: 2;
+  }
+  thead th:first-child { text-align: left; width: auto; }
+  thead th.mark-col { width: 96px; }
+
+  tbody tr.lesson-row {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.25s ease;
+  }
+  tbody tr.lesson-row:hover { filter: brightness(0.98); }
+
+  tbody tr.lesson-row[data-count="0"] { background: #ffffff; }
+  tbody tr.lesson-row[data-count="1"] { background: #fdecec; }
+  tbody tr.lesson-row[data-count="2"] { background: #fff8e1; }
+  tbody tr.lesson-row[data-count="3"] { background: #e7f7ee; }
+
+  td.lesson-title {
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: text;
+    -webkit-user-select: text;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.94rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.15s;
+  }
+  td.lesson-title:hover { color: var(--accent); }
+  td.lesson-title .toggle-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.7);
+    border-radius: 6px;
+    color: var(--accent);
+    font-size: 0.7rem;
+    transition: transform 0.25s ease, background 0.15s, color 0.15s;
+  }
+  td.lesson-title.open .toggle-icon {
+    transform: rotate(90deg);
+    background: var(--accent);
+    color: #fff;
+  }
+  td.lesson-title ::selection { background: rgba(49,130,206,0.35); color: #1a202c; }
+
+  td.mark {
+    text-align: center;
+    width: 96px;
+    padding: 8px 6px;
+    vertical-align: middle;
+  }
+  td.mark .mark-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  td.mark input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 26px; height: 26px;
+    border: 2px solid #cbd5e0;
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.18s ease;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+  }
+  td.mark input[type="checkbox"]:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(49,130,206,0.12);
+  }
+  td.mark input[type="checkbox"]:checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+  td.mark input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 8px; top: 3px;
+    width: 6px; height: 12px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+  }
+
+  td.mark .date-input {
+    width: 100%;
+    max-width: 84px;
+    font-size: 0.68rem;
+    padding: 2px 3px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    color: var(--text-soft);
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: border-color 0.15s, opacity 0.15s;
+  }
+  td.mark .date-input:hover:not(:disabled) { border-color: var(--accent); }
+  td.mark .date-input:disabled { opacity: 0.35; cursor: not-allowed; background: #edf2f7; }
+  td.mark .date-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.18);
+  }
+
+  tr.content-row { display: none; }
+  tr.content-row.open { display: table-row; }
+  tr.content-row td {
+    background: #fafcfe;
+    padding: 0 16px 0 60px;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    border-bottom: 1px solid var(--border);
+  }
+  tr.content-row.open td { padding-top: 6px; padding-bottom: 18px; }
+  .content-inner {
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+    animation: fadeIn 0.25s ease;
+  }
+  .content-inner ul { list-style: none; padding: 0; margin: 0; }
+  .content-inner ul li { position: relative; padding: 3px 0 3px 20px; line-height: 1.5; }
+  .content-inner ul li::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 12px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  tr.lesson-row.url-highlight {
+    box-shadow: 0 0 0 3px #3182ce, 0 0 20px rgba(49,130,206,0.3);
+    border-radius: 8px;
+    animation: pulseHighlight 1.5s ease-in-out;
+  }
+  @keyframes pulseHighlight {
+    0%, 100% { box-shadow: 0 0 0 3px #3182ce, 0 0 20px rgba(49,130,206,0.3); }
+    50% { box-shadow: 0 0 0 5px #63b3ed, 0 0 30px rgba(99,179,237,0.5); }
+  }
+  td.mark.url-highlight {
+    outline: 3px solid #3182ce;
+    outline-offset: -3px;
+    border-radius: 8px;
+    animation: pulseCell 1.5s ease-in-out;
+  }
+  @keyframes pulseCell {
+    0%, 100% { outline-color: #3182ce; }
+    50% { outline-color: #63b3ed; }
+  }
+
+  .io-message {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    min-height: 1.3em;
+    text-align: center;
+    font-weight: 500;
+    transition: opacity 0.3s;
+  }
+  .io-message.ok { color: var(--success); }
+  .io-message.err { color: var(--danger); }
+
+  /* ===== РАСПИСАНИЕ ===== */
+  .schedule-label { font-weight: 600; color: var(--text-soft); font-size: 0.85rem; }
+  .schedule-select {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    min-width: 180px;
+    min-height: 36px;
+  }
+  .schedule-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(49,130,206,0.15);
+  }
+  .schedule-status { font-size: 0.8rem; color: var(--text-soft); }
+  .schedule-status.err { color: var(--danger); }
+  .schedule-status.ok { color: var(--success); }
+
+  .schedule-footer {
+    margin-top: 12px;
+    padding: 0 4px;
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    text-align: right;
+  }
+
+  /* Фильтр по дням */
+  .day-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .day-chip {
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-height: 34px;
+    white-space: nowrap;
+    position: relative;
+  }
+  .day-chip:hover { border-color: var(--accent); color: var(--primary); }
+  .day-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(49,130,206,0.25);
+  }
+  .day-chip.all-chip { color: var(--primary); }
+  .day-chip.all-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .day-chip.is-today::after {
+    content: '';
+    position: absolute;
+    top: 4px; right: 6px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+  }
+  .day-chip.active.is-today::after { background: #fff; }
+
+  .schedule-grid { padding: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .schedule-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px;
+    min-width: 720px;
+  }
+  .schedule-table th {
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 8px;
+    border-radius: 8px;
+    text-align: center;
+    position: static;
+  }
+  .schedule-table th.is-today {
+    background: var(--success);
+  }
+  .schedule-table td { vertical-align: top; padding: 0; min-width: 120px; }
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    line-height: 1.35;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .card .c-lesson {
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .card .c-class { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+  .card .c-subject { color: var(--text); margin-top: 2px; }
+  .card .c-room { color: var(--text-soft); font-size: 0.75rem; margin-top: 2px; }
+  .card.subject-physics { border-left-color: var(--success); }
+  .card.subject-informatics { border-left-color: var(--purple); }
+  .card.subject-english { border-left-color: var(--warning); }
+
+  /* Плашка "окно" в десктопной таблице */
+  .card.card-gap {
+    border-left-color: #cbd5e0;
+    background: #fafafa;
+    border-style: dashed;
+    color: #a0aec0;
+  }
+  .card.card-gap .c-lesson { color: #a0aec0; }
+  .card.card-gap .c-gap-text {
+    color: #a0aec0;
+    font-style: italic;
+    font-size: 0.82rem;
+    margin-top: 2px;
+  }
+
+  .schedule-empty {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 30px 10px;
+    font-size: 0.95rem;
+  }
+  .schedule-empty.err { color: var(--danger); }
+
+  /* Мобильный список */
+  .schedule-list { display: none; }
+  .day-block { margin-bottom: 14px; }
+  .day-block:last-child { margin-bottom: 0; }
+  .day-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    background: var(--accent-soft);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .day-title .today-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--success);
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+  .day-lessons { display: flex; flex-direction: column; gap: 6px; }
+  .m-card {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .m-card .m-num {
+    flex-shrink: 0;
+    width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: var(--text-soft);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .m-card .m-body { flex: 1; padding: 8px 10px; min-width: 0; }
+  .m-card .m-class { font-weight: 700; color: var(--primary); font-size: 0.95rem; }
+  .m-card .m-subject { color: var(--text); font-size: 0.85rem; margin-top: 2px; }
+  .m-card .m-room { color: var(--text-soft); font-size: 0.75rem; margin-top: 2px; }
+  .m-card.subject-physics { border-left-color: var(--success); }
+  .m-card.subject-informatics { border-left-color: var(--purple); }
+  .m-card.subject-english { border-left-color: var(--warning); }
+
+  .m-card.m-gap {
+    border-left-color: #cbd5e0;
+    background: #fafafa;
+    border-style: dashed;
+  }
+  .m-card.m-gap .m-num {
+    background: #edf2f7;
+    color: #a0aec0;
+    font-weight: 600;
+  }
+  .m-card.m-gap .m-gap-text {
+    padding: 8px 10px;
+    color: #a0aec0;
+    font-size: 0.82rem;
+    font-style: italic;
+    align-self: center;
+  }
+
+  .day-empty {
+    color: #cbd5e0;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    font-style: italic;
+  }
+
+  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
+  @media (max-width: 768px) {
+    body {
+      padding: 14px 10px 40px;
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
+    }
+
+    .tabs-nav {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      border-bottom: none;
+      margin-bottom: 14px;
+    }
+    .tabs-buttons {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--border);
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+    }
+    .tabs-buttons::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex: 0 0 auto;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+    .tabs-nav .schedule-toolbar {
+      margin-left: 0;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tabs-nav .schedule-toolbar .schedule-label { font-size: 0.8rem; }
+    .tabs-nav .schedule-toolbar .schedule-select {
+      flex: 1 1 140px;
+      min-width: 0;
+      font-size: 0.85rem;
+      min-height: 36px;
+    }
+    .tabs-nav .schedule-toolbar .btn-export {
+      min-height: 36px;
+      padding: 6px 12px;
+    }
+
+    .progress-card { padding: 14px 14px; gap: 12px; margin-bottom: 14px; }
+    .progress-info { min-width: 0; flex: 1 1 100%; }
+    .progress-bar { flex: 1 1 100%; min-width: 0; }
+    .progress-count { font-size: 1.2rem; }
+    .per-class { gap: 14px; flex: 1 1 100%; justify-content: space-between; }
+    .class-stat { min-width: 50px; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .controls button, .controls .btn-file {
+      width: 100%;
+      justify-content: center;
+      font-size: 0.82rem;
+      padding: 10px 8px;
+      min-height: var(--tap);
+    }
+
+    .table-wrap { border-radius: 10px; }
+    thead th { padding: 10px 6px; font-size: 0.68rem; }
+    thead th.mark-col { width: 60px; }
+    td.lesson-title {
+      padding: 12px 8px;
+      font-size: 0.85rem;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    td.lesson-title .toggle-icon {
+      width: 20px; height: 20px; font-size: 0.65rem;
+      margin-top: 1px;
+    }
+    td.mark { width: 60px; padding: 8px 3px; }
+    td.mark .mark-inner { gap: 3px; }
+    td.mark input[type="checkbox"] { width: 24px; height: 24px; }
+    td.mark input[type="checkbox"]:checked::after { left: 7px; top: 2px; width: 5px; height: 11px; }
+    td.mark .date-input { font-size: 0.6rem; max-width: 56px; padding: 2px 1px; }
+    tr.content-row td {
+      padding-left: 12px;
+      padding-right: 10px;
+      font-size: 0.85rem;
+    }
+    tr.content-row.open td { padding-top: 4px; padding-bottom: 14px; }
+
+    .day-filter { gap: 5px; margin-bottom: 10px; }
+    .day-chip { font-size: 0.78rem; padding: 6px 12px; min-height: 32px; }
+
+    .schedule-grid { padding: 10px; display: none; }
+    .schedule-list { display: block; padding: 12px 10px; }
+    .schedule-footer { font-size: 0.7rem; padding: 0 6px; }
+
+    .io-message { font-size: 0.82rem; margin-top: 12px; }
+  }
+
+  @media (max-width: 360px) {
+    .controls { grid-template-columns: 1fr; }
+    td.mark { width: 52px; }
+    thead th.mark-col { width: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ===== ВКЛАДКИ + ВЫБОР УЧИТЕЛЯ ===== -->
+  <div class="tabs-nav">
+    <div class="tabs-buttons">
+      <button class="tab-btn" data-tab="schedule">📅 Расписание</button>
+      <button class="tab-btn active" data-tab="class-9">9 класс</button>
+      <button class="tab-btn" data-tab="class-8">8 класс</button>
+      <button class="tab-btn" data-tab="class-7">7 класс</button>
+    </div>
+    <div class="schedule-toolbar">
+      <label for="teacherSelect" class="schedule-label">Учитель:</label>
+      <select id="teacherSelect" class="schedule-select"></select>
+      <button class="btn-export" id="reloadScheduleBtn" title="Перезагрузить файлы">⟳</button>
+      <span class="schedule-status" id="scheduleStatus"></span>
+    </div>
+  </div>
+
+  <!-- ======================= РАСПИСАНИЕ ======================= -->
+  <div class="tab-content" id="schedule">
+
+    <div class="day-filter" id="dayFilter">
+      <button class="day-chip all-chip active" data-day="all">Все</button>
+      <button class="day-chip" data-day="ПН">ПН</button>
+      <button class="day-chip" data-day="ВТ">ВТ</button>
+      <button class="day-chip" data-day="СР">СР</button>
+      <button class="day-chip" data-day="ЧТ">ЧТ</button>
+      <button class="day-chip" data-day="ПТ">ПТ</button>
+      <button class="day-chip" data-day="СБ">СБ</button>
+    </div>
+
+    <div class="table-wrap">
+      <div id="scheduleGrid" class="schedule-grid">
+        <p class="schedule-empty">Откройте вкладку, чтобы загрузить расписание…</p>
+      </div>
+      <div id="scheduleList" class="schedule-list">
+        <p class="schedule-empty">Откройте вкладку, чтобы загрузить расписание…</p>
+      </div>
+    </div>
+
+    <div class="schedule-footer" id="scheduleInfo" hidden></div>
+  </div>
+
+  <!-- ======================= 9 КЛАСС ======================= -->
+  <div class="tab-content active" id="class-9">
+    <div class="progress-card">
+      <div class="progress-info">
+        <div class="progress-label">Отмечено пройдено</div>
+        <div class="progress-count" id="progressCount">0 <span class="of">из 54</span></div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="per-class">
+        <div class="class-stat">
+          <div class="name">9а</div>
+          <div class="num" id="stat9a">0/18</div>
+        </div>
+        <div class="class-stat">
+          <div class="name">9б</div>
+          <div class="num" id="stat9b">0/18</div>
+        </div>
+        <div class="class-stat">
+          <div class="name">9в</div>
+          <div class="num" id="stat9v">0/18</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-expand" id="expandAllBtn">⤢ Развернуть всё</button>
+      <button class="btn-collapse" id="collapseAllBtn">⤡ Свернуть всё</button>
+      <button class="btn-export" id="downloadBtn">💾 Скачать .json</button>
+      <label class="btn-file btn-import">
+        📂 Открыть .json
+        <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
+      </label>
+      <button class="btn-class" data-action="check">✓ Отметить всё</button>
+      <button class="btn-uncheck" data-action="uncheck">✗ Снять всё</button>
+      <button class="btn-reset" id="resetBtn">⟲ Сброс</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Урок и тема</th>
+            <th class="mark-col">9а</th>
+            <th class="mark-col">9б</th>
+            <th class="mark-col">9в</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+
+          <!-- Урок 15 -->
+          <tr class="lesson-row" data-content="c15" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 15. Решение задач на применение на практике законов Ньютона
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u15-9a">
+              <input type="date" class="date-input" data-date-id="u15-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u15-9b">
+              <input type="date" class="date-input" data-date-id="u15-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u15-9v">
+              <input type="date" class="date-input" data-date-id="u15-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c15">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Первый закон Ньютона</li>
+                <li>Второй закон Ньютона</li>
+                <li>Третий закон Ньютона</li>
+                <li>Инерциальные и неинерциальные системы отсчёта</li>
+                <li>Принцип суперпозиции сил</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 16 -->
+          <tr class="lesson-row" data-content="c16" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 16. Сила тяжести. Свободное падение тел
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u16-9a">
+              <input type="date" class="date-input" data-date-id="u16-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u16-9b">
+              <input type="date" class="date-input" data-date-id="u16-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u16-9v">
+              <input type="date" class="date-input" data-date-id="u16-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c16">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Ускорение свободного падения на Земле и других планетах</li>
+                <li>Сила тяжести</li>
+                <li>Центр тяжести</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 17 -->
+          <tr class="lesson-row" data-content="c17" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 17. Закон всемирного тяготения. Ускорение свободного падения
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u17-9a">
+              <input type="date" class="date-input" data-date-id="u17-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u17-9b">
+              <input type="date" class="date-input" data-date-id="u17-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u17-9v">
+              <input type="date" class="date-input" data-date-id="u17-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c17">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Закон всемирного тяготения. Гравитационная постоянная</li>
+                <li>Ускорение свободного падения на Земле и других планетах</li>
+                <li>Опыт Кавендиша</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 18 -->
+          <tr class="lesson-row" data-content="c18" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 18. Сила упругости. Закон Гука
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u18-9a">
+              <input type="date" class="date-input" data-date-id="u18-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u18-9b">
+              <input type="date" class="date-input" data-date-id="u18-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u18-9v">
+              <input type="date" class="date-input" data-date-id="u18-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c18">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Сила упругости</li>
+                <li>Закон Гука</li>
+                <li>Коэффициент жёсткости</li>
+                <li>Соединение пружин</li>
+                <li>Границы применимости</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 19 -->
+          <tr class="lesson-row" data-content="c19" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 19. Лабораторная работа «Определение жёсткости пружины»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u19-9a">
+              <input type="date" class="date-input" data-date-id="u19-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u19-9b">
+              <input type="date" class="date-input" data-date-id="u19-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u19-9v">
+              <input type="date" class="date-input" data-date-id="u19-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c19">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Сила упругости</li>
+                <li>Закон Гука</li>
+                <li>Коэффициент жёсткости</li>
+                <li>Разбор задач</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 20 -->
+          <tr class="lesson-row" data-content="c20" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 20. Вес тела
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u20-9a">
+              <input type="date" class="date-input" data-date-id="u20-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u20-9b">
+              <input type="date" class="date-input" data-date-id="u20-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u20-9v">
+              <input type="date" class="date-input" data-date-id="u20-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c20">
+            <td colspan="4"><div class="content-inner">
+              <ul><li>Вес тела</li></ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 21 -->
+          <tr class="lesson-row" data-content="c21" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 21. Сила трения
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u21-9a">
+              <input type="date" class="date-input" data-date-id="u21-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u21-9b">
+              <input type="date" class="date-input" data-date-id="u21-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u21-9v">
+              <input type="date" class="date-input" data-date-id="u21-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c21">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Сила трения</li>
+                <li>Коэффициент трения</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 22 -->
+          <tr class="lesson-row" data-content="c22" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 22. Лабораторная работа «Определение коэффициента трения скольжения»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u22-9a">
+              <input type="date" class="date-input" data-date-id="u22-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u22-9b">
+              <input type="date" class="date-input" data-date-id="u22-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u22-9v">
+              <input type="date" class="date-input" data-date-id="u22-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c22">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Сила трения</li>
+                <li>Коэффициент трения</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 23 -->
+          <tr class="lesson-row" data-content="c23" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 23. Решение задач с применением законов Ньютона
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u23-9a">
+              <input type="date" class="date-input" data-date-id="u23-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u23-9b">
+              <input type="date" class="date-input" data-date-id="u23-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u23-9v">
+              <input type="date" class="date-input" data-date-id="u23-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c23">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Сила трения</li>
+                <li>Сила упругости</li>
+                <li>Первый закон Ньютона</li>
+                <li>Второй закон Ньютона</li>
+                <li>Третий закон Ньютона</li>
+                <li>Закон Гука</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 24 -->
+          <tr class="lesson-row" data-content="c24" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 24. Решение задач с применением законов Ньютона
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u24-9a">
+              <input type="date" class="date-input" data-date-id="u24-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u24-9b">
+              <input type="date" class="date-input" data-date-id="u24-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u24-9v">
+              <input type="date" class="date-input" data-date-id="u24-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c24">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Сила трения</li>
+                <li>Сила упругости</li>
+                <li>Первый закон Ньютона</li>
+                <li>Второй закон Ньютона</li>
+                <li>Третий закон Ньютона</li>
+                <li>Закон Гука</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 25 -->
+          <tr class="lesson-row" data-content="c25" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 25. Динамика криволинейного движения
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u25-9a">
+              <input type="date" class="date-input" data-date-id="u25-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u25-9b">
+              <input type="date" class="date-input" data-date-id="u25-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u25-9v">
+              <input type="date" class="date-input" data-date-id="u25-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c25">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Центростремительное ускорение</li>
+                <li>Движение по окружности</li>
+                <li>Прямолинейное и криволинейное движение</li>
+                <li>Вес тела</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 26 -->
+          <tr class="lesson-row" data-content="c26" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 26. Первая космическая скорость. Искусственные спутники Земли
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u26-9a">
+              <input type="date" class="date-input" data-date-id="u26-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u26-9b">
+              <input type="date" class="date-input" data-date-id="u26-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u26-9v">
+              <input type="date" class="date-input" data-date-id="u26-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c26">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Первая космическая скорость</li>
+                <li>Невесомость. Перегрузка</li>
+                <li>Искусственные спутники Земли</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 27 -->
+          <tr class="lesson-row" data-content="c27" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 27. Решение задач по теме «Взаимодействие тел»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u27-9a">
+              <input type="date" class="date-input" data-date-id="u27-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u27-9b">
+              <input type="date" class="date-input" data-date-id="u27-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u27-9v">
+              <input type="date" class="date-input" data-date-id="u27-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c27">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Вес тела</li>
+                <li>Сила трения</li>
+                <li>Сила упругости</li>
+                <li>Первый закон Ньютона</li>
+                <li>Первая космическая скорость</li>
+                <li>Невесомость. Перегрузка</li>
+                <li>Взаимодействие тел</li>
+                <li>Второй закон Ньютона</li>
+                <li>Закон Гука</li>
+                <li>Искусственные спутники Земли</li>
+                <li>Инерциальные и неинерциальные системы отсчёта</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 28 -->
+          <tr class="lesson-row" data-content="c28" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 28. Урок-конференция «Движение тел вокруг гравитационного центра (Солнечная система). Галактики»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u28-9a">
+              <input type="date" class="date-input" data-date-id="u28-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u28-9b">
+              <input type="date" class="date-input" data-date-id="u28-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u28-9v">
+              <input type="date" class="date-input" data-date-id="u28-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c28">
+            <td colspan="4"><div class="content-inner">
+              <ul><li>Движение планет вокруг Солнца</li></ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 29 -->
+          <tr class="lesson-row" data-content="c29" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 29. Равновесие материальной точки. Абсолютно твёрдое тело. Равновесие твёрдого тела с закреплённой осью вращения. Момент силы. Центр тяжести
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u29-9a">
+              <input type="date" class="date-input" data-date-id="u29-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u29-9b">
+              <input type="date" class="date-input" data-date-id="u29-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u29-9v">
+              <input type="date" class="date-input" data-date-id="u29-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c29">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Равновесие твёрдого тела с закреплённой осью вращения</li>
+                <li>Равновесие материальной точки</li>
+                <li>Центр тяжести</li>
+                <li>Абсолютно твёрдое тело</li>
+                <li>Момент силы. Правило моментов</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 30 -->
+          <tr class="lesson-row" data-content="c30" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 30. Решение задач по теме «Момент силы. Центр тяжести»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u30-9a">
+              <input type="date" class="date-input" data-date-id="u30-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u30-9b">
+              <input type="date" class="date-input" data-date-id="u30-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u30-9v">
+              <input type="date" class="date-input" data-date-id="u30-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c30">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Центр тяжести</li>
+                <li>Момент силы. Правило моментов</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 31 -->
+          <tr class="lesson-row" data-content="c31" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 31. Подготовка к контрольной работе по темам: «Механическое движение», «Взаимодействие тел»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u31-9a">
+              <input type="date" class="date-input" data-date-id="u31-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u31-9b">
+              <input type="date" class="date-input" data-date-id="u31-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u31-9v">
+              <input type="date" class="date-input" data-date-id="u31-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c31">
+            <td colspan="4"><div class="content-inner">
+              <ul>
+                <li>Вес тела</li>
+                <li>Сила трения</li>
+                <li>Сила упругости</li>
+                <li>Первый закон Ньютона</li>
+                <li>Движение тел под действием нескольких сил</li>
+                <li>Закон всемирного тяготения. Гравитационная постоянная</li>
+                <li>Ускорение свободного падения на Земле и других планетах</li>
+                <li>Динамометр</li>
+                <li>Движение планет вокруг Солнца</li>
+                <li>Равновесие твёрдого тела с закреплённой осью вращения</li>
+                <li>Равновесие материальной точки</li>
+                <li>Сила тяжести</li>
+                <li>Первая космическая скорость</li>
+                <li>Невесомость. Перегрузка</li>
+                <li>Взаимодействие тел</li>
+                <li>Второй закон Ньютона</li>
+                <li>Третий закон Ньютона</li>
+                <li>Закон Гука</li>
+                <li>Центр тяжести</li>
+                <li>Искусственные спутники Земли</li>
+                <li>Инерциальные и неинерциальные системы отсчёта</li>
+                <li>Принцип суперпозиции сил</li>
+                <li>Абсолютно твёрдое тело</li>
+                <li>Коэффициент жёсткости</li>
+                <li>Момент силы. Правило моментов</li>
+                <li>Коэффициент трения</li>
+              </ul>
+            </div></td>
+          </tr>
+
+          <!-- Урок 32 -->
+          <tr class="lesson-row" data-content="c32" data-count="0">
+            <td class="lesson-title">
+              <span class="toggle-icon">▶</span>
+              Урок 32. Контрольная работа по темам: «Механическое движение», «Взаимодействие тел»
+            </td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u32-9a">
+              <input type="date" class="date-input" data-date-id="u32-9a" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u32-9b">
+              <input type="date" class="date-input" data-date-id="u32-9b" disabled>
+            </div></td>
+            <td class="mark"><div class="mark-inner">
+              <input type="checkbox" data-id="u32-9v">
+              <input type="date" class="date-input" data-date-id="u32-9v" disabled>
+            </div></td>
+          </tr>
+          <tr class="content-row" id="c32">
+            <td colspan="4"><div class="content-inner">
+              <ul><li>Контрольная работа</li></ul>
+            </div></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ======================= 8 КЛАСС (ЗАГОТОВКА) ======================= -->
+  <div class="tab-content" id="class-8">
+    <div class="table-wrap" style="padding: 30px; text-align: center; color: var(--text-soft);">
+      <h3>Программа для 8 класса</h3>
+      <p style="margin-top: 10px;">Здесь пока нет тем. Скопируйте структуру таблицы из 9 класса и вставьте сюда.</p>
+    </div>
+  </div>
+
+  <!-- ======================= 7 КЛАСС (ЗАГОТОВКА) ======================= -->
+  <div class="tab-content" id="class-7">
+    <div class="table-wrap" style="padding: 30px; text-align: center; color: var(--text-soft);">
+      <h3>Программа для 7 класса</h3>
+      <p style="margin-top: 10px;">Здесь пока нет тем. Скопируйте структуру таблицы из 9 класса и вставьте сюда.</p>
+    </div>
+  </div>
+
+  <div class="io-message" id="ioMessage"></div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'physics_marks_v4';
+  const todayStr = () => new Date().toISOString().slice(0, 10);
+
+  // === URL параметры ===
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlLesson = parseInt(urlParams.get('lesson'), 10);
+  const urlClass  = (urlParams.get('class') || '').toLowerCase();
+
+  // === ВКЛАДКИ ===
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  function activateTab(tabId) {
+    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    tabContents.forEach(c => c.classList.toggle('active', c.id === tabId));
+    localStorage.setItem(STORAGE_KEY + '_tab', tabId);
+
+    if (tabId === 'schedule') {
+      loadSchedule(false);
+    }
+
+    updateUI();
+  }
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+
+  // Автоматический выбор вкладки
+  let initialTab = localStorage.getItem(STORAGE_KEY + '_tab') || 'class-9';
+  if (urlClass) {
+    if (urlClass.startsWith('9')) initialTab = 'class-9';
+    else if (urlClass.startsWith('8')) initialTab = 'class-8';
+    else if (urlClass.startsWith('7')) initialTab = 'class-7';
+  }
+  activateTab(initialTab);
+
+  // === ОБЩИЕ ФУНКЦИИ ===
+  function getActiveTab() {
+    return document.querySelector('.tab-content.active');
+  }
+
+  function dateInputFor(id) {
+    return document.querySelector(`input.date-input[data-date-id="${id}"]`);
+  }
+
+  // === РАЗВОРАЧИВАНИЕ ТЕМ ===
+  function initLessonRows(container) {
+    const rows = container.querySelectorAll('tr.lesson-row');
+    rows.forEach(row => {
+      const titleCell = row.querySelector('.lesson-title');
+      const contentId = row.dataset.content;
+      const contentRow = container.querySelector('#' + contentId);
+      if (!contentRow) return;
+
+      titleCell.addEventListener('click', () => {
+        const selection = window.getSelection();
+        if (selection && selection.toString().trim().length > 0) return;
+        const isOpen = contentRow.classList.toggle('open');
+        titleCell.classList.toggle('open', isOpen);
+      });
+    });
+  }
+
+  document.querySelectorAll('.tab-content').forEach(initLessonRows);
+
+  // === ЗАГРУЗКА / СОХРАНЕНИЕ ===
+  function loadState() {
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch (e) {
+      saved = {};
+    }
+
+    const today = todayStr();
+    const normalized = {};
+    Object.keys(saved).forEach(key => {
+      const val = saved[key];
+      if (val === true) normalized[key] = today;
+      else if (typeof val === 'string' && val) normalized[key] = val;
+    });
+
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      const id = box.dataset.id;
+      const dateInput = dateInputFor(id);
+      if (normalized[id]) {
+        box.checked = true;
+        if (dateInput) {
+          dateInput.value = normalized[id];
+          dateInput.disabled = false;
+        }
+      } else {
+        box.checked = false;
+        if (dateInput) {
+          dateInput.value = '';
+          dateInput.disabled = true;
+        }
+      }
+    });
+  }
+
+  function saveState() {
+    const state = {};
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.checked) {
+        const id = box.dataset.id;
+        const dateInput = dateInputFor(id);
+        state[id] = (dateInput && dateInput.value) ? dateInput.value : todayStr();
+      }
+    });
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Не удалось сохранить состояние', e);
+    }
+  }
+
+  function countClass(container, cls) {
+    let done = 0, total = 0;
+    container.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.dataset.id.endsWith('-' + cls)) {
+        total++;
+        if (box.checked) done++;
+      }
+    });
+    return { done, total };
+  }
+
+  // === ОБНОВЛЕНИЕ UI ===
+  function updateUI() {
+    const container = getActiveTab();
+    if (!container) return;
+
+    const progressCount = container.querySelector('#progressCount');
+    const progressFill = container.querySelector('#progressFill');
+    const stat9a = container.querySelector('#stat9a');
+    const stat9b = container.querySelector('#stat9b');
+    const stat9v = container.querySelector('#stat9v');
+
+    const boxes = container.querySelectorAll('input[type="checkbox"][data-id]');
+    if (boxes.length === 0) return;
+
+    const TOTAL = boxes.length;
+    const done = Array.from(boxes).filter(b => b.checked).length;
+    const pct = Math.round(done / TOTAL * 100);
+
+    if (progressCount) progressCount.innerHTML = `${done} <span class="of">из ${TOTAL} · ${pct}%</span>`;
+    if (progressFill) progressFill.style.width = pct + '%';
+
+    ['9a', '9b', '9v'].forEach((cls, i) => {
+      const el = [stat9a, stat9b, stat9v][i];
+      if (!el) return;
+      const { done: d, total: t } = countClass(container, cls);
+      el.textContent = `${d}/${t}`;
+      el.classList.toggle('done', d === t);
+    });
+
+    container.querySelectorAll('tr.lesson-row').forEach(row => {
+      const cbs = row.querySelectorAll('input[type="checkbox"]');
+      const count = Array.from(cbs).filter(cb => cb.checked).length;
+      row.dataset.count = count;
+    });
+  }
+
+  loadState();
+  updateUI();
+
+  // === ПОДСВЕТКА ИЗ URL ===
+  function highlightFromUrl() {
+    if (!urlLesson || isNaN(urlLesson)) return;
+
+    const container = getActiveTab();
+    if (!container) return;
+
+    const targetRow = container.querySelector(`tr.lesson-row[data-content="c${urlLesson}"]`);
+    if (!targetRow) return;
+
+    const titleCell = targetRow.querySelector('.lesson-title');
+    const contentRow = container.querySelector('#' + targetRow.dataset.content);
+
+    if (contentRow) {
+      contentRow.classList.add('open');
+      titleCell.classList.add('open');
+    }
+
+    if (['9a', '9b', '9v'].includes(urlClass)) {
+      const clsIndex = urlClass === '9a' ? 0 : urlClass === '9b' ? 1 : 2;
+      const th = container.querySelectorAll('thead th.mark-col')[clsIndex];
+      if (th) {
+        th.style.outline = '3px solid #3182ce';
+        th.style.outlineOffset = '-3px';
+        th.style.borderRadius = '0';
+      }
+      const cells = targetRow.querySelectorAll('td.mark');
+      if (cells[clsIndex]) {
+        cells[clsIndex].classList.add('url-highlight');
+        setTimeout(() => cells[clsIndex].classList.remove('url-highlight'), 3000);
+      }
+    }
+
+    targetRow.classList.add('url-highlight');
+    setTimeout(() => targetRow.classList.remove('url-highlight'), 3000);
+
+    setTimeout(() => {
+      targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 300);
+  }
+
+  highlightFromUrl();
+
+  // === ОБРАБОТЧИКИ ЧЕКБОКСОВ И ДАТ ===
+  document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+    const id = box.dataset.id;
+    const dateInput = dateInputFor(id);
+
+    if (dateInput) {
+      box.addEventListener('change', () => {
+        if (box.checked) {
+          dateInput.disabled = false;
+          if (!dateInput.value) dateInput.value = todayStr();
+        } else {
+          dateInput.disabled = true;
+          dateInput.value = '';
+        }
+        saveState();
+        updateUI();
+      });
+
+      dateInput.addEventListener('change', () => {
+        if (!dateInput.value) {
+          box.checked = false;
+          dateInput.disabled = true;
+        } else {
+          box.checked = true;
+          dateInput.disabled = false;
+        }
+        saveState();
+        updateUI();
+      });
+    }
+  });
+
+  // === СООБЩЕНИЯ ===
+  const ioMessage = document.getElementById('ioMessage');
+  let msgTimer = null;
+  function showMessage(text, type = 'ok') {
+    ioMessage.textContent = text;
+    ioMessage.className = 'io-message ' + type;
+    clearTimeout(msgTimer);
+    if (type === 'ok') {
+      msgTimer = setTimeout(() => {
+        ioMessage.textContent = '';
+        ioMessage.className = 'io-message';
+      }, 4000);
+    }
+  }
+
+  // === ЭКСПОРТ / ИМПОРТ ===
+  document.getElementById('downloadBtn')?.addEventListener('click', () => {
+    const marks = {};
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.checked) {
+        const id = box.dataset.id;
+        marks[id] = dateInputFor(id)?.value || todayStr();
+      }
+    });
+    const data = { version: 3, exportedAt: new Date().toISOString(), marks };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'physics_marks_' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showMessage('💾 Файл сохранён.', 'ok');
+  });
+
+  function applyMarksFromObject(obj) {
+    if (!obj || typeof obj !== 'object') throw new Error('Некорректный объект JSON');
+    const marks = obj.marks && typeof obj.marks === 'object' ? obj.marks : obj;
+    const today = todayStr();
+    let applied = 0, unknown = 0;
+
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      const id = box.dataset.id;
+      const dateInput = dateInputFor(id);
+
+      if (Object.prototype.hasOwnProperty.call(marks, id)) {
+        const val = marks[id];
+        let dateStr = '';
+        if (val === true) dateStr = today;
+        else if (typeof val === 'string' && val) dateStr = val;
+
+        if (dateStr) {
+          box.checked = true;
+          if (dateInput) {
+            dateInput.value = dateStr;
+            dateInput.disabled = false;
+          }
+        } else {
+          box.checked = false;
+          if (dateInput) {
+            dateInput.value = '';
+            dateInput.disabled = true;
+          }
+        }
+        applied++;
+      } else {
+        box.checked = false;
+        if (dateInput) {
+          dateInput.value = '';
+          dateInput.disabled = true;
+        }
+        unknown++;
+      }
+    });
+
+    saveState();
+    updateUI();
+    return { applied, unknown };
+  }
+
+  document.getElementById('fileInput')?.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        const res = applyMarksFromObject(obj);
+        showMessage(`📂 «${file.name}» загружен · отметок: ${res.applied}, пропущено: ${res.unknown}.`, 'ok');
+      } catch (err) {
+        showMessage('Ошибка при разборе файла: ' + err.message, 'err');
+      }
+    };
+    reader.onerror = () => showMessage('Не удалось прочитать файл.', 'err');
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // === КНОПКИ УПРАВЛЕНИЯ ===
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.action === 'check';
+      const today = todayStr();
+      const container = getActiveTab();
+      
+      container.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+        const dateInput = dateInputFor(box.dataset.id);
+        box.checked = val;
+        if (dateInput) {
+          if (val) {
+            dateInput.disabled = false;
+            if (!dateInput.value) dateInput.value = today;
+          } else {
+            dateInput.disabled = true;
+            dateInput.value = '';
+          }
+        }
+      });
+      saveState();
+      updateUI();
+      showMessage(val ? '✓ Все отметки установлены.' : '✗ Все отметки сняты.', 'ok');
+    });
+  });
+
+  document.getElementById('resetBtn')?.addEventListener('click', () => {
+    if (confirm('Снять все отметки в текущем классе?')) {
+      const container = getActiveTab();
+      container.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+        const dateInput = dateInputFor(box.dataset.id);
+        box.checked = false;
+        if (dateInput) {
+          dateInput.disabled = true;
+          dateInput.value = '';
+        }
+      });
+      saveState();
+      updateUI();
+      showMessage('⟲ Все отметки сброшены.', 'ok');
+    }
+  });
+
+  document.getElementById('expandAllBtn')?.addEventListener('click', () => {
+    const container = getActiveTab();
+    container.querySelectorAll('tr.lesson-row').forEach(row => {
+      const titleCell = row.querySelector('.lesson-title');
+      const contentRow = container.querySelector('#' + row.dataset.content);
+      if (contentRow && titleCell) {
+        contentRow.classList.add('open');
+        titleCell.classList.add('open');
+      }
+    });
+  });
+
+  document.getElementById('collapseAllBtn')?.addEventListener('click', () => {
+    const container = getActiveTab();
+    container.querySelectorAll('tr.lesson-row').forEach(row => {
+      const titleCell = row.querySelector('.lesson-title');
+      const contentRow = container.querySelector('#' + row.dataset.content);
+      if (contentRow && titleCell) {
+        contentRow.classList.remove('open');
+        titleCell.classList.remove('open');
+      }
+    });
+  });
+
+  /* ============================================================
+     РАСПИСАНИЕ
+     ============================================================ */
+  const DATA_DIR = 'data/';
+  const SCHEDULE_TEACHER_KEY = STORAGE_KEY + '_teacher';
+  const SCHEDULE_DAYS_KEY    = STORAGE_KEY + '_days';
+  const SCHEDULE_DAYS_MANUAL_KEY = STORAGE_KEY + '_days_manual';
+  const DEFAULT_TEACHER_ID = 'mihalitsyn_a';
+  const DAYS_ORDER = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+  const DAYS_FULL = {
+    'ПН': 'Понедельник', 'ВТ': 'Вторник', 'СР': 'Среда',
+    'ЧТ': 'Четверг', 'ПТ': 'Пятница', 'СБ': 'Суббота'
+  };
+  const DAY_CUTOFF_HOUR = 16;
+
+  function getAutoActiveDay() {
+    const now = new Date();
+    const jsDay = now.getDay();
+    const hours = now.getHours();
+    let idx = jsDay === 0 ? 0 : jsDay - 1;
+    if (hours >= DAY_CUTOFF_HOUR) {
+      idx = (idx + 1) % DAYS_ORDER.length;
+    }
+    return DAYS_ORDER[idx];
+  }
+
+  function loadActiveDays() {
+    const wasManual = localStorage.getItem(SCHEDULE_DAYS_MANUAL_KEY) === '1';
+    try {
+      const raw = localStorage.getItem(SCHEDULE_DAYS_KEY);
+      if (wasManual && raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          return new Set(arr.filter(d => DAYS_ORDER.includes(d)));
+        }
+      }
+    } catch (e) { /* ignore */ }
+    return new Set([getAutoActiveDay()]);
+  }
+
+  function saveActiveDays() {
+    try {
+      localStorage.setItem(SCHEDULE_DAYS_KEY, JSON.stringify([...scheduleState.activeDays]));
+      localStorage.setItem(SCHEDULE_DAYS_MANUAL_KEY, '1');
+    } catch (e) { /* ignore */ }
+  }
+
+  const scheduleState = {
+    teachers: null,
+    teachersLoaded: false,
+    schedules: {},
+    loading: false,
+    currentId: null,
+    currentEntry: null,
+    activeDays: loadActiveDays()
+  };
+
+  const teacherSelect     = document.getElementById('teacherSelect');
+  const reloadScheduleBtn = document.getElementById('reloadScheduleBtn');
+  const scheduleStatus    = document.getElementById('scheduleStatus');
+  const scheduleInfo      = document.getElementById('scheduleInfo');
+  const scheduleGrid      = document.getElementById('scheduleGrid');
+  const scheduleList      = document.getElementById('scheduleList');
+  const dayFilter         = document.getElementById('dayFilter');
+
+  function setScheduleStatus(text, type = '') {
+    scheduleStatus.textContent = text || '';
+    scheduleStatus.className = 'schedule-status' + (type ? ' ' + type : '');
+  }
+
+  async function fetchJson(url) {
+    const resp = await fetch(url, { cache: 'no-cache' });
+    if (!resp.ok) {
+      throw new Error(`Не удалось загрузить ${url} (HTTP ${resp.status})`);
+    }
+    return resp.json();
+  }
+
+  async function loadTeachers(force = false) {
+    if (scheduleState.teachersLoaded && !force) return scheduleState.teachers;
+
+    const data = await fetchJson(DATA_DIR + 'teachers.json');
+    if (!data || !Array.isArray(data.teachers)) {
+      throw new Error('Некорректный формат teachers.json');
+    }
+
+    scheduleState.teachers = data.teachers;
+    scheduleState.teachersLoaded = true;
+
+    teacherSelect.innerHTML = '';
+    data.teachers.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      teacherSelect.appendChild(opt);
+    });
+
+    return data.teachers;
+  }
+
+  async function loadTeacherSchedule(teacherId, force = false) {
+    const teacher = (scheduleState.teachers || []).find(t => t.id === teacherId);
+    if (!teacher) throw new Error('Учитель не найден: ' + teacherId);
+
+    if (!force && scheduleState.schedules[teacherId]) {
+      return scheduleState.schedules[teacherId];
+    }
+
+    const url = DATA_DIR + teacher.scheduleFile;
+    const data = await fetchJson(url);
+    const entry = {
+      teacher,
+      schedule: data,
+      loadedAt: new Date()
+    };
+    scheduleState.schedules[teacherId] = entry;
+    return entry;
+  }
+
+  function subjectClass(subject) {
+    const s = (subject || '').toLowerCase();
+    if (s.includes('физ')) return 'subject-physics';
+    if (s.includes('информ')) return 'subject-informatics';
+    if (s.includes('англ')) return 'subject-english';
+    return '';
+  }
+
+  /* Отрисовка с учётом фильтра дней */
+  function renderSchedule(entry) {
+    scheduleState.currentEntry = entry;
+    const { schedule } = entry;
+
+    const lastUpdate = schedule.last_update
+      ? new Date(schedule.last_update.replace(' ', 'T')).toLocaleString('ru-RU')
+      : '—';
+    scheduleInfo.hidden = false;
+    scheduleInfo.innerHTML = `обновлено: ${lastUpdate}`;
+
+    const autoDay = getAutoActiveDay();
+
+    // Какие дни показывать
+    const active = scheduleState.activeDays;
+    const showAll = active.size === 0;
+    const shownDays = DAYS_ORDER.filter(d => showAll || active.has(d));
+
+    // Максимальный номер урока среди показанных дней
+    let maxLesson = 0;
+    shownDays.forEach(day => {
+      (schedule[day] || []).forEach(item => {
+        if (item && typeof item.lesson === 'number' && item.lesson > maxLesson) {
+          maxLesson = item.lesson;
+        }
+      });
+    });
+
+    /* ===== Десктоп: таблица ===== */
+    if (shownDays.length === 0) {
+      scheduleGrid.innerHTML = '<p class="schedule-empty">Нет выбранных дней.</p>';
+    } else if (maxLesson === 0) {
+      scheduleGrid.innerHTML = '<p class="schedule-empty">В выбранных днях нет уроков.</p>';
+    } else {
+      const map = {};
+      shownDays.forEach(day => {
+        map[day] = {};
+        (schedule[day] || []).forEach(item => {
+          if (item && item.lesson) map[day][item.lesson] = item;
+        });
+      });
+
+      let html = '<table class="schedule-table"><thead><tr>';
+      shownDays.forEach(day => {
+        const isToday = day === autoDay;
+        html += `<th class="${isToday ? 'is-today' : ''}">${DAYS_FULL[day] || day}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      for (let n = 1; n <= maxLesson; n++) {
+        html += '<tr>';
+        shownDays.forEach(day => {
+          const item = map[day][n];
+          html += '<td>';
+          if (!item) {
+            // Окно: показываем номер урока, как и для занятых ячеек
+            html += `<div class="card card-gap">` +
+                      `<div class="c-lesson">Урок ${n}</div>` +
+                      `<div class="c-gap-text">окно</div>` +
+                    `</div>`;
+          } else {
+            const cls = subjectClass(item.subject);
+            html += `<div class="card ${cls}">` +
+                      `<div class="c-lesson">Урок ${n}</div>` +
+                      `<div class="c-class">${item.class || ''}</div>` +
+                      `<div class="c-subject">${item.subject || ''}</div>` +
+                      `<div class="c-room">каб. ${item.room || '—'}</div>` +
+                    `</div>`;
+          }
+          html += '</td>';
+        });
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      scheduleGrid.innerHTML = html;
+    }
+
+    /* ===== Мобильный список ===== */
+    if (shownDays.length === 0) {
+      scheduleList.innerHTML = '<p class="schedule-empty">Нет выбранных дней.</p>';
+      return;
+    }
+
+    let mob = '';
+    shownDays.forEach(day => {
+      const items = (schedule[day] || [])
+        .filter(it => it && it.lesson)
+        .sort((a, b) => a.lesson - b.lesson);
+
+      const isToday = day === autoDay;
+      mob += '<div class="day-block">';
+      mob += `<div class="day-title">` +
+               `<span>${DAYS_FULL[day] || day}</span>` +
+               (isToday ? `<span class="today-badge">сегодня</span>` : '') +
+             `</div>`;
+
+      if (items.length === 0) {
+        mob += '<div class="day-empty">Нет уроков</div>';
+      } else {
+        const maxN = items[items.length - 1].lesson;
+        const byNum = {};
+        items.forEach(it => { byNum[it.lesson] = it; });
+
+        mob += '<div class="day-lessons">';
+        for (let n = 1; n <= maxN; n++) {
+          const item = byNum[n];
+          if (!item) {
+            mob += `<div class="m-card m-gap">` +
+                     `<div class="m-num">${n}</div>` +
+                     `<div class="m-gap-text">окно</div>` +
+                   `</div>`;
+          } else {
+            const cls = subjectClass(item.subject);
+            mob += `<div class="m-card ${cls}">` +
+                     `<div class="m-num">${n}</div>` +
+                     `<div class="m-body">` +
+                       `<div class="m-class">${item.class || ''}</div>` +
+                       `<div class="m-subject">${item.subject || ''}</div>` +
+                       `<div class="m-room">каб. ${item.room || '—'}</div>` +
+                     `</div>` +
+                   `</div>`;
+          }
+        }
+        mob += '</div>';
+      }
+      mob += '</div>';
+    });
+    scheduleList.innerHTML = mob;
+  }
+
+  async function loadSchedule(force = false) {
+    if (scheduleState.loading) return;
+
+    try {
+      scheduleState.loading = true;
+      setScheduleStatus('Загрузка…');
+
+      await loadTeachers(force);
+
+      const saved = localStorage.getItem(SCHEDULE_TEACHER_KEY);
+      let id = saved || teacherSelect.value || DEFAULT_TEACHER_ID;
+      if (!scheduleState.teachers.some(t => t.id === id)) id = DEFAULT_TEACHER_ID;
+      if (!scheduleState.teachers.some(t => t.id === id)) id = scheduleState.teachers[0].id;
+      teacherSelect.value = id;
+      scheduleState.currentId = id;
+      localStorage.setItem(SCHEDULE_TEACHER_KEY, id);
+
+      const entry = await loadTeacherSchedule(id, force);
+      renderSchedule(entry);
+
+      setScheduleStatus('✓ Загружено', 'ok');
+    } catch (err) {
+      console.error(err);
+      scheduleInfo.hidden = true;
+      const hint = location.protocol === 'file:'
+        ? ' Откройте страницу через локальный сервер (например, <code>python -m http.server</code>), а не как file://.'
+        : '';
+      const errHtml = `<p class="schedule-empty err">Ошибка: ${err.message}.${hint}</p>`;
+      scheduleGrid.innerHTML = errHtml;
+      scheduleList.innerHTML = errHtml;
+      setScheduleStatus('Ошибка загрузки', 'err');
+    } finally {
+      scheduleState.loading = false;
+    }
+  }
+
+  teacherSelect?.addEventListener('change', async () => {
+    const id = teacherSelect.value;
+    scheduleState.currentId = id;
+    localStorage.setItem(SCHEDULE_TEACHER_KEY, id);
+    try {
+      setScheduleStatus('Загрузка…');
+      const entry = await loadTeacherSchedule(id);
+      renderSchedule(entry);
+      setScheduleStatus('✓ Загружено', 'ok');
+    } catch (err) {
+      console.error(err);
+      scheduleInfo.hidden = true;
+      const errHtml = `<p class="schedule-empty err">Ошибка: ${err.message}</p>`;
+      scheduleGrid.innerHTML = errHtml;
+      scheduleList.innerHTML = errHtml;
+      setScheduleStatus('Ошибка загрузки', 'err');
+    }
+  });
+
+  reloadScheduleBtn?.addEventListener('click', () => {
+    if (scheduleState.currentId) {
+      delete scheduleState.schedules[scheduleState.currentId];
+    }
+    scheduleState.teachersLoaded = false;
+    loadSchedule(true);
+  });
+
+  /* === Фильтр по дням === */
+  function syncDayFilterUI() {
+    const chips = dayFilter.querySelectorAll('.day-chip');
+    const active = scheduleState.activeDays;
+    const showAll = active.size === 0;
+    const autoDay = getAutoActiveDay();
+
+    chips.forEach(chip => {
+      const d = chip.dataset.day;
+      if (d === 'all') chip.classList.toggle('active', showAll);
+      else chip.classList.toggle('active', !showAll && active.has(d));
+      chip.classList.toggle('is-today', d === autoDay);
+    });
+  }
+
+  dayFilter?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.day-chip');
+    if (!chip) return;
+    const d = chip.dataset.day;
+
+    if (d === 'all') {
+      scheduleState.activeDays = new Set();
+    } else {
+      const active = scheduleState.activeDays;
+      if (active.has(d)) active.delete(d);
+      else active.add(d);
+      if (active.size === 0) {
+        scheduleState.activeDays = new Set();
+      }
+    }
+    saveActiveDays();
+    syncDayFilterUI();
+    if (scheduleState.currentEntry) renderSchedule(scheduleState.currentEntry);
+  });
+
+  syncDayFilterUI();
+
+  if (initialTab === 'schedule') {
+    loadSchedule(false);
+  }
+
+</script>
+
+</body>
+</html>
