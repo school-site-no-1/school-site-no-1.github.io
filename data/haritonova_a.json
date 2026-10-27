@@ -34,20 +34,20 @@
   ],
   "СР": [
     {
-      "lesson": 1,
+      "lesson": 2,
+      "class": "1Б",
+      "subject": "ИЗО",
+      "room": ""
+    },
+    {
+      "lesson": 3,
       "class": "5Б",
       "subject": "ИЗО",
       "room": "208"
     },
     {
-      "lesson": 3,
-      "class": "1А",
-      "subject": "ИЗО",
-      "room": ""
-    },
-    {
       "lesson": 4,
-      "class": "1Б",
+      "class": "1А",
       "subject": "ИЗО",
       "room": ""
     },
@@ -123,5 +123,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-26 13:06:02"
+  "last_update": "2026-10-27 12:56:01"
 }
