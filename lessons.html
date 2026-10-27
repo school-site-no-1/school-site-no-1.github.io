@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Темы и отметки</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #3182ce;
+    --accent-soft: #ebf4ff;
+    --success: #2f855a;
+    --danger: #c53030;
+    --warning: #c05621;
+    --purple: #6b46c1;
+    --border: #e2e8f0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --text-soft: #718096;
+    --tap: 44px;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px 16px 24px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    min-height: 100%;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ===== Прогресс ===== */
+  .progress-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  }
+  .progress-info { flex: 1; min-width: 220px; }
+  .progress-label {
+    font-size: 0.85rem; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .progress-count { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+  .progress-count .of { color: var(--text-soft); font-weight: 500; font-size: 1rem; }
+  .progress-bar {
+    flex: 2; min-width: 200px; height: 10px;
+    background: var(--border); border-radius: 999px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .per-class { display: flex; gap: 20px; flex-wrap: wrap; }
+  .class-stat { text-align: center; min-width: 60px; }
+  .class-stat .name {
+    font-size: 0.75rem; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .class-stat .num { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+  .class-stat .num.done { color: var(--success); }
+
+  /* ===== Кнопки ===== */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  button, .btn-file {
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+    min-height: 38px;
+  }
+  button:hover, .btn-file:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  }
+  button:active, .btn-file:active { transform: translateY(0); }
+
+  .btn-refresh { background: #ed8936; }
+  .btn-reset { background: var(--danger); }
+  .btn-class { background: var(--success); }
+  .btn-uncheck { background: var(--warning); }
+  .btn-export { background: var(--accent); }
+  .btn-import { background: var(--purple); }
+  .btn-expand { background: var(--primary-light); }
+  .btn-collapse { background: #4a5568; }
+
+  /* ===== Таблица ===== */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--primary);
+    color: #fff;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+    position: sticky; top: 0; z-index: 2;
+  }
+  thead th:first-child { text-align: left; width: auto; }
+  thead th.mark-col { width: 96px; }
+
+  tbody tr.lesson-row {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.25s ease;
+  }
+  tbody tr.lesson-row:hover { filter: brightness(0.98); }
+
+  tbody tr.lesson-row[data-count="0"] { background: #ffffff; }
+  tbody tr.lesson-row[data-count="1"] { background: #fdecec; }
+  tbody tr.lesson-row[data-count="2"] { background: #fff8e1; }
+  tbody tr.lesson-row[data-count="3"] { background: #e7f7ee; }
+
+  td.lesson-title {
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: text;
+    -webkit-user-select: text;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.94rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.15s;
+  }
+  td.lesson-title:hover { color: var(--accent); }
+  td.lesson-title .toggle-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.7);
+    border-radius: 6px;
+    color: var(--accent);
+    font-size: 0.7rem;
+    transition: transform 0.25s ease, background 0.15s, color 0.15s;
+  }
+  td.lesson-title.open .toggle-icon {
+    transform: rotate(90deg);
+    background: var(--accent);
+    color: #fff;
+  }
+
+  td.mark {
+    text-align: center;
+    width: 96px;
+    padding: 8px 6px;
+    vertical-align: middle;
+  }
+  td.mark .mark-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  td.mark input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 26px; height: 26px;
+    border: 2px solid #cbd5e0;
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.18s ease;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+  }
+  td.mark input[type="checkbox"]:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(49,130,206,0.12);
+  }
+  td.mark input[type="checkbox"]:checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+  td.mark input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 8px; top: 3px;
+    width: 6px; height: 12px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+  }
+
+  td.mark .date-input {
+    width: 100%;
+    max-width: 84px;
+    font-size: 0.68rem;
+    padding: 2px 3px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    color: var(--text-soft);
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: border-color 0.15s, opacity 0.15s;
+  }
+  td.mark .date-input:hover:not(:disabled) { border-color: var(--accent); }
+  td.mark .date-input:disabled { opacity: 0.35; cursor: not-allowed; background: #edf2f7; }
+  td.mark .date-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.18);
+  }
+
+  tr.content-row { display: none; }
+  tr.content-row.open { display: table-row; }
+  tr.content-row td {
+    background: #fafcfe;
+    padding: 0 16px 0 60px;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    border-bottom: 1px solid var(--border);
+  }
+  tr.content-row.open td { padding-top: 6px; padding-bottom: 18px; }
+  .content-inner {
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+    animation: fadeIn 0.25s ease;
+  }
+  .content-inner ul { list-style: none; padding: 0; margin: 0; }
+  .content-inner ul li { position: relative; padding: 3px 0 3px 20px; line-height: 1.5; }
+  .content-inner ul li::before {
+    content: '';
+    position: absolute;
+    left: 4px; top: 12px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .io-message {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    min-height: 1.3em;
+    text-align: center;
+    font-weight: 500;
+  }
+  .io-message.ok { color: var(--success); }
+  .io-message.err { color: var(--danger); }
+
+  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
+  @media (max-width: 768px) {
+    body { padding: 14px 10px 30px; }
+    
+    .progress-card { padding: 14px 14px; gap: 12px; margin-bottom: 14px; }
+    .progress-info { min-width: 0; flex: 1 1 100%; }
+    .progress-bar { flex: 1 1 100%; min-width: 0; }
+    .progress-count { font-size: 1.2rem; }
+    .per-class { gap: 14px; flex: 1 1 100%; justify-content: space-between; }
+    .class-stat { min-width: 50px; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .controls button, .controls .btn-file {
+      width: 100%;
+      justify-content: center;
+      font-size: 0.82rem;
+      padding: 10px 8px;
+      min-height: var(--tap);
+    }
+
+    thead th { padding: 10px 6px; font-size: 0.68rem; }
+    thead th.mark-col { width: 60px; }
+    td.lesson-title {
+      padding: 12px 8px;
+      font-size: 0.85rem;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    td.lesson-title .toggle-icon {
+      width: 20px; height: 20px; font-size: 0.65rem;
+      margin-top: 1px;
+    }
+    td.mark { width: 60px; padding: 8px 3px; }
+    td.mark .mark-inner { gap: 3px; }
+    td.mark input[type="checkbox"] { width: 24px; height: 24px; }
+    td.mark input[type="checkbox"]:checked::after { left: 7px; top: 2px; width: 5px; height: 11px; }
+    td.mark .date-input { font-size: 0.6rem; max-width: 56px; padding: 2px 1px; }
+    tr.content-row td {
+      padding-left: 12px;
+      padding-right: 10px;
+      font-size: 0.85rem;
+    }
+    tr.content-row.open td { padding-top: 4px; padding-bottom: 14px; }
+  }
+
+  @media (max-width: 360px) {
+    .controls { grid-template-columns: 1fr; }
+    td.mark { width: 52px; }
+    thead th.mark-col { width: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="progress-card">
+    <div class="progress-info">
+      <div class="progress-label">Отмечено пройдено</div>
+      <div class="progress-count" id="progressCount">0 <span class="of">из 0</span></div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="per-class">
+      <div class="class-stat">
+        <div class="name">9а</div>
+        <div class="num" id="stat9a">0/0</div>
+      </div>
+      <div class="class-stat">
+        <div class="name">9б</div>
+        <div class="num" id="stat9b">0/0</div>
+      </div>
+      <div class="class-stat">
+        <div class="name">9в</div>
+        <div class="num" id="stat9v">0/0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-refresh" id="refreshBtn">⟳ Обновить</button>
+    <button class="btn-expand" id="expandAllBtn">⤢ Развернуть всё</button>
+    <button class="btn-collapse" id="collapseAllBtn">⤡ Свернуть всё</button>
+    <button class="btn-export" id="downloadBtn">💾 Скачать .json</button>
+    <label class="btn-file btn-import">
+      📂 Открыть .json
+      <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
+    </label>
+    <button class="btn-class" data-action="check">✓ Отметить всё</button>
+    <button class="btn-uncheck" data-action="uncheck">✗ Снять всё</button>
+    <button class="btn-reset" id="resetBtn">⟲ Сброс</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Урок и тема</th>
+          <th class="mark-col">9а</th>
+          <th class="mark-col">9б</th>
+          <th class="mark-col">9в</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-soft);">Загрузка уроков…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="io-message" id="ioMessage"></div>
+</div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyMQuN_CbN-yvednYUX0czQHhR_IlyPh70IeF8FoRlwvhS3qQRL-n7jfe0yrBiH14k1yA/exec';
+  const CACHE_KEY   = 'lessons_cache_v5';
+  const PENDING_KEY = 'lessons_pending_v5';
+
+  const todayStr = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  };
+
+  function normalizeDate(val) {
+    if (!val) return '';
+    let s = String(val).trim();
+    if (/^\d{2}\.\d{2}\.\d{4}$/.test(s)) { const p = s.split('.'); return `${p[2]}-${p[1]}-${p[0]}`; }
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) { const p = s.split('/'); return `${p[2]}-${p[1]}-${p[0]}`; }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) { return s; }
+    return s;
+  }
+
+  const state = { lessons: [], saving: false };
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch (e) { return {}; } }
+  function writeCache(obj) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch (e) {} }
+
+  function classKeyFor(cls) {
+    if (cls === '9a') return 'class9a';
+    if (cls === '9b') return 'class9b';
+    if (cls === '9v') return 'class9v';
+    return null;
+  }
+
+  function dateInputFor(id) { return document.querySelector(`input.date-input[data-date-id="${id}"]`); }
+
+  const ioMessage = document.getElementById('ioMessage');
+  let msgTimer = null;
+  function showMessage(text, type = 'ok') {
+    ioMessage.textContent = text;
+    ioMessage.className = 'io-message ' + type;
+    clearTimeout(msgTimer);
+    if (type === 'ok') {
+      msgTimer = setTimeout(() => { ioMessage.textContent = ''; ioMessage.className = 'io-message'; }, 4000);
+    }
+  }
+
+  function renderLessons(lessons) {
+    state.lessons = lessons || [];
+    const tbody = document.getElementById('tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (state.lessons.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-soft);">Нет уроков.</td></tr>';
+      return;
+    }
+
+    state.lessons.forEach(lesson => {
+      const tr = document.createElement('tr');
+      tr.className = 'lesson-row';
+      tr.dataset.content = 'c' + lesson.id;
+      tr.dataset.count = '0';
+      tr.dataset.lessonId = lesson.id;
+
+      const tdTitle = document.createElement('td');
+      tdTitle.className = 'lesson-title';
+      tdTitle.innerHTML = '<span class="toggle-icon">▶</span>' + escapeHtml(lesson.title || lesson.id);
+      tr.appendChild(tdTitle);
+
+      ['9a', '9b', '9v'].forEach(cls => {
+        const td = document.createElement('td');
+        td.className = 'mark';
+        const inner = document.createElement('div');
+        inner.className = 'mark-inner';
+
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.dataset.id = lesson.id + '-' + cls;
+        box.dataset.lessonId = lesson.id;
+        box.dataset.cls = cls;
+
+        const date = document.createElement('input');
+        date.type = 'date';
+        date.className = 'date-input';
+        date.dataset.dateId = lesson.id + '-' + cls;
+        date.disabled = true;
+
+        inner.appendChild(box);
+        inner.appendChild(date);
+        td.appendChild(inner);
+
+        if (!lesson[classKeyFor(cls)]) inner.style.visibility = 'hidden';
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+
+      const contentTr = document.createElement('tr');
+      contentTr.className = 'content-row';
+      contentTr.id = 'c' + lesson.id;
+      const tdContent = document.createElement('td');
+      tdContent.colSpan = 4;
+
+      const innerDiv = document.createElement('div');
+      innerDiv.className = 'content-inner';
+      const ul = document.createElement('ul');
+      (lesson.content || []).forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+      innerDiv.appendChild(ul);
+      tdContent.appendChild(innerDiv);
+      contentTr.appendChild(tdContent);
+
+      tbody.appendChild(contentTr);
+    });
+  }
+
+  function applyMarksToUI(marks) {
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      const id = box.dataset.id;
+      const dateInput = dateInputFor(id);
+      const rawDate = marks[id];
+      
+      if (rawDate) {
+        box.checked = true;
+        if (dateInput) {
+          dateInput.value = normalizeDate(rawDate);
+          dateInput.disabled = false;
+        }
+      } else {
+        box.checked = false;
+        if (dateInput) {
+          dateInput.value = '';
+          dateInput.disabled = true;
+        }
+      }
+    });
+    updateUI();
+  }
+
+  function collectMarksFromUI() {
+    const out = {};
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.checked) {
+        const id = box.dataset.id;
+        const dateInput = dateInputFor(id);
+        out[id] = (dateInput && dateInput.value) ? dateInput.value : todayStr();
+      }
+    });
+    return out;
+  }
+
+  async function loadFromServer(force = false) {
+    if (force) { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
+
+    const cached = readCache();
+    if (!force) {
+      if (cached.lessons && cached.lessons.length) renderLessons(cached.lessons);
+      if (cached.marks) applyMarksToUI(cached.marks);
+      bindAllLessonEvents();
+    }
+
+    try {
+      const resp = await fetch(API_URL + '?action=load', { cache: 'no-cache' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+
+      writeCache({ lessons: data.lessons || [], marks: data.marks || {} });
+      renderLessons(data.lessons || []);
+      applyMarksToUI(data.marks || {});
+      bindAllLessonEvents();
+      updateUI();
+      
+      if (force) showMessage('✓ Данные успешно обновлены.', 'ok');
+    } catch (err) {
+      console.warn('[sync] не удалось загрузить:', err);
+      if (force) showMessage('⚠️ Ошибка обновления. Проверьте связь.', 'err');
+    }
+  }
+
+  async function pushOneMark(id, date) {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ id, date })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+    return data;
+  }
+
+  function saveMark(id, date) {
+    const marks = collectMarksFromUI();
+    writeCache({ lessons: state.lessons, marks });
+
+    pushOneMark(id, date)
+      .then(() => { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} })
+      .catch(err => {
+        console.warn('[sync] отложено:', err);
+        try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {}
+      });
+  }
+
+  function saveAllMarks() {
+    const marks = collectMarksFromUI();
+    writeCache({ lessons: state.lessons, marks });
+
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ marks })
+    })
+      .then(r => r.json())
+      .then(data => { if (data.result === 'ok') { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} } })
+      .catch(err => { try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {} });
+  }
+
+  function bindAllLessonEvents() {
+    document.querySelectorAll('tr.lesson-row').forEach(row => {
+      if (row.dataset.bound === '1') return;
+      row.dataset.bound = '1';
+
+      const titleCell = row.querySelector('.lesson-title');
+      const contentId = row.dataset.content;
+      const contentRow = document.getElementById(contentId);
+      if (!titleCell || !contentRow) return;
+
+      titleCell.addEventListener('click', () => {
+        const sel = window.getSelection();
+        if (sel && sel.toString().trim().length > 0) return;
+        contentRow.classList.toggle('open');
+        titleCell.classList.toggle('open');
+      });
+    });
+
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.dataset.bound === '1') return;
+      box.dataset.bound = '1';
+
+      const id = box.dataset.id;
+      const dateInput = dateInputFor(id);
+      if (!dateInput) return;
+
+      box.addEventListener('change', () => {
+        let dateVal;
+        if (box.checked) {
+          dateInput.disabled = false;
+          if (!dateInput.value) dateInput.value = todayStr();
+          dateVal = dateInput.value;
+        } else {
+          dateInput.disabled = true;
+          dateInput.value = '';
+          dateVal = '';
+        }
+        saveMark(id, dateVal);
+        updateUI();
+      });
+
+      dateInput.addEventListener('change', () => {
+        if (!dateInput.value) {
+          box.checked = false;
+          dateInput.disabled = true;
+          saveMark(id, '');
+        } else {
+          box.checked = true;
+          dateInput.disabled = false;
+          saveMark(id, dateInput.value);
+        }
+        updateUI();
+      });
+    });
+  }
+
+  function updateUI() {
+    const progressCount = document.getElementById('progressCount');
+    const progressFill  = document.getElementById('progressFill');
+    const stat9a = document.getElementById('stat9a');
+    const stat9b = document.getElementById('stat9b');
+    const stat9v = document.getElementById('stat9v');
+
+    const boxes = document.querySelectorAll('input[type="checkbox"][data-id]');
+    if (boxes.length === 0) return;
+
+    const visibleBoxes = Array.from(boxes).filter(box => {
+      const td = box.closest('td');
+      const inner = td && td.querySelector('.mark-inner');
+      return !(inner && inner.style.visibility === 'hidden');
+    });
+
+    const TOTAL = visibleBoxes.length;
+    const done = visibleBoxes.filter(b => b.checked).length;
+    const pct = TOTAL > 0 ? Math.round(done / TOTAL * 100) : 0;
+
+    if (progressCount) progressCount.innerHTML = `${done} <span class="of">из ${TOTAL} · ${pct}%</span>`;
+    if (progressFill) progressFill.style.width = pct + '%';
+
+    const stats = { '9a': { d: 0, t: 0 }, '9b': { d: 0, t: 0 }, '9v': { d: 0, t: 0 } };
+    visibleBoxes.forEach(box => {
+      const cls = box.dataset.cls;
+      if (!cls || !stats[cls]) return;
+      stats[cls].t++;
+      if (box.checked) stats[cls].d++;
+    });
+
+    [['9a', stat9a], ['9b', stat9b], ['9v', stat9v]].forEach(([k, el]) => {
+      if (!el) return;
+      el.textContent = `${stats[k].d}/${stats[k].t}`;
+      el.classList.toggle('done', stats[k].t > 0 && stats[k].d === stats[k].t);
+    });
+
+    document.querySelectorAll('tr.lesson-row').forEach(row => {
+      const cbs = row.querySelectorAll('input[type="checkbox"]');
+      const visible = Array.from(cbs).filter(cb => {
+        const td = cb.closest('td');
+        const inner = td && td.querySelector('.mark-inner');
+        return !(inner && inner.style.visibility === 'hidden');
+      });
+      row.dataset.count = visible.filter(cb => cb.checked).length;
+    });
+  }
+
+  document.getElementById('refreshBtn')?.addEventListener('click', () => {
+    loadFromServer(true);
+  });
+
+  document.getElementById('downloadBtn')?.addEventListener('click', () => {
+    const data = { version: 3, exportedAt: new Date().toISOString(), marks: collectMarksFromUI() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'physics_marks_' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showMessage('💾 Файл сохранён.', 'ok');
+  });
+
+  function applyMarksFromObject(obj) {
+    if (!obj || typeof obj !== 'object') throw new Error('Некорректный объект JSON');
+    const marks = obj.marks && typeof obj.marks === 'object' ? obj.marks : obj;
+    const today = todayStr();
+    let applied = 0;
+
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      const id = box.dataset.id;
+      const dateInput = dateInputFor(id);
+      if (Object.prototype.hasOwnProperty.call(marks, id)) {
+        const val = marks[id];
+        let dateStr = val === true ? today : (typeof val === 'string' && val ? normalizeDate(val) : '');
+        if (dateStr) {
+          box.checked = true;
+          if (dateInput) { dateInput.value = dateStr; dateInput.disabled = false; }
+        } else {
+          box.checked = false;
+          if (dateInput) { dateInput.value = ''; dateInput.disabled = true; }
+        }
+        applied++;
+      } else {
+        box.checked = false;
+        if (dateInput) { dateInput.value = ''; dateInput.disabled = true; }
+      }
+    });
+
+    updateUI();
+    return applied;
+  }
+
+  document.getElementById('fileInput')?.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        const applied = applyMarksFromObject(obj);
+        saveAllMarks();
+        showMessage(`📂 «${file.name}» загружен · отметок: ${applied}.`, 'ok');
+      } catch (err) {
+        showMessage('Ошибка при разборе файла: ' + err.message, 'err');
+      }
+    };
+    reader.onerror = () => showMessage('Не удалось прочитать файл.', 'err');
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = btn.dataset.action === 'check';
+      const today = todayStr();
+
+      document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+        const td = box.closest('td');
+        const inner = td && td.querySelector('.mark-inner');
+        if (inner && inner.style.visibility === 'hidden') return;
+
+        const dateInput = dateInputFor(box.dataset.id);
+        box.checked = val;
+        if (dateInput) {
+          if (val) {
+            dateInput.disabled = false;
+            if (!dateInput.value) dateInput.value = today;
+          } else {
+            dateInput.disabled = true;
+            dateInput.value = '';
+          }
+        }
+      });
+
+      updateUI();
+      saveAllMarks();
+      showMessage(val ? '✓ Все отметки установлены.' : '✗ Все отметки сняты.', 'ok');
+    });
+  });
+
+  document.getElementById('resetBtn')?.addEventListener('click', () => {
+    if (confirm('Снять все отметки?')) {
+      document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+        const dateInput = dateInputFor(box.dataset.id);
+        box.checked = false;
+        if (dateInput) { dateInput.disabled = true; dateInput.value = ''; }
+      });
+      updateUI();
+      saveAllMarks();
+      showMessage('⟲ Все отметки сброшены.', 'ok');
+    }
+  });
+
+  document.getElementById('expandAllBtn')?.addEventListener('click', () => {
+    document.querySelectorAll('tr.lesson-row').forEach(row => {
+      document.getElementById(row.dataset.content)?.classList.add('open');
+      row.querySelector('.lesson-title')?.classList.add('open');
+    });
+  });
+
+  document.getElementById('collapseAllBtn')?.addEventListener('click', () => {
+    document.querySelectorAll('tr.lesson-row').forEach(row => {
+      document.getElementById(row.dataset.content)?.classList.remove('open');
+      row.querySelector('.lesson-title')?.classList.remove('open');
+    });
+  });
+
+  window.addEventListener('online', () => {
+    try {
+      if (localStorage.getItem(PENDING_KEY) === '1') saveAllMarks();
+    } catch (e) {}
+  });
+
+  // Автоподстройка высоты для родительского окна (main.html)
+  function sendHeightToParent() {
+    if (window.parent !== window) {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ type: 'resize-iframe', height: height }, '*');
+    }
+  }
+
+  window.addEventListener('load', sendHeightToParent);
+  window.addEventListener('resize', sendHeightToParent);
+  const observer = new MutationObserver(sendHeightToParent);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+  loadFromServer();
+</script>
+
+</body>
+</html>
