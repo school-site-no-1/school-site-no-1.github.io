@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Школа: Расписание и Сервисы</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1e3a5f;
+    --accent: #3182ce;
+    --accent-soft: #ebf4ff;
+    --border: #e2e8f0;
+    --bg: #f7fafc;
+    --text: #2d3748;
+    --text-soft: #718096;
+    --danger: #c53030;
+  }
+
+  html { -webkit-text-size-adjust: 100%; height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px 16px 40px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1100px; width: 100%; margin: 0 auto; }
+
+  /* ===== ПАНЕЛЬ ТЕСТИРОВАНИЯ ===== */
+  .test-panel {
+    background: #fff;
+    border: 2px dashed #cbd5e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+  }
+  .test-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .test-panel-title {
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .test-panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .test-panel button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+  }
+  .test-panel button:hover { filter: brightness(1.1); }
+  .test-panel button.btn-reset { background: var(--danger); }
+  
+  .test-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+  .test-panel.collapsed .test-panel-body {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .test-panel.collapsed {
+    padding-bottom: 12px;
+    gap: 0;
+  }
+
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .slider-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    min-width: 120px;
+  }
+  .slider-group input[type="range"] {
+    flex: 1;
+    min-width: 200px;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+  .slider-value {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 60px;
+    text-align: right;
+    font-size: 0.95rem;
+  }
+  .test-panel-status {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--danger);
+    display: none;
+  }
+  .test-panel-status.active { display: block; }
+
+  /* ===== ВКЛАДКИ (ДЕСКТОП) ===== */
+  .tabs-nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+    border-radius: 8px 8px 0 0;
+    min-height: 44px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { color: var(--primary); background: var(--accent-soft); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); background: #fff; }
+
+  .tab-content { display: none; animation: fadeInTab 0.3s ease; }
+  .tab-content.active { display: block; }
+  @keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Iframe ===== */
+  .iframe-wrap {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    width: 100%;
+  }
+  .iframe-wrap iframe {
+    width: 100%;
+    border: none;
+    display: block;
+    height: 800px;
+  }
+
+  .iframe-wrap.iframe-full iframe {
+    height: calc(100dvh - 100px);
+    min-height: 500px;
+  }
+
+  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ (КВАДРАТИКИ) ======================= */
+  @media (max-width: 768px) {
+    body { padding: 14px 10px 30px; }
+    
+    .slider-group { flex-direction: column; align-items: stretch; gap: 6px; }
+    .slider-group label { min-width: 0; }
+    .slider-value { text-align: left; }
+
+    /* Вкладки в один ряд (6 колонок) */
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr); /* 6 плиток в ряд */
+      gap: 4px;
+      border-bottom: none;
+      margin-bottom: 16px;
+      padding-bottom: 0;
+    }
+    .tab-btn {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 2px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0;
+      min-height: 70px; /* Чуть меньше высота, чтобы влезло */
+      font-size: 0.65rem;
+      color: var(--text-soft);
+      text-align: center;
+      line-height: 1.1;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+    .tab-btn .tab-icon {
+      font-size: 18px; /* Уменьшили иконки */
+      line-height: 1;
+    }
+    .tab-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(49,130,206,0.2);
+    }
+
+    .iframe-wrap.iframe-full iframe { height: calc(100dvh - 120px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ===== ПАНЕЛЬ СИМУЛЯЦИИ ВРЕМЕНИ ===== -->
+  <div class="test-panel collapsed" id="testPanel">
+    <div class="test-panel-header" id="testPanelHeader">
+      <div class="test-panel-title">🛠 Тест: Машина времени</div>
+      <div class="test-panel-controls" onclick="event.stopPropagation();">
+        <button id="resetTestBtn" class="btn-reset">Сбросить</button>
+        <button id="toggleTestBtn">Развернуть</button>
+      </div>
+    </div>
+    
+    <div class="test-panel-body" id="testPanelBody">
+      <div class="slider-group">
+        <label for="sliderDay">День недели:</label>
+        <input type="range" id="sliderDay" min="0" max="6" step="1" value="1">
+        <div class="slider-value" id="valDay">Понедельник</div>
+      </div>
+      
+      <div class="slider-group">
+        <label for="sliderTime">Время:</label>
+        <input type="range" id="sliderTime" min="480" max="990" step="1" value="480">
+        <div class="slider-value" id="valTime">08:00</div>
+      </div>
+
+      <div class="test-panel-status" id="testStatus">⚠️ Включена симуляция времени!</div>
+    </div>
+  </div>
+
+  <!-- ===== ВКЛАДКИ ===== -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" data-tab="schedule">
+      <span class="tab-icon">👨‍🏫</span>
+      <span class="tab-text">Учитель</span>
+    </button>
+    <button class="tab-btn" data-tab="lessons">
+      <span class="tab-icon">📚</span>
+      <span class="tab-text">Темы</span>
+    </button>
+    <button class="tab-btn" data-tab="tiles">
+      <span class="tab-icon">🧩</span>
+      <span class="tab-text">Плитки</span>
+    </button>
+    <button class="tab-btn" data-tab="table">
+      <span class="tab-icon">📋</span>
+      <span class="tab-text">Изменения</span>
+    </button>
+    <button class="tab-btn" data-tab="menu">
+      <span class="tab-icon">🍽</span>
+      <span class="tab-text">Меню</span>
+    </button>
+    <button class="tab-btn" data-tab="quiz">
+      <span class="tab-icon">🎮</span>
+      <span class="tab-text">Квиз</span>
+    </button>
+  </div>
+
+  <!-- ======================= УЧИТЕЛЬ ======================= -->
+  <div class="tab-content active" id="schedule">
+    <div class="iframe-wrap">
+      <iframe id="scheduleFrame" src="schedule.html" scrolling="no" title="Расписание учителя"></iframe>
+    </div>
+  </div>
+
+  <!-- ======================= ТЕМЫ ======================= -->
+  <div class="tab-content" id="lessons">
+    <div class="iframe-wrap">
+      <iframe id="lessonsFrame" src="lessons.html" scrolling="no" title="Темы и отметки"></iframe>
+    </div>
+  </div>
+
+  <!-- ======================= РАСПИСАНИЕ (ПЛИТКИ) ======================= -->
+  <div class="tab-content" id="tiles">
+    <div class="iframe-wrap">
+      <iframe id="tilesFrame" src="tiles.html" scrolling="no" title="Расписание плитками"></iframe>
+    </div>
+  </div>
+
+  <!-- ======================= ИЗМЕНЕНИЯ (ТАБЛИЦА) ======================= -->
+  <div class="tab-content" id="table">
+    <div class="iframe-wrap">
+      <iframe id="tableFrame" src="table.html" scrolling="no" title="Таблица изменений"></iframe>
+    </div>
+  </div>
+
+  <!-- ======================= МЕНЮ ======================= -->
+  <div class="tab-content" id="menu">
+    <div class="iframe-wrap">
+      <iframe id="menuFrame" src="school-menu/viewer.html" scrolling="no" title="Меню"></iframe>
+    </div>
+  </div>
+
+  <!-- ======================= КВИЗ ======================= -->
+  <div class="tab-content" id="quiz">
+    <div class="iframe-wrap iframe-full">
+      <iframe id="quizFrame" src="live-quiz/live-quiz.html" scrolling="no" allow="fullscreen" title="Квиз"></iframe>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ============================================================
+     МАШИНА ВРЕМЕНИ
+     ============================================================ */
+  const testPanel = document.getElementById('testPanel');
+  const testPanelHeader = document.getElementById('testPanelHeader');
+  const toggleTestBtn = document.getElementById('toggleTestBtn');
+  const testPanelBody = document.getElementById('testPanelBody');
+  
+  const sliderDay = document.getElementById('sliderDay');
+  const sliderTime = document.getElementById('sliderTime');
+  const valDay = document.getElementById('valDay');
+  const valTime = document.getElementById('valTime');
+  const resetTestBtn = document.getElementById('resetTestBtn');
+  const testStatus = document.getElementById('testStatus');
+
+  const DAY_NAMES = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+  let isSimulationActive = false;
+
+  function togglePanel() {
+    const isCollapsed = testPanel.classList.contains('collapsed');
+    if (isCollapsed) {
+      testPanel.classList.remove('collapsed');
+      toggleTestBtn.textContent = 'Свернуть';
+      localStorage.setItem('testPanelCollapsed', 'false');
+    } else {
+      testPanel.classList.add('collapsed');
+      toggleTestBtn.textContent = 'Развернуть';
+      localStorage.setItem('testPanelCollapsed', 'true');
+    }
+  }
+
+  testPanelHeader.addEventListener('click', togglePanel);
+  toggleTestBtn.addEventListener('click', togglePanel);
+
+  if (localStorage.getItem('testPanelCollapsed') === 'false') {
+    testPanel.classList.remove('collapsed');
+    toggleTestBtn.textContent = 'Свернуть';
+  } else {
+    testPanel.classList.add('collapsed');
+    toggleTestBtn.textContent = 'Развернуть';
+  }
+
+  function formatTime(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  }
+
+  function updateSimulation() {
+    const day = parseInt(sliderDay.value);
+    const timeMin = parseInt(sliderTime.value);
+    
+    valDay.textContent = DAY_NAMES[day];
+    valTime.textContent = formatTime(timeMin);
+    
+    testStatus.classList.add('active');
+    isSimulationActive = true;
+
+    const iframe = document.getElementById('scheduleFrame');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: 'set-time',
+        day: day,
+        time: formatTime(timeMin)
+      }, '*');
+    }
+  }
+
+  let sliderTimeout = null;
+  function debouncedUpdate() {
+    clearTimeout(sliderTimeout);
+    sliderTimeout = setTimeout(updateSimulation, 50);
+  }
+
+  sliderDay.addEventListener('input', debouncedUpdate);
+  sliderTime.addEventListener('input', debouncedUpdate);
+
+  resetTestBtn.addEventListener('click', () => {
+    testStatus.classList.remove('active');
+    isSimulationActive = false;
+    
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentMin = now.getHours() * 60 + now.getMinutes();
+    
+    sliderDay.value = currentDay;
+    sliderTime.value = currentMin;
+    
+    valDay.textContent = DAY_NAMES[currentDay];
+    valTime.textContent = formatTime(currentMin);
+
+    const iframe = document.getElementById('scheduleFrame');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ type: 'reset-time' }, '*');
+    }
+  });
+
+  const savedDay = localStorage.getItem('testDay');
+  const savedTime = localStorage.getItem('testTime');
+
+  if (savedDay !== null && savedTime !== null) {
+    sliderDay.value = savedDay;
+    sliderTime.value = savedTime;
+    valDay.textContent = DAY_NAMES[savedDay];
+    valTime.textContent = formatTime(savedTime);
+  } else {
+    const now = new Date();
+    sliderDay.value = now.getDay();
+    sliderTime.value = now.getHours() * 60 + now.getMinutes();
+    valDay.textContent = DAY_NAMES[now.getDay()];
+    valTime.textContent = formatTime(now.getHours() * 60 + now.getMinutes());
+  }
+
+  sliderDay.addEventListener('input', () => localStorage.setItem('testDay', sliderDay.value));
+  sliderTime.addEventListener('input', () => localStorage.setItem('testTime', sliderTime.value));
+
+  /* ============================================================
+     ВКЛАДКИ
+     ============================================================ */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  function activateTab(tabId) {
+    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+    tabContents.forEach(c => c.classList.toggle('active', c.id === tabId));
+    localStorage.setItem('school_current_tab', tabId);
+  }
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.dataset.tab;
+      activateTab(tabId);
+
+      if (tabId === 'schedule') {
+        const iframe = document.getElementById('scheduleFrame');
+        if (iframe) {
+          iframe.src = iframe.src;
+        }
+      }
+    });
+  });
+
+  let initialTab = localStorage.getItem('school_current_tab') || 'schedule';
+  if (!document.getElementById(initialTab)) initialTab = 'schedule';
+  activateTab(initialTab);
+
+  window.addEventListener('load', () => {
+    if (initialTab === 'schedule') {
+      setTimeout(() => {
+        const iframe = document.getElementById('scheduleFrame');
+        if (iframe) {
+          iframe.src = iframe.src;
+          setTimeout(() => {
+            if (isSimulationActive) {
+              updateSimulation();
+            }
+          }, 500);
+        }
+      }, 100);
+    }
+  });
+
+  /* ============================================================
+     АВТОМАТИЧЕСКАЯ ПОДСТРОЙКА ВЫСОТЫ IFRAME
+     ============================================================ */
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'resize-iframe') {
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        if (iframe.contentWindow === e.source) {
+          if (iframe.id === 'quizFrame') return; 
+          iframe.style.height = (e.data.height + 20) + 'px';
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

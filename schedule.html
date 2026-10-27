@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Расписание</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #3182ce;
+    --accent-soft: #ebf4ff;
+    --success: #2f855a;
+    --danger: #c53030;
+    --warning: #c05621;
+    --purple: #6b46c1;
+    --border: #e2e8f0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --text-soft: #718096;
+    --tap: 44px;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 16px 16px 24px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    min-height: 100%;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Тулбар */
+  .schedule-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .schedule-label {
+    font-weight: 600;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+  }
+  .schedule-select {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    min-width: 180px;
+    min-height: 36px;
+  }
+  .schedule-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(49,130,206,0.15);
+  }
+  .schedule-status {
+    font-size: 0.8rem;
+    color: var(--text-soft);
+  }
+  .schedule-status.err { color: var(--danger); }
+  .schedule-status.ok  { color: var(--success); }
+
+  button.btn-export {
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 7px 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    background: var(--accent);
+    min-height: 36px;
+    transition: filter 0.12s;
+  }
+  button.btn-export:hover { filter: brightness(1.08); }
+
+  /* Фильтр по дням */
+  .day-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .day-chip {
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-height: 34px;
+    white-space: nowrap;
+    position: relative;
+  }
+  .day-chip:hover { border-color: var(--accent); color: var(--primary); }
+  .day-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(49,130,206,0.25);
+  }
+  .day-chip.all-chip { color: var(--primary); }
+  .day-chip.all-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+  .day-chip.is-today::after {
+    content: '';
+    position: absolute;
+    top: 4px; right: 6px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+  }
+  .day-chip.active.is-today::after { background: #fff; }
+
+  /* Таблица расписания (десктоп) */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .schedule-grid {
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .schedule-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px;
+    min-width: 720px;
+  }
+  .schedule-table th {
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 8px;
+    border-radius: 8px;
+    text-align: center;
+    position: static;
+  }
+  .schedule-table th.is-today { background: var(--success); }
+  
+  .schedule-table td {
+    vertical-align: top;
+    padding: 0;
+    min-width: 120px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    line-height: 1.35;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card .c-lesson-time {
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+
+  .card .c-main {
+    color: var(--text);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .card .c-main .c-class {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.9rem;
+  }
+  .card .c-main .c-sep { color: var(--text-soft); }
+  .card .c-main .c-subject { color: var(--text); }
+  .card .c-room {
+    color: var(--text-soft);
+    font-size: 0.75rem;
+    margin-top: 2px;
+  }
+  .card.subject-physics      { border-left-color: var(--success); }
+  .card.subject-informatics  { border-left-color: var(--purple); }
+  .card.subject-english      { border-left-color: var(--warning); }
+
+  /* Прогресс-бар внутри карточки урока (десктоп) */
+  .card .lesson-progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s linear, background 0.3s;
+    border-radius: 0 0 0 8px;
+    z-index: 10;
+  }
+  .card.active-lesson .lesson-progress-bar {
+    background: var(--success);
+  }
+  .card.active-lesson {
+    background: #f0fff4;
+    border-color: var(--success);
+  }
+
+  .card.card-gap {
+    border-left-color: #cbd5e0;
+    background: #fafafa;
+    border-style: dashed;
+    color: #a0aec0;
+  }
+  .card.card-gap .c-lesson-time { color: #a0aec0; }
+  .card.card-gap .c-gap-text {
+    color: #a0aec0;
+    font-style: italic;
+    font-size: 0.82rem;
+    margin-top: 2px;
+  }
+
+  .card.c-sat {
+    border-left-color: var(--accent);
+    padding: 10px;
+  }
+  .card.c-sat .c-main { margin-top: 0; }
+
+  .schedule-empty {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 30px 10px;
+    font-size: 0.95rem;
+  }
+  .schedule-empty.err { color: var(--danger); }
+
+  /* Мобильный список */
+  .schedule-list { display: none; }
+  .day-block { margin-bottom: 14px; }
+  .day-block:last-child { margin-bottom: 0; }
+  .day-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    background: var(--accent-soft);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .day-title .today-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--success);
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+  .day-lessons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .m-card {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  
+  .m-card .m-body {
+    flex: 1;
+    padding: 8px 10px;
+    min-width: 0;
+  }
+  
+  .m-card .m-lesson-time {
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+
+  .m-card .m-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .m-card .m-main .m-class {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.95rem;
+  }
+  .m-card .m-main .m-sep {
+    color: var(--text-soft);
+    font-size: 0.85rem;
+  }
+  .m-card .m-main .m-subject {
+    color: var(--text);
+    font-size: 0.85rem;
+  }
+  .m-card .m-room {
+    color: var(--text-soft);
+    font-size: 0.75rem;
+  }
+  .m-card.subject-physics      { border-left-color: var(--success); }
+  .m-card.subject-informatics  { border-left-color: var(--purple); }
+  .m-card.subject-english      { border-left-color: var(--warning); }
+
+  /* Прогресс-бар внутри мобильной карточки */
+  .m-card .lesson-progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s linear, background 0.3s;
+    border-radius: 0 0 0 10px;
+    z-index: 10;
+  }
+  .m-card.active-lesson .lesson-progress-bar {
+    background: var(--success);
+  }
+  .m-card.active-lesson {
+    background: #f0fff4;
+    border-color: var(--success);
+  }
+
+  .m-card.m-gap {
+    border-left-color: #cbd5e0;
+    background: #fafafa;
+    border-style: dashed;
+  }
+  .m-card.m-gap .m-lesson-time { color: #a0aec0; }
+  .m-card.m-gap .m-gap-text {
+    padding: 8px 10px;
+    color: #a0aec0;
+    font-size: 0.82rem;
+    font-style: italic;
+    align-self: center;
+  }
+
+  .m-card.m-sat .m-body {
+    padding: 10px 12px;
+  }
+
+  /* ===== ПРОГРЕСС ПЕРЕМЕНЫ (мобильный) ===== */
+  .break-row {
+    height: 20px;
+    border-radius: 6px;
+    margin: 2px 0 4px 0;
+    background: #edf2f7;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .break-row-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), #48bb78);
+    width: 0%;
+    transition: width 0.5s linear;
+    position: absolute;
+    top: 0; left: 0;
+  }
+  .break-row-text {
+    position: relative;
+    z-index: 2;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #22543d;
+    padding: 0 8px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .break-row-text .bp-time {
+    color: #276749;
+  }
+
+  .day-empty {
+    color: #cbd5e0;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    font-style: italic;
+  }
+
+  .schedule-footer {
+    margin-top: 12px;
+    padding: 0 4px;
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    text-align: right;
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 10px 10px 20px; }
+    .schedule-toolbar { flex-wrap: wrap; gap: 6px; }
+    .schedule-label { font-size: 0.8rem; }
+    .schedule-select { flex: 1 1 140px; min-width: 0; font-size: 0.85rem; min-height: 36px; }
+    .day-filter { gap: 5px; margin-bottom: 10px; }
+    .day-chip { font-size: 0.78rem; padding: 6px 12px; min-height: 32px; }
+    .schedule-grid { padding: 10px; display: none; }
+    .schedule-list { display: block; padding: 12px 10px; }
+    .schedule-footer { font-size: 0.7rem; padding: 0 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="schedule-toolbar">
+    <label for="teacherSelect" class="schedule-label">Учитель:</label>
+    <select id="teacherSelect" class="schedule-select"></select>
+    <button class="btn-export" id="reloadScheduleBtn" title="Перезагрузить файлы">⟳</button>
+    <span class="schedule-status" id="scheduleStatus"></span>
+  </div>
+
+  <div class="day-filter" id="dayFilter">
+    <button class="day-chip all-chip active" data-day="all">Все</button>
+    <button class="day-chip" data-day="ПН">ПН</button>
+    <button class="day-chip" data-day="ВТ">ВТ</button>
+    <button class="day-chip" data-day="СР">СР</button>
+    <button class="day-chip" data-day="ЧТ">ЧТ</button>
+    <button class="day-chip" data-day="ПТ">ПТ</button>
+    <button class="day-chip" data-day="СБ">СБ</button>
+  </div>
+
+  <div class="table-wrap">
+    <div id="scheduleGrid" class="schedule-grid">
+      <p class="schedule-empty">Загрузка расписания…</p>
+    </div>
+    <div id="scheduleList" class="schedule-list">
+      <p class="schedule-empty">Загрузка расписания…</p>
+    </div>
+  </div>
+
+  <div class="schedule-footer" id="scheduleInfo" hidden></div>
+
+</div>
+
+<script>
+  /* ============================================================
+     МАШИНА ВРЕМЕНИ (ДЛЯ ТЕСТИРОВАНИЯ)
+     ============================================================ */
+  let simulatedDate = null;
+  const OriginalDate = window.Date;
+  let simulatedDayIndex = null;
+
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'set-time') {
+      const now = new OriginalDate();
+      
+      const day = e.data.day !== null ? e.data.day : now.getDay();
+      simulatedDayIndex = day;
+      
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      if (e.data.time) {
+        const parts = e.data.time.split(':');
+        hours = parseInt(parts[0]);
+        minutes = parseInt(parts[1]);
+      }
+      
+      simulatedDate = new OriginalDate(now);
+      
+      const currentDay = now.getDay();
+      let dayDiff = day - currentDay;
+      if (dayDiff < -3) dayDiff += 7;
+      if (dayDiff > 3) dayDiff -= 7;
+      
+      simulatedDate.setDate(now.getDate() + dayDiff);
+      simulatedDate.setHours(hours, minutes, 0, 0);
+      
+      window.Date = class extends OriginalDate {
+        constructor(...args) {
+          if (args.length === 0) {
+            super(simulatedDate.getTime());
+          } else {
+            super(...args);
+          }
+        }
+        static now() {
+          return simulatedDate.getTime();
+        }
+      };
+      
+      if (scheduleState.currentEntry) {
+        renderSchedule(scheduleState.currentEntry);
+      }
+      
+    } else if (e.data && e.data.type === 'reset-time') {
+      window.Date = OriginalDate;
+      simulatedDate = null;
+      simulatedDayIndex = null;
+      if (scheduleState.currentEntry) {
+        renderSchedule(scheduleState.currentEntry);
+      }
+    }
+  });
+
+  /* ============================================================
+     КОНСТАНТЫ
+     ============================================================ */
+  const DATA_DIR = 'data/';
+  const STORAGE_TEACHER_KEY      = 'schedule_teacher';
+  const STORAGE_DAYS_KEY         = 'schedule_days';
+  const STORAGE_DAYS_MANUAL_KEY  = 'schedule_days_manual';
+  const DEFAULT_TEACHER_ID       = 'mihalitsyn_a';
+  const DAYS_ORDER               = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+  const WEEK_DAYS                = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'];
+  const DAYS_FULL = {
+    'ПН': 'Понедельник', 'ВТ': 'Вторник', 'СР': 'Среда',
+    'ЧТ': 'Четверг', 'ПТ': 'Пятница', 'СБ': 'Суббота'
+  };
+  const DAY_CUTOFF_HOUR = 16;
+
+  const LESSON_TIMES = {
+    1: { start: '08:30', end: '09:10' },
+    2: { start: '09:20', end: '10:00' },
+    3: { start: '10:10', end: '10:50' },
+    4: { start: '11:05', end: '11:45' },
+    5: { start: '12:00', end: '12:40' },
+    6: { start: '12:55', end: '13:35' },
+    7: { start: '13:45', end: '14:25' },
+    8: { start: '14:35', end: '15:15' },
+    9: { start: '15:25', end: '16:05' }
+  };
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  const teacherSelect     = document.getElementById('teacherSelect');
+  const reloadScheduleBtn = document.getElementById('reloadScheduleBtn');
+  const scheduleStatus    = document.getElementById('scheduleStatus');
+  const scheduleInfo      = document.getElementById('scheduleInfo');
+  const scheduleGrid      = document.getElementById('scheduleGrid');
+  const scheduleList      = document.getElementById('scheduleList');
+  const dayFilter         = document.getElementById('dayFilter');
+
+  function getAutoActiveDay() {
+    if (simulatedDayIndex !== null) {
+      return DAYS_ORDER[simulatedDayIndex === 0 ? 6 : simulatedDayIndex - 1];
+    }
+    const now = new Date();
+    const jsDay = now.getDay();
+    const hours = now.getHours();
+    let idx = jsDay === 0 ? 0 : jsDay - 1;
+    if (hours >= DAY_CUTOFF_HOUR) idx = (idx + 1) % DAYS_ORDER.length;
+    return DAYS_ORDER[idx];
+  }
+
+  function loadActiveDays() {
+    const wasManual = localStorage.getItem(STORAGE_DAYS_MANUAL_KEY) === '1';
+    try {
+      const raw = localStorage.getItem(STORAGE_DAYS_KEY);
+      if (wasManual && raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return new Set(arr.filter(d => DAYS_ORDER.includes(d)));
+      }
+    } catch (e) {}
+    return new Set(WEEK_DAYS);
+  }
+
+  function saveActiveDays() {
+    try {
+      localStorage.setItem(STORAGE_DAYS_KEY, JSON.stringify([...scheduleState.activeDays]));
+      localStorage.setItem(STORAGE_DAYS_MANUAL_KEY, '1');
+    } catch (e) {}
+  }
+
+  const scheduleState = {
+    teachers: null, teachersLoaded: false, schedules: {},
+    loading: false, currentId: null, currentEntry: null,
+    activeDays: loadActiveDays()
+  };
+
+  function setScheduleStatus(text, type = '') {
+    scheduleStatus.textContent = text || '';
+    scheduleStatus.className = 'schedule-status' + (type ? ' ' + type : '');
+  }
+
+  async function fetchJson(url) {
+    const resp = await fetch(url, { cache: 'no-cache' });
+    if (!resp.ok) throw new Error(`Ошибка HTTP ${resp.status} при загрузке ${url}`);
+    return resp.json();
+  }
+
+  async function loadTeachers(force = false) {
+    if (scheduleState.teachersLoaded && !force) return scheduleState.teachers;
+    const data = await fetchJson(DATA_DIR + 'teachers.json');
+    if (!data || !Array.isArray(data.teachers)) throw new Error('Некорректный формат teachers.json');
+    scheduleState.teachers = data.teachers;
+    scheduleState.teachersLoaded = true;
+    teacherSelect.innerHTML = '';
+    data.teachers.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      teacherSelect.appendChild(opt);
+    });
+    return data.teachers;
+  }
+
+  async function loadTeacherSchedule(teacherId, force = false) {
+    const teacher = (scheduleState.teachers || []).find(t => t.id === teacherId);
+    if (!teacher) throw new Error('Учитель не найден: ' + teacherId);
+    if (!force && scheduleState.schedules[teacherId]) return scheduleState.schedules[teacherId];
+    const url = DATA_DIR + teacher.scheduleFile;
+    const data = await fetchJson(url);
+    const entry = { teacher, schedule: data, loadedAt: new Date() };
+    scheduleState.schedules[teacherId] = entry;
+    return entry;
+  }
+
+  function subjectClass(subject) {
+    const s = (subject || '').toLowerCase();
+    if (s.includes('физ')) return 'subject-physics';
+    if (s.includes('информ')) return 'subject-informatics';
+    if (s.includes('англ')) return 'subject-english';
+    return '';
+  }
+
+  // Вспомогательные функции для расчёта прогресса
+  function parseTime(timeStr) {
+    if (!timeStr) return 0;
+    const [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function getCurrentMinutes() {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+  }
+
+  function getProgress(startStr, endStr) {
+    const now = getCurrentMinutes();
+    const start = parseTime(startStr);
+    const end = parseTime(endStr);
+    if (now < start) return 0;
+    if (now > end) return 100;
+    return ((now - start) / (end - start)) * 100;
+  }
+
+  // Форматирование оставшегося времени (MM:SS)
+  function formatRemaining(ms) {
+    if (ms < 0) return '00:00';
+    const totalSec = Math.floor(ms / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
+  function renderSchedule(entry) {
+    scheduleState.currentEntry = entry;
+    const { schedule } = entry;
+
+    const lastUpdate = schedule.last_update
+      ? new Date(schedule.last_update.replace(' ', 'T')).toLocaleString('ru-RU') : '—';
+    scheduleInfo.hidden = false;
+    scheduleInfo.innerHTML = `обновлено: ${lastUpdate}`;
+
+    const autoDay = getAutoActiveDay();
+    const active = scheduleState.activeDays;
+    const showAll = active.size === 0;
+    const shownDays = DAYS_ORDER.filter(d => showAll || active.has(d));
+
+    // Текущее время для определения активного урока
+    const nowMin = getCurrentMinutes();
+    let currentLessonNum = 0;
+    for (let i = 1; i <= 9; i++) {
+      if (LESSON_TIMES[i]) {
+        if (nowMin >= parseTime(LESSON_TIMES[i].start) && nowMin < parseTime(LESSON_TIMES[i].end)) {
+          currentLessonNum = i;
+          break;
+        }
+      }
+    }
+
+    let maxLesson = 0;
+    shownDays.forEach(day => {
+      (schedule[day] || []).forEach(item => {
+        if (item && typeof item.lesson === 'number' && item.lesson > maxLesson) maxLesson = item.lesson;
+      });
+    });
+
+    if (shownDays.length === 0) {
+      scheduleGrid.innerHTML = '<p class="schedule-empty">Нет выбранных дней.</p>';
+    } else if (maxLesson === 0) {
+      scheduleGrid.innerHTML = '<p class="schedule-empty">В выбранных днях нет уроков.</p>';
+    } else {
+      const map = {};
+      shownDays.forEach(day => {
+        map[day] = {};
+        (schedule[day] || []).forEach(item => { if (item && item.lesson) map[day][item.lesson] = item; });
+      });
+
+      let html = '<table class="schedule-table"><thead><tr>';
+      shownDays.forEach(day => {
+        html += `<th class="${day === autoDay ? 'is-today' : ''}">${DAYS_FULL[day] || day}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      for (let n = 1; n <= maxLesson; n++) {
+        html += '<tr>';
+        shownDays.forEach(day => {
+          const item = map[day][n];
+          const t = LESSON_TIMES[n] || { start: '', end: '' };
+          const timeStr = t.start ? `${t.start}–${t.end}` : '';
+          
+          html += '<td>';
+          
+          if (day === 'СБ') {
+            if (!item) html += `<div class="card card-gap c-sat"></div>`;
+            else {
+              const cls = subjectClass(item.subject);
+              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const mainParts = [];
+              if (klass) mainParts.push(`<span class="c-class">${escapeHtml(klass)}</span>`);
+              if (klass && subject) mainParts.push(`<span class="c-sep">·</span>`);
+              if (subject) mainParts.push(`<span class="c-subject">${escapeHtml(subject)}</span>`);
+              html += `<div class="card ${cls} c-sat"><div class="c-main">${mainParts.join('')}</div><div class="c-room">каб. ${escapeHtml(room) || '—'}</div></div>`;
+            }
+          } else {
+            if (!item) {
+              html += `<div class="card card-gap"><div class="c-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div><div class="c-gap-text">окно</div></div>`;
+            } else {
+              const cls = subjectClass(item.subject);
+              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const mainParts = [];
+              if (klass) mainParts.push(`<span class="c-class">${escapeHtml(klass)}</span>`);
+              if (klass && subject) mainParts.push(`<span class="c-sep">·</span>`);
+              if (subject) mainParts.push(`<span class="c-subject">${escapeHtml(subject)}</span>`);
+              
+              const isActive = (n === currentLessonNum && day === autoDay);
+              
+              html += `<div class="card ${cls} ${isActive ? 'active-lesson' : ''}">`;
+              if (isActive) {
+                const prog = getProgress(t.start, t.end);
+                html += `<div class="lesson-progress-bar" data-start="${t.start}" data-end="${t.end}" style="width: ${prog}%"></div>`;
+              }
+              html += `<div class="c-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div>`;
+              html += `<div class="c-main">${mainParts.join('')}</div>`;
+              html += `<div class="c-room">каб. ${escapeHtml(room) || '—'}</div>`;
+              html += `</div>`;
+            }
+          }
+          html += '</td>';
+        });
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      scheduleGrid.innerHTML = html;
+    }
+
+    // ============ МОБИЛЬНАЯ ВЕРСИЯ ============
+    if (shownDays.length === 0) {
+      scheduleList.innerHTML = '<p class="schedule-empty">Нет выбранных дней.</p>';
+      return;
+    }
+
+    let mob = '';
+    shownDays.forEach(day => {
+      const items = (schedule[day] || []).filter(it => it && it.lesson).sort((a, b) => a.lesson - b.lesson);
+      mob += '<div class="day-block">';
+      mob += `<div class="day-title"><span>${DAYS_FULL[day] || day}</span>${day === autoDay ? `<span class="today-badge">сегодня</span>` : ''}</div>`;
+
+      if (items.length === 0) {
+        mob += '<div class="day-empty">Нет уроков</div>';
+      } else {
+        const maxN = items[items.length - 1].lesson;
+        const byNum = {};
+        items.forEach(it => { byNum[it.lesson] = it; });
+
+        mob += '<div class="day-lessons">';
+        for (let n = 1; n <= maxN; n++) {
+          const item = byNum[n];
+          const t = LESSON_TIMES[n] || { start: '', end: '' };
+          const timeStr = t.start ? `${t.start}–${t.end}` : '';
+          
+          // 1. ВЫВОДИМ ПЕРЕМЕНУ (только если сейчас реально идёт перемена)
+          if (n > 1) {
+            const prevLessonEnd = LESSON_TIMES[n-1] ? LESSON_TIMES[n-1].end : null;
+            if (prevLessonEnd && t.start) {
+              const nowM = getCurrentMinutes();
+              const isCurrent = nowM >= parseTime(prevLessonEnd) && nowM < parseTime(t.start);
+              
+              // Показываем блок только если перемена идёт прямо сейчас
+              if (isCurrent) {
+                const prog = getProgress(prevLessonEnd, t.start);
+                
+                // Вычисляем сколько осталось до конца перемены
+                const endMin = parseTime(t.start);
+                const remainingMin = endMin - nowM;
+                const remainingMs = remainingMin * 60 * 1000;
+                const remainingText = formatRemaining(remainingMs);
+
+                mob += `<div class="break-row">`;
+                mob += `<div class="break-row-fill" data-start="${prevLessonEnd}" data-end="${t.start}" style="width: ${prog}%"></div>`;
+                mob += `<div class="break-row-text">`;
+                mob += `<span class="bp-time">${prevLessonEnd}–${t.start}</span>`;
+                mob += `<span class="bp-label">осталось ${remainingText}</span>`;
+                mob += `</div></div>`;
+              }
+            }
+          }
+
+          // 2. ВЫВОДИМ КАРТОЧКУ УРОКА
+          if (day === 'СБ') {
+            if (item) {
+              const cls = subjectClass(item.subject);
+              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const mainParts = [];
+              if (klass) mainParts.push(`<span class="m-class">${escapeHtml(klass)}</span>`);
+              if (klass && subject) mainParts.push(`<span class="m-sep">·</span>`);
+              if (subject) mainParts.push(`<span class="m-subject">${escapeHtml(subject)}</span>`);
+              if (room) {
+                if (klass || subject) mainParts.push(`<span class="m-sep">·</span>`);
+                mainParts.push(`<span class="m-room">каб. ${escapeHtml(room)}</span>`);
+              }
+              mob += `<div class="m-card ${cls} m-sat"><div class="m-body"><div class="m-main">${mainParts.join('')}</div></div></div>`;
+            }
+          } else {
+            if (!item) {
+              mob += `<div class="m-card m-gap"><div class="m-body"><div class="m-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div><div class="m-gap-text" style="padding:0; align-self:flex-start;">окно</div></div></div>`;
+            } else {
+              const cls = subjectClass(item.subject);
+              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const mainParts = [];
+              if (klass) mainParts.push(`<span class="m-class">${escapeHtml(klass)}</span>`);
+              if (klass && subject) mainParts.push(`<span class="m-sep">·</span>`);
+              if (subject) mainParts.push(`<span class="m-subject">${escapeHtml(subject)}</span>`);
+              if (room) {
+                if (klass || subject) mainParts.push(`<span class="m-sep">·</span>`);
+                mainParts.push(`<span class="m-room">каб. ${escapeHtml(room)}</span>`);
+              }
+              
+              const isActive = (n === currentLessonNum && day === autoDay);
+              
+              mob += `<div class="m-card ${cls} ${isActive ? 'active-lesson' : ''}">`;
+              
+              // Прогресс-бар внутри карточки урока
+              if (isActive) {
+                const prog = getProgress(t.start, t.end);
+                mob += `<div class="lesson-progress-bar" data-start="${t.start}" data-end="${t.end}" style="width: ${prog}%"></div>`;
+              }
+              
+              mob += `<div class="m-body">`;
+              mob += `<div class="m-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div>`;
+              mob += `<div class="m-main">${mainParts.join('')}</div>`;
+              mob += `</div>`;
+              
+              mob += `</div>`;
+            }
+          }
+        }
+        mob += '</div>';
+      }
+      mob += '</div>';
+    });
+    scheduleList.innerHTML = mob;
+
+    // Отправляем высоту родителю
+    if (window.parent !== window) {
+      setTimeout(() => {
+        window.parent.postMessage({ type: 'resize-iframe', height: document.body.scrollHeight }, '*');
+      }, 50);
+    }
+  }
+
+  // ============ ТАЙМЕР ОБНОВЛЕНИЯ ПРОГРЕСС-БАРОВ И ОБРАТНОГО ОТСЧЕТА ============
+  function updateProgressBars() {
+    // Обновляем прогресс-бары уроков
+    document.querySelectorAll('.lesson-progress-bar').forEach(bar => {
+      const start = bar.dataset.start;
+      const end = bar.dataset.end;
+      if (start && end) {
+        bar.style.width = getProgress(start, end) + '%';
+      }
+    });
+
+    // Обновляем прогресс-бары перемен и обратный отсчёт
+    document.querySelectorAll('.break-row-fill').forEach(bar => {
+      const start = bar.dataset.start;
+      const end = bar.dataset.end;
+      if (start && end) {
+        bar.style.width = getProgress(start, end) + '%';
+        
+        // Обновляем текст оставшегося времени
+        const parent = bar.closest('.break-row');
+        const label = parent.querySelector('.bp-label');
+        if (label) {
+          const endMin = parseTime(end);
+          const nowM = getCurrentMinutes();
+          const remainingMin = endMin - nowM;
+          const remainingMs = remainingMin * 60 * 1000;
+          label.textContent = 'осталось ' + formatRemaining(remainingMs);
+        }
+      }
+    });
+  }
+  
+  setInterval(updateProgressBars, 1000);
+
+  async function loadSchedule(force = false) {
+    if (scheduleState.loading) return;
+    try {
+      scheduleState.loading = true;
+      setScheduleStatus('Загрузка…');
+      await loadTeachers(force);
+      const saved = localStorage.getItem(STORAGE_TEACHER_KEY);
+      let id = saved || teacherSelect.value || DEFAULT_TEACHER_ID;
+      if (!scheduleState.teachers.some(t => t.id === id)) id = DEFAULT_TEACHER_ID;
+      if (!scheduleState.teachers.some(t => t.id === id)) id = scheduleState.teachers[0].id;
+      teacherSelect.value = id;
+      scheduleState.currentId = id;
+      localStorage.setItem(STORAGE_TEACHER_KEY, id);
+      const entry = await loadTeacherSchedule(id, force);
+      renderSchedule(entry);
+      setScheduleStatus('✓ Загружено', 'ok');
+    } catch (err) {
+      console.error(err);
+      scheduleInfo.hidden = true;
+      const hint = location.protocol === 'file:' ? ' Откройте через сервер (python -m http.server).' : '';
+      const errHtml = `<p class="schedule-empty err">Ошибка: ${escapeHtml(err.message)}.${hint}</p>`;
+      scheduleGrid.innerHTML = errHtml; scheduleList.innerHTML = errHtml;
+      setScheduleStatus('Ошибка загрузки', 'err');
+    } finally {
+      scheduleState.loading = false;
+    }
+  }
+
+  teacherSelect?.addEventListener('change', async () => {
+    const id = teacherSelect.value;
+    scheduleState.currentId = id;
+    localStorage.setItem(STORAGE_TEACHER_KEY, id);
+    try {
+      setScheduleStatus('Загрузка…');
+      const entry = await loadTeacherSchedule(id);
+      renderSchedule(entry);
+      setScheduleStatus('✓ Загружено', 'ok');
+    } catch (err) {
+      scheduleInfo.hidden = true;
+      const errHtml = `<p class="schedule-empty err">Ошибка: ${escapeHtml(err.message)}</p>`;
+      scheduleGrid.innerHTML = errHtml; scheduleList.innerHTML = errHtml;
+      setScheduleStatus('Ошибка загрузки', 'err');
+    }
+  });
+
+  reloadScheduleBtn?.addEventListener('click', () => {
+    if (scheduleState.currentId) delete scheduleState.schedules[scheduleState.currentId];
+    scheduleState.teachersLoaded = false;
+    loadSchedule(true);
+  });
+
+  function syncDayFilterUI() {
+    const chips = dayFilter.querySelectorAll('.day-chip');
+    const active = scheduleState.activeDays;
+    const showAll = active.size === 0;
+    const autoDay = getAutoActiveDay();
+    chips.forEach(chip => {
+      const d = chip.dataset.day;
+      if (d === 'all') chip.classList.toggle('active', showAll);
+      else chip.classList.toggle('active', !showAll && active.has(d));
+      chip.classList.toggle('is-today', d === autoDay);
+    });
+  }
+
+  dayFilter?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.day-chip');
+    if (!chip) return;
+    const d = chip.dataset.day;
+    if (d === 'all') scheduleState.activeDays = new Set(WEEK_DAYS);
+    else {
+      const active = scheduleState.activeDays;
+      if (active.has(d)) active.delete(d); else active.add(d);
+      if (active.size === 0) scheduleState.activeDays = new Set();
+    }
+    saveActiveDays(); syncDayFilterUI();
+    if (scheduleState.currentEntry) renderSchedule(scheduleState.currentEntry);
+  });
+
+  syncDayFilterUI();
+  loadSchedule(false);
+</script>
+
+</body>
+</html>
