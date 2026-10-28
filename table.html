@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.3.23">
+<html lang="ru" data-version="v4.3.19">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Изменение расписания 5-11</title>
+    <title>Изменение расписания 5-11 (мобильная)</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2b6cb0">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -51,26 +51,25 @@
         }
 
         /* ============================
-           УВЕДОМЛЕНИЕ СВЕРХУ (уменьшено в 2 раза)
+           УВЕДОМЛЕНИЕ СВЕРХУ
            ============================ */
         .top-notification {
             position: fixed;
-            top: 8px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
             background: #38a169;
             color: #ffffff;
-            padding: 4px 12px;
-            border-radius: 5px;
-            font-size: 7px;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
             z-index: 9999;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
             opacity: 0;
             pointer-events: none;
             white-space: nowrap;
-            line-height: 1.2;
         }
         .top-notification.show {
             transform: translateX(-50%) translateY(0);
@@ -80,20 +79,19 @@
         .top-notification.warning { background: #d69e2e; }
 
         /* ============================
-           ШАПКА — часы справа вверху (уменьшены)
+           ШАПКА
            ============================ */
         .header {
             flex-shrink: 0;
             display: flex;
-            align-items: flex-start;
             justify-content: space-between;
-            gap: 6px;
-            min-height: 26px;
-            max-height: 26px;
-            padding: 1px 4px;
-            border-bottom: 1px solid #e2e8f0;
-            background: #ffffff;
-            overflow: hidden;
+            align-items: center;
+            border-bottom: none !important;
+            padding-bottom: 1px;
+            flex-wrap: nowrap;
+            gap: 4px;
+            min-height: 35px;
+            max-height: 35px;
         }
         .header-left { display: none !important; }
         .header-banner { display: none !important; }
@@ -102,12 +100,10 @@
         .header-center {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            flex-shrink: 0;
             flex: 1 1 auto;
-            min-width: 0;
             justify-content: flex-start;
-            overflow: hidden;
-            align-self: center;
         }
         .header-center .day-indicator { display: none !important; }
         .header-center .divider { display: none !important; }
@@ -115,103 +111,98 @@
         .period {
             color: #2d3748;
             font-weight: 600;
+            min-height: 1.4em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            line-height: 1.05;
-            flex-shrink: 0;
+            line-height: 1.1;
             transition: opacity 0.2s;
         }
-        .period .line1 { font-size: 9px; line-height: 1.05; color: #2d3748; }
-        .period .line2 { font-size: 8px; font-weight: 500; color: #4a5568; }
+        .period .line1 { font-size: 10px; line-height: 1.1; color: #2d3748; }
+        .period .line2 { font-size: 9px; font-weight: 500; color: #4a5568; }
 
         .period.past-period { opacity: 0.45; filter: grayscale(0.4); }
         .period.past-period .line1 { color: #a0aec0; }
         .period.past-period .line2 { color: #a0aec0; }
 
-        /* ==========================================
-           ЧАСЫ — справа вверху (в 2 раза меньше)
-           ========================================== */
-        .header-clock {
-            flex: 0 0 auto;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            gap: 3px;
-            margin-left: auto;
-            padding-top: 1px;
-        }
-
-        .analog-clock {
-            width: 19px;
-            height: 19px;
-            flex-shrink: 0;
-            transform: none;
-            transform-origin: center;
-        }
-        .analog-clock .face {
-            fill: #ffffff;
-            stroke: #4a5568;
-            stroke-width: 1.5;
-        }
-        .analog-clock .tick {
-            stroke: #a0aec0;
-            stroke-width: 1;
-            stroke-linecap: round;
-        }
-        .analog-clock .tick-major {
-            stroke: #4a5568;
-            stroke-width: 1.6;
-        }
-        .analog-clock .hand-hour {
-            stroke: #2d3748;
-            stroke-width: 2.4;
-            stroke-linecap: round;
-        }
-        .analog-clock .hand-minute {
-            stroke: #2d3748;
-            stroke-width: 1.6;
-            stroke-linecap: round;
-        }
-        .analog-clock .hand-second {
-            stroke: #e53e3e;
-            stroke-width: 1;
-            stroke-linecap: round;
-        }
-        .analog-clock .center-dot {
-            fill: #2d3748;
-        }
-
-        .clock-info {
+        .header-right {
+            text-align: right;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-            line-height: 1;
+            align-items: flex-end;
+            gap: 1px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .header-right .schedule-updated {
+            color: #718096;
+            font-weight: 500;
+            background: #edf2f7;
+            padding: 0 6px;
+            border-radius: 8px;
+            font-size: 8px;
+            margin-top: 0px;
+        }
+        .header-right .schedule-updated.error {
+            color: #e53e3e;
+            background: #fff5f5;
+        }
+
+        /* ============================
+           ЦИФРОВЫЕ ЧАСЫ → ДЕНЬ → ДАТА (в одну строку)
+           ============================ */
+        #clockContainer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .clock-line {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
             white-space: nowrap;
-            padding-top: 0;
-        }
-        .clock-info .digital-time {
-            font-size: 6.5px;
-            color: #2d3748;
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-        }
-        .clock-info .date {
-            font-size: 4.5px;
-            color: #4a5568;
-            font-weight: 600;
-            line-height: 1;
-        }
-        .clock-info .day-name {
-            font-size: 4.5px;
-            color: #2d3748;
-            font-weight: 700;
             line-height: 1;
         }
 
-        .header-right { display: none !important; }
+        /* Время — самое крупное, насыщенный синий */
+        .clock-line .clock-time {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1e3a8a; /* тёмно-синий */
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
+        }
+
+        /* День недели — бирюзовый, чуть меньше */
+        .clock-line .clock-day {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f766e; /* бирюзовый */
+            letter-spacing: 0.2px;
+        }
+
+        /* Дата — приглушённый серо-синий */
+        .clock-line .clock-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b; /* серо-синий */
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 700px) {
+            .clock-line { gap: 6px; }
+            .clock-line .clock-time { font-size: 18px; }
+            .clock-line .clock-day  { font-size: 12px; }
+            .clock-line .clock-date { font-size: 11px; }
+        }
+
+        @media (max-width: 480px) {
+            .clock-line { gap: 4px; }
+            .clock-line .clock-time { font-size: 16px; }
+            .clock-line .clock-day  { font-size: 11px; }
+            .clock-line .clock-date { font-size: 10px; }
+        }
 
         /* ============================
            ОСНОВНАЯ ЧАСТЬ
@@ -221,7 +212,7 @@
             display: flex;
             gap: 0;
             min-height: 0;
-            margin-top: 1px;
+            margin-top: 2px;
             height: 100%;
         }
         .table-wrapper {
@@ -241,8 +232,8 @@
             flex-direction: column;
             width: 100%;
             height: 100%;
-            gap: 2px;
-            padding: 1px 0;
+            gap: 4px;
+            padding: 2px 0;
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: thin;
@@ -253,14 +244,14 @@
 
         .tiles-header-row {
             display: flex;
-            gap: 2px;
+            gap: 4px;
             flex-shrink: 0;
             position: sticky;
             top: 0;
             z-index: 5;
             background: #ffffff;
-            padding-bottom: 1px;
-            border-bottom: 1.5px solid #4a5568;
+            padding-bottom: 2px;
+            border-bottom: 2px solid #4a5568;
         }
         .tiles-header-row .tile-header {
             flex: 1 1 0;
@@ -270,19 +261,19 @@
             font-weight: 700;
             text-transform: uppercase;
             font-size: clamp(8px, 0.75vw, 12px);
-            padding: 3px 2px;
+            padding: 4px 2px;
             text-align: center;
-            border-radius: 5px 5px 0 0;
+            border-radius: 6px 6px 0 0;
             letter-spacing: 0.3px;
-            line-height: 1.15;
+            line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .tiles-header-row .tile-header:first-child {
-            flex: 0 0 34px;
-            min-width: 34px;
-            max-width: 34px;
+            flex: 0 0 36px;
+            min-width: 36px;
+            max-width: 36px;
             background: #e2e8f0;
             color: #4a5568;
             font-size: clamp(8px, 0.7vw, 11px);
@@ -290,10 +281,10 @@
 
         .tiles-row {
             display: flex;
-            gap: 2px;
+            gap: 4px;
             flex-shrink: 0;
             min-height: 0;
-            border-radius: 7px;
+            border-radius: 8px;
             transition: background 0.15s, opacity 0.2s;
         }
 
@@ -320,9 +311,9 @@
         .tiles-row.past-lesson-row .tile-subject.empty-tile { background: #fafbfc; border-color: #e2e8f0; }
 
         .tile-number {
-            flex: 0 0 34px;
-            min-width: 34px;
-            max-width: 34px;
+            flex: 0 0 36px;
+            min-width: 36px;
+            max-width: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -330,9 +321,9 @@
             font-size: clamp(10px, 0.85vw, 14px);
             color: #4a5568;
             background: #f7fafc;
-            border-radius: 5px;
+            border-radius: 6px;
             border: 1px solid #e2e8f0;
-            padding: 1px;
+            padding: 2px;
             line-height: 1.1;
         }
         .tiles-row.current-lesson-row .tile-number {
@@ -341,7 +332,6 @@
             border-color: #4a5568;
         }
 
-        /* ⭐ Карточки с предметами сужены на 4px по высоте */
         .tile-subject {
             flex: 1 1 0;
             min-width: 0;
@@ -349,8 +339,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1px 3px;
-            border-radius: 5px;
+            padding: 3px 3px;
+            border-radius: 6px;
             border: 1px solid #e2e8f0;
             background: #ffffff;
             transition: background 0.15s, border-color 0.15s;
@@ -359,8 +349,8 @@
             word-wrap: break-word;
             word-break: break-word;
             hyphens: auto;
-            line-height: 1.1;
-            min-height: 28px;
+            line-height: 1.15;
+            min-height: 38px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
         .tiles-row.current-lesson-row .tile-subject {
@@ -376,14 +366,14 @@
             font-size: clamp(8px, 0.72vw, 12px);
             color: #2d3748;
             display: block;
-            line-height: 1.1;
+            line-height: 1.2;
         }
         .tile-subject .subject-room {
             font-weight: 700;
             font-size: clamp(7px, 0.6vw, 10px);
             color: #9a3412;
             display: block;
-            margin-top: 0;
+            margin-top: 1px;
             white-space: nowrap;
             letter-spacing: 0.2px;
         }
@@ -402,15 +392,15 @@
         .tiles-row.current-lesson-row .tile-subject.empty-tile { background: #edf2f7; border-color: #a0aec0; }
 
         /* ==========================================
-           СТАТУСБАР ПЕРЕМЕНЫ — промежутки +4px
+           СТАТУСБАР ПЕРЕМЕНЫ — 100 СЕГМЕНТОВ
            ========================================== */
         .tiles-break-row {
             display: flex;
             flex-direction: column;
             gap: 0;
             flex-shrink: 0;
-            min-height: 10px;   /* было 6px → +4px */
-            max-height: 10px;
+            min-height: 9px;
+            max-height: 9px;
             border-radius: 0;
             background: transparent;
             box-shadow: none;
@@ -423,13 +413,13 @@
         }
 
         .tiles-break-row.current-break-row {
-            min-height: 30px;   /* было 26px → +4px */
-            max-height: 30px;
-            border-radius: 5px;
+            min-height: 32px;
+            max-height: 32px;
+            border-radius: 6px;
             background: rgba(113, 128, 150, 0.08);
             box-shadow: 0 0 0 1.5px rgba(113, 128, 150, 0.35) inset;
-            margin: 1px 0;
-            padding: 2px 6px 3px;
+            margin: 2px 0;
+            padding: 2px 6px 4px;
         }
 
         .break-top {
@@ -474,7 +464,7 @@
         .break-seg {
             flex: 1 1 0;
             min-width: 0;
-            height: 6px;
+            height: 8px;
             background: rgba(113, 128, 150, 0.10);
             border: 1px solid rgba(113, 128, 150, 0.18);
             border-radius: 1px;
@@ -488,7 +478,7 @@
 
         .tiles-break-row.current-break-row .break-top .break-time { color: #2d3748; font-size: 8px; }
         .tiles-break-row.current-break-row .break-top .break-percent { color: #2d3748; font-size: 9px; }
-        .tiles-break-row.current-break-row .break-seg { height: 10px; }  /* +2px для заполнения высокой строки */
+        .tiles-break-row.current-break-row .break-seg { height: 10px; }
         .tiles-break-row.current-break-row .break-seg.on {
             background: linear-gradient(180deg, #4a5568, #2d3748);
             border-color: #2d3748;
@@ -504,65 +494,43 @@
             box-shadow: none;
         }
 
-        /* Мобильная адаптация */
         @media (max-width: 700px) {
-            .header { min-height: 24px; max-height: 24px; gap: 4px; padding: 1px 3px; }
-            .header-center { gap: 4px; }
-            .period .line1 { font-size: 8px; }
-            .period .line2 { font-size: 7px; }
-            .analog-clock { width: 16px; height: 16px; }
-            .clock-info .digital-time { font-size: 6px; }
-            .clock-info .date { font-size: 4px; }
-            .clock-info .day-name { font-size: 4px; }
-
-            .tiles-header-row .tile-header { font-size: 7px; padding: 2px 1px; }
-            .tiles-header-row .tile-header:first-child { flex: 0 0 26px; min-width: 26px; max-width: 26px; font-size: 7px; }
-            .tile-number { flex: 0 0 26px; min-width: 26px; max-width: 26px; font-size: 9px; }
-            .tile-subject { padding: 1px 2px; min-height: 24px; }
+            .tiles-header-row .tile-header { font-size: 7px; padding: 3px 1px; }
+            .tiles-header-row .tile-header:first-child { flex: 0 0 28px; min-width: 28px; max-width: 28px; font-size: 7px; }
+            .tile-number { flex: 0 0 28px; min-width: 28px; max-width: 28px; font-size: 9px; }
+            .tile-subject { padding: 2px 2px; min-height: 30px; }
             .tile-subject .subject-name { font-size: 7px; }
             .tile-subject .subject-room { font-size: 6px; }
-            .tiles-grid { gap: 1.5px; }
-            .tiles-row { gap: 1.5px; }
-            .tiles-break-row { min-height: 9px; max-height: 9px; }
-            .tiles-break-row.current-break-row { min-height: 28px; max-height: 28px; margin: 1px 0; padding: 2px 4px 3px; }
+            .tiles-grid { gap: 2px; }
+            .tiles-row { gap: 2px; }
+            .tiles-break-row { min-height: 7px; max-height: 7px; }
+            .tiles-break-row.current-break-row { min-height: 28px; max-height: 28px; margin: 1.5px 0; padding: 2px 4px 3px; }
             .break-top .break-time,
             .break-top .break-percent { font-size: 6px; }
             .tiles-break-row.current-break-row .break-top .break-time { font-size: 7px; }
             .tiles-break-row.current-break-row .break-top .break-percent { font-size: 8px; }
             .break-segments { gap: 0.5px; margin-top: 2px; }
-            .break-seg { height: 5px; border-radius: 1px; }
-            .tiles-break-row.current-break-row .break-seg { height: 9px; }
-
-            .top-notification { font-size: 6px; padding: 3px 10px; }
+            .break-seg { height: 6px; border-radius: 1px; }
+            .tiles-break-row.current-break-row .break-seg { height: 8px; }
         }
 
         @media (max-width: 480px) {
-            .header { min-height: 22px; max-height: 22px; }
-            .period .line1 { font-size: 7px; }
-            .period .line2 { font-size: 6px; }
-            .analog-clock { width: 14px; height: 14px; }
-            .clock-info .digital-time { font-size: 5.5px; }
-            .clock-info .date { display: none; }
-            .clock-info .day-name { font-size: 3.5px; }
-
             .tiles-header-row .tile-header { font-size: 6px; padding: 2px 0; }
             .tiles-header-row .tile-header:first-child { flex: 0 0 22px; min-width: 22px; max-width: 22px; font-size: 6px; }
             .tile-number { flex: 0 0 22px; min-width: 22px; max-width: 22px; font-size: 8px; }
-            .tile-subject { padding: 1px 1px; min-height: 20px; }
+            .tile-subject { padding: 2px 1px; min-height: 26px; }
             .tile-subject .subject-name { font-size: 6px; }
             .tile-subject .subject-room { font-size: 5.5px; }
             .tiles-row.current-lesson-row { box-shadow: 0 0 0 1.5px #2d3748 inset; }
-            .tiles-break-row { min-height: 8px; max-height: 8px; }
-            .tiles-break-row.current-break-row { min-height: 26px; max-height: 26px; margin: 1px 0; padding: 1px 3px 2px; }
+            .tiles-break-row { min-height: 6px; max-height: 6px; }
+            .tiles-break-row.current-break-row { min-height: 24px; max-height: 24px; margin: 1px 0; padding: 1px 3px 2px; }
             .break-top .break-time,
             .break-top .break-percent { font-size: 5.5px; }
             .tiles-break-row.current-break-row .break-top .break-time { font-size: 6.5px; }
             .tiles-break-row.current-break-row .break-top .break-percent { font-size: 7px; }
             .break-segments { gap: 0.5px; margin-top: 2px; }
-            .break-seg { height: 4px; border-radius: 1px; }
-            .tiles-break-row.current-break-row .break-seg { height: 8px; }
-
-            .top-notification { font-size: 6px; padding: 3px 8px; }
+            .break-seg { height: 5px; border-radius: 1px; }
+            .tiles-break-row.current-break-row .break-seg { height: 7px; }
         }
 
         /* ============================
@@ -573,7 +541,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 18px;
+            min-height: 20px;
             color: #a0aec0;
             text-align: center;
             border-top: 1px solid #e2e8f0;
@@ -686,7 +654,7 @@
             .tiles-grid { overflow: visible !important; height: auto !important; }
             .tiles-row.past-lesson-row { opacity: 1 !important; filter: none !important; }
             .period.past-period { opacity: 1 !important; filter: none !important; }
-            .tiles-break-row.current-break-row { min-height: 13px !important; max-height: 13px !important; background: transparent !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
+            .tiles-break-row.current-break-row { min-height: 9px !important; max-height: 9px !important; background: transparent !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
         }
     </style>
 </head>
@@ -700,23 +668,14 @@
             <div class="header-left"></div>
 
             <div class="header-center">
+                <span class="day-indicator" id="dayIndicator">ПН</span>
+                <span class="divider">|</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
             </div>
 
-            <div class="header-clock" id="headerClock" aria-label="Текущее время">
-                <svg class="analog-clock" viewBox="0 0 40 40" role="img" aria-hidden="true">
-                    <circle class="face" cx="20" cy="20" r="18"/>
-                    <g id="clockTicks"></g>
-                    <line class="hand-hour"   id="handHour"   x1="20" y1="20" x2="20" y2="11"/>
-                    <line class="hand-minute" id="handMinute" x1="20" y1="20" x2="20" y2="7"/>
-                    <line class="hand-second" id="handSecond" x1="20" y1="20" x2="20" y2="6"/>
-                    <circle class="center-dot" cx="20" cy="20" r="1.6"/>
-                </svg>
-                <div class="clock-info">
-                    <span class="digital-time" id="digitalTime">--:--</span>
-                    <span class="date" id="clockDate">--.--.----</span>
-                    <span class="day-name" id="clockDay">—</span>
-                </div>
+            <div class="header-right">
+                <!-- ⭐ Цифровые часы → день → дата: контейнер, логика в oclock.js -->
+                <div id="clockContainer"></div>
             </div>
         </header>
 
@@ -748,6 +707,9 @@
         <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
     </div>
 
+    <!-- ⭐ Цифровые часы вынесены в отдельный файл oclock.js -->
+    <script src="oclock.js"></script>
+
     <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
     <script type="text/javascript">
        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -769,7 +731,7 @@
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.3.23';
+        var APP_VERSION = '4.3.19';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10", break: "10" },
             { num: 2, start: "09:20", end: "10:00", break: "10" },
@@ -813,71 +775,6 @@
             requestAnimationFrame(function() { el.classList.add('show'); });
             clearTimeout(notificationTimeout);
             notificationTimeout = setTimeout(function() { el.classList.remove('show'); }, 4000);
-        }
-
-        // ================================================================
-        // ЧАСЫ
-        // ================================================================
-        var CLOCK_TICKS_DRAWN = false;
-
-        function drawClockTicks() {
-            if (CLOCK_TICKS_DRAWN) return;
-            var g = document.getElementById('clockTicks');
-            if (!g) return;
-            var svgNS = 'http://www.w3.org/2000/svg';
-            for (var i = 0; i < 12; i++) {
-                var angle = (i * 30) * Math.PI / 180;
-                var isMajor = (i % 3 === 0);
-                var r1 = isMajor ? 13.5 : 14.5;
-                var r2 = 17;
-                var x1 = 20 + Math.sin(angle) * r1;
-                var y1 = 20 - Math.cos(angle) * r1;
-                var x2 = 20 + Math.sin(angle) * r2;
-                var y2 = 20 - Math.cos(angle) * r2;
-                var line = document.createElementNS(svgNS, 'line');
-                line.setAttribute('x1', x1.toFixed(2));
-                line.setAttribute('y1', y1.toFixed(2));
-                line.setAttribute('x2', x2.toFixed(2));
-                line.setAttribute('y2', y2.toFixed(2));
-                line.setAttribute('class', isMajor ? 'tick tick-major' : 'tick');
-                g.appendChild(line);
-            }
-            CLOCK_TICKS_DRAWN = true;
-        }
-
-        function updateClock() {
-            var now = new Date();
-            var h = now.getHours();
-            var m = now.getMinutes();
-            var s = now.getSeconds();
-
-            var dt = document.getElementById('digitalTime');
-            if (dt) dt.textContent = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
-
-            var dateEl = document.getElementById('clockDate');
-            if (dateEl) {
-                var dd = now.getDate();
-                var mm = now.getMonth() + 1;
-                var yyyy = now.getFullYear();
-                dateEl.textContent = (dd < 10 ? '0' + dd : dd) + '.' + (mm < 10 ? '0' + mm : mm) + '.' + yyyy;
-            }
-
-            var dayEl = document.getElementById('clockDay');
-            if (dayEl) {
-                var dayFull = DAYS_FULL[now.getDay()] || '';
-                dayEl.textContent = dayFull;
-            }
-
-            var hourAngle = ((h % 12) + m / 60 + s / 3600) * 30;
-            var minuteAngle = (m + s / 60) * 6;
-            var secondAngle = s * 6;
-
-            var handHour = document.getElementById('handHour');
-            var handMinute = document.getElementById('handMinute');
-            var handSecond = document.getElementById('handSecond');
-            if (handHour)   handHour.setAttribute('transform',   'rotate(' + hourAngle.toFixed(2) + ' 20 20)');
-            if (handMinute) handMinute.setAttribute('transform', 'rotate(' + minuteAngle.toFixed(2) + ' 20 20)');
-            if (handSecond) handSecond.setAttribute('transform', 'rotate(' + secondAngle.toFixed(2) + ' 20 20)');
         }
 
         // ================================================================
@@ -1292,6 +1189,12 @@
                 if (currentLesson < 0) currentLesson = 0;
             }
 
+            var dayDisplay = displayDay.full;
+            if (displayDay.isTomorrow) {
+                dayDisplay = 'Завтра, ' + dayDisplay;
+            }
+            document.getElementById('dayIndicator').textContent = dayDisplay;
+
             var periodEl = document.getElementById('currentPeriod');
             periodEl.innerHTML = getPeriodName();
             if (isPeriodPast()) {
@@ -1502,9 +1405,12 @@
         // ИНИЦИАЛИЗАЦИЯ
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            drawClockTicks();
-            updateClock();
-            setInterval(updateClock, 1000);
+            // ⭐ Часы инициализируются из oclock.js
+            if (typeof initClock === 'function') {
+                initClock('clockContainer');
+            } else {
+                console.warn('oclock.js не загружен!');
+            }
 
             window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
@@ -1529,11 +1435,10 @@
             document.addEventListener('visibilitychange', function() {
                 if (!document.hidden) {
                     refreshAll();
-                    updateClock();
                 }
             });
 
-            console.log('✅ Расписание v' + APP_VERSION + ' (+4px перемены, −4px карточки) загружено!');
+            console.log('✅ Расписание v' + APP_VERSION + ' (100 сегментов перемены) загружено!');
             console.log('ℹ️ Автообновление данных: только в 16:00');
         });
     </script>
