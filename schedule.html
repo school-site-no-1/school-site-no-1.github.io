@@ -619,7 +619,8 @@
   const scheduleState = {
     teachers: null, teachersLoaded: false, schedules: {},
     loading: false, currentId: null, currentEntry: null,
-    activeDays: loadActiveDays()
+    activeDays: loadActiveDays(),
+    lastStateKey: ''
   };
 
   function setScheduleStatus(text, type = '') {
@@ -715,10 +716,24 @@
     // Текущее время для определения активного урока
     const nowMin = getCurrentMinutes();
     let currentLessonNum = 0;
+    let currentBreakIndex = -1;
+
     for (let i = 1; i <= 9; i++) {
       if (LESSON_TIMES[i]) {
         if (nowMin >= parseTime(LESSON_TIMES[i].start) && nowMin < parseTime(LESSON_TIMES[i].end)) {
           currentLessonNum = i;
+          break;
+        }
+      }
+    }
+
+    // Проверка на перемену (если урок не идёт)
+    if (currentLessonNum === 0) {
+      for (let i = 1; i < 9; i++) {
+        const prevEnd = parseTime(LESSON_TIMES[i].end);
+        const nextStart = parseTime(LESSON_TIMES[i+1].start);
+        if (nowMin >= prevEnd && nowMin < nextStart) {
+          currentBreakIndex = i;
           break;
         }
       }
@@ -833,7 +848,7 @@
               const isCurrent = nowM >= parseTime(prevLessonEnd) && nowM < parseTime(t.start);
               
               // Показываем блок только если перемена идёт прямо сейчас
-              if (isCurrent) {
+              if (isCurrent && day === autoDay) {
                 const prog = getProgress(prevLessonEnd, t.start);
                 
                 // Вычисляем сколько осталось до конца перемены
@@ -915,8 +930,41 @@
     }
   }
 
-  // ============ ТАЙМЕР ОБНОВЛЕНИЯ ПРОГРЕСС-БАРОВ И ОБРАТНОГО ОТСЧЕТА ============
+  // ============ АВТООБНОВЛЕНИЕ (ПЕРЕРИСОВКА ПРИ СМЕНЕ УРОКА/ПЕРЕМЕНЫ) ============
   function updateProgressBars() {
+    // Вычисляем текущий статус (урок или перемена)
+    const nowMin = getCurrentMinutes();
+    let currentState = 'none';
+    
+    for (let i = 1; i <= 9; i++) {
+      if (LESSON_TIMES[i]) {
+        if (nowMin >= parseTime(LESSON_TIMES[i].start) && nowMin < parseTime(LESSON_TIMES[i].end)) {
+          currentState = 'lesson_' + i;
+          break;
+        }
+      }
+    }
+    
+    if (currentState === 'none') {
+      for (let i = 1; i < 9; i++) {
+        const prevEnd = parseTime(LESSON_TIMES[i].end);
+        const nextStart = parseTime(LESSON_TIMES[i+1].start);
+        if (nowMin >= prevEnd && nowMin < nextStart) {
+          currentState = 'break_' + i;
+          break;
+        }
+      }
+    }
+
+    // Если состояние изменилось (перемена -> урок или урок -> перемена), перерисовываем
+    if (currentState !== scheduleState.lastStateKey) {
+      scheduleState.lastStateKey = currentState;
+      if (scheduleState.currentEntry) {
+        renderSchedule(scheduleState.currentEntry);
+      }
+      return; // После перерисовки не нужно обновлять полоски, они создались заново
+    }
+
     // Обновляем прогресс-бары уроков
     document.querySelectorAll('.lesson-progress-bar').forEach(bar => {
       const start = bar.dataset.start;
