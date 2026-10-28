@@ -75,22 +75,22 @@
       "lesson": 1,
       "class": "7В",
       "subject": "ДКП",
-      "room": "310"
+      "room": "205"
     },
     {
       "lesson": 3,
       "class": "6А",
       "subject": "ДКП",
-      "room": "310"
+      "room": "205"
     },
     {
       "lesson": 7,
       "class": "7А",
       "subject": "ДКП",
-      "room": "310"
+      "room": "304"
     }
   ],
   "ПТ": [],
   "СБ": [],
-  "last_update": "2026-10-28 11:34:03"
+  "last_update": "2026-10-28 13:17:12"
 }
