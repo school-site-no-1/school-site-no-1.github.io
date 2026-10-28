@@ -27,9 +27,18 @@
     line-height: 1.5;
     padding: 24px 16px 40px;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
-  .container { max-width: 1100px; width: 100%; margin: 0 auto; }
+  .container { 
+    max-width: 1100px; 
+    width: 100%; 
+    margin: 0 auto; 
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 
   /* ===== ПАНЕЛЬ ТЕСТИРОВАНИЯ ===== */
   .test-panel {
@@ -37,6 +46,7 @@
     border: 2px dashed #cbd5e0;
     border-radius: 12px;
     padding: 12px 16px;
+    margin-top: 30px;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
@@ -44,6 +54,11 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
   }
+  
+  .test-panel.hidden {
+    display: none;
+  }
+
   .test-panel-header {
     display: flex;
     justify-content: space-between;
@@ -130,7 +145,7 @@
   }
   .test-panel-status.active { display: block; }
 
-  /* ===== ВКЛАДКИ (ДЕСКТОП) ===== */
+  /* ===== ВКЛАДКИ ===== */
   .tabs-nav {
     display: flex;
     gap: 6px;
@@ -187,7 +202,7 @@
     min-height: 500px;
   }
 
-  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ (КВАДРАТИКИ) ======================= */
+  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
   @media (max-width: 768px) {
     body { padding: 14px 10px 30px; }
     
@@ -195,10 +210,9 @@
     .slider-group label { min-width: 0; }
     .slider-value { text-align: left; }
 
-    /* Вкладки в один ряд (6 колонок) */
     .tabs-nav {
       display: grid;
-      grid-template-columns: repeat(6, 1fr); /* 6 плиток в ряд */
+      grid-template-columns: repeat(7, 1fr);
       gap: 4px;
       border-bottom: none;
       margin-bottom: 16px;
@@ -214,8 +228,8 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       margin-bottom: 0;
-      min-height: 70px; /* Чуть меньше высота, чтобы влезло */
-      font-size: 0.65rem;
+      min-height: 70px;
+      font-size: 0.6rem;
       color: var(--text-soft);
       text-align: center;
       line-height: 1.1;
@@ -223,7 +237,7 @@
       transition: all 0.2s ease;
     }
     .tab-btn .tab-icon {
-      font-size: 18px; /* Уменьшили иконки */
+      font-size: 18px;
       line-height: 1;
     }
     .tab-btn.active {
@@ -241,33 +255,6 @@
 
 <div class="container">
 
-  <!-- ===== ПАНЕЛЬ СИМУЛЯЦИИ ВРЕМЕНИ ===== -->
-  <div class="test-panel collapsed" id="testPanel">
-    <div class="test-panel-header" id="testPanelHeader">
-      <div class="test-panel-title">🛠 Тест: Машина времени</div>
-      <div class="test-panel-controls" onclick="event.stopPropagation();">
-        <button id="resetTestBtn" class="btn-reset">Сбросить</button>
-        <button id="toggleTestBtn">Развернуть</button>
-      </div>
-    </div>
-    
-    <div class="test-panel-body" id="testPanelBody">
-      <div class="slider-group">
-        <label for="sliderDay">День недели:</label>
-        <input type="range" id="sliderDay" min="0" max="6" step="1" value="1">
-        <div class="slider-value" id="valDay">Понедельник</div>
-      </div>
-      
-      <div class="slider-group">
-        <label for="sliderTime">Время:</label>
-        <input type="range" id="sliderTime" min="480" max="990" step="1" value="480">
-        <div class="slider-value" id="valTime">08:00</div>
-      </div>
-
-      <div class="test-panel-status" id="testStatus">⚠️ Включена симуляция времени!</div>
-    </div>
-  </div>
-
   <!-- ===== ВКЛАДКИ ===== -->
   <div class="tabs-nav">
     <button class="tab-btn active" data-tab="schedule">
@@ -277,6 +264,10 @@
     <button class="tab-btn" data-tab="lessons">
       <span class="tab-icon">📚</span>
       <span class="tab-text">Темы</span>
+    </button>
+    <button class="tab-btn" data-tab="pdf">
+      <span class="tab-icon">📄</span>
+      <span class="tab-text">Замены</span>
     </button>
     <button class="tab-btn" data-tab="tiles">
       <span class="tab-icon">🧩</span>
@@ -310,10 +301,17 @@
     </div>
   </div>
 
+  <!-- ======================= ЗАМЕНЫ ИЗ PDF ======================= -->
+  <div class="tab-content" id="pdf">
+    <div class="iframe-wrap">
+      <iframe id="pdfFrame" src="mi.html" scrolling="no" title="Замены из PDF"></iframe>
+    </div>
+  </div>
+
   <!-- ======================= РАСПИСАНИЕ (ПЛИТКИ) ======================= -->
   <div class="tab-content" id="tiles">
     <div class="iframe-wrap">
-      <iframe id="tilesFrame" src="tiles.html" scrolling="no" title="Расписание плитками"></iframe>
+      <iframe id="tilesFrame" src="index.html" scrolling="no" title="Расписание плитками"></iframe>
     </div>
   </div>
 
@@ -338,13 +336,52 @@
     </div>
   </div>
 
+  <!-- ===== ПАНЕЛЬ СИМУЛЯЦИИ ВРЕМЕНИ ===== -->
+  <div class="test-panel collapsed" id="testPanel">
+    <div class="test-panel-header" id="testPanelHeader">
+      <div class="test-panel-title">🛠 Тест: Машина времени</div>
+      <div class="test-panel-controls" onclick="event.stopPropagation();">
+        <button id="resetTestBtn" class="btn-reset">Сбросить</button>
+        <button id="toggleTestBtn">Развернуть</button>
+      </div>
+    </div>
+    
+    <div class="test-panel-body" id="testPanelBody">
+      <div class="slider-group">
+        <label for="sliderDay">День недели:</label>
+        <input type="range" id="sliderDay" min="0" max="6" step="1" value="1">
+        <div class="slider-value" id="valDay">Понедельник</div>
+      </div>
+      
+      <div class="slider-group">
+        <label for="sliderTime">Время:</label>
+        <input type="range" id="sliderTime" min="480" max="990" step="1" value="480">
+        <div class="slider-value" id="valTime">08:00</div>
+      </div>
+
+      <div class="test-panel-status" id="testStatus">⚠️ Включена симуляция времени!</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
   /* ============================================================
-     МАШИНА ВРЕМЕНИ
+     УПРАВЛЕНИЕ ВИДИМОСТЬЮ ПАНЕЛИ ТЕСТИРОВАНИЯ
      ============================================================ */
   const testPanel = document.getElementById('testPanel');
+
+  function updateTestPanelVisibility(activeTabId) {
+    if (activeTabId === 'schedule') {
+      testPanel.classList.remove('hidden');
+    } else {
+      testPanel.classList.add('hidden');
+    }
+  }
+
+  /* ============================================================
+     МАШИНА ВРЕМЕНИ
+     ============================================================ */
   const testPanelHeader = document.getElementById('testPanelHeader');
   const toggleTestBtn = document.getElementById('toggleTestBtn');
   const testPanelBody = document.getElementById('testPanelBody');
@@ -468,6 +505,8 @@
     tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
     tabContents.forEach(c => c.classList.toggle('active', c.id === tabId));
     localStorage.setItem('school_current_tab', tabId);
+    
+    updateTestPanelVisibility(tabId);
   }
 
   tabBtns.forEach(btn => {
