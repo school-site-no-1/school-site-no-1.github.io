@@ -283,7 +283,7 @@
 
 <!-- 📅 Фильтр по дням недели (сверху) -->
 <div class="day-filter" id="dayFilter">
-  <button class="active" data-day="Пн">Пн</button>
+  <button data-day="Пн">Пн</button>
   <button data-day="Вт">Вт</button>
   <button data-day="Ср">Ср</button>
   <button data-day="Чт">Чт</button>
@@ -380,7 +380,17 @@ let tempTimes = null;
 let tempNames = null;
 let activeTab = 'lessons';
 let currentPin = null;
-let selectedDay = 'Пн'; // Текущий выбранный день для фильтра
+
+// ⭐ Определяем текущий день недели
+let selectedDay = 'Пн';
+const nowDay = new Date().getDay(); // 0 - Вс, 1 - Пн ...
+const dayMapJS = { 1: 'Пн', 2: 'Вт', 3: 'Ср', 4: 'Чт', 5: 'Пт' };
+if (dayMapJS[nowDay]) {
+  selectedDay = dayMapJS[nowDay];
+} else {
+  // Если сегодня выходной (Сб/Вс), показываем Пн
+  selectedDay = 'Пн';
+}
 
 // ============ СТАТУС ============
 function setStatus(msg, type) {
@@ -402,14 +412,15 @@ function showDateBanner(dateStr) {
 }
 
 // ============ ФИЛЬТР ПО ДНЯМ ============
+// Устанавливаем активную кнопку при загрузке
 document.querySelectorAll('#dayFilter button').forEach(btn => {
+  if (btn.dataset.day === selectedDay) {
+    btn.classList.add('active');
+  }
   btn.addEventListener('click', () => {
-    // Снять активность со всех
     document.querySelectorAll('#dayFilter button').forEach(b => b.classList.remove('active'));
-    // Установить текущую
     btn.classList.add('active');
     selectedDay = btn.dataset.day;
-    // Перерисовать расписание
     renderSchedule();
   });
 });
