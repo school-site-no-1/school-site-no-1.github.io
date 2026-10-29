@@ -123,18 +123,30 @@
   ],
   "ПТ": [
     {
-      "lesson": 2,
+      "lesson": 3,
       "class": "7В",
       "subject": "Труд",
       "room": "112"
     },
     {
-      "lesson": 3,
+      "lesson": 4,
       "class": "7В",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 5,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "112"
+    },
+    {
+      "lesson": 6,
+      "class": "7А",
       "subject": "Труд",
       "room": "112"
     }
   ],
   "СБ": [],
-  "last_update": "2026-10-29 07:06:49"
+  "last_update": "2026-10-29 11:47:57"
 }
