@@ -150,7 +150,7 @@
         }
 
         /* ============================
-           ЦИФРОВЫЕ ЧАСЫ (родной Segoe UI, без дрожания)
+           ЦИФРОВЫЕ ЧАСЫ (Решение 1: фиксированная ширина в px)
            ============================ */
         #clockContainer {
             display: flex;
@@ -171,8 +171,10 @@
             letter-spacing: 0.5px;
             line-height: 1;
             display: inline-block;
-            min-width: 8.5ch;
+            width: 100px;              /* фиксированная ширина под HH:MM:SS */
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         /* День + дата — справа в шапке */
@@ -195,13 +197,13 @@
         }
 
         @media (max-width: 700px) {
-            #clockContainer .clock-time { font-size: 13.5px; min-width: 8.5ch; }
+            #clockContainer .clock-time { font-size: 13.5px; width: 82px; }
             .header-right .clock-day  { font-size: 9px; }
             .header-right .clock-date { font-size: 8.25px; }
         }
 
         @media (max-width: 480px) {
-            #clockContainer .clock-time { font-size: 12px; min-width: 8.5ch; }
+            #clockContainer .clock-time { font-size: 12px; width: 74px; }
             .header-right .clock-day  { font-size: 8.25px; }
             .header-right .clock-date { font-size: 7.5px; }
         }
@@ -762,19 +764,16 @@
             <h1 class="visually-hidden">Расписание уроков для 5–11 классов</h1>
             <div class="header-left"></div>
 
-            <!-- Левая колонка: период -->
             <div class="header-center">
                 <span class="day-indicator" id="dayIndicator">ПН</span>
                 <span class="divider">|</span>
                 <span class="period" id="currentPeriod" aria-live="off">Загрузка...</span>
             </div>
 
-            <!-- Центральная колонка: только время (двойной клик — машина времени) -->
             <div class="header-clock">
                 <div id="clockContainer" title="Двойной клик — машина времени"></div>
             </div>
 
-            <!-- Правая колонка: день недели + дата -->
             <div class="header-right" id="clockSubRight"></div>
         </header>
 
@@ -837,8 +836,7 @@
         </div>
     </div>
 
-    <!-- ⭐ Версия в URL сбрасывает кеш браузера -->
-    <script src="oclock.js?v=3.2.0"></script>
+    <script src="oclock.js?v=3.2.1"></script>
 
     <!-- ===== ЯНДЕКС.МЕТРИКА ===== -->
     <script type="text/javascript">

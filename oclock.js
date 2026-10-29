@@ -1,33 +1,46 @@
 /**
- * oclock.js — цифровые часы + день недели + дата в одну строку
- * Версия: 3.0.0
+ * oclock.js — цифровые часы + день недели + дата
+ * Версия: 3.2.1
  *
- * Порядок: ЧЧ:ММ:СС → Понедельник → ДД.ММ.ГГГГ
+ * Время (ЧЧ:ММ:СС) → #clockContainer (по центру шапки)
+ * День недели + дата → #clockSubRight (справа в шапке)
  *
  * Подключение:
  *   <div id="clockContainer"></div>
- *   <script src="oclock.js"></script>
- *   initClock('clockContainer');
+ *   <div id="clockSubRight"></div>
+ *   <script src="oclock.js?v=3.2.1"></script>
+ *   initClock('clockContainer', 'clockSubRight');
  */
 
 (function (global) {
     'use strict';
 
     var DAY_NAMES_FULL = [
-        'Воскресенье', // 0
-        'Понедельник', // 1
-        'Вторник',     // 2
-        'Среда',       // 3
-        'Четверг',     // 4
-        'Пятница',     // 5
-        'Суббота'      // 6
+        'Воскресенье',
+        'Понедельник',
+        'Вторник',
+        'Среда',
+        'Четверг',
+        'Пятница',
+        'Суббота'
     ];
 
     var _intervalId = null;
-    var _containerId = null;
+    var _clockId = null;
+    var _subId = null;
+    var _offsetMs = 0;
+    var _freezeTime = false;
+    var _frozenTime = null;
 
     function pad2(n) {
         return n < 10 ? '0' + n : String(n);
+    }
+
+    function getNow() {
+        if (_freezeTime && _frozenTime !== null) {
+            return new Date(_frozenTime);
+        }
+        return new Date(Date.now() + _offsetMs);
     }
 
     function formatTime(d) {
@@ -42,25 +55,46 @@
         return DAY_NAMES_FULL[d.getDay()] || '—';
     }
 
-    function tick(container) {
-        var d = new Date();
+    function tick() {
+        var d = getNow();
 
-        var timeEl = container.querySelector('.clock-time');
-        var dayEl  = container.querySelector('.clock-day');
-        var dateEl = container.querySelector('.clock-date');
+        var clockContainer = document.getElementById(_clockId);
+        if (clockContainer) {
+            var timeEl = clockContainer.querySelector('.clock-time');
+            if (timeEl) {
+                var t = formatTime(d);
+                if (timeEl.textContent !== t) timeEl.textContent = t;
+            }
+        }
 
-        if (timeEl) timeEl.textContent = formatTime(d);
-        if (dayEl)  dayEl.textContent  = getDayFull(d);
-        if (dateEl) dateEl.textContent = formatDate(d);
+        var subRight = document.getElementById(_subId);
+        if (subRight) {
+            var dayEl  = subRight.querySelector('.clock-day');
+            var dateEl = subRight.querySelector('.clock-date');
+            if (dayEl) {
+                var dayText = getDayFull(d);
+                if (dayEl.textContent !== dayText) dayEl.textContent = dayText;
+            }
+            if (dateEl) {
+                var dateText = formatDate(d);
+                if (dateEl.textContent !== dateText) dateEl.textContent = dateText;
+            }
+        }
     }
 
-    function initClock(containerId) {
-        var id = containerId || 'clockContainer';
-        var container = document.getElementById(id);
+    function initClock(clockContainerId, subRightId) {
+        var clockId = clockContainerId || 'clockContainer';
+        var subId = subRightId || 'clockSubRight';
 
-        if (!container) {
-            console.warn('oclock.js: контейнер #' + id + ' не найден');
+        var clockContainer = document.getElementById(clockId);
+        var subRight = document.getElementById(subId);
+
+        if (!clockContainer) {
+            console.warn('oclock.js: контейнер #' + clockId + ' не найден');
             return null;
+        }
+        if (!subRight) {
+            console.warn('oclock.js: контейнер #' + subId + ' не найден');
         }
 
         if (_intervalId !== null) {
@@ -68,42 +102,62 @@
             _intervalId = null;
         }
 
-        _containerId = id;
+        _clockId = clockId;
+        _subId = subId;
 
-        // ⭐ Порядок: часы → день недели (полностью) → дата
-        container.innerHTML =
-            '<div class="clock-line">' +
-                '<span class="clock-time">--:--:--</span>' +
+        clockContainer.innerHTML =
+            '<span class="clock-time">--:--:--</span>';
+
+        if (subRight) {
+            subRight.innerHTML =
                 '<span class="clock-day">—</span>' +
-                '<span class="clock-date">--.--.----</span>' +
-            '</div>';
+                '<span class="clock-date">--.--.----</span>';
+        }
 
-        tick(container);
+        tick();
 
-        _intervalId = setInterval(function () {
-            var c = document.getElementById(_containerId);
-            if (c) {
-                tick(c);
-            } else {
-                if (_intervalId !== null) {
-                    clearInterval(_intervalId);
-                    _intervalId = null;
-                }
-            }
-        }, 1000);
+        _intervalId = setInterval(tick, 1000);
 
-        return container;
+        return clockContainer;
     }
 
     global.initClock = initClock;
 
     global.__clockModule = {
         init: initClock,
+
         stop: function () {
             if (_intervalId !== null) {
                 clearInterval(_intervalId);
                 _intervalId = null;
             }
+        },
+
+        setTimeOffset: function (ms) {
+            _offsetMs = Number(ms) || 0;
+            _freezeTime = false;
+            _frozenTime = null;
+            tick();
+        },
+
+        freezeAt: function (timestampMs) {
+            _freezeTime = true;
+            _frozenTime = Number(timestampMs) || Date.now();
+            tick();
+        },
+
+        unfreeze: function () {
+            _freezeTime = false;
+            _frozenTime = null;
+            tick();
+        },
+
+        getTimeOffset: function () {
+            return _offsetMs;
+        },
+
+        isFrozen: function () {
+            return _freezeTime;
         }
     };
 
