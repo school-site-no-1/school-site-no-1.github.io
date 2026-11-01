@@ -5,6 +5,8 @@ const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
 const MAX_LEN       = 150;
 
+// Оставляем прокси для генерации ответов (если нужно), 
+// но проверка на мат теперь локальная.
 const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -34,44 +36,27 @@ async function fetchWithTimeout(url, options, timeoutMs = 15000) {
   }
 }
 
-// ==== 4. Запрос к DeepSeek (проверка на мат) ====
-async function askDeepSeek(prompt, maxTokens = 10) {
-  try {
-    const response = await fetchWithTimeout(DEEPSEEK_PROXY, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.1,
-        max_tokens: maxTokens
-      })
-    }, 8000);
+// ==== 4. ЛОКАЛЬНАЯ проверка на мат (БЕСПЛАТНО) ====
+// Список нецензурных слов (дополните по необходимости)
+const BAD_WORDS = [
+  'хуй', 'хуя', 'хую', 'хуе', 'пизд', 'бля', 'бляд', 'ебал', 'ебет', 'ебут', 
+  'еби', 'ебан', 'ебат', 'сука', 'суки', 'мудак', 'мудил', 'залуп', 'дроч', 
+  'fuck', 'shit', 'bitch', 'cunt', 'asshole'
+];
 
-    if (!response || !response.ok) return null;
-    const data = await response.json();
-    if (data.choices && data.choices[0]) return data.choices[0].message.content;
-    return null;
-  } catch (error) {
-    console.error('DeepSeek error:', error);
-    return null;
-  }
+function checkProfanity(nickname, text) {
+  const lowerNick = nickname.toLowerCase();
+  const lowerText = text.toLowerCase();
+  
+  // Проверяем, содержит ли имя или текст запрещенные корни
+  const hasBadWord = BAD_WORDS.some(word => 
+    lowerNick.includes(word) || lowerText.includes(word)
+  );
+  
+  return hasBadWord;
 }
 
-// ==== 5. Проверка на мат ====
-async function checkProfanity(nickname, text) {
-  const prompt =
-    'Проверь ИМЯ и ТЕКСТ на наличие мата, нецензурных слов, оскорблений (русский и английский). ' +
-    'Ответь строго одним словом: ДА (если есть мат хотя бы где-то) или НЕТ (если чисто). ' +
-    'ИМЯ: "' + nickname.replace(/"/g, '') + '". ' +
-    'ТЕКСТ: "' + text.replace(/"/g, '') + '".';
-
-  const answer = await askDeepSeek(prompt, 10);
-  if (answer === null) return false;
-  return answer.trim().toUpperCase().startsWith('ДА');
-}
-
-// ==== 6. Запрос к Worker ====
+// ==== 5. Запрос к Worker (для ответов на вопросы) ====
 async function callTranslate(text, gender, mode, nickname) {
   try {
     const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
@@ -90,7 +75,7 @@ async function callTranslate(text, gender, mode, nickname) {
   }
 }
 
-// ==== 7. DOM ====
+// ==== 6. DOM ====
 const chatEl      = document.getElementById('chat');
 const reactionsEl = document.getElementById('reactions');
 const form        = document.getElementById('form');
@@ -113,7 +98,7 @@ genderEl.value = localStorage.getItem('gender') || '';
 nickEl.addEventListener('input',   () => localStorage.setItem('nick',   nickEl.value));
 genderEl.addEventListener('change', () => localStorage.setItem('gender', genderEl.value));
 
-// ==== 8. Счётчик символов ====
+// ==== 7. Счётчик символов ====
 function autoGrow() {
   textEl.style.height = 'auto';
   textEl.style.height = Math.min(textEl.scrollHeight, 90) + 'px';
@@ -156,7 +141,7 @@ textEl.addEventListener('keydown', (e) => {
 
 updateCharCounter();
 
-// ==== 9. Приветствие нового ученика (приватное) ====
+// ==== 8. Приветствие нового ученика (приватное) ====
 async function sendGreeting() {
   const gender   = genderEl.value || null;
   const nickname = nickEl.value.trim() || '';
@@ -245,7 +230,7 @@ setTimeout(() => {
   if (!greetingSent) trySendGreeting();
 }, 30000);
 
-// ==== 10. Загрузка вопроса ====
+// ==== 9. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
@@ -265,7 +250,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 11. История ====
+// ==== 10. История ====
 async function loadHistory() {
   const day = todayMoscow();
   const { data, error } = await db
@@ -278,7 +263,7 @@ async function loadHistory() {
   data.forEach(addMessageToChat);
 }
 
-// ==== 12. Realtime ====
+// ==== 11. Realtime ====
 const channel = db
   .channel('room:' + ROOM)
   .on(
@@ -322,7 +307,7 @@ db.channel('reactions-watch')
   )
   .subscribe();
 
-// ==== 13. Отрисовка ====
+// ==== 12. Отрисовка ====
 function addMessageToChat(row) {
   if (row.hidden) return;
   if (document.querySelector('[data-id="' + row.id + '"]')) return;
@@ -337,6 +322,7 @@ function addMessageToChat(row) {
     div.innerHTML = '<i>' + escapeHtml(row.ai_question) + '</i>';
   } else {
     div.className = 'msg';
+    // БЕЗОПАСНЫЙ ВЫВОД (экранируем HTML)
     div.innerHTML =
       '<b>' + escapeHtml(row.nickname) + '</b>: ' +
       escapeHtml(row.text).replace(/\n/g, '<br>');
@@ -372,7 +358,7 @@ async function getModPassword() {
   return modPassword;
 }
 
-// ==== 14. Отправка ====
+// ==== 13. Отправка ====
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -387,17 +373,14 @@ form.addEventListener('submit', async (e) => {
     updateCharCounter();
   }
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = '…';
-
-  console.log('Проверка на мат...');
-  const isBad = await checkProfanity(nickname, originalText);
-  if (isBad) {
+  // ЛОКАЛЬНАЯ ПРОВЕРКА НА МАТ (мгновенно и бесплатно)
+  if (checkProfanity(nickname, originalText)) {
     alert('Имя или сообщение содержит недопустимые слова.');
-    submitBtn.disabled = false;
-    submitBtn.textContent = '➤';
     return;
   }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = '…';
 
   const isQuestion = /[?]|^(что|как|почему|зачем|когда|где|кто|какой|какая|какие|сколько)/i.test(originalText);
 
@@ -445,7 +428,7 @@ form.addEventListener('submit', async (e) => {
   textEl.focus();
 });
 
-// ==== 15. Реакции ====
+// ==== 14. Реакции ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
@@ -493,7 +476,7 @@ async function loadReactionCounts() {
   renderReactionsStats();
 }
 
-// ==== 16. Presence + статистика посещений ====
+// ==== 15. Presence + статистика посещений ====
 let visitLogged = false;
 
 const presence = db.channel('presence:' + ROOM, {
@@ -532,7 +515,7 @@ presence
     }
   });
 
-// ==== 17. Модерация ====
+// ==== 16. Модерация ====
 async function refreshStats() {
   const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
   if (error || !data) return;
@@ -561,7 +544,7 @@ if (isModerator) {
   });
 }
 
-// ==== 18. Модалка пароля ====
+// ==== 17. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -586,14 +569,14 @@ function askPassword() {
   });
 }
 
-// ==== 19. Утилита ====
+// ==== 18. Утилита ====
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
 }
 
-// ==== 20. Автосброс в 00:00 ====
+// ==== 19. Автосброс в 00:00 ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -617,7 +600,7 @@ function scheduleReset() {
 
 scheduleReset();
 
-// ==== 21. Старт ====
+// ==== 20. Старт ====
 loadQuestion();
 loadHistory();
 loadReactionCounts();
