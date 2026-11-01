@@ -587,13 +587,13 @@
 
   function getAutoActiveDay() {
     if (simulatedDayIndex !== null) {
-      return DAYS_ORDER[simulatedDayIndex === 0 ? 6 : simulatedDayIndex - 1];
+      return DAYS_ORDER[simulatedDayIndex === 0 ? 0 : simulatedDayIndex - 1];
     }
     const now = new Date();
     const jsDay = now.getDay();
     const hours = now.getHours();
     let idx = jsDay === 0 ? 0 : jsDay - 1;
-    if (hours >= DAY_CUTOFF_HOUR) idx = (idx + 1) % DAYS_ORDER.length;
+    if (hours >= DAY_CUTOFF_HOUR && jsDay !== 0) idx = (idx + 1) % DAYS_ORDER.length;
     return DAYS_ORDER[idx];
   }
 
@@ -1081,3 +1081,4 @@
 
 </body>
 </html>
+```[cite: 1]
