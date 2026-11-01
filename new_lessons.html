@@ -266,7 +266,7 @@
     opacity: 0.7;
   }
 
-  /* Ссылка на материалы к уроку */
+  /* Ссылка на материалы */
   .content-link-box {
     margin-top: 10px;
     padding-top: 8px;
@@ -288,6 +288,41 @@
   .content-link-box a:hover {
     background: var(--accent);
     color: #fff;
+  }
+
+  /* Комментарии */
+  .comment-box {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .comment-box textarea {
+    width: 100%;
+    min-height: 64px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    background: #fff;
+    color: var(--text);
+  }
+  .comment-box textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(49,130,206,0.12);
+  }
+  .comment-status {
+    font-size: 0.75rem;
+    text-align: right;
+    min-height: 1.2em;
+    font-weight: 500;
+    color: var(--text-soft);
   }
 
   @keyframes fadeIn {
@@ -365,7 +400,6 @@
 <body>
 
 <div class="container">
-
   <div class="progress-card">
     <div class="progress-info">
       <div class="progress-label">Отмечено пройдено</div>
@@ -425,8 +459,8 @@
 
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbwA3FnrFzsCRsY9IVDUbLL2qAOl6Aduaam4bLgtUgINX0BLkmV8HmumNSev1VkdH9UuQA/exec';
-  const CACHE_KEY   = 'lessons_cache_v6';
-  const PENDING_KEY = 'lessons_pending_v6';
+  const CACHE_KEY   = 'lessons_cache_v7';
+  const PENDING_KEY = 'lessons_pending_v7';
 
   const todayStr = () => {
     const d = new Date();
@@ -445,7 +479,7 @@
     return s;
   }
 
-  const state = { lessons: [], saving: false };
+  let state = { lessons: [], comments: {} };
 
   function escapeHtml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -542,20 +576,62 @@
       });
       innerDiv.appendChild(ul);
 
-      // Блок со ссылкой на материалы к уроку
+      // Ссылка
       if (lesson.link && String(lesson.link).trim() !== '') {
         const linkBox = document.createElement('div');
         linkBox.className = 'content-link-box';
-
         const a = document.createElement('a');
         a.href = lesson.link.trim();
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.innerHTML = '🔗 Материалы к уроку';
-
         linkBox.appendChild(a);
         innerDiv.appendChild(linkBox);
       }
+
+      // Текстовое поле для комментария
+      const commentBox = document.createElement('div');
+      commentBox.className = 'comment-box';
+      
+      const textarea = document.createElement('textarea');
+      textarea.placeholder = 'Ваши заметки к уроку (что задали, что повторить)...';
+      textarea.value = state.comments[lesson.id] || '';
+      
+      const statusText = document.createElement('div');
+      statusText.className = 'comment-status';
+      
+      // Логика сохранения комментария при потере фокуса
+      textarea.addEventListener('change', async (e) => {
+        const val = e.target.value.trim();
+        statusText.textContent = 'Сохранение...';
+        statusText.style.color = 'var(--warning)';
+        
+        try {
+          state.comments[lesson.id] = val;
+          const marks = collectMarksFromUI();
+          writeCache({ lessons: state.lessons, marks: marks, comments: state.comments });
+
+          const resp = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'comment', id: lesson.id, text: val })
+          });
+          const result = await resp.json();
+          if (result.result === 'ok') {
+            statusText.textContent = '✓ Сохранено';
+            statusText.style.color = 'var(--success)';
+            setTimeout(() => statusText.textContent = '', 2500);
+          } else {
+            throw new Error('Server error');
+          }
+        } catch (err) {
+          statusText.textContent = '✗ Ошибка';
+          statusText.style.color = 'var(--danger)';
+        }
+      });
+
+      commentBox.appendChild(textarea);
+      commentBox.appendChild(statusText);
+      innerDiv.appendChild(commentBox);
 
       tdContent.appendChild(innerDiv);
       contentTr.appendChild(tdContent);
@@ -569,19 +645,12 @@
       const id = box.dataset.id;
       const dateInput = dateInputFor(id);
       const rawDate = marks[id];
-      
       if (rawDate) {
         box.checked = true;
-        if (dateInput) {
-          dateInput.value = normalizeDate(rawDate);
-          dateInput.disabled = false;
-        }
+        if (dateInput) { dateInput.value = normalizeDate(rawDate); dateInput.disabled = false; }
       } else {
         box.checked = false;
-        if (dateInput) {
-          dateInput.value = '';
-          dateInput.disabled = true;
-        }
+        if (dateInput) { dateInput.value = ''; dateInput.disabled = true; }
       }
     });
     updateUI();
@@ -604,6 +673,7 @@
 
     const cached = readCache();
     if (!force) {
+      if (cached.comments) state.comments = cached.comments;
       if (cached.lessons && cached.lessons.length) renderLessons(cached.lessons);
       if (cached.marks) applyMarksToUI(cached.marks);
       bindAllLessonEvents();
@@ -615,7 +685,8 @@
       const data = await resp.json();
       if (data.result !== 'ok') throw new Error(data.error || 'unknown');
 
-      writeCache({ lessons: data.lessons || [], marks: data.marks || {} });
+      state.comments = data.comments || {};
+      writeCache({ lessons: data.lessons || [], marks: data.marks || {}, comments: state.comments });
       renderLessons(data.lessons || []);
       applyMarksToUI(data.marks || {});
       bindAllLessonEvents();
@@ -631,34 +702,29 @@
   async function pushOneMark(id, date) {
     const resp = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ id, date })
     });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    if (!resp.ok) throw new Error('HTTP error');
     const data = await resp.json();
-    if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+    if (data.result !== 'ok') throw new Error('App error');
     return data;
   }
 
   function saveMark(id, date) {
     const marks = collectMarksFromUI();
-    writeCache({ lessons: state.lessons, marks });
+    writeCache({ lessons: state.lessons, marks, comments: state.comments });
 
     pushOneMark(id, date)
       .then(() => { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} })
-      .catch(err => {
-        console.warn('[sync] отложено:', err);
-        try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {}
-      });
+      .catch(err => { try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {} });
   }
 
   function saveAllMarks() {
     const marks = collectMarksFromUI();
-    writeCache({ lessons: state.lessons, marks });
+    writeCache({ lessons: state.lessons, marks, comments: state.comments });
 
     return fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ marks })
     })
       .then(r => r.json())
@@ -670,12 +736,9 @@
     document.querySelectorAll('tr.lesson-row').forEach(row => {
       if (row.dataset.bound === '1') return;
       row.dataset.bound = '1';
-
       const titleCell = row.querySelector('.lesson-title');
-      const contentId = row.dataset.content;
-      const contentRow = document.getElementById(contentId);
+      const contentRow = document.getElementById(row.dataset.content);
       if (!titleCell || !contentRow) return;
-
       titleCell.addEventListener('click', () => {
         const sel = window.getSelection();
         if (sel && sel.toString().trim().length > 0) return;
@@ -687,13 +750,12 @@
     document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
       if (box.dataset.bound === '1') return;
       box.dataset.bound = '1';
-
       const id = box.dataset.id;
       const dateInput = dateInputFor(id);
       if (!dateInput) return;
 
       box.addEventListener('change', () => {
-        let dateVal;
+        let dateVal = '';
         if (box.checked) {
           dateInput.disabled = false;
           if (!dateInput.value) dateInput.value = todayStr();
@@ -701,7 +763,6 @@
         } else {
           dateInput.disabled = true;
           dateInput.value = '';
-          dateVal = '';
         }
         saveMark(id, dateVal);
         updateUI();
@@ -770,10 +831,7 @@
     });
   }
 
-  document.getElementById('refreshBtn')?.addEventListener('click', () => {
-    loadFromServer(true);
-  });
-
+  document.getElementById('refreshBtn')?.addEventListener('click', () => { loadFromServer(true); });
   document.getElementById('downloadBtn')?.addEventListener('click', () => {
     const data = { version: 3, exportedAt: new Date().toISOString(), marks: collectMarksFromUI() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -793,7 +851,6 @@
     const marks = obj.marks && typeof obj.marks === 'object' ? obj.marks : obj;
     const today = todayStr();
     let applied = 0;
-
     document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
       const id = box.dataset.id;
       const dateInput = dateInputFor(id);
@@ -813,7 +870,6 @@
         if (dateInput) { dateInput.value = ''; dateInput.disabled = true; }
       }
     });
-
     updateUI();
     return applied;
   }
@@ -841,12 +897,10 @@
     btn.addEventListener('click', () => {
       const val = btn.dataset.action === 'check';
       const today = todayStr();
-
       document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
         const td = box.closest('td');
         const inner = td && td.querySelector('.mark-inner');
         if (inner && inner.style.visibility === 'hidden') return;
-
         const dateInput = dateInputFor(box.dataset.id);
         box.checked = val;
         if (dateInput) {
@@ -859,7 +913,6 @@
           }
         }
       });
-
       updateUI();
       saveAllMarks();
       showMessage(val ? '✓ Все отметки установлены.' : '✗ Все отметки сняты.', 'ok');
@@ -885,7 +938,6 @@
       row.querySelector('.lesson-title')?.classList.add('open');
     });
   });
-
   document.getElementById('collapseAllBtn')?.addEventListener('click', () => {
     document.querySelectorAll('tr.lesson-row').forEach(row => {
       document.getElementById(row.dataset.content)?.classList.remove('open');
@@ -894,19 +946,12 @@
   });
 
   window.addEventListener('online', () => {
-    try {
-      if (localStorage.getItem(PENDING_KEY) === '1') saveAllMarks();
-    } catch (e) {}
+    try { if (localStorage.getItem(PENDING_KEY) === '1') saveAllMarks(); } catch (e) {}
   });
 
-  // Автоподстройка высоты для родительского окна (main.html)
   function sendHeightToParent() {
-    if (window.parent !== window) {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage({ type: 'resize-iframe', height: height }, '*');
-    }
+    if (window.parent !== window) window.parent.postMessage({ type: 'resize-iframe', height: document.body.scrollHeight }, '*');
   }
-
   window.addEventListener('load', sendHeightToParent);
   window.addEventListener('resize', sendHeightToParent);
   const observer = new MutationObserver(sendHeightToParent);
