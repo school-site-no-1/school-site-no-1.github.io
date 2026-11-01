@@ -3,11 +3,6 @@ const SUPABASE_URL  = 'https://wwspemquprfjggytfhno.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_KGg69p8Px9QaJt80DgKaag_zvWdE_aE';
 const ROOM          = 'live-1';
 const QUESTION_ID   = 'q1';
-const MAX_LEN       = 150;
-
-// Оставляем прокси для генерации ответов (если нужно), 
-// но проверка на мат теперь локальная.
-const DEEPSEEK_PROXY = 'https://deepseek-proxy.a-mikhalitsyn.workers.dev';
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -18,219 +13,35 @@ function todayMoscow() {
   return moscow.toISOString().slice(0, 10);
 }
 
-// ==== 3. Fetch с таймаутом ====
-async function fetchWithTimeout(url, options, timeoutMs = 15000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
-    clearTimeout(timer);
-    return response;
-  } catch (error) {
-    clearTimeout(timer);
-    if (error.name === 'AbortError') {
-      console.warn('Запрос превысил таймаут ' + timeoutMs + ' мс');
-      return null;
-    }
-    throw error;
-  }
-}
-
-// ==== 4. ЛОКАЛЬНАЯ проверка на мат (БЕСПЛАТНО) ====
-// Список нецензурных слов (дополните по необходимости)
-const BAD_WORDS = [
-  'хуй', 'хуя', 'хую', 'хуе', 'пизд', 'бля', 'бляд', 'ебал', 'ебет', 'ебут', 
-  'еби', 'ебан', 'ебат', 'сука', 'суки', 'мудак', 'мудил', 'залуп', 'дроч', 
-  'fuck', 'shit', 'bitch', 'cunt', 'asshole'
-];
-
-function checkProfanity(nickname, text) {
-  const lowerNick = nickname.toLowerCase();
-  const lowerText = text.toLowerCase();
-  
-  // Проверяем, содержит ли имя или текст запрещенные корни
-  const hasBadWord = BAD_WORDS.some(word => 
-    lowerNick.includes(word) || lowerText.includes(word)
-  );
-  
-  return hasBadWord;
-}
-
-// ==== 5. Запрос к Worker (для ответов на вопросы) ====
-async function callTranslate(text, gender, mode, nickname) {
-  try {
-    const response = await fetchWithTimeout(DEEPSEEK_PROXY + '/translate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, gender, mode, nickname })
-    }, 20000);
-
-    if (!response || !response.ok) return null;
-    const data = await response.json();
-    if (data.translated) return data.translated;
-    return null;
-  } catch (error) {
-    console.error('Сетевая ошибка:', error);
-    return null;
-  }
-}
-
-// ==== 6. DOM ====
-const chatEl      = document.getElementById('chat');
-const reactionsEl = document.getElementById('reactions');
-const form        = document.getElementById('form');
-const nickEl      = document.getElementById('nickname');
-const genderEl    = document.getElementById('gender');
-const textEl      = document.getElementById('text');
-const onlineEl    = document.getElementById('online');
-const statsEl     = document.getElementById('stats');
+// ==== 3. DOM ====
+const reactionsEl  = document.getElementById('reactions');
+const onlineEl     = document.getElementById('online');
 const statsReactEl = document.getElementById('reactions-stats');
-const charCounterEl = document.getElementById('char-counter');
-const submitBtn   = form.querySelector('button[type=submit]');
 
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
 let modPassword   = null;
 
 const reactionCounts = {};
 
-nickEl.value   = localStorage.getItem('nick')   || '';
-genderEl.value = localStorage.getItem('gender') || '';
-nickEl.addEventListener('input',   () => localStorage.setItem('nick',   nickEl.value));
-genderEl.addEventListener('change', () => localStorage.setItem('gender', genderEl.value));
+// ==== 4. Realtime ====
+const channel = db
+  .channel('room:' + ROOM)
+  .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
+  .subscribe(status => console.log('Realtime status:', status));
 
-// ==== 7. Счётчик символов ====
-function autoGrow() {
-  textEl.style.height = 'auto';
-  textEl.style.height = Math.min(textEl.scrollHeight, 90) + 'px';
-  updateCharCounter();
-}
-
-function updateCharCounter() {
-  const len = textEl.value.length;
-  charCounterEl.textContent = len + '/' + MAX_LEN;
-  charCounterEl.classList.remove('warn', 'danger');
-  if (len >= MAX_LEN) charCounterEl.classList.add('danger');
-  else if (len > MAX_LEN - 25) charCounterEl.classList.add('warn');
-}
-
-textEl.addEventListener('input', () => {
-  if (textEl.value.length > MAX_LEN) textEl.value = textEl.value.slice(0, MAX_LEN);
-  autoGrow();
-});
-
-textEl.addEventListener('paste', (e) => {
-  const pasted = (e.clipboardData || window.clipboardData).getData('text');
-  if (textEl.value.length + pasted.length > MAX_LEN) {
-    e.preventDefault();
-    textEl.value += pasted.slice(0, MAX_LEN - textEl.value.length);
-    updateCharCounter();
-  }
-});
-
-// ==== Отправка по Enter (Shift+Enter — перенос строки) ====
-textEl.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    if (form.requestSubmit) {
-      form.requestSubmit();
-    } else {
-      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+db.channel('reactions-watch')
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'reactions_count', filter: 'room=eq.' + ROOM },
+    (payload) => {
+      const row = payload.new || payload.old;
+      if (!row) return;
+      if (row.day === todayMoscow()) updateReactionCounter(row.emoji, row.cnt);
     }
-  }
-});
+  )
+  .subscribe();
 
-updateCharCounter();
-
-// ==== 8. Приветствие нового ученика (приватное) ====
-async function sendGreeting() {
-  const gender   = genderEl.value || null;
-  const nickname = nickEl.value.trim() || '';
-
-  console.log('Приветствие. Имя:', nickname || 'не указано', '· Пол:', gender || 'не указан');
-
-  const greeting = await callTranslate('', gender, 'greeting', nickname);
-  if (!greeting) return;
-
-  // Показываем ЛОКАЛЬНО
-  const div = document.createElement('div');
-  div.className = 'msg system-msg';
-  div.dataset.private = '1';
-  div.innerHTML = '<i>' + escapeHtml(greeting) + '</i>';
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
-
-  // Сохраняем в БД с флагом is_private
-  try {
-    await db.from('answers').insert({
-      room: ROOM,
-      nickname: nickname || 'Аноним',
-      gender,
-      text: greeting,
-      ai_question: greeting,
-      original_text: null,
-      ai_answer: null,
-      is_private: true,
-      question_id: QUESTION_ID,
-      day: todayMoscow()
-    });
-    console.log('Приветствие сохранено в БД (приватное)');
-  } catch (e) {
-    console.error('Ошибка сохранения приветствия:', e);
-  }
-}
-
-let greetingSent = false;
-
-async function trySendGreeting() {
-  if (greetingSent) return;
-
-  const nickname = nickEl.value.trim();
-  if (!nickname) return;
-
-  const localKey = 'greeted_' + todayMoscow();
-  if (localStorage.getItem(localKey) === '1') {
-    console.log('Приветствие уже было сегодня');
-    greetingSent = true;
-    return;
-  }
-
-  // Проверка в БД
-  try {
-    const { data, error } = await db
-      .from('answers')
-      .select('id')
-      .eq('room', ROOM)
-      .eq('day', todayMoscow())
-      .eq('nickname', nickname)
-      .eq('is_private', true)
-      .limit(1);
-
-    if (!error && data && data.length > 0) {
-      console.log('Ученик ' + nickname + ' уже получал приветствие сегодня');
-      greetingSent = true;
-      localStorage.setItem(localKey, '1');
-      return;
-    }
-  } catch (e) {
-    console.warn('Ошибка проверки в БД:', e);
-  }
-
-  greetingSent = true;
-  localStorage.setItem(localKey, '1');
-  sendGreeting();
-}
-
-let nameTimer = null;
-nickEl.addEventListener('input', () => {
-  clearTimeout(nameTimer);
-  nameTimer = setTimeout(trySendGreeting, 1000);
-});
-
-setTimeout(() => {
-  if (!greetingSent) trySendGreeting();
-}, 30000);
-
-// ==== 9. Загрузка вопроса ====
+// ==== 5. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
@@ -250,185 +61,7 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 10. История ====
-async function loadHistory() {
-  const day = todayMoscow();
-  const { data, error } = await db
-    .from('answers').select('*')
-    .eq('room', ROOM).eq('hidden', false).eq('day', day)
-    .order('created_at', { ascending: true })
-    .limit(200);
-
-  if (error) { console.error('Ошибка загрузки:', error); return; }
-  data.forEach(addMessageToChat);
-}
-
-// ==== 11. Realtime ====
-const channel = db
-  .channel('room:' + ROOM)
-  .on(
-    'postgres_changes',
-    { event: 'INSERT', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
-    (payload) => {
-      const row = payload.new;
-      if (row.day !== todayMoscow()) return;
-
-      // Приватное — только адресату
-      if (row.is_private) {
-        const myName = nickEl.value.trim();
-        if (row.nickname !== myName) return;
-        if (document.querySelector('[data-private="1"]')) return;
-      }
-
-      addMessageToChat(row);
-    }
-  )
-  .on(
-    'postgres_changes',
-    { event: 'UPDATE', schema: 'public', table: 'answers', filter: 'room=eq.' + ROOM },
-    (payload) => {
-      if (payload.new.hidden && payload.new.day === todayMoscow()) {
-        removeMessage(payload.new.id);
-      }
-    }
-  )
-  .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
-  .subscribe(status => console.log('Realtime status:', status));
-
-db.channel('reactions-watch')
-  .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'reactions_count', filter: 'room=eq.' + ROOM },
-    (payload) => {
-      const row = payload.new || payload.old;
-      if (!row) return;
-      if (row.day === todayMoscow()) updateReactionCounter(row.emoji, row.cnt);
-    }
-  )
-  .subscribe();
-
-// ==== 12. Отрисовка ====
-function addMessageToChat(row) {
-  if (row.hidden) return;
-  if (document.querySelector('[data-id="' + row.id + '"]')) return;
-
-  const div = document.createElement('div');
-  div.dataset.id = row.id;
-
-  // Приветствие нейронки
-  if (row.ai_question && !row.original_text) {
-    div.className = 'msg system-msg';
-    div.dataset.private = '1';
-    div.innerHTML = '<i>' + escapeHtml(row.ai_question) + '</i>';
-  } else {
-    div.className = 'msg';
-    // БЕЗОПАСНЫЙ ВЫВОД (экранируем HTML)
-    div.innerHTML =
-      '<b>' + escapeHtml(row.nickname) + '</b>: ' +
-      escapeHtml(row.text).replace(/\n/g, '<br>');
-  }
-
-  if (isModerator) {
-    const btn = document.createElement('button');
-    btn.className = 'hide-btn';
-    btn.textContent = '✕';
-    btn.onclick = () => hideMessage(row.id);
-    div.appendChild(btn);
-  }
-
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
-}
-
-function removeMessage(id) {
-  const el = document.querySelector('[data-id="' + id + '"]');
-  if (el) el.remove();
-}
-
-async function hideMessage(id) {
-  const pwd = await getModPassword();
-  if (!pwd) return;
-  const { error } = await db.rpc('hide_answer', { answer_id: id, password: pwd });
-  if (error) { alert(error.message); modPassword = null; return; }
-  removeMessage(id);
-}
-
-async function getModPassword() {
-  if (!modPassword) modPassword = await askPassword();
-  return modPassword;
-}
-
-// ==== 13. Отправка ====
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const nickname = nickEl.value.trim() || 'Аноним';
-  const gender   = genderEl.value || null;
-  let   originalText = textEl.value.trim();
-  if (!originalText) return;
-
-  if (originalText.length > MAX_LEN) {
-    originalText = originalText.slice(0, MAX_LEN);
-    textEl.value = originalText;
-    updateCharCounter();
-  }
-
-  // ЛОКАЛЬНАЯ ПРОВЕРКА НА МАТ (мгновенно и бесплатно)
-  if (checkProfanity(nickname, originalText)) {
-    alert('Имя или сообщение содержит недопустимые слова.');
-    return;
-  }
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = '…';
-
-  const isQuestion = /[?]|^(что|как|почему|зачем|когда|где|кто|какой|какая|какие|сколько)/i.test(originalText);
-
-  let aiAnswer = null;
-  let finalText = originalText;
-
-  if (isQuestion) {
-    console.log('Вопрос. Пол:', gender || 'не указан', '· Имя:', nickname);
-    const answer = await callTranslate(originalText, gender, 'question', nickname);
-    if (answer) {
-      aiAnswer = answer;
-      finalText = '❓ ' + originalText + '\n' + answer;
-    }
-  }
-
-  const { data, error } = await db
-    .from('answers')
-    .insert({
-      room: ROOM,
-      nickname,
-      gender,
-      text: finalText,
-      original_text: originalText,
-      ai_answer: aiAnswer,
-      ai_question: null,
-      is_private: false,
-      question_id: QUESTION_ID,
-      day: todayMoscow()
-    })
-    .select().single();
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = '➤';
-
-  if (error) {
-    console.error('Ошибка Supabase:', error);
-    alert('Ошибка: ' + error.message);
-    return;
-  }
-
-  addMessageToChat(data);
-  textEl.value = '';
-  autoGrow();
-  updateCharCounter();
-  textEl.focus();
-});
-
-// ==== 14. Реакции ====
+// ==== 6. Реакции ====
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
@@ -476,7 +109,7 @@ async function loadReactionCounts() {
   renderReactionsStats();
 }
 
-// ==== 15. Presence + статистика посещений ====
+// ==== 7. Presence + статистика посещений ====
 let visitLogged = false;
 
 const presence = db.channel('presence:' + ROOM, {
@@ -489,7 +122,6 @@ presence
     const count = Object.keys(state).length;
     onlineEl.textContent = 'Онлайн: ' + count;
 
-    // Обновляем максимум онлайна
     try {
       await db.rpc('bump_online', { p_room: ROOM, p_current_online: count });
     } catch (e) {
@@ -500,7 +132,6 @@ presence
     if (status === 'SUBSCRIBED') {
       await presence.track({ joined_at: Date.now() });
 
-      // Фиксируем посещение (1 раз за сессию)
       if (!visitLogged) {
         visitLogged = true;
         try {
@@ -515,20 +146,9 @@ presence
     }
   });
 
-// ==== 16. Модерация ====
-async function refreshStats() {
-  const { data, error } = await db.rpc('answer_stats', { p_room: ROOM });
-  if (error || !data) return;
-  statsEl.innerHTML = '<b>Топ ответов</b><br>' + data.map(r =>
-    escapeHtml(r.answer_text) + ' — <b>' + r.cnt + '</b>'
-  ).join('<br>');
-}
-
+// ==== 8. Модерация ====
 if (isModerator) {
-  statsEl.classList.add('visible');
   document.getElementById('mod-actions').classList.add('visible');
-  setInterval(refreshStats, 3000);
-  refreshStats();
 
   document.getElementById('new-question').addEventListener('click', async () => {
     const url = prompt('URL картинки вопроса:', document.getElementById('question').src);
@@ -544,7 +164,12 @@ if (isModerator) {
   });
 }
 
-// ==== 17. Модалка пароля ====
+async function getModPassword() {
+  if (!modPassword) modPassword = await askPassword();
+  return modPassword;
+}
+
+// ==== 9. Модалка пароля ====
 function askPassword() {
   return new Promise(resolve => {
     const modal = document.getElementById('mod-prompt');
@@ -569,14 +194,7 @@ function askPassword() {
   });
 }
 
-// ==== 18. Утилита ====
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
-}
-
-// ==== 19. Автосброс в 00:00 ====
+// ==== 10. Автосброс в 00:00 ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -590,9 +208,7 @@ function scheduleReset() {
   console.log('Сброс в 00:00 через ' + Math.round(ms / 1000 / 60) + ' минут');
 
   setTimeout(() => {
-    console.log('00:00 по Москве — сбрасываем чат и счётчики');
-    chatEl.innerHTML = '';
-    loadHistory();
+    console.log('00:00 по Москве — сбрасываем счётчики');
     loadReactionCounts();
     scheduleReset();
   }, ms);
@@ -600,7 +216,6 @@ function scheduleReset() {
 
 scheduleReset();
 
-// ==== 20. Старт ====
+// ==== 11. Старт ====
 loadQuestion();
-loadHistory();
 loadReactionCounts();
