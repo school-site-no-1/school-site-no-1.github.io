@@ -76,8 +76,8 @@
   .class-stat .num { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
   .class-stat .num.done { color: var(--success); }
 
-  /* ===== Кнопки ===== */
-  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  /* ===== Кнопки (перенесены вниз) ===== */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   button, .btn-file {
     font-family: inherit;
     font-size: 0.88rem;
@@ -355,7 +355,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-top: 14px;
     }
     .controls button, .controls .btn-file {
       width: 100%;
@@ -424,20 +424,6 @@
     </div>
   </div>
 
-  <div class="controls">
-    <button class="btn-refresh" id="refreshBtn">⟳ Обновить</button>
-    <button class="btn-expand" id="expandAllBtn">⤢ Развернуть всё</button>
-    <button class="btn-collapse" id="collapseAllBtn">⤡ Свернуть всё</button>
-    <button class="btn-export" id="downloadBtn">💾 Скачать .json</button>
-    <label class="btn-file btn-import">
-      📂 Открыть .json
-      <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
-    </label>
-    <button class="btn-class" data-action="check">✓ Отметить всё</button>
-    <button class="btn-uncheck" data-action="uncheck">✗ Снять всё</button>
-    <button class="btn-reset" id="resetBtn">⟲ Сброс</button>
-  </div>
-
   <div class="table-wrap">
     <table>
       <thead>
@@ -454,11 +440,24 @@
     </table>
   </div>
 
+  <div class="controls">
+    <button class="btn-refresh" id="refreshBtn">⟳ Обновить</button>
+    <button class="btn-expand" id="expandAllBtn">⤢ Развернуть всё</button>
+    <button class="btn-collapse" id="collapseAllBtn">⤡ Свернуть всё</button>
+    <button class="btn-export" id="downloadBtn">💾 Скачать .json</button>
+    <label class="btn-file btn-import">
+      📂 Открыть .json
+      <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
+    </label>
+    <button class="btn-class" data-action="check">✓ Отметить всё</button>
+    <button class="btn-uncheck" data-action="uncheck">✗ Снять всё</button>
+    <button class="btn-reset" id="resetBtn">⟲ Сброс</button>
+  </div>
+
   <div class="io-message" id="ioMessage"></div>
 </div>
 
 <script>
-  // Новая ссылка:
   const API_URL = 'https://script.google.com/macros/s/AKfycbyCDfJmdROm11Yq11utvbi8tXIb3nOvsb3FaDoSAKvuCBOKCIlaZLxMwjOg3udQ4-ceqA/exec';
   const CACHE_KEY   = 'lessons_cache_v9';
   const PENDING_KEY = 'lessons_pending_v9';
