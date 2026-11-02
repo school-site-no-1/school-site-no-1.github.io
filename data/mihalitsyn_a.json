@@ -66,7 +66,7 @@
       "lesson": 3,
       "class": "9А",
       "subject": "Физика",
-      "room": "308"
+      "room": "113"
     },
     {
       "lesson": 4,
@@ -78,13 +78,13 @@
       "lesson": 5,
       "class": "8Б",
       "subject": "Физика",
-      "room": "306"
+      "room": "113"
     },
     {
       "lesson": 6,
       "class": "8В",
       "subject": "Физика",
-      "room": "204"
+      "room": "113"
     },
     {
       "lesson": 7,
@@ -96,7 +96,7 @@
       "lesson": 8,
       "class": "8А",
       "subject": "Физика",
-      "room": "204"
+      "room": "113"
     },
     {
       "lesson": 9,
@@ -280,5 +280,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-02 16:08:08"
+  "last_update": "2026-11-02 16:20:46"
 }
