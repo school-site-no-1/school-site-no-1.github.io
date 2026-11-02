@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v4.9.2">
+<html lang="ru" data-version="v5.0.0">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Изменение расписания 5-11 (мобильная)</title>
+    <title>Изменение расписания 5-11</title>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#1e3a5f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -237,7 +237,7 @@
             border-color: var(--primary);
             color: #fff;
         }
-        .filter-btn.class-btn { font-size: 0.5rem; padding: 3px 6px; }
+        .filter-btn.day-btn { font-size: 0.54rem; padding: 3px 8px; }
 
         @media (max-width: 900px) {
             .clock-line { gap: 3px; }
@@ -247,7 +247,7 @@
             .period .line1 { font-size: 0.56rem; }
             .period .line2 { font-size: 0.46rem; }
             .filter-btn { font-size: 0.5rem; padding: 3px 6px; min-height: 20px; }
-            .filter-btn.class-btn { font-size: 0.46rem; padding: 2px 5px; }
+            .filter-btn.day-btn { font-size: 0.5rem; padding: 3px 6px; }
         }
 
         @media (max-width: 640px) {
@@ -273,7 +273,7 @@
             .clock-line .clock-day  { font-size: 7px; }
             .clock-line .clock-date { font-size: 6px; }
             .filter-btn { font-size: 0.46rem; padding: 2px 5px; }
-            .filter-btn.class-btn { font-size: 0.42rem; padding: 2px 4px; }
+            .filter-btn.day-btn { font-size: 0.46rem; padding: 2px 5px; }
         }
 
         /* ============================
@@ -899,9 +899,8 @@
                 </div>
             </div>
 
-            <div class="filter-bar" id="filterBar" role="toolbar" aria-label="Фильтр классов">
-                <div class="filter-group" id="parallelGroup"></div>
-                <div class="filter-group" id="classGroup"></div>
+            <div class="filter-bar" id="filterBar" role="toolbar" aria-label="Фильтр по дням">
+                <div class="filter-group" id="dayGroup"></div>
             </div>
         </header>
 
@@ -996,16 +995,13 @@
     <script>
         // ================================================================
         // ⭐ PIN-КОД ДЛЯ МАШИНЫ ВРЕМЕНИ
-        // Поменяйте на свой. Хранится в памяти (не в localStorage),
-        // чтобы не подглядели через DevTools. Но в исходнике он виден.
-        // Для реальной защиты нужен серверный бэкенд.
         // ================================================================
         var TIME_TESTER_PIN = '2026';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '4.9.2';
+        var APP_VERSION = '5.0.0';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10" },
             { num: 2, start: "09:20", end: "10:00" },
@@ -1021,7 +1017,6 @@
         var MAX_LESSONS = 9;
         var BREAK_SEGMENTS = 100;
         var PRIMARY_CLASSES = ['5А', '5Б', '6А', '6Б', '6В', '7А', '7Б', '7В', '8А', '8Б', '8В', '9А', '9Б', '9В', '10А', '10Б', '11А', '11Б'];
-        var PARALLELS = [5, 6, 7, 8, 9, 10, 11];
         var DAYS_SHORT = { 1: "ПН", 2: "ВТ", 3: "СР", 4: "ЧТ", 5: "ПТ", 6: "СБ", 0: "ВС" };
         var DAYS_FULL = { 1: "Понедельник", 2: "Вторник", 3: "Среда", 4: "Четверг", 5: "Пятница", 6: "Суббота", 0: "Воскресенье" };
         var DAYS_LIST = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
@@ -1035,8 +1030,8 @@
         var nextScheduledRefresh = null;
         var notificationTimeout = null;
 
-        var activeParallel = null;
-        var activeClass = null;
+        // ⭐ Фильтр по дням: null = текущий день (авто)
+        var selectedDay = null;
 
         // ⭐ Состояние машины времени (разблокирована ли)
         var timeTesterUnlocked = false;
@@ -1050,7 +1045,6 @@
 
         window.addEventListener('message', function(e) {
             if (!e.data) return;
-            // ⭐ Без разблокировки не принимаем команды
             if (!timeTesterUnlocked) {
                 if (e.data.type === 'set-time' || e.data.type === 'reset-time') {
                     showTopNotification('🔒 Сначала разблокируйте машину времени', 'error');
@@ -1283,7 +1277,18 @@
             }
             return '<span class="line1">⏰ Загрузка...</span>';
         }
+
+        // ⭐ Возвращает ключ дня с учётом выбранного фильтра
         function getTargetDay() {
+            // Если вручную выбран день в фильтре — используем его
+            if (selectedDay !== null) {
+                return {
+                    key: DAYS_SHORT[selectedDay] || 'ПН',
+                    full: DAYS_FULL[selectedDay] || 'Понедельник',
+                    manual: true
+                };
+            }
+            // Иначе авто: текущий/следующий учебный день по реальному (или симулированному) времени
             var now = new Date(), d = now.getDay(), tm = now.getHours() * 60 + now.getMinutes();
             var shift = (tm >= 16 * 60) ? 1 : 0;
             var t = d + shift;
@@ -1291,15 +1296,16 @@
             if (t > 6) t = 1;
             var key = DAYS_SHORT[t] || "ПН";
             var full = DAYS_FULL[t] || "Понедельник";
-            if (weekDays[key] && Object.keys(weekDays[key]).length > 0) return { key: key, full: full };
+            if (weekDays[key] && Object.keys(weekDays[key]).length > 0) return { key: key, full: full, manual: false };
             for (var i = 0; i < DAYS_LIST.length; i++) {
                 var dd = DAYS_LIST[i];
                 if (weekDays[dd] && Object.keys(weekDays[dd]).length > 0) {
-                    return { key: dd, full: DAYS_FULL[DAYS_LIST.indexOf(dd) + 1] || dd };
+                    return { key: dd, full: DAYS_FULL[DAYS_LIST.indexOf(dd) + 1] || dd, manual: false };
                 }
             }
-            return { key: "ПН", full: "Понедельник" };
+            return { key: "ПН", full: "Понедельник", manual: false };
         }
+
         function formatDateForDisplay(v) {
             if (!v) return null;
             var d = new Date(v);
@@ -1308,49 +1314,24 @@
         }
 
         // ================================================================
-        // ФИЛЬТР
+        // ФИЛЬТР ПО ДНЯМ
         // ================================================================
-        function getParallelOf(cls) {
-            var m = cls.match(/^(\d+)/);
-            return m ? parseInt(m[1]) : null;
-        }
-        function getClassesForParallel(p) {
-            return PRIMARY_CLASSES.filter(function(c) { return getParallelOf(c) === p; });
-        }
         function buildFilterBar() {
-            var pGroup = document.getElementById('parallelGroup');
-            var cGroup = document.getElementById('classGroup');
-            var pHtml = '<button type="button" class="filter-btn all-btn' + (activeParallel === null ? ' active' : '') + '" data-parallel="all">Все</button>';
-            PARALLELS.forEach(function(p) {
-                var cls = 'filter-btn' + (activeParallel === p ? ' active' : '');
-                pHtml += '<button type="button" class="' + cls + '" data-parallel="' + p + '">' + p + '</button>';
-            });
-            pGroup.innerHTML = pHtml;
+            var dayGroup = document.getElementById('dayGroup');
+            if (!dayGroup) return;
 
-            var cHtml = '';
-            if (activeParallel !== null) {
-                var classes = getClassesForParallel(activeParallel);
-                classes.forEach(function(c) {
-                    var cls = 'filter-btn class-btn' + (activeClass === c ? ' active' : '');
-                    cHtml += '<button type="button" class="' + cls + '" data-class="' + c + '">' + c + '</button>';
-                });
+            var html = '<button type="button" class="filter-btn all-btn' + (selectedDay === null ? ' active' : '') + '" data-day="auto">Текущий</button>';
+            for (var d = 1; d <= 6; d++) {
+                var label = DAYS_SHORT[d];
+                var cls = 'filter-btn day-btn' + (selectedDay === d ? ' active' : '');
+                html += '<button type="button" class="' + cls + '" data-day="' + d + '">' + label + '</button>';
             }
-            cGroup.innerHTML = cHtml;
+            dayGroup.innerHTML = html;
 
-            pGroup.querySelectorAll('button').forEach(function(btn) {
+            dayGroup.querySelectorAll('button').forEach(function(btn) {
                 btn.addEventListener('click', function() {
-                    var v = btn.getAttribute('data-parallel');
-                    activeParallel = (v === 'all') ? null : parseInt(v);
-                    activeClass = null;
-                    buildFilterBar();
-                    renderTiles();
-                    lastBoardRenderKey = getBoardRenderKey();
-                });
-            });
-            cGroup.querySelectorAll('button').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var v = btn.getAttribute('data-class');
-                    activeClass = (activeClass === v) ? null : v;
+                    var v = btn.getAttribute('data-day');
+                    selectedDay = (v === 'auto') ? null : parseInt(v, 10);
                     buildFilterBar();
                     renderTiles();
                     lastBoardRenderKey = getBoardRenderKey();
@@ -1498,31 +1479,31 @@
             var targetDay = getTargetDay();
             var dayKey = targetDay.key;
             var info = getCurrentPeriodInfo();
+            var isManualDay = targetDay.manual === true;
 
             var periodEl = document.getElementById('currentPeriod');
-            periodEl.innerHTML = getPeriodName();
-            if (isPeriodPast()) periodEl.classList.add('past-period');
-            else periodEl.classList.remove('past-period');
+            // Если выбран не текущий (ручной) день — показываем название дня в шапке
+            if (isManualDay) {
+                periodEl.innerHTML = '<span class="line1">📅 ' + targetDay.full + '</span><span class="line2">расписание на день</span>';
+                periodEl.classList.remove('past-period');
+            } else {
+                periodEl.innerHTML = getPeriodName();
+                if (isPeriodPast()) periodEl.classList.add('past-period');
+                else periodEl.classList.remove('past-period');
+            }
 
             var dayData = weekDays[dayKey];
             var tilesHeader = document.getElementById('tilesHeader');
             var tilesBody = document.getElementById('tilesBody');
 
-            if (!dayData || Object.keys(dayData).length === 0) {
+           if (!dayData || Object.keys(dayData).length === 0) {
                 tilesHeader.innerHTML = '';
                 tilesBody.innerHTML = '<div class="loading-overlay">📌 Нет расписания</div>';
                 return;
             }
 
-            var classes;
-            if (activeClass) {
-                classes = [activeClass];
-            } else if (activeParallel !== null) {
-                classes = getClassesForParallel(activeParallel);
-            } else {
-                classes = PRIMARY_CLASSES.slice();
-            }
-            classes = classes.filter(function(c) { return dayData[c] !== undefined; });
+            // Показываем все классы (фильтр по классам убран)
+            var classes = PRIMARY_CLASSES.filter(function(c) { return dayData[c] !== undefined; });
             if (classes.length === 0) classes = PRIMARY_CLASSES.slice();
             classes = sortClasses(classes);
 
@@ -1536,8 +1517,9 @@
             for (var lessonNum = 1; lessonNum <= MAX_LESSONS; lessonNum++) {
                 var idx = lessonNum - 1;
                 var lessonStatus = getLessonStatus(lessonNum);
-                var isCurrent = (lessonStatus === 'now');
-                var isPast = (lessonStatus === 'past');
+                // Подсветка текущего урока только для авто-дня (не ручного)
+                var isCurrent = (!isManualDay) && (lessonStatus === 'now');
+                var isPast = (!isManualDay) && (lessonStatus === 'past');
                 if (info.type === 'break' || info.type === 'before' || info.type === 'after') isCurrent = false;
 
                 var rowClasses = 'tiles-row';
@@ -1574,7 +1556,8 @@
 
                 if (lessonNum < MAX_LESSONS) {
                     var b = getBreakInfo(idx);
-                    if (b && getBreakStatus(b) === 'now') {
+                    // Перемена показывается только в авто-дне и когда она идёт
+                    if (!isManualDay && b && getBreakStatus(b) === 'now') {
                         var pr = getBreakProgress(b);
                         bodyHTML += '<div class="tiles-break-row current-break-row" role="row">' + renderBreakSegments(b, pr) + '</div>';
                     }
@@ -1588,7 +1571,7 @@
             if (i.type === 'lesson') a = i.num;
             else if (i.type === 'break') { a = Math.max(0, i.nextLesson - 1); bk = 'b' + i.breakIndex; }
             else if (i.type === 'before') a = Math.max(0, i.nextLesson - 1);
-            return t.key + '|' + i.type + '|' + a + '|' + bk + '|' + (activeParallel || 'all') + '|' + (activeClass || 'all');
+            return t.key + '|' + i.type + '|' + a + '|' + bk + '|' + (selectedDay === null ? 'auto' : selectedDay);
         }
 
         function setBoardSync(state, message) {
@@ -1604,8 +1587,15 @@
             else p.classList.remove('past-period');
         }
         function refreshAll() {
-            document.getElementById('currentPeriod').innerHTML = getPeriodName();
-            updatePeriodPastClass();
+            var targetDay = getTargetDay();
+            var periodEl = document.getElementById('currentPeriod');
+            if (targetDay.manual) {
+                periodEl.innerHTML = '<span class="line1">📅 ' + targetDay.full + '</span><span class="line2">расписание на день</span>';
+                periodEl.classList.remove('past-period');
+            } else {
+                periodEl.innerHTML = getPeriodName();
+                updatePeriodPastClass();
+            }
             if (!dataLoaded && Object.keys(weekDays).length === 0) return;
             var key = getBoardRenderKey();
             if (key !== lastBoardRenderKey) {
@@ -1649,11 +1639,13 @@
             var rows = document.querySelectorAll('.tiles-row');
             var info = getCurrentPeriodInfo();
             var bNow = (info.type === 'break' || info.type === 'before' || info.type === 'after');
+            var targetDay = getTargetDay();
+            var manual = targetDay.manual === true;
             for (var i = 0; i < rows.length; i++) {
                 var r = rows[i], num = i + 1;
                 var st = getLessonStatus(num);
-                var isPast = (st === 'past');
-                var isNow = (st === 'now') && !bNow;
+                var isPast = (st === 'past') && !manual;
+                var isNow = (st === 'now') && !bNow && !manual;
                 if (isPast && !r.classList.contains('past-lesson-row')) r.classList.add('past-lesson-row');
                 else if (!isPast && r.classList.contains('past-lesson-row')) r.classList.remove('past-lesson-row');
                 if (isNow && !r.classList.contains('current-lesson-row')) r.classList.add('current-lesson-row');
@@ -1721,17 +1713,14 @@
                 showTopNotification('🔒 Машина времени заблокирована', 'success');
             }
 
-            // Кнопка ⏱/🔒
             toggle.addEventListener('click', function() {
                 if (timeTesterUnlocked) {
-                    // если уже разблокировано — открываем/закрываем панель
                     if (panel.classList.contains('open')) {
                         panel.classList.remove('open');
                     } else {
                         openTimePanel();
                     }
                 } else {
-                    // иначе — PIN
                     if (pinPanel.classList.contains('open')) {
                         closePinPanel();
                     } else {
@@ -1740,7 +1729,6 @@
                 }
             });
 
-            // Ввод PIN
             function tryUnlock() {
                 var val = String(pinInput.value || '').trim();
                 if (val === String(TIME_TESTER_PIN)) {
@@ -1756,7 +1744,6 @@
                     pinError.textContent = 'Неверный PIN-код';
                     pinInput.value = '';
                     pinInput.focus();
-                    // лёгкая вибрация, если есть
                     if (navigator.vibrate) navigator.vibrate(80);
                 }
             }
@@ -1767,13 +1754,9 @@
             });
             pinCancel.addEventListener('click', closePinPanel);
 
-            // Закрыть панель
             closeBtn.addEventListener('click', function() { panel.classList.remove('open'); });
-
-            // Заблокировать обратно
             lockBtn.addEventListener('click', function() { lockTimePanel(); });
 
-            // Применить
             applyBtn.addEventListener('click', function() {
                 var dayVal = daySel.value === '' ? null : parseInt(daySel.value, 10);
                 var timeVal = timeInp.value || null;
@@ -1785,7 +1768,6 @@
                 showTopNotification('⏱ Время сброшено', 'success');
             });
 
-            // Предзаполнить текущим временем
             var n = new OriginalDate();
             if (timeInp) {
                 timeInp.value = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
