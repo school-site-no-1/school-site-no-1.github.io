@@ -32,7 +32,7 @@
   }
 
   .container { 
-    max-width: 1100px; 
+    max-width: 1400px; 
     width: 100%; 
     margin: 0 auto; 
     flex: 1;
@@ -202,7 +202,128 @@
     min-height: 500px;
   }
 
+  /* ===== LAYOUT (контент + стикеры) ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+    flex: 1;
+  }
+  .main-col { min-width: 0; }
+
+  /* ===== СТИКЕРЫ ===== */
+  .stickers {
+    position: sticky;
+    top: 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100dvh - 32px);
+  }
+  .stickers-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+  }
+  .stickers-head button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .stickers-head button:hover { filter: brightness(1.1); }
+  .stickers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+  }
+  .sticker {
+    position: relative;
+    border-radius: 8px;
+    padding: 10px 48px 10px 12px;
+    font-size: 0.85rem;
+    color: #2d3748;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .sticker-del,
+  .sticker-edit {
+    position: absolute;
+    top: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.45;
+    line-height: 1;
+    padding: 4px;
+  }
+  .sticker-del { right: 4px; color: #c53030; }
+  .sticker-edit { right: 26px; color: var(--text-soft); font-size: 0.95rem; }
+  .sticker-del:hover,
+  .sticker-edit:hover { opacity: 1; }
+  .sticker-input {
+    width: 100%;
+    min-height: 70px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    font: inherit;
+    font-size: 0.85rem;
+    resize: vertical;
+  }
+  .sticker-colors {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .sticker-colors span {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .sticker-colors span.active { border-color: var(--primary); }
+  .stickers-hint { font-size: 0.7rem; color: var(--text-soft); }
+  .sticker-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+  .sticker-actions button {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .sticker-actions .btn-cancel { background: #e2e8f0; color: var(--text); }
+  .sticker-actions .btn-ok { background: var(--accent); color: #fff; }
+
   /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .stickers { position: static; max-height: none; order: -1; }
+  }
+
   @media (max-width: 768px) {
     body { padding: 14px 10px 30px; }
     
@@ -254,115 +375,131 @@
 <body>
 
 <div class="container">
+  <div class="layout">
 
-  <!-- ===== ВКЛАДКИ ===== -->
-  <div class="tabs-nav">
-    <button class="tab-btn active" data-tab="schedule">
-      <span class="tab-icon">👨‍🏫</span>
-      <span class="tab-text">Учитель</span>
-    </button>
-    <button class="tab-btn" data-tab="lessons">
-      <span class="tab-icon">📚</span>
-      <span class="tab-text">Темы</span>
-    </button>
-    <button class="tab-btn" data-tab="pdf">
-      <span class="tab-icon">📄</span>
-      <span class="tab-text">Замены</span>
-    </button>
-    <button class="tab-btn" data-tab="tiles">
-      <span class="tab-icon">🧩</span>
-      <span class="tab-text">Плитки</span>
-    </button>
-    <button class="tab-btn" data-tab="table">
-      <span class="tab-icon">📋</span>
-      <span class="tab-text">Изменения</span>
-    </button>
-    <button class="tab-btn" data-tab="menu">
-      <span class="tab-icon">🍽</span>
-      <span class="tab-text">Меню</span>
-    </button>
-    <button class="tab-btn" data-tab="quiz">
-      <span class="tab-icon">🎮</span>
-      <span class="tab-text">Квиз</span>
-    </button>
-  </div>
+    <div class="main-col">
 
-  <!-- ======================= УЧИТЕЛЬ ======================= -->
-  <div class="tab-content active" id="schedule">
-    <div class="iframe-wrap">
-      <iframe id="scheduleFrame" src="schedule.html" scrolling="no" title="Расписание учителя"></iframe>
-    </div>
-  </div>
-
-  <!-- ======================= ТЕМЫ ======================= -->
-  <div class="tab-content" id="lessons">
-    <div class="iframe-wrap">
-      <iframe id="lessonsFrame" src="new_lessons.html" scrolling="no" title="Темы и отметки"></iframe>
-    </div>
-  </div>
-
-  <!-- ======================= ЗАМЕНЫ ИЗ PDF ======================= -->
-  <div class="tab-content" id="pdf">
-    <div class="iframe-wrap">
-      <iframe id="pdfFrame" src="mi.html" scrolling="no" title="Замены из PDF"></iframe>
-    </div>
-  </div>
-
-  <!-- ======================= РАСПИСАНИЕ (ПЛИТКИ) ======================= -->
-  <div class="tab-content" id="tiles">
-    <div class="iframe-wrap">
-      <iframe id="tilesFrame" src="new_index.html" scrolling="no" title="Расписание плитками"></iframe>
-    </div>
-  </div>
-
-  <!-- ======================= ИЗМЕНЕНИЯ (ТАБЛИЦА) ======================= -->
-  <div class="tab-content" id="table">
-    <div class="iframe-wrap">
-      <iframe id="tableFrame" src="new_table.html" scrolling="no" title="Таблица изменений"></iframe>
-    </div>
-  </div>
-
-  <!-- ======================= МЕНЮ ======================= -->
-  <div class="tab-content" id="menu">
-    <div class="iframe-wrap">
-      <iframe id="menuFrame" src="school-menu/viewer.html" scrolling="no" title="Меню"></iframe>
-    </div>
-  </div>
-
-  <!-- ======================= КВИЗ ======================= -->
-  <div class="tab-content" id="quiz">
-    <div class="iframe-wrap iframe-full">
-      <iframe id="quizFrame" src="live-quiz/live-quiz.html" scrolling="no" allow="fullscreen" title="Квиз"></iframe>
-    </div>
-  </div>
-
-  <!-- ===== ПАНЕЛЬ СИМУЛЯЦИИ ВРЕМЕНИ ===== -->
-  <div class="test-panel collapsed" id="testPanel">
-    <div class="test-panel-header" id="testPanelHeader">
-      <div class="test-panel-title">🛠 Тест: Машина времени</div>
-      <div class="test-panel-controls" onclick="event.stopPropagation();">
-        <button id="resetTestBtn" class="btn-reset">Сбросить</button>
-        <button id="toggleTestBtn">Развернуть</button>
-      </div>
-    </div>
-    
-    <div class="test-panel-body" id="testPanelBody">
-      <div class="slider-group">
-        <label for="sliderDay">День недели:</label>
-        <input type="range" id="sliderDay" min="0" max="6" step="1" value="1">
-        <div class="slider-value" id="valDay">Понедельник</div>
-      </div>
-      
-      <div class="slider-group">
-        <label for="sliderTime">Время:</label>
-        <input type="range" id="sliderTime" min="480" max="990" step="1" value="480">
-        <div class="slider-value" id="valTime">08:00</div>
+      <!-- ===== ВКЛАДКИ ===== -->
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="schedule">
+          <span class="tab-icon">👨‍🏫</span>
+          <span class="tab-text">Учитель</span>
+        </button>
+        <button class="tab-btn" data-tab="lessons">
+          <span class="tab-icon">📚</span>
+          <span class="tab-text">Темы</span>
+        </button>
+        <button class="tab-btn" data-tab="pdf">
+          <span class="tab-icon">📄</span>
+          <span class="tab-text">Замены</span>
+        </button>
+        <button class="tab-btn" data-tab="tiles">
+          <span class="tab-icon">🧩</span>
+          <span class="tab-text">Плитки</span>
+        </button>
+        <button class="tab-btn" data-tab="table">
+          <span class="tab-icon">📋</span>
+          <span class="tab-text">Изменения</span>
+        </button>
+        <button class="tab-btn" data-tab="menu">
+          <span class="tab-icon">🍽</span>
+          <span class="tab-text">Меню</span>
+        </button>
+        <button class="tab-btn" data-tab="quiz">
+          <span class="tab-icon">🎮</span>
+          <span class="tab-text">Квиз</span>
+        </button>
       </div>
 
-      <div class="test-panel-status" id="testStatus">⚠️ Включена симуляция времени!</div>
-    </div>
-  </div>
+      <!-- ======================= УЧИТЕЛЬ ======================= -->
+      <div class="tab-content active" id="schedule">
+        <div class="iframe-wrap">
+          <iframe id="scheduleFrame" src="schedule.html" scrolling="no" title="Расписание учителя"></iframe>
+        </div>
+      </div>
 
+      <!-- ======================= ТЕМЫ ======================= -->
+      <div class="tab-content" id="lessons">
+        <div class="iframe-wrap">
+          <iframe id="lessonsFrame" src="new_lessons.html" scrolling="no" title="Темы и отметки"></iframe>
+        </div>
+      </div>
+
+      <!-- ======================= ЗАМЕНЫ ИЗ PDF ======================= -->
+      <div class="tab-content" id="pdf">
+        <div class="iframe-wrap">
+          <iframe id="pdfFrame" src="mi.html" scrolling="no" title="Замены из PDF"></iframe>
+        </div>
+      </div>
+
+      <!-- ======================= РАСПИСАНИЕ (ПЛИТКИ) ======================= -->
+      <div class="tab-content" id="tiles">
+        <div class="iframe-wrap">
+          <iframe id="tilesFrame" src="new_index.html" scrolling="no" title="Расписание плитками"></iframe>
+        </div>
+      </div>
+
+      <!-- ======================= ИЗМЕНЕНИЯ (ТАБЛИЦА) ======================= -->
+      <div class="tab-content" id="table">
+        <div class="iframe-wrap">
+          <iframe id="tableFrame" src="new_table.html" scrolling="no" title="Таблица изменений"></iframe>
+        </div>
+      </div>
+
+      <!-- ======================= МЕНЮ ======================= -->
+      <div class="tab-content" id="menu">
+        <div class="iframe-wrap">
+          <iframe id="menuFrame" src="school-menu/viewer.html" scrolling="no" title="Меню"></iframe>
+        </div>
+      </div>
+
+      <!-- ======================= КВИЗ ======================= -->
+      <div class="tab-content" id="quiz">
+        <div class="iframe-wrap iframe-full">
+          <iframe id="quizFrame" src="live-quiz/live-quiz.html" scrolling="no" allow="fullscreen" title="Квиз"></iframe>
+        </div>
+      </div>
+
+      <!-- ===== ПАНЕЛЬ СИМУЛЯЦИИ ВРЕМЕНИ ===== -->
+      <div class="test-panel collapsed" id="testPanel">
+        <div class="test-panel-header" id="testPanelHeader">
+          <div class="test-panel-title">🛠 Тест: Машина времени</div>
+          <div class="test-panel-controls" onclick="event.stopPropagation();">
+            <button id="resetTestBtn" class="btn-reset">Сбросить</button>
+            <button id="toggleTestBtn">Развернуть</button>
+          </div>
+        </div>
+        
+        <div class="test-panel-body" id="testPanelBody">
+          <div class="slider-group">
+            <label for="sliderDay">День недели:</label>
+            <input type="range" id="sliderDay" min="0" max="6" step="1" value="1">
+            <div class="slider-value" id="valDay">Понедельник</div>
+          </div>
+          
+          <div class="slider-group">
+            <label for="sliderTime">Время:</label>
+            <input type="range" id="sliderTime" min="480" max="990" step="1" value="480">
+            <div class="slider-value" id="valTime">08:00</div>
+          </div>
+
+          <div class="test-panel-status" id="testStatus">⚠️ Включена симуляция времени!</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== СТИКЕРЫ ===== -->
+    <aside class="stickers" id="stickersPanel">
+      <div class="stickers-head">
+        <span>📌 Стикеры</span>
+        <button id="addStickerBtn" title="Добавить">+</button>
+      </div>
+      <div class="stickers-list" id="stickersList"></div>
+      <div class="stickers-hint" id="stickersHint">Загрузка…</div>
+    </aside>
+
+  </div>
 </div>
 
 <script>
@@ -384,7 +521,6 @@
      ============================================================ */
   const testPanelHeader = document.getElementById('testPanelHeader');
   const toggleTestBtn = document.getElementById('toggleTestBtn');
-  const testPanelBody = document.getElementById('testPanelBody');
   
   const sliderDay = document.getElementById('sliderDay');
   const sliderTime = document.getElementById('sliderTime');
@@ -557,6 +693,191 @@
       });
     }
   });
+
+  /* ============================================================
+     СТИКЕРЫ С СОХРАНЕНИЕМ В GOOGLE SHEETS
+     ============================================================ */
+  const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxmvClkqB4VCjs092CKBoWaM3WsdUykC0cQue5TmuFOiobbsdYXf2x_UzvTlQlz9xN7tQ/exec';
+  const STICKERS_CACHE_KEY = 'school_stickers_cache';
+
+  const COLORS = ['#fef3c7', '#dbeafe', '#dcfce7', '#fce7f3', '#ede9fe', '#fee2e2'];
+
+  const stickersList = document.getElementById('stickersList');
+  const addStickerBtn = document.getElementById('addStickerBtn');
+  const stickersHint = document.getElementById('stickersHint');
+
+  let stickers = [];
+  let currentColor = COLORS[0];
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function renderStickers() {
+    stickersList.innerHTML = '';
+    if (!stickers.length) {
+      stickersList.innerHTML = '<div class="stickers-hint">Пока пусто. Нажмите «+».</div>';
+      return;
+    }
+    stickers.forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'sticker';
+      el.style.background = s.color || COLORS[0];
+      el.textContent = s.text;
+
+      const del = document.createElement('button');
+      del.className = 'sticker-del';
+      del.textContent = '✕';
+      del.title = 'Удалить';
+      del.onclick = () => deleteSticker(s.id);
+
+      const edit = document.createElement('button');
+      edit.className = 'sticker-edit';
+      edit.textContent = '✎';
+      edit.title = 'Редактировать';
+      edit.onclick = () => editSticker(s.id);
+
+      el.appendChild(del);
+      el.appendChild(edit);
+      stickersList.appendChild(el);
+    });
+  }
+
+  function persistLocal() {
+    localStorage.setItem(STICKERS_CACHE_KEY, JSON.stringify(stickers));
+  }
+
+  async function loadStickers() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(STICKERS_CACHE_KEY) || '[]');
+      if (Array.isArray(cached)) { stickers = cached; renderStickers(); }
+    } catch (e) {}
+
+    try {
+      const res = await fetch(GOOGLE_SHEET_URL + '?t=' + Date.now());
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        stickers = data.filter(s => s && s.id).map(s => ({
+          id: String(s.id),
+          text: String(s.text ?? ''),
+          color: s.color || COLORS[0],
+          created: s.created || '',
+          updated: s.updated || ''
+        }));
+        persistLocal();
+        renderStickers();
+        stickersHint.textContent = 'Синхронизировано с Google Sheets ✓';
+      }
+    } catch (e) {
+      stickersHint.textContent = 'Офлайн-режим (локальный кэш)';
+    }
+  }
+
+  async function saveStickerToSheet(sticker) {
+    try {
+      await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'save', sticker })
+      });
+    } catch (e) {
+      stickersHint.textContent = 'Не удалось сохранить в облако';
+    }
+  }
+
+  async function deleteStickerFromSheet(id) {
+    try {
+      await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'delete', id })
+      });
+    } catch (e) {}
+  }
+
+  function buildEditor(initialText, initialColor, onSave, onCancel) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+    wrap.innerHTML = `
+      <textarea class="sticker-input" placeholder="Текст стикера…"></textarea>
+      <div class="sticker-colors"></div>
+      <div class="sticker-actions">
+        <button class="btn-cancel">Отмена</button>
+        <button class="btn-ok">Сохранить</button>
+      </div>
+    `;
+    const ta = wrap.querySelector('textarea');
+    ta.value = initialText || '';
+    let picked = initialColor || COLORS[0];
+
+    const colorsBox = wrap.querySelector('.sticker-colors');
+    COLORS.forEach(c => {
+      const dot = document.createElement('span');
+      dot.style.background = c;
+      if (c === picked) dot.classList.add('active');
+      dot.onclick = () => {
+        picked = c;
+        colorsBox.querySelectorAll('span').forEach(x => x.classList.remove('active'));
+        dot.classList.add('active');
+      };
+      colorsBox.appendChild(dot);
+    });
+
+    wrap.querySelector('.btn-cancel').onclick = onCancel;
+    wrap.querySelector('.btn-ok').onclick = () => {
+      const text = ta.value.trim();
+      if (!text) { ta.focus(); return; }
+      onSave(text, picked);
+    };
+
+    setTimeout(() => ta.focus(), 0);
+    return wrap;
+  }
+
+  function addSticker() {
+    if (stickersList.querySelector('.sticker-input')) return; // уже открыт редактор
+    const editor = buildEditor('', currentColor, (text, color) => {
+      const now = new Date().toISOString();
+      const sticker = { id: uid(), text, color, created: now, updated: now };
+      stickers.unshift(sticker);
+      persistLocal();
+      renderStickers();
+      saveStickerToSheet(sticker);
+    }, () => renderStickers());
+    stickersList.prepend(editor);
+  }
+
+  function editSticker(id) {
+    if (stickersList.querySelector('.sticker-input')) return;
+    const s = stickers.find(x => x.id === id);
+    if (!s) return;
+    const idx = stickers.findIndex(x => x.id === id);
+    const node = stickersList.children[idx];
+    if (!node) return;
+    const editor = buildEditor(s.text, s.color, (text, color) => {
+      s.text = text;
+      s.color = color;
+      s.updated = new Date().toISOString();
+      persistLocal();
+      renderStickers();
+      saveStickerToSheet(s);
+    }, () => renderStickers());
+    node.replaceWith(editor);
+  }
+
+  function deleteSticker(id) {
+    if (!confirm('Удалить стикер?')) return;
+    stickers = stickers.filter(s => s.id !== id);
+    persistLocal();
+    renderStickers();
+    deleteStickerFromSheet(id);
+  }
+
+  addStickerBtn.addEventListener('click', addSticker);
+
+  loadStickers();
 </script>
 
 </body>
