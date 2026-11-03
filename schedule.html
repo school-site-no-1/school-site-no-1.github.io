@@ -218,6 +218,26 @@
   .card.subject-informatics  { border-left-color: var(--purple); }
   .card.subject-english      { border-left-color: var(--warning); }
 
+  /* Бейджи классов (десктоп) */
+  .card .c-main .c-class-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    margin: 1px 1px;
+    background: #edf2f7;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .card.active-lesson .c-main .c-class-badge {
+    background: #c6f6d5;
+    border-color: #68d391;
+    color: #22543d;
+  }
+
   /* Прогресс-бар внутри карточки урока (десктоп) */
   .card .lesson-progress-bar {
     position: absolute;
@@ -349,6 +369,26 @@
   .m-card.subject-physics      { border-left-color: var(--success); }
   .m-card.subject-informatics  { border-left-color: var(--purple); }
   .m-card.subject-english      { border-left-color: var(--warning); }
+
+  /* Бейджи классов (мобильный) */
+  .m-card .m-main .m-class-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    margin: 1px 1px;
+    background: #edf2f7;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .m-card.active-lesson .m-main .m-class-badge {
+    background: #c6f6d5;
+    border-color: #68d391;
+    color: #22543d;
+  }
 
   /* Прогресс-бар внутри мобильной карточки */
   .m-card .lesson-progress-bar {
@@ -577,6 +617,30 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  function normalizeList(val) {
+    if (!val) return [];
+    if (Array.isArray(val)) {
+      return val
+        .flatMap(v => String(v).split(/[,;\/]/))
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+    return String(val)
+      .split(/[,;\/]/)
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  function renderClassBadges(classVal, badgeClass) {
+    const list = normalizeList(classVal);
+    const seen = [];
+    list.forEach(c => { if (!seen.includes(c)) seen.push(c); });
+    if (!seen.length) return '';
+    return seen
+      .map(c => `<span class="${badgeClass}">${escapeHtml(c)}</span>`)
+      .join(' ');
+  }
+
   const teacherSelect     = document.getElementById('teacherSelect');
   const reloadScheduleBtn = document.getElementById('reloadScheduleBtn');
   const scheduleStatus    = document.getElementById('scheduleStatus');
@@ -776,10 +840,11 @@
             if (!item) html += `<div class="card card-gap c-sat"></div>`;
             else {
               const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
+              const classHtml = renderClassBadges(item.class, 'c-class-badge');
               const mainParts = [];
-              if (klass) mainParts.push(`<span class="c-class">${escapeHtml(klass)}</span>`);
-              if (klass && subject) mainParts.push(`<span class="c-sep">·</span>`);
+              if (classHtml) mainParts.push(classHtml);
+              if (classHtml && subject) mainParts.push(`<span class="c-sep">·</span>`);
               if (subject) mainParts.push(`<span class="c-subject">${escapeHtml(subject)}</span>`);
               html += `<div class="card ${cls} c-sat"><div class="c-main">${mainParts.join('')}</div><div class="c-room">каб. ${escapeHtml(room) || '—'}</div></div>`;
             }
@@ -788,10 +853,11 @@
               html += `<div class="card card-gap"><div class="c-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div><div class="c-gap-text">окно</div></div>`;
             } else {
               const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
+              const classHtml = renderClassBadges(item.class, 'c-class-badge');
               const mainParts = [];
-              if (klass) mainParts.push(`<span class="c-class">${escapeHtml(klass)}</span>`);
-              if (klass && subject) mainParts.push(`<span class="c-sep">·</span>`);
+              if (classHtml) mainParts.push(classHtml);
+              if (classHtml && subject) mainParts.push(`<span class="c-sep">·</span>`);
               if (subject) mainParts.push(`<span class="c-subject">${escapeHtml(subject)}</span>`);
               
               const isActive = (n === currentLessonNum && day === autoDay);
@@ -871,13 +937,14 @@
           if (day === 'СБ') {
             if (item) {
               const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
+              const classHtml = renderClassBadges(item.class, 'm-class-badge');
               const mainParts = [];
-              if (klass) mainParts.push(`<span class="m-class">${escapeHtml(klass)}</span>`);
-              if (klass && subject) mainParts.push(`<span class="m-sep">·</span>`);
+              if (classHtml) mainParts.push(classHtml);
+              if (classHtml && subject) mainParts.push(`<span class="m-sep">·</span>`);
               if (subject) mainParts.push(`<span class="m-subject">${escapeHtml(subject)}</span>`);
               if (room) {
-                if (klass || subject) mainParts.push(`<span class="m-sep">·</span>`);
+                if (classHtml || subject) mainParts.push(`<span class="m-sep">·</span>`);
                 mainParts.push(`<span class="m-room">каб. ${escapeHtml(room)}</span>`);
               }
               mob += `<div class="m-card ${cls} m-sat"><div class="m-body"><div class="m-main">${mainParts.join('')}</div></div></div>`;
@@ -887,13 +954,14 @@
               mob += `<div class="m-card m-gap"><div class="m-body"><div class="m-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div><div class="m-gap-text" style="padding:0; align-self:flex-start;">окно</div></div></div>`;
             } else {
               const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), klass = (item.class || '').trim(), room = (item.room || '').trim();
+              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
+              const classHtml = renderClassBadges(item.class, 'm-class-badge');
               const mainParts = [];
-              if (klass) mainParts.push(`<span class="m-class">${escapeHtml(klass)}</span>`);
-              if (klass && subject) mainParts.push(`<span class="m-sep">·</span>`);
+              if (classHtml) mainParts.push(classHtml);
+              if (classHtml && subject) mainParts.push(`<span class="m-sep">·</span>`);
               if (subject) mainParts.push(`<span class="m-subject">${escapeHtml(subject)}</span>`);
               if (room) {
-                if (klass || subject) mainParts.push(`<span class="m-sep">·</span>`);
+                if (classHtml || subject) mainParts.push(`<span class="m-sep">·</span>`);
                 mainParts.push(`<span class="m-room">каб. ${escapeHtml(room)}</span>`);
               }
               
