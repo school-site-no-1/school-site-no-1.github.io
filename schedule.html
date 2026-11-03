@@ -631,8 +631,8 @@
       .filter(Boolean);
   }
 
-  function renderClassBadges(classVal, badgeClass) {
-    const list = normalizeList(classVal);
+  function renderClassBadges(classList, badgeClass) {
+    const list = Array.isArray(classList) ? classList : normalizeList(classList);
     const seen = [];
     list.forEach(c => { if (!seen.includes(c)) seen.push(c); });
     if (!seen.length) return '';
@@ -763,6 +763,26 @@
     return String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
   }
 
+  // Группировка записей одного дня по номеру урока
+  function groupDayLessons(rawList) {
+    const byNum = {};
+    (rawList || []).forEach(item => {
+      if (!item || !item.lesson) return;
+      const n = item.lesson;
+      if (!byNum[n]) byNum[n] = { lesson: n, classes: [], subjects: [], rooms: [] };
+      normalizeList(item.class).forEach(c => {
+        if (!byNum[n].classes.includes(c)) byNum[n].classes.push(c);
+      });
+      normalizeList(item.subject).forEach(s => {
+        if (!byNum[n].subjects.includes(s)) byNum[n].subjects.push(s);
+      });
+      normalizeList(item.room).forEach(r => {
+        if (!byNum[n].rooms.includes(r)) byNum[n].rooms.push(r);
+      });
+    });
+    return byNum;
+  }
+
   function renderSchedule(entry) {
     scheduleState.currentEntry = entry;
     const { schedule } = entry;
@@ -803,10 +823,14 @@
       }
     }
 
+    // Группируем уроки по дням
+    const groupedByDay = {};
     let maxLesson = 0;
     shownDays.forEach(day => {
-      (schedule[day] || []).forEach(item => {
-        if (item && typeof item.lesson === 'number' && item.lesson > maxLesson) maxLesson = item.lesson;
+      groupedByDay[day] = groupDayLessons(schedule[day]);
+      Object.keys(groupedByDay[day]).forEach(k => {
+        const n = parseInt(k, 10);
+        if (n > maxLesson) maxLesson = n;
       });
     });
 
@@ -815,12 +839,6 @@
     } else if (maxLesson === 0) {
       scheduleGrid.innerHTML = '<p class="schedule-empty">В выбранных днях нет уроков.</p>';
     } else {
-      const map = {};
-      shownDays.forEach(day => {
-        map[day] = {};
-        (schedule[day] || []).forEach(item => { if (item && item.lesson) map[day][item.lesson] = item; });
-      });
-
       let html = '<table class="schedule-table"><thead><tr>';
       shownDays.forEach(day => {
         html += `<th class="${day === autoDay ? 'is-today' : ''}">${DAYS_FULL[day] || day}</th>`;
@@ -830,35 +848,39 @@
       for (let n = 1; n <= maxLesson; n++) {
         html += '<tr>';
         shownDays.forEach(day => {
-          const item = map[day][n];
+          const item = groupedByDay[day][n];
+          const hasLesson = item && item.classes.length > 0;
           const t = LESSON_TIMES[n] || { start: '', end: '' };
           const timeStr = t.start ? `${t.start}–${t.end}` : '';
           
           html += '<td>';
           
           if (day === 'СБ') {
-            if (!item) html += `<div class="card card-gap c-sat"></div>`;
-            else {
-              const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
-              const classHtml = renderClassBadges(item.class, 'c-class-badge');
+            if (!hasLesson) {
+              html += `<div class="card card-gap c-sat"></div>`;
+            } else {
+              const subjectStr = item.subjects.join(', ');
+              const roomStr = item.rooms.join(', ');
+              const cls = subjectClass(subjectStr);
+              const classHtml = renderClassBadges(item.classes, 'c-class-badge');
               const mainParts = [];
               if (classHtml) mainParts.push(classHtml);
-              if (classHtml && subject) mainParts.push(`<span class="c-sep">·</span>`);
-              if (subject) mainParts.push(`<span class="c-subject">${escapeHtml(subject)}</span>`);
-              html += `<div class="card ${cls} c-sat"><div class="c-main">${mainParts.join('')}</div><div class="c-room">каб. ${escapeHtml(room) || '—'}</div></div>`;
+              if (classHtml && subjectStr) mainParts.push(`<span class="c-sep">·</span>`);
+              if (subjectStr) mainParts.push(`<span class="c-subject">${escapeHtml(subjectStr)}</span>`);
+              html += `<div class="card ${cls} c-sat"><div class="c-main">${mainParts.join('')}</div><div class="c-room">каб. ${escapeHtml(roomStr) || '—'}</div></div>`;
             }
           } else {
-            if (!item) {
+            if (!hasLesson) {
               html += `<div class="card card-gap"><div class="c-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div><div class="c-gap-text">окно</div></div>`;
             } else {
-              const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
-              const classHtml = renderClassBadges(item.class, 'c-class-badge');
+              const subjectStr = item.subjects.join(', ');
+              const roomStr = item.rooms.join(', ');
+              const cls = subjectClass(subjectStr);
+              const classHtml = renderClassBadges(item.classes, 'c-class-badge');
               const mainParts = [];
               if (classHtml) mainParts.push(classHtml);
-              if (classHtml && subject) mainParts.push(`<span class="c-sep">·</span>`);
-              if (subject) mainParts.push(`<span class="c-subject">${escapeHtml(subject)}</span>`);
+              if (classHtml && subjectStr) mainParts.push(`<span class="c-sep">·</span>`);
+              if (subjectStr) mainParts.push(`<span class="c-subject">${escapeHtml(subjectStr)}</span>`);
               
               const isActive = (n === currentLessonNum && day === autoDay);
               
@@ -869,7 +891,7 @@
               }
               html += `<div class="c-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div>`;
               html += `<div class="c-main">${mainParts.join('')}</div>`;
-              html += `<div class="c-room">каб. ${escapeHtml(room) || '—'}</div>`;
+              html += `<div class="c-room">каб. ${escapeHtml(roomStr) || '—'}</div>`;
               html += `</div>`;
             }
           }
@@ -889,20 +911,21 @@
 
     let mob = '';
     shownDays.forEach(day => {
-      const items = (schedule[day] || []).filter(it => it && it.lesson).sort((a, b) => a.lesson - b.lesson);
+      const byNum = groupedByDay[day];
+      const lessonNums = Object.keys(byNum).map(Number).sort((a, b) => a - b);
+
       mob += '<div class="day-block">';
       mob += `<div class="day-title"><span>${DAYS_FULL[day] || day}</span>${day === autoDay ? `<span class="today-badge">сегодня</span>` : ''}</div>`;
 
-      if (items.length === 0) {
+      if (lessonNums.length === 0) {
         mob += '<div class="day-empty">Нет уроков</div>';
       } else {
-        const maxN = items[items.length - 1].lesson;
-        const byNum = {};
-        items.forEach(it => { byNum[it.lesson] = it; });
+        const maxN = lessonNums[lessonNums.length - 1];
 
         mob += '<div class="day-lessons">';
         for (let n = 1; n <= maxN; n++) {
           const item = byNum[n];
+          const hasLesson = item && item.classes.length > 0;
           const t = LESSON_TIMES[n] || { start: '', end: '' };
           const timeStr = t.start ? `${t.start}–${t.end}` : '';
           
@@ -935,34 +958,36 @@
 
           // 2. ВЫВОДИМ КАРТОЧКУ УРОКА
           if (day === 'СБ') {
-            if (item) {
-              const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
-              const classHtml = renderClassBadges(item.class, 'm-class-badge');
+            if (hasLesson) {
+              const subjectStr = item.subjects.join(', ');
+              const roomStr = item.rooms.join(', ');
+              const cls = subjectClass(subjectStr);
+              const classHtml = renderClassBadges(item.classes, 'm-class-badge');
               const mainParts = [];
               if (classHtml) mainParts.push(classHtml);
-              if (classHtml && subject) mainParts.push(`<span class="m-sep">·</span>`);
-              if (subject) mainParts.push(`<span class="m-subject">${escapeHtml(subject)}</span>`);
-              if (room) {
-                if (classHtml || subject) mainParts.push(`<span class="m-sep">·</span>`);
-                mainParts.push(`<span class="m-room">каб. ${escapeHtml(room)}</span>`);
+              if (classHtml && subjectStr) mainParts.push(`<span class="m-sep">·</span>`);
+              if (subjectStr) mainParts.push(`<span class="m-subject">${escapeHtml(subjectStr)}</span>`);
+              if (roomStr) {
+                if (classHtml || subjectStr) mainParts.push(`<span class="m-sep">·</span>`);
+                mainParts.push(`<span class="m-room">каб. ${escapeHtml(roomStr)}</span>`);
               }
               mob += `<div class="m-card ${cls} m-sat"><div class="m-body"><div class="m-main">${mainParts.join('')}</div></div></div>`;
             }
           } else {
-            if (!item) {
+            if (!hasLesson) {
               mob += `<div class="m-card m-gap"><div class="m-body"><div class="m-lesson-time">Урок ${n} ${timeStr ? '· ' + timeStr : ''}</div><div class="m-gap-text" style="padding:0; align-self:flex-start;">окно</div></div></div>`;
             } else {
-              const cls = subjectClass(item.subject);
-              const subject = (item.subject || '').trim(), room = (item.room || '').trim();
-              const classHtml = renderClassBadges(item.class, 'm-class-badge');
+              const subjectStr = item.subjects.join(', ');
+              const roomStr = item.rooms.join(', ');
+              const cls = subjectClass(subjectStr);
+              const classHtml = renderClassBadges(item.classes, 'm-class-badge');
               const mainParts = [];
               if (classHtml) mainParts.push(classHtml);
-              if (classHtml && subject) mainParts.push(`<span class="m-sep">·</span>`);
-              if (subject) mainParts.push(`<span class="m-subject">${escapeHtml(subject)}</span>`);
-              if (room) {
-                if (classHtml || subject) mainParts.push(`<span class="m-sep">·</span>`);
-                mainParts.push(`<span class="m-room">каб. ${escapeHtml(room)}</span>`);
+              if (classHtml && subjectStr) mainParts.push(`<span class="m-sep">·</span>`);
+              if (subjectStr) mainParts.push(`<span class="m-subject">${escapeHtml(subjectStr)}</span>`);
+              if (roomStr) {
+                if (classHtml || subjectStr) mainParts.push(`<span class="m-sep">·</span>`);
+                mainParts.push(`<span class="m-room">каб. ${escapeHtml(roomStr)}</span>`);
               }
               
               const isActive = (n === currentLessonNum && day === autoDay);
