@@ -212,10 +212,21 @@
   }
   .main-col { min-width: 0; }
 
-  /* ===== СТИКЕРЫ ===== */
-  .stickers {
+  /* ===== ПРАВАЯ КОЛОНКА (стикеры + калькулятор) ===== */
+  .side-col {
     position: sticky;
     top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+  .side-col::-webkit-scrollbar { width: 6px; }
+  .side-col::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
+
+  /* ===== СТИКЕРЫ ===== */
+  .stickers {
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -224,7 +235,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: calc(100dvh - 32px);
   }
   .stickers-head {
     display: flex;
@@ -251,6 +261,7 @@
     flex-direction: column;
     gap: 8px;
     overflow-y: auto;
+    max-height: 260px;
   }
   .sticker {
     position: relative;
@@ -318,10 +329,100 @@
   .sticker-actions .btn-cancel { background: #e2e8f0; color: var(--text); }
   .sticker-actions .btn-ok { background: var(--accent); color: #fff; }
 
+  /* ===== КАЛЬКУЛЯТОР ===== */
+  .calc {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .calc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+  .calc-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    padding: 2px 4px;
+  }
+  .calc-toggle:hover { text-decoration: underline; }
+  .calc-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
+  }
+  .calc.collapsed .calc-body {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+  .calc-display {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+  }
+  .calc-history {
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    min-height: 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .calc-result {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .calc-grid button {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+    user-select: none;
+    min-height: 40px;
+  }
+  .calc-grid button:hover { background: var(--accent-soft); }
+  .calc-grid button:active { transform: scale(0.96); }
+  .calc-grid button.op { color: var(--accent); background: #f0f7ff; }
+  .calc-grid button.eq { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .calc-grid button.eq:hover { filter: brightness(1.1); }
+  .calc-grid button.fn { color: var(--danger); background: #fff5f5; }
+  .calc-grid button.span2 { grid-column: span 2; }
+
   /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
-    .stickers { position: static; max-height: none; order: -1; }
+    .side-col { position: static; max-height: none; order: -1; }
+    .stickers-list { max-height: 200px; }
   }
 
   @media (max-width: 768px) {
@@ -489,14 +590,58 @@
 
     </div>
 
-    <!-- ===== СТИКЕРЫ ===== -->
-    <aside class="stickers" id="stickersPanel">
-      <div class="stickers-head">
-        <span>📌 Стикеры</span>
-        <button id="addStickerBtn" title="Добавить">+</button>
+    <!-- ===== ПРАВАЯ КОЛОНКА: СТИКЕРЫ + КАЛЬКУЛЯТОР ===== -->
+    <aside class="side-col">
+
+      <!-- ===== СТИКЕРЫ ===== -->
+      <div class="stickers" id="stickersPanel">
+        <div class="stickers-head">
+          <span>📌 Стикеры</span>
+          <button id="addStickerBtn" title="Добавить">+</button>
+        </div>
+        <div class="stickers-list" id="stickersList"></div>
+        <div class="stickers-hint" id="stickersHint">Загрузка…</div>
       </div>
-      <div class="stickers-list" id="stickersList"></div>
-      <div class="stickers-hint" id="stickersHint">Загрузка…</div>
+
+      <!-- ===== КАЛЬКУЛЯТОР ===== -->
+      <div class="calc" id="calc">
+        <div class="calc-head">
+          <span>🧮 Калькулятор</span>
+          <button class="calc-toggle" id="calcToggleBtn">Свернуть</button>
+        </div>
+        <div class="calc-body" id="calcBody">
+          <div class="calc-display">
+            <div class="calc-history" id="calcHistory">&nbsp;</div>
+            <div class="calc-result" id="calcResult">0</div>
+          </div>
+          <div class="calc-grid" id="calcGrid">
+            <button class="fn" data-action="clear">C</button>
+            <button class="fn" data-action="back">⌫</button>
+            <button class="fn" data-action="percent">%</button>
+            <button class="op" data-op="/">÷</button>
+
+            <button data-num="7">7</button>
+            <button data-num="8">8</button>
+            <button data-num="9">9</button>
+            <button class="op" data-op="*">×</button>
+
+            <button data-num="4">4</button>
+            <button data-num="5">5</button>
+            <button data-num="6">6</button>
+            <button class="op" data-op="-">−</button>
+
+            <button data-num="1">1</button>
+            <button data-num="2">2</button>
+            <button data-num="3">3</button>
+            <button class="op" data-op="+">+</button>
+
+            <button data-num="0" class="span2">0</button>
+            <button data-action="dot">.</button>
+            <button class="eq" data-action="equals">=</button>
+          </div>
+        </div>
+      </div>
+
     </aside>
 
   </div>
@@ -878,6 +1023,335 @@
   addStickerBtn.addEventListener('click', addSticker);
 
   loadStickers();
+
+  /* ============================================================
+     КАЛЬКУЛЯТОР
+     ============================================================ */
+  const calc = document.getElementById('calc');
+  const calcToggleBtn = document.getElementById('calcToggleBtn');
+  const calcHistory = document.getElementById('calcHistory');
+  const calcResult = document.getElementById('calcResult');
+  const calcGrid = document.getElementById('calcGrid');
+
+  // Состояние калькулятора
+  let calcState = {
+    current: '0',        // текущее вводимое число (строка)
+    previous: null,      // предыдущее число (строка)
+    operator: null,      // оператор: + - * /
+    justEvaluated: false,// только что нажали =
+    historyText: ''      // строка для верхней панели
+  };
+
+  // Сохраняем/загружаем состояние калькулятора в localStorage
+  function saveCalcState() {
+    try {
+      localStorage.setItem('school_calc_state', JSON.stringify(calcState));
+    } catch (e) {}
+  }
+
+  function loadCalcState() {
+    try {
+      const raw = localStorage.getItem('school_calc_state');
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved && typeof saved === 'object' && 'current' in saved) {
+          calcState = Object.assign(calcState, saved);
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Обновление дисплея
+  function updateCalcDisplay() {
+    calcResult.textContent = calcState.current;
+    calcHistory.innerHTML = calcState.historyText || '&nbsp;';
+  }
+
+  // Форматирование числа для отображения (убираем лишние нули)
+  function formatNumber(str) {
+    if (str === '' || str === '-') return str;
+    // Если число очень длинное — не трогаем
+    if (str.length > 15) return str;
+    // Убираем лишние нули после запятой, но сохраняем введённое пользователем
+    return str;
+  }
+
+  // Безопасное вычисление выражения
+  function safeCalculate(a, op, b) {
+    const numA = parseFloat(a);
+    const numB = parseFloat(b);
+    if (isNaN(numA) || isNaN(numB)) return 'Ошибка';
+    let result;
+    switch (op) {
+      case '+': result = numA + numB; break;
+      case '-': result = numA - numB; break;
+      case '*': result = numA * numB; break;
+      case '/':
+        if (numB === 0) return 'Ошибка';
+        result = numA / numB;
+        break;
+      default: return 'Ошибка';
+    }
+    // Ограничиваем количество знаков
+    if (!isFinite(result)) return 'Ошибка';
+    // Округляем до 10 знаков, убираем хвостовые нули
+    let resStr = String(parseFloat(result.toFixed(10)));
+    // Если получилось очень длинное число — используем экспоненциальный формат
+    if (resStr.length > 14) {
+      resStr = result.toExponential(6);
+    }
+    return resStr;
+  }
+
+  // Обработка нажатия цифры
+  function inputDigit(digit) {
+    if (calcState.justEvaluated) {
+      // После = начинаем новое вычисление с нуля
+      calcState.current = digit;
+      calcState.previous = null;
+      calcState.operator = null;
+      calcState.historyText = '';
+      calcState.justEvaluated = false;
+    } else {
+      if (calcState.current === '0' && digit !== '.') {
+        calcState.current = digit;
+      } else {
+        // Ограничиваем длину ввода
+        if (calcState.current.replace('-', '').replace('.', '').length >= 15) return;
+        calcState.current += digit;
+      }
+    }
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Ввод точки
+  function inputDot() {
+    if (calcState.justEvaluated) {
+      calcState.current = '0.';
+      calcState.previous = null;
+      calcState.operator = null;
+      calcState.historyText = '';
+      calcState.justEvaluated = false;
+    } else {
+      if (!calcState.current.includes('.')) {
+        calcState.current += '.';
+      }
+    }
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Выбор оператора
+  function setOperator(op) {
+    const currentVal = calcState.current;
+    if (currentVal === '' || currentVal === '-') return;
+
+    // Если уже есть оператор и предыдущее число, и пользователь меняет оператор
+    if (calcState.operator && calcState.previous !== null && !calcState.justEvaluated) {
+      // Вычисляем промежуточный результат
+      const intermediate = safeCalculate(calcState.previous, calcState.operator, currentVal);
+      if (intermediate === 'Ошибка') {
+        calcState.current = 'Ошибка';
+        calcState.previous = null;
+        calcState.operator = null;
+        calcState.historyText = '';
+        calcState.justEvaluated = true;
+        updateCalcDisplay();
+        saveCalcState();
+        return;
+      }
+      calcState.previous = intermediate;
+      calcState.current = '0';
+    } else {
+      calcState.previous = currentVal;
+      calcState.current = '0';
+    }
+
+    calcState.operator = op;
+    calcState.justEvaluated = false;
+
+    const opSymbol = { '+': '+', '-': '−', '*': '×', '/': '÷' }[op];
+    calcState.historyText = formatNumber(calcState.previous) + ' ' + opSymbol;
+
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Вычисление (=)
+  function evaluate() {
+    if (calcState.operator === null || calcState.previous === null) {
+      // Просто фиксируем текущее число
+      calcState.historyText = '';
+      calcState.justEvaluated = true;
+      updateCalcDisplay();
+      saveCalcState();
+      return;
+    }
+
+    const result = safeCalculate(calcState.previous, calcState.operator, calcState.current);
+
+    const opSymbol = { '+': '+', '-': '−', '*': '×', '/': '÷' }[calcState.operator];
+    calcState.historyText = formatNumber(calcState.previous) + ' ' + opSymbol + ' ' + formatNumber(calcState.current) + ' =';
+
+    calcState.current = result;
+    calcState.previous = null;
+    calcState.operator = null;
+    calcState.justEvaluated = true;
+
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Очистка
+  function clearAll() {
+    calcState = {
+      current: '0',
+      previous: null,
+      operator: null,
+      justEvaluated: false,
+      historyText: ''
+    };
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Удаление последнего символа
+  function backspace() {
+    if (calcState.justEvaluated) {
+      // После = ничего не удаляем, просто сбрасываем состояние
+      calcState.current = '0';
+      calcState.justEvaluated = false;
+      calcState.historyText = '';
+    } else {
+      if (calcState.current.length > 1) {
+        calcState.current = calcState.current.slice(0, -1);
+        if (calcState.current === '-' || calcState.current === '') {
+          calcState.current = '0';
+        }
+      } else {
+        calcState.current = '0';
+      }
+    }
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Процент
+  function percent() {
+    const num = parseFloat(calcState.current);
+    if (isNaN(num)) return;
+
+    // Если есть предыдущее число и оператор — считаем процент от предыдущего
+    if (calcState.previous !== null && calcState.operator !== null) {
+      const prevNum = parseFloat(calcState.previous);
+      if (!isNaN(prevNum)) {
+        calcState.current = String(prevNum * num / 100);
+        updateCalcDisplay();
+        saveCalcState();
+        return;
+      }
+    }
+
+    // Иначе просто делим на 100
+    calcState.current = String(num / 100);
+    updateCalcDisplay();
+    saveCalcState();
+  }
+
+  // Обработчик кнопок
+  calcGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    const num = btn.dataset.num;
+    const op = btn.dataset.op;
+    const action = btn.dataset.action;
+
+    if (num !== undefined) {
+      inputDigit(num);
+    } else if (op !== undefined) {
+      setOperator(op);
+    } else if (action) {
+      switch (action) {
+        case 'clear': clearAll(); break;
+        case 'back': backspace(); break;
+        case 'percent': percent(); break;
+        case 'dot': inputDot(); break;
+        case 'equals': evaluate(); break;
+      }
+    }
+  });
+
+  // Сворачивание/разворачивание калькулятора
+  function toggleCalc() {
+    const isCollapsed = calc.classList.contains('collapsed');
+    if (isCollapsed) {
+      calc.classList.remove('collapsed');
+      calcToggleBtn.textContent = 'Свернуть';
+      localStorage.setItem('calcCollapsed', 'false');
+    } else {
+      calc.classList.add('collapsed');
+      calcToggleBtn.textContent = 'Развернуть';
+      localStorage.setItem('calcCollapsed', 'true');
+    }
+  }
+
+  calcToggleBtn.addEventListener('click', toggleCalc);
+
+  // Восстанавливаем состояние сворачивания
+  if (localStorage.getItem('calcCollapsed') === 'true') {
+    calc.classList.add('collapsed');
+    calcToggleBtn.textContent = 'Развернуть';
+  } else {
+    calc.classList.remove('collapsed');
+    calcToggleBtn.textContent = 'Свернуть';
+  }
+
+  // Загружаем сохранённое состояние калькулятора и обновляем дисплей
+  loadCalcState();
+  updateCalcDisplay();
+
+  // Поддержка клавиатуры
+  document.addEventListener('keydown', (e) => {
+    // Если фокус в поле ввода или textarea — не перехватываем
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
+
+    const key = e.key;
+
+    if (/^[0-9]$/.test(key)) {
+      e.preventDefault();
+      inputDigit(key);
+    } else if (key === '.' || key === ',') {
+      e.preventDefault();
+      inputDot();
+    } else if (key === '+') {
+      e.preventDefault();
+      setOperator('+');
+    } else if (key === '-') {
+      e.preventDefault();
+      setOperator('-');
+    } else if (key === '*') {
+      e.preventDefault();
+      setOperator('*');
+    } else if (key === '/') {
+      e.preventDefault();
+      setOperator('/');
+    } else if (key === 'Enter' || key === '=') {
+      e.preventDefault();
+      evaluate();
+    } else if (key === 'Backspace') {
+      e.preventDefault();
+      backspace();
+    } else if (key === 'Escape') {
+      e.preventDefault();
+      clearAll();
+    } else if (key === '%') {
+      e.preventDefault();
+      percent();
+    }
+  });
 </script>
 
 </body>
