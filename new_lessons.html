@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Темы и отметки</title>
+<title>Темы и отметки — предметы и классы</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,27 +37,117 @@
     min-height: 100%;
   }
 
-  .container { max-width: 1100px; margin: 0 auto; }
+  .container { max-width: 1200px; margin: 0 auto; }
 
-  /* ===== Прогресс ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .subject-sidebar {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 16px;
+  }
+  .subject-sidebar-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--text-soft);
+    padding: 6px 10px 10px;
+  }
+  .subject-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 12px 12px;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    margin-bottom: 4px;
+    min-height: var(--tap);
+  }
+  .subject-btn:hover { background: #f0f5fa; color: var(--primary); }
+  .subject-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(30,58,95,0.28);
+  }
+  .subject-btn .sub {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    opacity: 0.75;
+    margin-top: 3px;
+    letter-spacing: 0.02em;
+  }
+
+  .workspace { min-width: 0; }
+
+  .class-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: var(--card);
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .class-tab {
+    flex: 1 1 auto;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-soft);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    min-height: 40px;
+    white-space: nowrap;
+  }
+  .class-tab:hover { color: var(--primary); background: #f0f5fa; }
+  .class-tab.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(49,130,206,0.3);
+  }
+
   .progress-card {
     background: var(--card);
     border-radius: 12px;
-    padding: 18px 22px;
-    margin-bottom: 20px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
   }
-  .progress-info { flex: 1; min-width: 220px; }
+  .progress-info { flex: 1; min-width: 200px; }
   .progress-label {
-    font-size: 0.85rem; color: var(--text-soft);
+    font-size: 0.82rem; color: var(--text-soft);
     text-transform: uppercase; letter-spacing: 0.05em;
     font-weight: 600; margin-bottom: 4px;
   }
-  .progress-count { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
-  .progress-count .of { color: var(--text-soft); font-weight: 500; font-size: 1rem; }
+  .progress-count { font-size: 1.35rem; font-weight: 700; color: var(--primary); }
+  .progress-count .of { color: var(--text-soft); font-weight: 500; font-size: 0.95rem; }
   .progress-bar {
-    flex: 2; min-width: 200px; height: 10px;
+    flex: 2; min-width: 180px; height: 10px;
     background: var(--border); border-radius: 999px; overflow: hidden;
   }
   .progress-fill {
@@ -67,22 +157,13 @@
     transition: width 0.4s ease;
     width: 0%;
   }
-  .per-class { display: flex; gap: 20px; flex-wrap: wrap; }
-  .class-stat { text-align: center; min-width: 60px; }
-  .class-stat .name {
-    font-size: 0.75rem; font-weight: 700; color: var(--text-soft);
-    text-transform: uppercase; letter-spacing: 0.06em;
-  }
-  .class-stat .num { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-  .class-stat .num.done { color: var(--success); }
 
-  /* ===== Кнопки (перенесены вниз) ===== */
-  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
   button, .btn-file {
     font-family: inherit;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 9px 16px;
+    padding: 9px 14px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -108,7 +189,6 @@
   .btn-expand { background: var(--primary-light); }
   .btn-collapse { background: #4a5568; }
 
-  /* ===== Таблица ===== */
   .table-wrap {
     background: var(--card);
     border-radius: 12px;
@@ -120,7 +200,7 @@
     background: var(--primary);
     color: #fff;
     padding: 14px 16px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -135,7 +215,6 @@
     transition: background 0.25s ease;
   }
   tbody tr.lesson-row:hover { filter: brightness(0.98); }
-
   tbody tr.lesson-row[data-count="0"] { background: #ffffff; }
   tbody tr.lesson-row[data-count="1"] { background: #fdecec; }
   tbody tr.lesson-row[data-count="2"] { background: #fff8e1; }
@@ -148,7 +227,7 @@
     -webkit-user-select: text;
     font-weight: 600;
     color: var(--primary);
-    font-size: 0.94rem;
+    font-size: 0.93rem;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -157,11 +236,8 @@
   td.lesson-title:hover { color: var(--accent); }
   td.lesson-title .toggle-icon {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
     background: rgba(255,255,255,0.7);
     border-radius: 6px;
     color: var(--accent);
@@ -181,10 +257,7 @@
     vertical-align: middle;
   }
   td.mark .mark-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
   }
   td.mark input[type="checkbox"] {
     appearance: none; -webkit-appearance: none;
@@ -266,16 +339,16 @@
     opacity: 0.7;
   }
 
-  /* Ссылка на материалы */
   .content-link-box {
     margin-top: 10px;
     padding-top: 8px;
     border-top: 1px dashed var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .content-link-box a {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    display: inline-flex; align-items: center; gap: 6px;
     color: var(--accent);
     text-decoration: none;
     font-size: 0.88rem;
@@ -285,20 +358,58 @@
     background: var(--accent-soft);
     transition: background 0.15s, color 0.15s;
   }
-  .content-link-box a:hover {
-    background: var(--accent);
-    color: #fff;
-  }
+  .content-link-box a:hover { background: var(--accent); color: #fff; }
 
-  /* Комментарии */
   .comment-box {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px dashed var(--border);
+  }
+
+  .comment-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    min-height: 32px;
+  }
+  .comment-toggle:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+  .comment-toggle .arrow {
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+  }
+  .comment-toggle.open .arrow {
+    transform: rotate(90deg);
+  }
+  .comment-toggle .has-text {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    font-weight: 500;
+  }
+
+  .comment-body {
+    display: none;
+    margin-top: 8px;
+  }
+  .comment-body.open {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    animation: fadeIn 0.2s ease;
   }
+
   .comment-box textarea {
     width: 100%;
     min-height: 64px;
@@ -340,16 +451,70 @@
   .io-message.ok { color: var(--success); }
   .io-message.err { color: var(--danger); }
 
-  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
+  .empty-state {
+    text-align: center;
+    padding: 26px 16px;
+    color: var(--text-soft);
+    font-size: 0.92rem;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 10px; }
+
+    .subject-sidebar {
+      position: static;
+      padding: 4px;
+      display: flex;
+      gap: 6px;
+      overflow: visible;
+      border-radius: 10px;
+    }
+    .subject-sidebar-title { display: none; }
+
+    .subject-btn {
+      flex: 1 1 0;
+      min-width: 0;
+      margin-bottom: 0;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      line-height: 1.15;
+      min-height: 38px;
+      border-radius: 8px;
+      white-space: nowrap;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .subject-btn .sub { display: none; }
+  }
+
   @media (max-width: 768px) {
     body { padding: 14px 10px 30px; }
-    
-    .progress-card { padding: 14px 14px; gap: 12px; margin-bottom: 14px; }
+
+    .class-switch {
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .class-switch::-webkit-scrollbar { display: none; }
+    .class-tab {
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      flex: 0 0 auto;
+      min-height: 32px;
+      border-radius: 7px;
+      white-space: nowrap;
+    }
+
+    .progress-card { padding: 10px 12px; gap: 10px; margin-bottom: 10px; }
     .progress-info { min-width: 0; flex: 1 1 100%; }
     .progress-bar { flex: 1 1 100%; min-width: 0; }
     .progress-count { font-size: 1.2rem; }
-    .per-class { gap: 14px; flex: 1 1 100%; justify-content: space-between; }
-    .class-stat { min-width: 50px; }
 
     .controls {
       display: grid;
@@ -374,93 +539,130 @@
       align-items: flex-start;
     }
     td.lesson-title .toggle-icon {
-      width: 20px; height: 20px; font-size: 0.65rem;
-      margin-top: 1px;
+      width: 20px; height: 20px; font-size: 0.65rem; margin-top: 1px;
     }
     td.mark { width: 60px; padding: 8px 3px; }
     td.mark .mark-inner { gap: 3px; }
     td.mark input[type="checkbox"] { width: 24px; height: 24px; }
     td.mark input[type="checkbox"]:checked::after { left: 7px; top: 2px; width: 5px; height: 11px; }
     td.mark .date-input { font-size: 0.6rem; max-width: 56px; padding: 2px 1px; }
-    tr.content-row td {
-      padding-left: 12px;
-      padding-right: 10px;
-      font-size: 0.85rem;
-    }
+    tr.content-row td { padding-left: 12px; padding-right: 10px; font-size: 0.85rem; }
     tr.content-row.open td { padding-top: 4px; padding-bottom: 14px; }
+
+    .comment-toggle { font-size: 0.78rem; padding: 5px 10px; min-height: 30px; }
+    .comment-box textarea { min-height: 56px; font-size: 0.85rem; }
+
+    .content-link-box { gap: 6px; }
+    .content-link-box a { font-size: 0.8rem; padding: 5px 10px; }
   }
 
   @media (max-width: 360px) {
     .controls { grid-template-columns: 1fr; }
     td.mark { width: 52px; }
-    thead th.mark-col { width: 52px; }
+    thead.mark-col { width: 52px; }
+    .subject-btn { font-size: 0.78rem; padding: 7px 6px; min-height: 34px; }
   }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="progress-card">
-    <div class="progress-info">
-      <div class="progress-label">Отмечено пройдено</div>
-      <div class="progress-count" id="progressCount">0 <span class="of">из 0</span></div>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div class="per-class">
-      <div class="class-stat">
-        <div class="name">9а</div>
-        <div class="num" id="stat9a">0/0</div>
-      </div>
-      <div class="class-stat">
-        <div class="name">9б</div>
-        <div class="num" id="stat9b">0/0</div>
-      </div>
-      <div class="class-stat">
-        <div class="name">9в</div>
-        <div class="num" id="stat9v">0/0</div>
-      </div>
-    </div>
-  </div>
+  <div class="layout">
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Урок и тема</th>
-          <th class="mark-col">9а</th>
-          <th class="mark-col">9б</th>
-          <th class="mark-col">9в</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-soft);">Загрузка уроков…</td></tr>
-      </tbody>
-    </table>
-  </div>
+    <aside class="subject-sidebar" id="subjectSwitch" role="tablist" aria-label="Выбор предмета">
+      <div class="subject-sidebar-title">Предметы</div>
+    </aside>
 
-  <div class="controls">
-    <button class="btn-refresh" id="refreshBtn">⟳ Обновить</button>
-    <button class="btn-expand" id="expandAllBtn">⤢ Развернуть всё</button>
-    <button class="btn-collapse" id="collapseAllBtn">⤡ Свернуть всё</button>
-    <button class="btn-export" id="downloadBtn">💾 Скачать .json</button>
-    <label class="btn-file btn-import">
-      📂 Открыть .json
-      <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
-    </label>
-    <button class="btn-class" data-action="check">✓ Отметить всё</button>
-    <button class="btn-uncheck" data-action="uncheck">✗ Снять всё</button>
-    <button class="btn-reset" id="resetBtn">⟲ Сброс</button>
-  </div>
+    <main class="workspace">
 
-  <div class="io-message" id="ioMessage"></div>
+      <div class="class-switch" id="classSwitch" role="tablist" aria-label="Выбор класса"></div>
+
+      <div class="progress-card">
+        <div class="progress-info">
+          <div class="progress-label" id="progressLabel">Отмечено пройдено</div>
+          <div class="progress-count" id="progressCount">0 <span class="of">из 0</span></div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbody">
+            <tr><td colspan="4" class="empty-state">Загрузка уроков…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="controls">
+        <button class="btn-refresh" id="refreshBtn">⟳ Обновить</button>
+        <button class="btn-expand" id="expandAllBtn">⤢ Развернуть всё</button>
+        <button class="btn-collapse" id="collapseAllBtn">⤡ Свернуть всё</button>
+        <button class="btn-export" id="downloadBtn">💾 Скачать .json</button>
+        <label class="btn-file btn-import">
+          📂 Открыть .json
+          <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
+        </label>
+        <button class="btn-class" data-action="check">✓ Отметить всё</button>
+        <button class="btn-uncheck" data-action="uncheck">✗ Снять всё</button>
+        <button class="btn-reset" id="resetBtn">⟲ Сброс</button>
+      </div>
+
+      <div class="io-message" id="ioMessage"></div>
+    </main>
+
+  </div>
 </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbyCDfJmdROm11Yq11utvbi8tXIb3nOvsb3FaDoSAKvuCBOKCIlaZLxMwjOg3udQ4-ceqA/exec';
-  const CACHE_KEY   = 'lessons_cache_v9';
-  const PENDING_KEY = 'lessons_pending_v9';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxFuQqQH3R11c2ECwzowa0OlbnIGLH_DRG3e6At9xJ_29LogiSlM-Met9NleS5kx5Yy/exec';
+  const CACHE_KEY   = 'lessons_cache_v18';
+  const PENDING_KEY = 'lessons_pending_v18';
+  const SUBJECT_KEY = 'lessons_subject_v18';
+  const CLASS_KEY   = 'lessons_class_v18';
+
+  const SUBJECTS = {
+    physics: {
+      id: 'physics',
+      label: 'Физика',
+      classes: [
+        { key: '7', label: '7 класс', letters: ['а', 'б', 'в'] },
+        { key: '8', label: '8 класс', letters: ['а', 'б', 'в'] },
+        { key: '9', label: '9 класс', letters: ['а', 'б', 'в'] }
+      ]
+    },
+    informatics: {
+      id: 'informatics',
+      label: 'Информатика',
+      classes: [
+        { key: '8',  label: '8 класс',  letters: ['а', 'б', 'в'] },
+        { key: '10', label: '10 класс', letters: ['а', 'б'] }
+      ]
+    }
+  };
+
+  const SUBJECT_ORDER = ['physics', 'informatics'];
+
+  let currentSubject = localStorage.getItem(SUBJECT_KEY) || 'physics';
+  if (!SUBJECTS[currentSubject]) currentSubject = 'physics';
+
+  let currentClass = localStorage.getItem(CLASS_KEY) || null;
+  if (!SUBJECTS[currentSubject].classes.some(c => c.key === currentClass)) {
+    currentClass = SUBJECTS[currentSubject].classes[0].key;
+  }
+
+  const datasetId = () => `${currentSubject}-${currentClass}`;
+
+  let state = {
+    lessons: {},
+    comments: {}
+  };
+
+  const subjectCfg = () => SUBJECTS[currentSubject];
+  const classCfg   = () => subjectCfg().classes.find(c => c.key === currentClass);
+  const lettersOf  = () => classCfg().letters;
 
   const todayStr = () => {
     const d = new Date();
@@ -479,21 +681,12 @@
     return s;
   }
 
-  let state = { lessons: [], comments: {} };
-
   function escapeHtml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch (e) { return {}; } }
   function writeCache(obj) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch (e) {} }
-
-  function classKeyFor(cls) {
-    if (cls === '9a') return 'class9a';
-    if (cls === '9b') return 'class9b';
-    if (cls === '9v') return 'class9v';
-    return null;
-  }
 
   function dateInputFor(id) { return document.querySelector(`input.date-input[data-date-id="${id}"]`); }
 
@@ -508,21 +701,75 @@
     }
   }
 
+  function renderSubjectSwitch() {
+    const wrap = document.getElementById('subjectSwitch');
+    wrap.innerHTML = '<div class="subject-sidebar-title">Предметы</div>';
+    SUBJECT_ORDER.forEach(id => {
+      const cfg = SUBJECTS[id];
+      const btn = document.createElement('button');
+      btn.className = 'subject-btn' + (id === currentSubject ? ' active' : '');
+      btn.dataset.subject = id;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', id === currentSubject ? 'true' : 'false');
+      const classesText = cfg.classes.map(c => c.key).join(' · ');
+      btn.innerHTML = `${escapeHtml(cfg.label)}<span class="sub">${escapeHtml(classesText)} классы</span>`;
+      btn.addEventListener('click', () => switchSubject(id));
+      wrap.appendChild(btn);
+    });
+  }
+
+  function renderClassSwitch() {
+    const wrap = document.getElementById('classSwitch');
+    wrap.innerHTML = '';
+    subjectCfg().classes.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'class-tab' + (c.key === currentClass ? ' active' : '');
+      btn.dataset.classKey = c.key;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', c.key === currentClass ? 'true' : 'false');
+      btn.textContent = c.label;
+      btn.addEventListener('click', () => switchClass(c.key));
+      wrap.appendChild(btn);
+    });
+  }
+
+  function renderTableHead() {
+    const thead = document.getElementById('thead');
+    thead.innerHTML = '';
+    const tr = document.createElement('tr');
+    const thTitle = document.createElement('th');
+    thTitle.textContent = 'Урок и тема';
+    tr.appendChild(thTitle);
+    lettersOf().forEach(letter => {
+      const th = document.createElement('th');
+      th.className = 'mark-col';
+      th.textContent = `${currentClass}${letter}`;
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+
+    const lbl = document.getElementById('progressLabel');
+    if (lbl) lbl.textContent = `Отмечено пройдено · ${subjectCfg().label} · ${classCfg().label}`;
+  }
+
   function renderLessons(lessons) {
-    state.lessons = lessons || [];
+    const ds = datasetId();
+    state.lessons[ds] = lessons || [];
     const tbody = document.getElementById('tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    if (state.lessons.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-soft);">Нет уроков.</td></tr>';
+    const list = state.lessons[ds];
+    const letters = lettersOf();
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="${1 + letters.length}" class="empty-state">Нет уроков: ${escapeHtml(subjectCfg().label)} · ${escapeHtml(classCfg().label)}.</td></tr>`;
       return;
     }
 
-    state.lessons.forEach(lesson => {
+    list.forEach(lesson => {
       const tr = document.createElement('tr');
       tr.className = 'lesson-row';
-      tr.dataset.content = 'c' + lesson.id;
+      tr.dataset.content = 'c_' + ds + '_' + lesson.id;
       tr.dataset.count = '0';
       tr.dataset.lessonId = lesson.id;
 
@@ -531,7 +778,7 @@
       tdTitle.innerHTML = '<span class="toggle-icon">▶</span>' + escapeHtml(lesson.title || lesson.id);
       tr.appendChild(tdTitle);
 
-      ['9a', '9b', '9v'].forEach(cls => {
+      letters.forEach(letter => {
         const td = document.createElement('td');
         td.className = 'mark';
         const inner = document.createElement('div');
@@ -539,21 +786,19 @@
 
         const box = document.createElement('input');
         box.type = 'checkbox';
-        box.dataset.id = lesson.id + '-' + cls;
+        box.dataset.id = lesson.id + '-' + letter;
         box.dataset.lessonId = lesson.id;
-        box.dataset.cls = cls;
+        box.dataset.letter = letter;
 
         const date = document.createElement('input');
         date.type = 'date';
         date.className = 'date-input';
-        date.dataset.dateId = lesson.id + '-' + cls;
+        date.dataset.dateId = lesson.id + '-' + letter;
         date.disabled = true;
 
         inner.appendChild(box);
         inner.appendChild(date);
         td.appendChild(inner);
-
-        if (!lesson[classKeyFor(cls)]) inner.style.visibility = 'hidden';
         tr.appendChild(td);
       });
 
@@ -561,9 +806,9 @@
 
       const contentTr = document.createElement('tr');
       contentTr.className = 'content-row';
-      contentTr.id = 'c' + lesson.id;
+      contentTr.id = 'c_' + ds + '_' + lesson.id;
       const tdContent = document.createElement('td');
-      tdContent.colSpan = 4;
+      tdContent.colSpan = 1 + letters.length;
 
       const innerDiv = document.createElement('div');
       innerDiv.className = 'content-inner';
@@ -576,44 +821,72 @@
       });
       innerDiv.appendChild(ul);
 
-      // Ссылка
-      if (lesson.link && String(lesson.link).trim() !== '') {
+      // ===== Материалы (несколько ссылок с названиями) =====
+      const materials = Array.isArray(lesson.materials) ? lesson.materials.filter(m => m && m.url) : [];
+      if (materials.length === 0 && lesson.link && String(lesson.link).trim() !== '') {
+        materials.push({ title: 'Материалы к уроку', url: String(lesson.link).trim() });
+      }
+
+      if (materials.length > 0) {
         const linkBox = document.createElement('div');
         linkBox.className = 'content-link-box';
-        const a = document.createElement('a');
-        a.href = lesson.link.trim();
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.innerHTML = '🔗 Материалы к уроку';
-        linkBox.appendChild(a);
+        materials.forEach(m => {
+          const a = document.createElement('a');
+          a.href = m.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = '🔗 ' + (m.title || 'Материал');
+          linkBox.appendChild(a);
+        });
         innerDiv.appendChild(linkBox);
       }
 
-      // Текстовое поле для комментария
+      // ===== Сворачиваемый комментарий =====
       const commentBox = document.createElement('div');
       commentBox.className = 'comment-box';
-      
+
+      const commentsForDs = state.comments[ds] || {};
+      const hasComment = !!(commentsForDs[lesson.id] && commentsForDs[lesson.id].trim());
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'comment-toggle' + (hasComment ? ' open' : '');
+      toggleBtn.innerHTML = `<span class="arrow">▶</span> Комментарий${hasComment ? ' <span class="has-text">(есть)</span>' : ''}`;
+
+      const body = document.createElement('div');
+      body.className = 'comment-body' + (hasComment ? ' open' : '');
+
       const textarea = document.createElement('textarea');
       textarea.placeholder = 'Ваши заметки к уроку (что задали, что повторить)...';
-      textarea.value = state.comments[lesson.id] || '';
-      
+      textarea.value = commentsForDs[lesson.id] || '';
+
       const statusText = document.createElement('div');
       statusText.className = 'comment-status';
-      
-      // Логика сохранения комментария при потере фокуса
+
+      toggleBtn.addEventListener('click', () => {
+        const isOpen = body.classList.toggle('open');
+        toggleBtn.classList.toggle('open', isOpen);
+      });
+
       textarea.addEventListener('change', async (e) => {
         const val = e.target.value.trim();
         statusText.textContent = 'Сохранение...';
         statusText.style.color = 'var(--warning)';
-        
+
         try {
-          state.comments[lesson.id] = val;
+          if (!state.comments[ds]) state.comments[ds] = {};
+          state.comments[ds][lesson.id] = val;
           const marks = collectMarksFromUI();
-          writeCache({ lessons: state.lessons, marks: marks, comments: state.comments });
+          writeCache({ dataset: ds, lessons: state.lessons, marks, comments: state.comments });
+
+          const hasNow = !!val;
+          toggleBtn.innerHTML = `<span class="arrow">▶</span> Комментарий${hasNow ? ' <span class="has-text">(есть)</span>' : ''}`;
+          if (hasNow) toggleBtn.classList.add('open');
+          else toggleBtn.classList.remove('open');
 
           const resp = await fetch(API_URL, {
             method: 'POST',
-            body: JSON.stringify({ action: 'comment', id: lesson.id, text: val })
+            body: JSON.stringify({ action: 'comment', subject: ds, id: lesson.id, text: val })
           });
           const result = await resp.json();
           if (result.result === 'ok') {
@@ -629,13 +902,14 @@
         }
       });
 
-      commentBox.appendChild(textarea);
-      commentBox.appendChild(statusText);
+      body.appendChild(textarea);
+      body.appendChild(statusText);
+      commentBox.appendChild(toggleBtn);
+      commentBox.appendChild(body);
       innerDiv.appendChild(commentBox);
 
       tdContent.appendChild(innerDiv);
       contentTr.appendChild(tdContent);
-
       tbody.appendChild(contentTr);
     });
   }
@@ -669,29 +943,42 @@
   }
 
   async function loadFromServer(force = false) {
+    const ds = datasetId();
     if (force) { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
 
     const cached = readCache();
-    if (!force) {
+    if (!force && cached.dataset === ds) {
       if (cached.comments) state.comments = cached.comments;
-      if (cached.lessons && cached.lessons.length) renderLessons(cached.lessons);
+      if (cached.lessons && cached.lessons[ds] && cached.lessons[ds].length) {
+        renderLessons(cached.lessons[ds]);
+      }
       if (cached.marks) applyMarksToUI(cached.marks);
       bindAllLessonEvents();
     }
 
     try {
-      const resp = await fetch(API_URL + '?action=load', { cache: 'no-cache' });
+      const url = API_URL + '?action=load&subject=' + encodeURIComponent(ds);
+      const resp = await fetch(url, { cache: 'no-cache' });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       const data = await resp.json();
       if (data.result !== 'ok') throw new Error(data.error || 'unknown');
 
-      state.comments = data.comments || {};
-      writeCache({ lessons: data.lessons || [], marks: data.marks || {}, comments: state.comments });
+      state.comments[ds] = data.comments || {};
+      if (!state.lessons[ds]) state.lessons[ds] = [];
+      state.lessons[ds] = data.lessons || [];
+
+      writeCache({
+        dataset: ds,
+        lessons: state.lessons,
+        marks: data.marks || {},
+        comments: state.comments
+      });
+
       renderLessons(data.lessons || []);
       applyMarksToUI(data.marks || {});
       bindAllLessonEvents();
       updateUI();
-      
+
       if (force) showMessage('✓ Данные успешно обновлены.', 'ok');
     } catch (err) {
       console.warn('[sync] не удалось загрузить:', err);
@@ -700,9 +987,10 @@
   }
 
   async function pushOneMark(id, date) {
+    const ds = datasetId();
     const resp = await fetch(API_URL, {
       method: 'POST',
-      body: JSON.stringify({ id, date })
+      body: JSON.stringify({ subject: ds, id, date })
     });
     if (!resp.ok) throw new Error('HTTP error');
     const data = await resp.json();
@@ -711,8 +999,9 @@
   }
 
   function saveMark(id, date) {
+    const ds = datasetId();
     const marks = collectMarksFromUI();
-    writeCache({ lessons: state.lessons, marks, comments: state.comments });
+    writeCache({ dataset: ds, lessons: state.lessons, marks, comments: state.comments });
 
     pushOneMark(id, date)
       .then(() => { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} })
@@ -720,12 +1009,13 @@
   }
 
   function saveAllMarks() {
+    const ds = datasetId();
     const marks = collectMarksFromUI();
-    writeCache({ lessons: state.lessons, marks, comments: state.comments });
+    writeCache({ dataset: ds, lessons: state.lessons, marks, comments: state.comments });
 
     return fetch(API_URL, {
       method: 'POST',
-      body: JSON.stringify({ marks })
+      body: JSON.stringify({ subject: ds, marks })
     })
       .then(r => r.json())
       .then(data => { if (data.result === 'ok') { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} } })
@@ -786,59 +1076,90 @@
   function updateUI() {
     const progressCount = document.getElementById('progressCount');
     const progressFill  = document.getElementById('progressFill');
-    const stat9a = document.getElementById('stat9a');
-    const stat9b = document.getElementById('stat9b');
-    const stat9v = document.getElementById('stat9v');
 
-    const boxes = document.querySelectorAll('input[type="checkbox"][data-id]');
-    if (boxes.length === 0) return;
-
-    const visibleBoxes = Array.from(boxes).filter(box => {
-      const td = box.closest('td');
-      const inner = td && td.querySelector('.mark-inner');
-      return !(inner && inner.style.visibility === 'hidden');
-    });
-
-    const TOTAL = visibleBoxes.length;
-    const done = visibleBoxes.filter(b => b.checked).length;
+    const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-id]'));
+    const TOTAL = boxes.length;
+    const done = boxes.filter(b => b.checked).length;
     const pct = TOTAL > 0 ? Math.round(done / TOTAL * 100) : 0;
 
     if (progressCount) progressCount.innerHTML = `${done} <span class="of">из ${TOTAL} · ${pct}%</span>`;
     if (progressFill) progressFill.style.width = pct + '%';
 
-    const stats = { '9a': { d: 0, t: 0 }, '9b': { d: 0, t: 0 }, '9v': { d: 0, t: 0 } };
-    visibleBoxes.forEach(box => {
-      const cls = box.dataset.cls;
-      if (!cls || !stats[cls]) return;
-      stats[cls].t++;
-      if (box.checked) stats[cls].d++;
-    });
-
-    [['9a', stat9a], ['9b', stat9b], ['9v', stat9v]].forEach(([k, el]) => {
-      if (!el) return;
-      el.textContent = `${stats[k].d}/${stats[k].t}`;
-      el.classList.toggle('done', stats[k].t > 0 && stats[k].d === stats[k].t);
-    });
-
     document.querySelectorAll('tr.lesson-row').forEach(row => {
       const cbs = row.querySelectorAll('input[type="checkbox"]');
-      const visible = Array.from(cbs).filter(cb => {
-        const td = cb.closest('td');
-        const inner = td && td.querySelector('.mark-inner');
-        return !(inner && inner.style.visibility === 'hidden');
-      });
-      row.dataset.count = visible.filter(cb => cb.checked).length;
+      const checked = Array.from(cbs).filter(cb => cb.checked).length;
+      row.dataset.count = checked;
     });
   }
 
+  function switchSubject(subject) {
+    if (!SUBJECTS[subject] || subject === currentSubject) return;
+    currentSubject = subject;
+
+    const available = SUBJECTS[subject].classes.map(c => c.key);
+    if (!available.includes(currentClass)) currentClass = available[0];
+
+    try {
+      localStorage.setItem(SUBJECT_KEY, currentSubject);
+      localStorage.setItem(CLASS_KEY, currentClass);
+    } catch (e) {}
+
+    renderSubjectSwitch();
+    renderClassSwitch();
+    renderTableHead();
+
+    const ds = datasetId();
+    renderLessons(state.lessons[ds] || []);
+    const cached = readCache();
+    if (cached.dataset === ds && cached.marks) {
+      applyMarksToUI(cached.marks);
+    } else {
+      updateUI();
+    }
+    bindAllLessonEvents();
+    loadFromServer();
+  }
+
+  function switchClass(classKey) {
+    if (classKey === currentClass) return;
+    if (!subjectCfg().classes.some(c => c.key === classKey)) return;
+    currentClass = classKey;
+    try { localStorage.setItem(CLASS_KEY, currentClass); } catch (e) {}
+
+    renderClassSwitch();
+    renderTableHead();
+
+    const ds = datasetId();
+    renderLessons(state.lessons[ds] || []);
+    const cached = readCache();
+    if (cached.dataset === ds && cached.marks) {
+      applyMarksToUI(cached.marks);
+    } else {
+      updateUI();
+    }
+    bindAllLessonEvents();
+    loadFromServer();
+  }
+
   document.getElementById('refreshBtn')?.addEventListener('click', () => { loadFromServer(true); });
+
   document.getElementById('downloadBtn')?.addEventListener('click', () => {
-    const data = { version: 3, exportedAt: new Date().toISOString(), marks: collectMarksFromUI() };
+    const ds = datasetId();
+    const data = {
+      version: 11,
+      dataset: ds,
+      subject: currentSubject,
+      class: currentClass,
+      letters: lettersOf(),
+      label: `${subjectCfg().label} · ${classCfg().label}`,
+      exportedAt: new Date().toISOString(),
+      marks: collectMarksFromUI()
+    };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'physics_marks_' + todayStr() + '.json';
+    a.download = `${ds}_marks_${todayStr()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -898,9 +1219,6 @@
       const val = btn.dataset.action === 'check';
       const today = todayStr();
       document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
-        const td = box.closest('td');
-        const inner = td && td.querySelector('.mark-inner');
-        if (inner && inner.style.visibility === 'hidden') return;
         const dateInput = dateInputFor(box.dataset.id);
         box.checked = val;
         if (dateInput) {
@@ -920,7 +1238,7 @@
   });
 
   document.getElementById('resetBtn')?.addEventListener('click', () => {
-    if (confirm('Снять все отметки?')) {
+    if (confirm('Снять все отметки по текущему предмету и классу?')) {
       document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
         const dateInput = dateInputFor(box.dataset.id);
         box.checked = false;
@@ -957,6 +1275,9 @@
   const observer = new MutationObserver(sendHeightToParent);
   observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 
+  renderSubjectSwitch();
+  renderClassSwitch();
+  renderTableHead();
   loadFromServer();
 </script>
 
