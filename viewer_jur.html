@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Посещаемость: Подготовка к ЕГЭ</title>
+<style>
+  :root {
+    --primary: #2563eb; --primary-light: #eff6ff; --text-main: #1f2937;
+    --text-muted: #6b7280; --border: #e5e7eb; --success: #10b981;
+    --success-bg: #ecfdf5; --danger: #ef4444; --danger-bg: #fef2f2;
+    --gray-bg: #f3f4f6; --admin-bg: #fef3c7; --admin-border: #f59e0b;
+  }
+  body { font-family: 'Segoe UI', Roboto, sans-serif; background: #f9fafb; color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+  .container { width: 100%; max-width: 1200px; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 30px; overflow-x: auto; position: relative; }
+  
+  /* Замочек */
+  .lock-container { position: absolute; top: 20px; right: 20px; z-index: 100; }
+  .lock-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; opacity: 0.3; transition: 0.2s; padding: 5px; }
+  .lock-btn:hover { opacity: 1; transform: scale(1.1); }
+  .lock-btn.unlocked { opacity: 1; }
+  .pin-dropdown { display: none; position: absolute; top: 40px; right: 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 220px; text-align: center; }
+  .pin-dropdown.active { display: block; animation: fadeIn 0.2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .pin-dropdown h4 { margin: 0 0 10px 0; font-size: 14px; color: #333; }
+  .pin-input { width: 100%; box-sizing: border-box; padding: 8px; font-size: 18px; text-align: center; letter-spacing: 4px; border: 2px solid #e5e7eb; border-radius: 6px; outline: none; margin-bottom: 10px; }
+  .pin-input:focus { border-color: var(--primary); }
+  .pin-dropdown button { width: 100%; padding: 8px; border-radius: 6px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; background: var(--primary); color: #fff; }
+  .error-text { color: var(--danger); font-size: 12px; margin-top: -5px; margin-bottom: 10px; display: none; }
+
+  .admin-banner { display: none; background: var(--admin-bg); border: 1px solid var(--admin-border); color: #92400e; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; align-items: center; justify-content: center; }
+  .admin-banner.active { display: flex; }
+
+  h1 { font-size: 24px; margin-top: 0; margin-bottom: 10px; color: #111827; text-align: center; }
+  .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+  .section-title { font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 20px; margin-top: 10px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+  
+  .student-stats-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 40px; }
+  .student-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
+  .student-name-title { font-weight: 600; font-size: 15px; color: #1e293b; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+  .student-stats-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; }
+  .stat-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-weight: 600; }
+  .stat-badge.present { background: var(--success-bg); color: var(--success); }
+  .stat-badge.absent { background: var(--danger-bg); color: var(--danger); }
+  .progress-container { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: auto; }
+  .progress-bar { height: 100%; background: var(--success); border-radius: 4px; }
+
+  table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+  th, td { border: 1px solid var(--border); padding: 12px 16px; text-align: center; vertical-align: middle; }
+  thead th { background: #f8fafc; font-weight: 600; color: #334155; font-size: 13px; text-transform: uppercase; }
+  th.theme-header { text-align: left; background: #f1f5f9; }
+  th.theme-date-header { color: var(--primary); background: var(--primary-light); }
+  th.student-name { background: #f8fafc; border-bottom: 1px solid var(--border); }
+  th.student-sub { background: #fff; font-size: 11px; font-weight: normal; color: var(--text-muted); }
+  td.theme-cell { text-align: left; font-weight: 600; background: #f8fafc; color: #1e293b; }
+  td.theme-date-cell { color: var(--primary); font-weight: 600; background: var(--primary-light); }
+
+  .status-indicator { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; font-weight: bold; margin: 0 auto; }
+  .status-indicator.present { background: var(--success-bg); color: var(--success); border: 2px solid var(--success); }
+  .status-indicator.absent { background: var(--danger-bg); color: var(--danger); border: 2px solid var(--danger); }
+  .comment-text { font-size: 13px; color: var(--text-muted); max-width: 200px; white-space: normal; text-align: left; line-height: 1.4; }
+
+  .admin-edit td.editable { cursor: pointer; transition: background 0.2s; }
+  .admin-edit td.editable:hover { background: #e8f4ff; }
+  .admin-edit .status-indicator, .admin-edit .comment-text { display: none; }
+  .admin-edit .admin-input { display: block; }
+  .admin-input { display: none; width: 100%; box-sizing: border-box; }
+  .admin-input input[type="date"], .admin-input input[type="text"] {
+    width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;
+    font-family: inherit; font-size: 13px; padding: 6px; outline: none; text-align: center;
+  }
+  .admin-status-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; background: #f0f0f0; color: #ccc; font-size: 18px; font-weight: bold; cursor: pointer; margin: 0 auto; }
+  .admin-status-btn.active { background: var(--success); color: #fff; }
+
+  .hide-btn { font-size: 20px; cursor: pointer; opacity: 0.5; transition: 0.2s; display: inline-block; padding: 5px; border-radius: 50%; }
+  .hide-btn:hover { opacity: 1; background: #ffe4e6; }
+  .hide-btn.hidden { opacity: 1; color: var(--danger); }
+
+  #status { text-align: center; padding: 20px; font-size: 16px; font-weight: bold; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="lock-container">
+    <button class="lock-btn" id="lockBtn" onclick="togglePinDropdown()">🔒</button>
+    <div class="pin-dropdown" id="pinDropdown">
+      <h4>Введите PIN-код</h4>
+      <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="****">
+      <div class="error-text" id="pinError">Неверный код</div>
+      <button onclick="checkPin()">Войти</button>
+    </div>
+  </div>
+
+  <h1>Посещаемость занятий</h1>
+  <div class="subtitle">Подготовка к ЕГЭ по информатике</div>
+
+  <div class="admin-banner" id="adminBanner">
+    <span>👑 Вы вошли как Администратор.</span>
+  </div>
+
+  <div id="status">Загрузка данных...</div>
+  
+  <div id="content" style="display: none;">
+    <div class="section-title">Статистика по ученикам</div>
+    <div class="student-stats-container" id="studentStatsContainer"></div>
+    <div class="section-title">Журнал посещений</div>
+    <table id="gradesTable">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwwccRlELkKvpTPEZZAb2BBY7cILNPUarY_Dh3x9nRDdphIl1sKQrEAuzGXwcSamWyB/exec';
+const SECRET_PIN = '2027'; 
+
+let isAdmin = localStorage.getItem('isAdmin') === 'true';
+let allData = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateLockIcon();
+  if (isAdmin) {
+    document.getElementById('adminBanner').classList.add('active');
+    document.body.classList.add('admin-edit');
+  }
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('pinDropdown');
+    const btn = document.getElementById('lockBtn');
+    if (dropdown.classList.contains('active') && !dropdown.contains(event.target) && !btn.contains(event.target)) {
+      dropdown.classList.remove('active');
+    }
+  });
+  loadData();
+});
+
+function updateLockIcon() {
+  const btn = document.getElementById('lockBtn');
+  if (isAdmin) { btn.textContent = '🔓'; btn.classList.add('unlocked'); } 
+  else { btn.textContent = '🔒'; btn.classList.remove('unlocked'); }
+}
+
+function togglePinDropdown() {
+  if (isAdmin) {
+    if(confirm('Выйти из режима администратора?')) { localStorage.removeItem('isAdmin'); window.location.reload(); }
+    return;
+  }
+  const dropdown = document.getElementById('pinDropdown');
+  const input = document.getElementById('pinInput');
+  if (dropdown.classList.contains('active')) {
+    dropdown.classList.remove('active');
+  } else {
+    dropdown.classList.add('active');
+    document.getElementById('pinError').style.display = 'none';
+    input.value = '';
+    setTimeout(() => input.focus(), 50);
+  }
+}
+
+function checkPin() {
+  const input = document.getElementById('pinInput');
+  if (input.value === SECRET_PIN) {
+    localStorage.setItem('isAdmin', 'true');
+    window.location.reload(); 
+  } else {
+    document.getElementById('pinError').style.display = 'block';
+    input.value = ''; input.focus();
+  }
+}
+document.getElementById('pinInput').addEventListener('keypress', function (e) {
+  if (e.key === 'Enter') checkPin();
+});
+
+function parseDateForInput(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('.');
+  if (parts.length !== 3) return '';
+  return `${parts[2]}-${parts[1]}-${parts[0]}`;
+}
+function formatDateFromInput(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
+async function saveToGoogle(student, theme, type, value) {
+  const statusEl = document.getElementById('status');
+  statusEl.innerText = 'Сохранение...';
+  statusEl.style.color = 'orange';
+
+  try {
+    // Отправляем POST запрос
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ student, theme, type, value })
+    });
+    
+    // Читаем ответ
+    const result = await response.json();
+    
+    if (result.status === 'success') {
+      statusEl.innerText = 'Сохранено!';
+      statusEl.style.color = 'green';
+      setTimeout(() => statusEl.innerText = '', 2000);
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    // Показываем ошибку прямо на экране
+    statusEl.innerText = 'Ошибка: ' + error.message;
+    statusEl.style.color = 'red';
+    alert('Сохранение не удалось: ' + error.message); // Принудительное оповещение
+  }
+}
+
+function loadData() {
+  fetch(API_URL)
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) throw new Error('Ошибка в скрипте: ' + data.error);
+      allData = data;
+      renderTable();
+      document.getElementById('status').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    })
+    .catch(err => {
+      document.getElementById('status').innerHTML = `<span style="color:red;">Ошибка загрузки: ${err.message}</span>`;
+    });
+}
+
+function renderTable() {
+  const themes = allData.themes || [];
+  const themeDates = allData.themeDates || [];
+  const isHidden = allData.isHidden || [];
+  const students = allData.students || [];
+  const cells = allData.cells || {};
+
+  let visibleIndices = [];
+  themes.forEach((theme, index) => {
+    if (isAdmin || !isHidden[index]) visibleIndices.push(index);
+  });
+
+  const studentStats = {};
+  students.forEach(s => studentStats[s] = { visits: 0, misses: 0, total: 0 });
+
+  visibleIndices.forEach(i => {
+    const theme = themes[i];
+    students.forEach(student => {
+      const cellData = (cells[student] && cells[student][theme]) ? cells[student][theme] : {};
+      const status = (cellData.status || '').trim();
+      studentStats[student].total++;
+      if (status.includes('✔')) studentStats[student].visits++;
+      else studentStats[student].misses++;
+    });
+  });
+
+  const studentContainer = document.getElementById('studentStatsContainer');
+  let studentCardsHtml = '';
+  students.forEach(student => {
+    const stats = studentStats[student];
+    const percent = stats.total > 0 ? Math.round((stats.visits / stats.total) * 100) : 0;
+    let barColor = 'var(--success)';
+    if (percent < 50) barColor = 'var(--danger)';
+    else if (percent < 80) barColor = '#f59e0b';
+    
+    studentCardsHtml += `
+      <div class="student-card">
+        <div class="student-name-title">${student}</div>
+        <div class="student-stats-row">
+          <span class="stat-badge present">✔ ${stats.visits}</span>
+          <span class="stat-badge absent">✘ ${stats.misses}</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">Посещаемость: <strong>${percent}%</strong></div>
+        <div class="progress-container"><div class="progress-bar" style="width: ${percent}%; background-color: ${barColor};"></div></div>
+      </div>`;
+  });
+  studentContainer.innerHTML = studentCardsHtml;
+
+  const table = document.getElementById('gradesTable');
+  const thead = table.querySelector('thead');
+  const tbody = table.querySelector('tbody');
+
+  let headerRow1 = '<tr><th class="theme-header" rowspan="2">Тема занятия</th><th class="theme-date-header" rowspan="2">Дата</th>';
+  if (isAdmin) headerRow1 += '<th rowspan="2" style="width:40px;">👁️</th>';
+  let headerRow2 = '<tr>';
+  
+  students.forEach(s => {
+    headerRow1 += `<th class="student-name" colspan="2">${s}</th>`;
+    headerRow2 += `<th class="student-sub">Посещение</th><th class="student-sub">Комментарий</th>`;
+  });
+  headerRow1 += '</tr>'; headerRow2 += '</tr>';
+  thead.innerHTML = headerRow1 + headerRow2;
+
+  let bodyHtml = '';
+  visibleIndices.forEach(i => {
+    const theme = themes[i];
+    const tDate = themeDates[i] || '';
+    const hidden = isHidden[i];
+    
+    bodyHtml += `<tr><td class="theme-cell">${theme}</td>`;
+    
+    if (isAdmin) {
+      bodyHtml += `<td class="editable theme-date-cell" data-student="" data-theme="${theme}" data-type="theme_date">
+          <div class="admin-input"><input type="date" value="${parseDateForInput(tDate)}"></div>
+          <span class="status-indicator absent" style="display:none;"></span></td>`;
+    } else {
+      bodyHtml += `<td class="theme-date-cell">${tDate || '—'}</td>`;
+    }
+
+    if (isAdmin) {
+      const hideClass = hidden ? 'hidden' : '';
+      const hideIcon = hidden ? '🙈' : '👁️';
+      bodyHtml += `<td><span class="hide-btn ${hideClass}" onclick="toggleHide('${theme}', '${hidden}')">${hideIcon}</span></td>`;
+    }
+    
+    students.forEach(student => {
+      const cellData = (cells[student] && cells[student][theme]) ? cells[student][theme] : { status: '', comment: '' };
+      const statusText = (cellData.status || '').trim();
+      const isPresent = statusText.includes('✔');
+      
+      bodyHtml += `<td class="editable" data-student="${student}" data-theme="${theme}" data-type="status">
+        ${isAdmin ? `<div class="admin-input"><div class="admin-status-btn ${isPresent ? 'active' : ''}">✔</div></div>` : ''}
+        <div class="status-indicator ${isPresent ? 'present' : 'absent'}">${isPresent ? '✔' : '✘'}</div></td>`;
+      
+      bodyHtml += `<td class="editable" data-student="${student}" data-theme="${theme}" data-type="comment">
+        ${isAdmin ? `<div class="admin-input"><input type="text" value="${(cellData.comment || '').replace(/"/g, '&quot;')}" placeholder="—"></div>` : ''}
+        <div class="comment-text">${cellData.comment || '—'}</div></td>`;
+    });
+    bodyHtml += '</tr>';
+  });
+  
+  tbody.innerHTML = bodyHtml;
+
+  if (isAdmin) {
+    document.querySelectorAll('.editable').forEach(td => {
+      const input = td.querySelector('input');
+      const btn = td.querySelector('.admin-status-btn');
+      const student = td.getAttribute('data-student') || '';
+      const theme = td.getAttribute('data-theme');
+      const type = td.getAttribute('data-type');
+
+      // ДАТА
+      if (type === 'theme_date' && input) {
+        input.addEventListener('change', async function() {
+          await saveToGoogle(student, theme, type, formatDateFromInput(this.value));
+        });
+      }
+
+      // КОММЕНТАРИЙ
+      if (type === 'comment' && input) {
+        // Сохраняем при уходе из поля (клик в другое место)
+        input.addEventListener('blur', async function() {
+          const oldValue = this.defaultValue || '';
+          const newValue = this.value.trim();
+          if (newValue !== oldValue) {
+            await saveToGoogle(student, theme, type, newValue);
+            this.defaultValue = newValue;
+            const textDiv = this.closest('td').querySelector('.comment-text');
+            if (textDiv) textDiv.textContent = newValue || '—';
+          }
+        });
+        
+        // Сохраняем ПРИ НАЖАТИИ ENTER
+        input.addEventListener('keydown', async function(e) {
+          if (e.key === 'Enter') {
+            this.blur(); // Вызываем потерю фокуса, которая запустит сохранение выше
+          }
+        });
+      }
+
+      // СТАТУС (галочка)
+      if (type === 'status' && btn) {
+        td.addEventListener('click', async function(e) {
+          if (e.target.tagName === 'INPUT') return;
+          const isActive = btn.classList.contains('active');
+          const ind = this.querySelector('.status-indicator');
+          
+          if (isActive) {
+            btn.classList.remove('active');
+            ind.className = 'status-indicator absent';
+            ind.textContent = '✘';
+            await saveToGoogle(student, theme, type, '');
+          } else {
+            btn.classList.add('active');
+            ind.className = 'status-indicator present';
+            ind.textContent = '✔';
+            await saveToGoogle(student, theme, type, '✔');
+          }
+        });
+      }
+    });
+  }
+}
+
+async function toggleHide(theme, currentHidden) {
+  const newValue = currentHidden === 'true' ? '' : 'скрыть';
+  allData.isHidden = allData.isHidden.map((val, idx) => allData.themes[idx] === theme ? newValue !== '' : val);
+  renderTable();
+  await saveToGoogle('', theme, 'hide', newValue); 
+}
+</script>
+</body>
+</html>

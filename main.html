@@ -434,7 +434,7 @@
 
     .tabs-nav {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 4px;
       border-bottom: none;
       margin-bottom: 16px;
@@ -510,6 +510,10 @@
           <span class="tab-icon">🎮</span>
           <span class="tab-text">Квиз</span>
         </button>
+        <button class="tab-btn" data-tab="journal">
+          <span class="tab-icon">📊</span>
+          <span class="tab-text">Журнал</span>
+        </button>
       </div>
 
       <!-- ======================= УЧИТЕЛЬ ======================= -->
@@ -558,6 +562,13 @@
       <div class="tab-content" id="quiz">
         <div class="iframe-wrap iframe-full">
           <iframe id="quizFrame" src="live-quiz/live-quiz.html" scrolling="no" allow="fullscreen" title="Квиз"></iframe>
+        </div>
+      </div>
+
+      <!-- ======================= ЖУРНАЛ ПОСЕЩАЕМОСТИ ======================= -->
+      <div class="tab-content" id="journal">
+        <div class="iframe-wrap">
+          <iframe id="journalFrame" src="viewer_jur.html" scrolling="no" title="Журнал посещаемости"></iframe>
         </div>
       </div>
 
