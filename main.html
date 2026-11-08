@@ -55,9 +55,7 @@
     transition: all 0.3s ease;
   }
   
-  .test-panel.hidden {
-    display: none;
-  }
+  .test-panel.hidden { display: none; }
 
   .test-panel-header {
     display: flex;
@@ -107,10 +105,7 @@
     margin: 0;
     padding: 0;
   }
-  .test-panel.collapsed {
-    padding-bottom: 12px;
-    gap: 0;
-  }
+  .test-panel.collapsed { padding-bottom: 12px; gap: 0; }
 
   .slider-group {
     display: flex;
@@ -202,7 +197,7 @@
     min-height: 500px;
   }
 
-  /* ===== LAYOUT (контент + стикеры) ===== */
+  /* ===== LAYOUT ===== */
   .layout {
     display: grid;
     grid-template-columns: 1fr 300px;
@@ -212,7 +207,6 @@
   }
   .main-col { min-width: 0; }
 
-  /* ===== ПРАВАЯ КОЛОНКА (стикеры + калькулятор) ===== */
   .side-col {
     position: sticky;
     top: 16px;
@@ -418,6 +412,172 @@
   .calc-grid button.fn { color: var(--danger); background: #fff5f5; }
   .calc-grid button.span2 { grid-column: span 2; }
 
+  /* ===== КОД БУДУЩЕГО ===== */
+  .code-future {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .code-future-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    gap: 6px;
+  }
+  .code-future-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .cf-icon-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    line-height: 1;
+    transition: all 0.15s;
+    opacity: 0.6;
+  }
+  .cf-icon-btn:hover {
+    opacity: 1;
+    background: var(--accent-soft);
+    border-color: var(--border);
+  }
+  .cf-icon-btn.active {
+    opacity: 1;
+    background: #fff5f5;
+    border-color: var(--danger);
+  }
+  #codeFutureSaveBtn:hover { background: #f0fff4; border-color: #9ae6b4; }
+  #codeFutureLoadBtn:hover { background: #ebf4ff; border-color: #90cdf4; }
+  .code-future-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
+    margin-top: 8px;
+  }
+  .code-future.collapsed .code-future-body {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-top: 0;
+  }
+  .code-future-class {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.95rem;
+    padding: 6px 10px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+  }
+  .code-future-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .code-future-kid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+  .code-future-kid .cf-kid-name::before {
+    content: '👤 ';
+    opacity: 0.6;
+  }
+  .code-future-kid .cf-kid-actions {
+    display: flex;
+    gap: 4px;
+  }
+  .code-future-kid .cf-kid-del,
+  .code-future-kid .cf-kid-edit {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    opacity: 0.55;
+    padding: 2px 4px;
+    line-height: 1;
+    border-radius: 4px;
+  }
+  .code-future-kid .cf-kid-del { color: var(--danger); }
+  .code-future-kid .cf-kid-edit { color: var(--text-soft); }
+  .code-future-kid .cf-kid-del:hover,
+  .code-future-kid .cf-kid-edit:hover {
+    opacity: 1;
+    background: rgba(0,0,0,0.05);
+  }
+  .code-future-kid .cf-kid-input {
+    flex: 1;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 4px 6px;
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    background: #fff;
+    outline: none;
+  }
+  .code-future-day-total {
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    padding: 6px 10px;
+    background: #f0fff4;
+    border: 1px dashed #9ae6b4;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .code-future-day-total b {
+    color: #2f855a;
+    font-size: 0.95rem;
+  }
+  .code-future-add {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .cf-add-input {
+    flex: 1;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+    outline: none;
+  }
+  .cf-add-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.15);
+  }
+  .cf-add-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .cf-add-btn:hover { filter: brightness(1.1); }
+
   /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
@@ -458,10 +618,7 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.03);
       transition: all 0.2s ease;
     }
-    .tab-btn .tab-icon {
-      font-size: 18px;
-      line-height: 1;
-    }
+    .tab-btn .tab-icon { font-size: 18px; line-height: 1; }
     .tab-btn.active {
       border-color: var(--accent);
       background: var(--accent-soft);
@@ -601,7 +758,7 @@
 
     </div>
 
-    <!-- ===== ПРАВАЯ КОЛОНКА: СТИКЕРЫ + КАЛЬКУЛЯТОР ===== -->
+    <!-- ===== ПРАВАЯ КОЛОНКА ===== -->
     <aside class="side-col">
 
       <!-- ===== СТИКЕРЫ ===== -->
@@ -653,6 +810,34 @@
         </div>
       </div>
 
+      <!-- ===== КОД БУДУЩЕГО ===== -->
+      <div class="code-future" id="codeFuture">
+        <div class="code-future-head">
+          <span>🚀 Код будущего</span>
+          <div class="code-future-head-actions">
+            <button class="cf-icon-btn" id="codeFutureSaveBtn" title="Сохранить в JSON">💾</button>
+            <button class="cf-icon-btn" id="codeFutureLoadBtn" title="Загрузить из JSON">📂</button>
+            <button class="cf-icon-btn cf-edit-btn" id="codeFutureEditBtn" title="Редактировать">✏️</button>
+            <button class="cf-icon-btn cf-trash-btn" id="codeFutureTrashBtn" title="Удалить ученика">🗑</button>
+            <button class="calc-toggle" id="codeFutureToggleBtn">Свернуть</button>
+          </div>
+        </div>
+        <div class="code-future-body" id="codeFutureBody">
+          <div class="code-future-class" id="codeFutureClass">—</div>
+          <div class="code-future-list" id="codeFutureList">
+            <div class="stickers-hint">Ожидание данных об уроке…</div>
+          </div>
+          <div class="code-future-day-total" id="codeFutureDayTotal" hidden>
+            👥 Сегодня (уникальных): <b id="codeFutureDayTotalCount">0</b>
+          </div>
+          <div class="code-future-add" id="codeFutureAdd" hidden>
+            <input type="text" class="cf-add-input" id="codeFutureAddInput" placeholder="Имя ученика…" maxlength="40">
+            <button class="cf-add-btn" id="codeFutureAddBtn">Добавить</button>
+          </div>
+          <input type="file" id="codeFutureFileInput" accept=".json,application/json" hidden>
+        </div>
+      </div>
+
     </aside>
 
   </div>
@@ -660,7 +845,7 @@
 
 <script>
   /* ============================================================
-     УПРАВЛЕНИЕ ВИДИМОСТЬЮ ПАНЕЛИ ТЕСТИРОВАНИЯ
+     ПАНЕЛЬ ТЕСТИРОВАНИЯ
      ============================================================ */
   const testPanel = document.getElementById('testPanel');
 
@@ -797,7 +982,6 @@
     tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
     tabContents.forEach(c => c.classList.toggle('active', c.id === tabId));
     localStorage.setItem('school_current_tab', tabId);
-    
     updateTestPanelVisibility(tabId);
   }
 
@@ -805,12 +989,9 @@
     btn.addEventListener('click', () => {
       const tabId = btn.dataset.tab;
       activateTab(tabId);
-
       if (tabId === 'schedule') {
         const iframe = document.getElementById('scheduleFrame');
-        if (iframe) {
-          iframe.src = iframe.src;
-        }
+        if (iframe) iframe.src = iframe.src;
       }
     });
   });
@@ -826,9 +1007,7 @@
         if (iframe) {
           iframe.src = iframe.src;
           setTimeout(() => {
-            if (isSimulationActive) {
-              updateSimulation();
-            }
+            if (isSimulationActive) updateSimulation();
           }, 500);
         }
       }, 100);
@@ -836,12 +1015,11 @@
   });
 
   /* ============================================================
-     АВТОМАТИЧЕСКАЯ ПОДСТРОЙКА ВЫСОТЫ IFRAME
+     АВТОПОДСТРОЙКА ВЫСОТЫ IFRAME
      ============================================================ */
   window.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'resize-iframe') {
-      const iframes = document.querySelectorAll('iframe');
-      iframes.forEach(iframe => {
+      document.querySelectorAll('iframe').forEach(iframe => {
         if (iframe.contentWindow === e.source) {
           if (iframe.id === 'quizFrame') return; 
           iframe.style.height = (e.data.height + 20) + 'px';
@@ -851,11 +1029,10 @@
   });
 
   /* ============================================================
-     СТИКЕРЫ С СОХРАНЕНИЕМ В GOOGLE SHEETS
+     СТИКЕРЫ
      ============================================================ */
   const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxmvClkqB4VCjs092CKBoWaM3WsdUykC0cQue5TmuFOiobbsdYXf2x_UzvTlQlz9xN7tQ/exec';
   const STICKERS_CACHE_KEY = 'school_stickers_cache';
-
   const COLORS = ['#fef3c7', '#dbeafe', '#dcfce7', '#fce7f3', '#ede9fe', '#fee2e2'];
 
   const stickersList = document.getElementById('stickersList');
@@ -993,7 +1170,7 @@
   }
 
   function addSticker() {
-    if (stickersList.querySelector('.sticker-input')) return; // уже открыт редактор
+    if (stickersList.querySelector('.sticker-input')) return;
     const editor = buildEditor('', currentColor, (text, color) => {
       const now = new Date().toISOString();
       const sticker = { id: uid(), text, color, created: now, updated: now };
@@ -1032,7 +1209,6 @@
   }
 
   addStickerBtn.addEventListener('click', addSticker);
-
   loadStickers();
 
   /* ============================================================
@@ -1044,20 +1220,16 @@
   const calcResult = document.getElementById('calcResult');
   const calcGrid = document.getElementById('calcGrid');
 
-  // Состояние калькулятора
   let calcState = {
-    current: '0',        // текущее вводимое число (строка)
-    previous: null,      // предыдущее число (строка)
-    operator: null,      // оператор: + - * /
-    justEvaluated: false,// только что нажали =
-    historyText: ''      // строка для верхней панели
+    current: '0',
+    previous: null,
+    operator: null,
+    justEvaluated: false,
+    historyText: ''
   };
 
-  // Сохраняем/загружаем состояние калькулятора в localStorage
   function saveCalcState() {
-    try {
-      localStorage.setItem('school_calc_state', JSON.stringify(calcState));
-    } catch (e) {}
+    try { localStorage.setItem('school_calc_state', JSON.stringify(calcState)); } catch (e) {}
   }
 
   function loadCalcState() {
@@ -1072,22 +1244,17 @@
     } catch (e) {}
   }
 
-  // Обновление дисплея
   function updateCalcDisplay() {
     calcResult.textContent = calcState.current;
     calcHistory.innerHTML = calcState.historyText || '&nbsp;';
   }
 
-  // Форматирование числа для отображения (убираем лишние нули)
   function formatNumber(str) {
     if (str === '' || str === '-') return str;
-    // Если число очень длинное — не трогаем
     if (str.length > 15) return str;
-    // Убираем лишние нули после запятой, но сохраняем введённое пользователем
     return str;
   }
 
-  // Безопасное вычисление выражения
   function safeCalculate(a, op, b) {
     const numA = parseFloat(a);
     const numB = parseFloat(b);
@@ -1103,21 +1270,14 @@
         break;
       default: return 'Ошибка';
     }
-    // Ограничиваем количество знаков
     if (!isFinite(result)) return 'Ошибка';
-    // Округляем до 10 знаков, убираем хвостовые нули
     let resStr = String(parseFloat(result.toFixed(10)));
-    // Если получилось очень длинное число — используем экспоненциальный формат
-    if (resStr.length > 14) {
-      resStr = result.toExponential(6);
-    }
+    if (resStr.length > 14) resStr = result.toExponential(6);
     return resStr;
   }
 
-  // Обработка нажатия цифры
   function inputDigit(digit) {
     if (calcState.justEvaluated) {
-      // После = начинаем новое вычисление с нуля
       calcState.current = digit;
       calcState.previous = null;
       calcState.operator = null;
@@ -1127,7 +1287,6 @@
       if (calcState.current === '0' && digit !== '.') {
         calcState.current = digit;
       } else {
-        // Ограничиваем длину ввода
         if (calcState.current.replace('-', '').replace('.', '').length >= 15) return;
         calcState.current += digit;
       }
@@ -1136,7 +1295,6 @@
     saveCalcState();
   }
 
-  // Ввод точки
   function inputDot() {
     if (calcState.justEvaluated) {
       calcState.current = '0.';
@@ -1145,22 +1303,17 @@
       calcState.historyText = '';
       calcState.justEvaluated = false;
     } else {
-      if (!calcState.current.includes('.')) {
-        calcState.current += '.';
-      }
+      if (!calcState.current.includes('.')) calcState.current += '.';
     }
     updateCalcDisplay();
     saveCalcState();
   }
 
-  // Выбор оператора
   function setOperator(op) {
     const currentVal = calcState.current;
     if (currentVal === '' || currentVal === '-') return;
 
-    // Если уже есть оператор и предыдущее число, и пользователь меняет оператор
     if (calcState.operator && calcState.previous !== null && !calcState.justEvaluated) {
-      // Вычисляем промежуточный результат
       const intermediate = safeCalculate(calcState.previous, calcState.operator, currentVal);
       if (intermediate === 'Ошибка') {
         calcState.current = 'Ошибка';
@@ -1189,10 +1342,8 @@
     saveCalcState();
   }
 
-  // Вычисление (=)
   function evaluate() {
     if (calcState.operator === null || calcState.previous === null) {
-      // Просто фиксируем текущее число
       calcState.historyText = '';
       calcState.justEvaluated = true;
       updateCalcDisplay();
@@ -1201,7 +1352,6 @@
     }
 
     const result = safeCalculate(calcState.previous, calcState.operator, calcState.current);
-
     const opSymbol = { '+': '+', '-': '−', '*': '×', '/': '÷' }[calcState.operator];
     calcState.historyText = formatNumber(calcState.previous) + ' ' + opSymbol + ' ' + formatNumber(calcState.current) + ' =';
 
@@ -1214,32 +1364,21 @@
     saveCalcState();
   }
 
-  // Очистка
   function clearAll() {
-    calcState = {
-      current: '0',
-      previous: null,
-      operator: null,
-      justEvaluated: false,
-      historyText: ''
-    };
+    calcState = { current: '0', previous: null, operator: null, justEvaluated: false, historyText: '' };
     updateCalcDisplay();
     saveCalcState();
   }
 
-  // Удаление последнего символа
   function backspace() {
     if (calcState.justEvaluated) {
-      // После = ничего не удаляем, просто сбрасываем состояние
       calcState.current = '0';
       calcState.justEvaluated = false;
       calcState.historyText = '';
     } else {
       if (calcState.current.length > 1) {
         calcState.current = calcState.current.slice(0, -1);
-        if (calcState.current === '-' || calcState.current === '') {
-          calcState.current = '0';
-        }
+        if (calcState.current === '-' || calcState.current === '') calcState.current = '0';
       } else {
         calcState.current = '0';
       }
@@ -1248,12 +1387,10 @@
     saveCalcState();
   }
 
-  // Процент
   function percent() {
     const num = parseFloat(calcState.current);
     if (isNaN(num)) return;
 
-    // Если есть предыдущее число и оператор — считаем процент от предыдущего
     if (calcState.previous !== null && calcState.operator !== null) {
       const prevNum = parseFloat(calcState.previous);
       if (!isNaN(prevNum)) {
@@ -1264,13 +1401,11 @@
       }
     }
 
-    // Иначе просто делим на 100
     calcState.current = String(num / 100);
     updateCalcDisplay();
     saveCalcState();
   }
 
-  // Обработчик кнопок
   calcGrid.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (!btn) return;
@@ -1294,7 +1429,6 @@
     }
   });
 
-  // Сворачивание/разворачивание калькулятора
   function toggleCalc() {
     const isCollapsed = calc.classList.contains('collapsed');
     if (isCollapsed) {
@@ -1310,7 +1444,6 @@
 
   calcToggleBtn.addEventListener('click', toggleCalc);
 
-  // Восстанавливаем состояние сворачивания
   if (localStorage.getItem('calcCollapsed') === 'true') {
     calc.classList.add('collapsed');
     calcToggleBtn.textContent = 'Развернуть';
@@ -1319,48 +1452,497 @@
     calcToggleBtn.textContent = 'Свернуть';
   }
 
-  // Загружаем сохранённое состояние калькулятора и обновляем дисплей
   loadCalcState();
   updateCalcDisplay();
 
-  // Поддержка клавиатуры
   document.addEventListener('keydown', (e) => {
-    // Если фокус в поле ввода или textarea — не перехватываем
     const tag = document.activeElement.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
 
     const key = e.key;
+    if (/^[0-9]$/.test(key)) { e.preventDefault(); inputDigit(key); }
+    else if (key === '.' || key === ',') { e.preventDefault(); inputDot(); }
+    else if (key === '+') { e.preventDefault(); setOperator('+'); }
+    else if (key === '-') { e.preventDefault(); setOperator('-'); }
+    else if (key === '*') { e.preventDefault(); setOperator('*'); }
+    else if (key === '/') { e.preventDefault(); setOperator('/'); }
+    else if (key === 'Enter' || key === '=') { e.preventDefault(); evaluate(); }
+    else if (key === 'Backspace') { e.preventDefault(); backspace(); }
+    else if (key === 'Escape') { e.preventDefault(); clearAll(); }
+    else if (key === '%') { e.preventDefault(); percent(); }
+  });
 
-    if (/^[0-9]$/.test(key)) {
-      e.preventDefault();
-      inputDigit(key);
-    } else if (key === '.' || key === ',') {
-      e.preventDefault();
-      inputDot();
-    } else if (key === '+') {
-      e.preventDefault();
-      setOperator('+');
-    } else if (key === '-') {
-      e.preventDefault();
-      setOperator('-');
-    } else if (key === '*') {
-      e.preventDefault();
-      setOperator('*');
-    } else if (key === '/') {
-      e.preventDefault();
-      setOperator('/');
-    } else if (key === 'Enter' || key === '=') {
-      e.preventDefault();
-      evaluate();
-    } else if (key === 'Backspace') {
-      e.preventDefault();
-      backspace();
-    } else if (key === 'Escape') {
-      e.preventDefault();
-      clearAll();
-    } else if (key === '%') {
-      e.preventDefault();
-      percent();
+  /* ============================================================
+     КОД БУДУЩЕГО — ученики привязаны к КЛАССУ (общие на всю неделю)
+     ============================================================ */
+
+  const CLASS_STUDENTS_DEFAULT = {
+    '8а': ['Ева', 'Лиза', 'Мира', 'Настя'],
+    '8б': ['Анна', 'Кира', 'Евангелина', 'Ангелина', 'Андрей'],
+    '9б': ['Никита', 'Артем', 'Егор'],
+    '9в': ['Дима', 'Кирилл', 'Женя']
+  };
+
+  const CF_CACHE_KEY = 'code_future_students_v3_by_class';
+
+  const codeFuture = document.getElementById('codeFuture');
+  const codeFutureToggleBtn = document.getElementById('codeFutureToggleBtn');
+  const codeFutureEditBtn = document.getElementById('codeFutureEditBtn');
+  const codeFutureTrashBtn = document.getElementById('codeFutureTrashBtn');
+  const codeFutureSaveBtn = document.getElementById('codeFutureSaveBtn');
+  const codeFutureLoadBtn = document.getElementById('codeFutureLoadBtn');
+  const codeFutureFileInput = document.getElementById('codeFutureFileInput');
+  const codeFutureClass = document.getElementById('codeFutureClass');
+  const codeFutureList = document.getElementById('codeFutureList');
+  const codeFutureAdd = document.getElementById('codeFutureAdd');
+  const codeFutureAddInput = document.getElementById('codeFutureAddInput');
+  const codeFutureAddBtn = document.getElementById('codeFutureAddBtn');
+  const codeFutureDayTotal = document.getElementById('codeFutureDayTotal');
+  const codeFutureDayTotalCount = document.getElementById('codeFutureDayTotalCount');
+
+  // { "8а": ["Ева", ...], "8б": [...] } — ОБЩИЕ на всю неделю
+  let cfStudents = {};
+  let cfCurrentClass = '';
+  let cfCurrentDay = '';
+  let cfCurrentDayClasses = [];
+  let cfTodayClasses = [];
+  let cfTrashMode = false;
+
+  function cfLoadFromCache() {
+    let loaded = null;
+    try {
+      const raw = localStorage.getItem(CF_CACHE_KEY);
+      if (raw) loaded = JSON.parse(raw);
+    } catch (e) {}
+
+    if (loaded && typeof loaded === 'object') {
+      // v3: плоский { "8а": [...], "8б": [...] } — значения массивы
+      const keys = Object.keys(loaded);
+      const isFlatByClass = keys.length > 0 && keys.every(k => Array.isArray(loaded[k]));
+
+      if (isFlatByClass) {
+        cfStudents = {};
+        keys.forEach(k => {
+          const key = String(k).toLowerCase().trim();
+          cfStudents[key] = loaded[k].map(x => String(x).trim()).filter(Boolean);
+        });
+        cfPersist();
+        return;
+      }
+
+      // Миграция из v2 (по дням)
+      const DAY_KEYS = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
+      const looksLikeWeek = keys.some(k => DAY_KEYS.includes(k.toUpperCase()));
+      if (looksLikeWeek) {
+        const merged = {};
+        DAY_KEYS.forEach(d => {
+          const dayData = loaded[d];
+          if (!dayData || typeof dayData !== 'object') return;
+          Object.keys(dayData).forEach(c => {
+            const key = String(c).toLowerCase().trim();
+            if (!Array.isArray(merged[key])) merged[key] = [];
+            (dayData[c] || []).forEach(name => {
+              if (typeof name === 'string' && name.trim() && !merged[key].includes(name.trim())) {
+                merged[key].push(name.trim());
+              }
+            });
+          });
+        });
+        cfStudents = merged;
+        cfPersist();
+        return;
+      }
+    }
+
+    // первый запуск
+    const norm = {};
+    Object.keys(CLASS_STUDENTS_DEFAULT).forEach(k => {
+      norm[String(k).toLowerCase().trim()] = CLASS_STUDENTS_DEFAULT[k].slice();
+    });
+    cfStudents = norm;
+    cfPersist();
+  }
+
+  function cfPersist() {
+    try { localStorage.setItem(CF_CACHE_KEY, JSON.stringify(cfStudents)); } catch (e) {}
+  }
+
+  function cfGetList(className) {
+    const key = (className || '').toLowerCase().trim();
+    if (!key) return [];
+    if (!Array.isArray(cfStudents[key])) cfStudents[key] = [];
+    return cfStudents[key];
+  }
+
+  // Уникальность ТОЛЬКО по имени (без привязки к классу).
+  // Один ребёнок в двух классах = 1.
+  function cfCountUniqueForDay(classList) {
+    const seen = new Set();
+    classList.forEach(className => {
+      const key = (className || '').toLowerCase().trim();
+      if (!key) return;
+      cfGetList(key).forEach(name => {
+        seen.add(String(name).toLowerCase().trim());
+      });
+    });
+    return seen.size;
+  }
+
+  function updateCodeFutureDayTotal() {
+    const list = cfTodayClasses.length ? cfTodayClasses : cfCurrentDayClasses;
+    if (list.length) {
+      const total = cfCountUniqueForDay(list);
+      codeFutureDayTotalCount.textContent = total;
+      codeFutureDayTotal.hidden = false;
+    } else {
+      codeFutureDayTotal.hidden = true;
+    }
+  }
+
+  function cfRender() {
+    const className = cfCurrentClass;
+    const day = cfCurrentDay;
+    const key = (className || '').toLowerCase().trim();
+
+    if (!key) {
+      codeFutureClass.textContent = day ? `${day} · —` : '—';
+      codeFutureList.innerHTML = '<div class="stickers-hint">Ожидание данных об уроке…</div>';
+      updateCodeFutureDayTotal();
+      return;
+    }
+
+    codeFutureClass.textContent = day
+      ? `${day} · Класс: ${className}`
+      : `Класс: ${className}`;
+
+    const kids = cfGetList(key);
+
+    if (!kids.length) {
+      codeFutureList.innerHTML = '<div class="stickers-hint">Нет учеников в этом классе</div>';
+      updateCodeFutureDayTotal();
+      return;
+    }
+
+    codeFutureList.innerHTML = '';
+    kids.forEach((name, idx) => {
+      const row = document.createElement('div');
+      row.className = 'code-future-kid';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'cf-kid-name';
+      nameEl.textContent = name;
+      row.appendChild(nameEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'cf-kid-actions';
+
+      if (cfTrashMode) {
+        const del = document.createElement('button');
+        del.className = 'cf-kid-del';
+        del.textContent = '✕';
+        del.title = 'Удалить';
+        del.onclick = () => {
+          const arr = cfGetList(key);
+          arr.splice(idx, 1);
+          cfPersist();
+          cfRender();
+        };
+        actions.appendChild(del);
+      } else {
+        const edit = document.createElement('button');
+        edit.className = 'cf-kid-edit';
+        edit.textContent = '✎';
+        edit.title = 'Редактировать';
+        edit.onclick = () => cfStartEditRow(row, key, idx);
+        actions.appendChild(edit);
+      }
+
+      row.appendChild(actions);
+      codeFutureList.appendChild(row);
+    });
+
+    updateCodeFutureDayTotal();
+  }
+
+  function cfStartEditRow(row, key, idx) {
+    const arr = cfGetList(key);
+    const oldName = arr[idx];
+
+    row.innerHTML = '';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'cf-kid-input';
+    input.value = oldName;
+    input.maxLength = 40;
+
+    const actions = document.createElement('div');
+    actions.className = 'cf-kid-actions';
+
+    const ok = document.createElement('button');
+    ok.className = 'cf-kid-edit';
+    ok.textContent = '✓';
+    ok.title = 'Сохранить';
+
+    const cancel = document.createElement('button');
+    cancel.className = 'cf-kid-del';
+    cancel.textContent = '↺';
+    cancel.title = 'Отмена';
+
+    actions.appendChild(ok);
+    actions.appendChild(cancel);
+    row.appendChild(input);
+    row.appendChild(actions);
+
+    setTimeout(() => { input.focus(); input.select(); }, 0);
+
+    function commit() {
+      const val = input.value.trim();
+      if (!val) { input.focus(); return; }
+      arr[idx] = val;
+      cfPersist();
+      cfRender();
+    }
+
+    ok.onclick = commit;
+    cancel.onclick = () => cfRender();
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); commit(); }
+      else if (e.key === 'Escape') { e.preventDefault(); cfRender(); }
+    });
+  }
+
+  function cfToggleTrashMode() {
+    cfTrashMode = !cfTrashMode;
+    codeFutureTrashBtn.classList.toggle('active', cfTrashMode);
+    codeFutureEditBtn.classList.toggle('active', !cfTrashMode);
+    codeFutureAdd.hidden = !cfTrashMode;
+    if (cfTrashMode) codeFutureAddInput.focus();
+    cfRender();
+  }
+
+  function cfAddStudent() {
+    const val = codeFutureAddInput.value.trim();
+    if (!val) { codeFutureAddInput.focus(); return; }
+    if (!cfCurrentClass) return;
+    cfGetList(cfCurrentClass).push(val);
+    codeFutureAddInput.value = '';
+    cfPersist();
+    cfRender();
+    codeFutureAddInput.focus();
+  }
+
+  codeFutureAddBtn.addEventListener('click', cfAddStudent);
+  codeFutureAddInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); cfAddStudent(); }
+  });
+
+  codeFutureTrashBtn.addEventListener('click', cfToggleTrashMode);
+  codeFutureEditBtn.addEventListener('click', cfToggleTrashMode);
+
+  function toggleCodeFuture() {
+    const isCollapsed = codeFuture.classList.contains('collapsed');
+    if (isCollapsed) {
+      codeFuture.classList.remove('collapsed');
+      codeFutureToggleBtn.textContent = 'Свернуть';
+      localStorage.setItem('codeFutureCollapsed', 'false');
+    } else {
+      codeFuture.classList.add('collapsed');
+      codeFutureToggleBtn.textContent = 'Развернуть';
+      localStorage.setItem('codeFutureCollapsed', 'true');
+    }
+  }
+
+  codeFutureToggleBtn.addEventListener('click', toggleCodeFuture);
+
+  if (localStorage.getItem('codeFutureCollapsed') === 'true') {
+    codeFuture.classList.add('collapsed');
+    codeFutureToggleBtn.textContent = 'Развернуть';
+  }
+
+  cfLoadFromCache();
+
+  /* ============================================================
+     ЭКСПОРТ / ИМПОРТ JSON (общий список учеников по классам)
+     ============================================================ */
+  function cfExportToJson() {
+    const data = {
+      version: 3,
+      scope: 'by-class',
+      exportedAt: new Date().toISOString(),
+      students: cfStudents
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    a.href = url;
+    a.download = `code-future-students-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function cfNormalizeImport(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+
+    // v3: { students: {...} }
+    if (raw.students && typeof raw.students === 'object') {
+      const out = {};
+      Object.keys(raw.students).forEach(c => {
+        const key = String(c).toLowerCase().trim();
+        const v = raw.students[c];
+        if (Array.isArray(v)) {
+          out[key] = v.map(x => String(x).trim()).filter(Boolean);
+        } else if (typeof v === 'string') {
+          out[key] = v.split(/[,;\n]/).map(s => s.trim()).filter(Boolean);
+        }
+      });
+      return Object.keys(out).length ? { students: out } : null;
+    }
+
+    // v2: { days: { "ПН": {...}, ... } } — объединяем все дни
+    if (raw.days && typeof raw.days === 'object') {
+      const merged = {};
+      Object.keys(raw.days).forEach(d => {
+        const dayData = raw.days[d];
+        if (!dayData || typeof dayData !== 'object') return;
+        Object.keys(dayData).forEach(c => {
+          const key = String(c).toLowerCase().trim();
+          if (!Array.isArray(merged[key])) merged[key] = [];
+          (dayData[c] || []).forEach(name => {
+            if (typeof name === 'string' && name.trim() && !merged[key].includes(name.trim())) {
+              merged[key].push(name.trim());
+            }
+          });
+        });
+      });
+      return Object.keys(merged).length ? { students: merged } : null;
+    }
+
+    // v1 / плоский { "8а": [...] }
+    const keys = Object.keys(raw);
+    const isFlat = keys.length > 0 && keys.every(k =>
+      Array.isArray(raw[k]) || typeof raw[k] === 'string'
+    );
+    if (isFlat) {
+      const out = {};
+      keys.forEach(k => {
+        const key = String(k).toLowerCase().trim();
+        const v = raw[k];
+        if (Array.isArray(v)) {
+          out[key] = v.map(x => String(x).trim()).filter(Boolean);
+        } else if (typeof v === 'string') {
+          out[key] = v.split(/[,;\n]/).map(s => s.trim()).filter(Boolean);
+        }
+      });
+      return Object.keys(out).length ? { students: out } : null;
+    }
+
+    // v2 без обёртки: { "ПН": {...}, ... }
+    const DAY_KEYS = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
+    const looksLikeWeek = keys.some(k => DAY_KEYS.includes(k.toUpperCase()));
+    if (looksLikeWeek) {
+      const merged = {};
+      keys.forEach(k => {
+        const d = k.toUpperCase();
+        if (!DAY_KEYS.includes(d)) return;
+        const dayData = raw[k];
+        if (!dayData || typeof dayData !== 'object') return;
+        Object.keys(dayData).forEach(c => {
+          const key = String(c).toLowerCase().trim();
+          if (!Array.isArray(merged[key])) merged[key] = [];
+          (dayData[c] || []).forEach(name => {
+            if (typeof name === 'string' && name.trim() && !merged[key].includes(name.trim())) {
+              merged[key].push(name.trim());
+            }
+          });
+        });
+      });
+      return Object.keys(merged).length ? { students: merged } : null;
+    }
+
+    return null;
+  }
+
+  function cfImportFromJson(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const raw = JSON.parse(ev.target.result);
+        const normalized = cfNormalizeImport(raw);
+
+        if (!normalized || !normalized.students) {
+          alert('Некорректный JSON: не удалось распознать структуру.');
+          return;
+        }
+
+        const replace = confirm(
+          'Заменить текущие списки?\n\n' +
+          'OK — заменить полностью\n' +
+          'Отмена — объединить (добавить недостающих)'
+        );
+
+        if (replace) {
+          cfStudents = normalized.students;
+        } else {
+          Object.keys(normalized.students).forEach(c => {
+            const key = c.toLowerCase().trim();
+            if (!Array.isArray(cfStudents[key])) cfStudents[key] = [];
+            normalized.students[c].forEach(name => {
+              if (!cfStudents[key].includes(name)) cfStudents[key].push(name);
+            });
+          });
+        }
+
+        cfPersist();
+        cfRender();
+        alert('Загрузка завершена ✓');
+      } catch (err) {
+        alert('Ошибка чтения JSON: ' + err.message);
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  codeFutureSaveBtn.addEventListener('click', cfExportToJson);
+  codeFutureLoadBtn.addEventListener('click', () => {
+    codeFutureFileInput.value = '';
+    codeFutureFileInput.click();
+  });
+  codeFutureFileInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    cfImportFromJson(file);
+  });
+
+  /* ============================================================
+     ПРИЁМ ДАННЫХ ОТ schedule.html
+     ============================================================ */
+  function renderCodeFuture(className, dayClasses, todayClasses, day) {
+    cfCurrentClass = className || '';
+    cfCurrentDayClasses = Array.isArray(dayClasses) ? dayClasses : [];
+    cfTodayClasses = Array.isArray(todayClasses) ? todayClasses : [];
+    cfCurrentDay = (day || '').toUpperCase().trim() || cfCurrentDay;
+    cfRender();
+  }
+
+  window.addEventListener('message', (e) => {
+    if (!e.data) return;
+    if (e.data.type === 'resize-iframe') return;
+    if (e.data.type === 'current-lesson') {
+      const iframe = document.getElementById('scheduleFrame');
+      if (iframe && iframe.contentWindow === e.source) {
+        renderCodeFuture(
+          e.data.className || '',
+          e.data.dayClasses || [],
+          e.data.todayClasses || [],
+          e.data.day || ''
+        );
+      }
     }
   });
 </script>

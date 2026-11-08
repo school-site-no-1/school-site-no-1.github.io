@@ -314,6 +314,7 @@
       const info = getScheduleDay();
       setActiveDayFilter(info.targetDay);
       if (scheduleState.currentEntry) renderSchedule(scheduleState.currentEntry);
+      sendCurrentLessonToParent();
     } else if (e.data && e.data.type === 'reset-time') {
       window.Date = OriginalDate;
       simulatedDate = null;
@@ -321,6 +322,7 @@
       const info = getScheduleDay();
       setActiveDayFilter(info.targetDay);
       if (scheduleState.currentEntry) renderSchedule(scheduleState.currentEntry);
+      sendCurrentLessonToParent();
     }
   });
 
@@ -492,6 +494,94 @@
     const min = Math.floor(totalSec / 60);
     const sec = totalSec % 60;
     return String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+  }
+
+  /* ============================================================
+     ОТПРАВКА АКТИВНОГО КЛАССА В РОДИТЕЛЬСКОЕ ОКНО
+     ============================================================ */
+  function sendCurrentLessonToParent() {
+    if (window.parent === window) return;
+    if (!scheduleState.currentEntry) return;
+
+    const entry = scheduleState.currentEntry;
+    const { schedule } = entry;
+
+    const dayInfo = getScheduleDay();
+    const realToday = dayInfo.realDay;
+
+    // Активный день: если выбрано "all" или пусто — берём реальный сегодня
+    let activeDay = scheduleState.activeDay;
+    if (!activeDay || activeDay === 'all') {
+      activeDay = realToday;
+    }
+
+    // Определяем текущий номер урока
+    const nowMin = getCurrentMinutes();
+    let currentLessonNum = 0;
+    for (let i = 1; i <= 9; i++) {
+      if (LESSON_TIMES[i] && nowMin >= parseTime(LESSON_TIMES[i].start) && nowMin < parseTime(LESSON_TIMES[i].end)) {
+        currentLessonNum = i;
+        break;
+      }
+    }
+
+    const rawList = schedule[activeDay] || [];
+
+    // Если урок не идёт — ищем ближайший следующий, иначе последний
+    let lessonNum = currentLessonNum;
+    if (!lessonNum) {
+      for (let i = 1; i <= 9; i++) {
+        if (LESSON_TIMES[i] && nowMin < parseTime(LESSON_TIMES[i].start)) {
+          lessonNum = i;
+          break;
+        }
+      }
+      if (!lessonNum) {
+        const nums = rawList.map(r => r.lesson).filter(Boolean);
+        if (nums.length) lessonNum = Math.max(...nums);
+      }
+    }
+
+    // Класс текущего (или ближайшего) урока
+    let className = '';
+    if (lessonNum) {
+      const items = rawList.filter(r => r && r.lesson === lessonNum);
+      const classes = [];
+      items.forEach(item => {
+        normalizeList(item.class).forEach(c => {
+          if (!classes.includes(c)) classes.push(c);
+        });
+      });
+      className = classes[0] || '';
+    }
+
+    // Классы за выбранный день (для списка)
+    const dayClasses = [];
+    rawList.forEach(item => {
+      if (!item) return;
+      normalizeList(item.class).forEach(c => {
+        if (!dayClasses.includes(c)) dayClasses.push(c);
+      });
+    });
+
+    // Классы за реальный сегодняшний день (для счётчика «Сегодня»)
+    const todayRawList = schedule[realToday] || [];
+    const todayClasses = [];
+    todayRawList.forEach(item => {
+      if (!item) return;
+      normalizeList(item.class).forEach(c => {
+        if (!todayClasses.includes(c)) todayClasses.push(c);
+      });
+    });
+
+    window.parent.postMessage({
+      type: 'current-lesson',
+      className: className,
+      day: activeDay,
+      lesson: lessonNum,
+      dayClasses: dayClasses,
+      todayClasses: todayClasses
+    }, '*');
   }
 
   function groupDayLessons(rawList) {
@@ -741,6 +831,8 @@
       mob += '</div>';
     });
     scheduleList.innerHTML = mob;
+
+    sendCurrentLessonToParent();
   }
 
   function updateProgressBars() {
@@ -762,7 +854,11 @@
 
     if (currentState !== scheduleState.lastStateKey) {
       scheduleState.lastStateKey = currentState;
-      if (scheduleState.currentEntry) renderSchedule(scheduleState.currentEntry);
+      if (scheduleState.currentEntry) {
+        renderSchedule(scheduleState.currentEntry);
+      } else {
+        sendCurrentLessonToParent();
+      }
       return;
     }
 
