@@ -146,17 +146,18 @@ presence
     }
   });
 
-// ==== 7. Статистика по предметам (слева, видна всем) ====
+// ==== 7. Статистика по предметам ====
+// Всем — только сумма. Модератору — с разбивкой 😀/😐/😞.
 async function loadSubjectStats() {
   const { data, error } = await db.rpc('subject_stats', {
     p_room: ROOM,
     p_day: todayMoscow()
   });
   if (error) { console.error('subject_stats:', error); return; }
-  renderSubjectStats(data || []);
+  renderSubjectStats(data || [], isModerator);
 }
 
-function renderSubjectStats(rows) {
+function renderSubjectStats(rows, detailed) {
   const el = document.getElementById('subject-stats');
   if (!el) return;
   if (!rows.length) {
@@ -167,32 +168,56 @@ function renderSubjectStats(rows) {
 
   const totalAll = rows.reduce((s, r) => s + Number(r.total), 0);
 
-  const body = rows.map(r => `
-    <tr>
-      <td>${escapeHtml(r.subject)}</td>
-      <td class="total">${r.total}</td>
-      <td class="g">${r.good}</td>
-      <td class="n">${r.neutral}</td>
-      <td class="b">${r.bad}</td>
-    </tr>
-  `).join('');
+  if (detailed) {
+    const body = rows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.subject)}</td>
+        <td class="total">${r.total}</td>
+        <td class="g">${r.good}</td>
+        <td class="n">${r.neutral}</td>
+        <td class="b">${r.bad}</td>
+      </tr>
+    `).join('');
 
-  el.innerHTML = `
-    <b>Голоса по предметам</b>
-    <div style="font-size:11px;opacity:.7;margin:2px 0 6px;">Всего: ${totalAll}</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Предмет</th>
-          <th>Σ</th>
-          <th>😀</th>
-          <th>😐</th>
-          <th>😞</th>
-        </tr>
-      </thead>
-      <tbody>${body}</tbody>
-    </table>
-  `;
+    el.innerHTML = `
+      <b>Голоса по предметам</b>
+      <div style="font-size:11px;opacity:.7;margin:2px 0 6px;">Всего: ${totalAll}</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Предмет</th>
+            <th>Σ</th>
+            <th>😀</th>
+            <th>😐</th>
+            <th>😞</th>
+          </tr>
+        </thead>
+        <tbody>${body}</tbody>
+      </table>
+    `;
+  } else {
+    const body = rows.map(r => `
+      <tr>
+        <td>${escapeHtml(r.subject)}</td>
+        <td class="total">${r.total}</td>
+      </tr>
+    `).join('');
+
+    el.innerHTML = `
+      <b>Голоса по предметам</b>
+      <div style="font-size:11px;opacity:.7;margin:2px 0 6px;">Всего: ${totalAll}</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Предмет</th>
+            <th>Σ</th>
+          </tr>
+        </thead>
+        <tbody>${body}</tbody>
+      </table>
+    `;
+  }
+
   el.classList.add('visible');
 }
 
