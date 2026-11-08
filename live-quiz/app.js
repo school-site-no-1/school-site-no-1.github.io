@@ -16,6 +16,7 @@ function todayMoscow() {
 // ==== 3. DOM ====
 const reactionsEl  = document.getElementById('reactions');
 const onlineEl     = document.getElementById('online');
+const statsEl      = document.getElementById('stats');
 const statsReactEl = document.getElementById('reactions-stats');
 
 const isModerator = new URLSearchParams(location.search).get('mod') === '1';
@@ -23,25 +24,7 @@ let modPassword   = null;
 
 const reactionCounts = {};
 
-// ==== 4. Realtime ====
-const channel = db
-  .channel('room:' + ROOM)
-  .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
-  .subscribe(status => console.log('Realtime status:', status));
-
-db.channel('reactions-watch')
-  .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'reactions_count', filter: 'room=eq.' + ROOM },
-    (payload) => {
-      const row = payload.new || payload.old;
-      if (!row) return;
-      if (row.day === todayMoscow()) updateReactionCounter(row.emoji, row.cnt);
-    }
-  )
-  .subscribe();
-
-// ==== 5. Загрузка вопроса ====
+// ==== 4. Загрузка вопроса ====
 async function loadQuestion() {
   const { data, error } = await db
     .from('questions').select('*').eq('id', QUESTION_ID).single();
@@ -61,13 +44,18 @@ db.channel('questions-watch')
   )
   .subscribe();
 
-// ==== 6. Реакции ====
+// ==== 5. Реакции ====
+const reactionChannel = db
+  .channel('reactions:' + ROOM)
+  .on('broadcast', { event: 'reaction' }, ({ payload }) => spawnReaction(payload.emoji))
+  .subscribe(status => console.log('Reactions channel:', status));
+
 document.querySelectorAll('#reaction-bar button').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const emoji = btn.dataset.emoji;
     spawnReaction(emoji);
     await db.rpc('bump_reaction', { p_room: ROOM, p_emoji: emoji });
-    channel.send({ type: 'broadcast', event: 'reaction', payload: { emoji } });
+    reactionChannel.send({ type: 'broadcast', event: 'reaction', payload: { emoji } });
   });
 });
 
@@ -109,7 +97,19 @@ async function loadReactionCounts() {
   renderReactionsStats();
 }
 
-// ==== 7. Presence + статистика посещений ====
+db.channel('reactions-watch')
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'reactions_count', filter: 'room=eq.' + ROOM },
+    (payload) => {
+      const row = payload.new || payload.old;
+      if (!row) return;
+      if (row.day === todayMoscow()) updateReactionCounter(row.emoji, row.cnt);
+    }
+  )
+  .subscribe();
+
+// ==== 6. Presence + статистика посещений ====
 let visitLogged = false;
 
 const presence = db.channel('presence:' + ROOM, {
@@ -146,6 +146,62 @@ presence
     }
   });
 
+// ==== 7. Статистика по предметам (слева, видна всем) ====
+async function loadSubjectStats() {
+  const { data, error } = await db.rpc('subject_stats', {
+    p_room: ROOM,
+    p_day: todayMoscow()
+  });
+  if (error) { console.error('subject_stats:', error); return; }
+  renderSubjectStats(data || []);
+}
+
+function renderSubjectStats(rows) {
+  const el = document.getElementById('subject-stats');
+  if (!el) return;
+  if (!rows.length) {
+    el.classList.remove('visible');
+    el.innerHTML = '';
+    return;
+  }
+
+  const totalAll = rows.reduce((s, r) => s + Number(r.total), 0);
+
+  const body = rows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.subject)}</td>
+      <td class="total">${r.total}</td>
+      <td class="g">${r.good}</td>
+      <td class="n">${r.neutral}</td>
+      <td class="b">${r.bad}</td>
+    </tr>
+  `).join('');
+
+  el.innerHTML = `
+    <b>Голоса по предметам</b>
+    <div style="font-size:11px;opacity:.7;margin:2px 0 6px;">Всего: ${totalAll}</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Предмет</th>
+          <th>Σ</th>
+          <th>😀</th>
+          <th>😐</th>
+          <th>😞</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
+  el.classList.add('visible');
+}
+
+// Показываем панель и грузим статистику для всех
+const subjectStatsEl = document.getElementById('subject-stats');
+if (subjectStatsEl) subjectStatsEl.classList.add('visible');
+loadSubjectStats();
+setInterval(loadSubjectStats, 5000);
+
 // ==== 8. Модерация ====
 if (isModerator) {
   document.getElementById('mod-actions').classList.add('visible');
@@ -162,11 +218,6 @@ if (isModerator) {
     document.getElementById('question').src    = url;
     document.getElementById('question-bg').src = url;
   });
-}
-
-async function getModPassword() {
-  if (!modPassword) modPassword = await askPassword();
-  return modPassword;
 }
 
 // ==== 9. Модалка пароля ====
@@ -194,7 +245,19 @@ function askPassword() {
   });
 }
 
-// ==== 10. Автосброс в 00:00 ====
+async function getModPassword() {
+  if (!modPassword) modPassword = await askPassword();
+  return modPassword;
+}
+
+// ==== 10. Утилита ====
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+// ==== 11. Автосброс в 00:00 ====
 function msUntilMidnightMoscow() {
   const now = new Date();
   const moscow = new Date(now.getTime() + (3 * 60 * 60 * 1000));
@@ -208,14 +271,14 @@ function scheduleReset() {
   console.log('Сброс в 00:00 через ' + Math.round(ms / 1000 / 60) + ' минут');
 
   setTimeout(() => {
-    console.log('00:00 по Москве — сбрасываем счётчики');
     loadReactionCounts();
+    loadSubjectStats();
     scheduleReset();
   }, ms);
 }
 
 scheduleReset();
 
-// ==== 11. Старт ====
+// ==== 12. Старт ====
 loadQuestion();
 loadReactionCounts();
