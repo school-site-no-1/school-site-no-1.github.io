@@ -40,22 +40,22 @@
       "room": "208"
     },
     {
-      "lesson": 2,
-      "class": "1Б",
+      "lesson": 3,
+      "class": "1А",
       "subject": "ИЗО",
-      "room": ""
+      "room": "208"
     },
     {
       "lesson": 4,
-      "class": "1А",
+      "class": "1Б",
       "subject": "ИЗО",
-      "room": ""
+      "room": "208"
     },
     {
       "lesson": 5,
       "class": "2А",
       "subject": "ИЗО",
-      "room": ""
+      "room": "208"
     }
   ],
   "ЧТ": [
@@ -129,5 +129,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-09 12:24:43"
+  "last_update": "2026-11-10 13:00:06"
 }
