@@ -15,16 +15,12 @@
     <!-- ❄️ CSS снежинок -->
     <link rel="stylesheet" href="snow.min.css">
 
-    <!-- ❄️ Тема ставится ДО отрисовки -->
+    <!-- ❄️ Тема ставится ДО отрисовки. По умолчанию — ТЁМНАЯ -->
     <script>
         (function () {
             try {
                 var saved = localStorage.getItem('schedule-theme');
-                var theme = saved;
-                if (!theme) {
-                    theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-                        ? 'dark' : 'light';
-                }
+                var theme = saved || 'dark'; // ❗ По умолчанию тёмная
                 document.documentElement.setAttribute('data-theme', theme);
                 var meta = document.querySelector('meta[name="theme-color"]');
                 if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f172a' : '#1e3a5f');
@@ -599,33 +595,42 @@
         .break-seg.on { background: linear-gradient(90deg, var(--success), #48bb78); }
 
         /* ============================
-           ПОДВАЛ
+           ПОДВАЛ — три строки, по правому краю
            ============================ */
         .footer {
             flex: 1 1 0;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-end;
             justify-content: center;
             min-height: 14px;
             color: var(--text-soft);
-            text-align: center;
+            text-align: right;
             padding-top: 1px;
             font-size: 0.46rem;
-            gap: 4px;
-            flex-wrap: wrap;
+            gap: 2px;
             font-family: inherit;
             position: relative;
             z-index: 101;
             background: var(--bg);
+            padding-right: 4px;
         }
         .footer-status {
-            display: inline-flex;
-            align-items: center;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
             justify-content: center;
-            gap: 4px;
+            gap: 2px;
             white-space: nowrap;
-            flex-wrap: wrap;
             font-family: inherit;
+            width: 100%;
+        }
+        .footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            width: 100%;
         }
         .footer-status .schedule-updated { color: var(--text-soft) !important; font-size: 0.46rem; padding: 0 2px; }
         .footer-status .board-sync { font-size: 0.46rem; padding: 0 2px; }
@@ -1093,13 +1098,22 @@
             </div>
         </main>
 
+        <!-- ❄️ Футер: 3 строки, выравнивание по правому краю -->
         <footer class="footer no-print">
             <div class="footer-status" aria-label="Состояние расписания">
-                <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
-                <span aria-hidden="true">·</span>
-                <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
-                <button type="button" id="refreshBtn" class="btn-refresh" onclick="manualRefresh()">⟳ Обновить</button>
-                <button type="button" id="themeToggleBtn" class="btn-theme" onclick="toggleTheme()" title="Переключить тему" aria-label="Переключить тему">🌙</button>
+                <!-- Строка 1: дата -->
+                <div class="footer-row">
+                    <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
+                </div>
+                <!-- Строка 2: статус "данные актуальны" -->
+                <div class="footer-row">
+                    <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
+                </div>
+                <!-- Строка 3: кнопки "Обновить" и тема -->
+                <div class="footer-row">
+                    <button type="button" id="refreshBtn" class="btn-refresh" onclick="manualRefresh()">⟳ Обновить</button>
+                    <button type="button" id="themeToggleBtn" class="btn-theme" onclick="toggleTheme()" title="Переключить тему" aria-label="Переключить тему">🌙</button>
+                </div>
             </div>
         </footer>
         <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
@@ -1242,9 +1256,10 @@
         }
 
         // ================================================================
-        // ❄️ ТЕМА
+        // ❄️ ТЕМА — по умолчанию ТЁМНАЯ
         // ================================================================
         var THEME_KEY = 'schedule-theme';
+        var DEFAULT_THEME = 'dark'; // ❗ Тёмная по умолчанию
 
         function getSystemTheme() {
             return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -1252,7 +1267,7 @@
         }
 
         function getCurrentTheme() {
-            return document.documentElement.getAttribute('data-theme') || getSystemTheme();
+            return document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
         }
 
         function applyTheme(theme, save) {
@@ -1275,12 +1290,16 @@
             applyTheme(next, true);
         }
 
+        // Слушаем системную тему — но НЕ применяем, если пользователь не выбирал явно
         try {
             var mq = window.matchMedia('(prefers-color-scheme: dark)');
             var onSystemThemeChange = function () {
                 var saved = null;
                 try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-                if (!saved) applyTheme(getSystemTheme(), false);
+                if (!saved) {
+                    // ❗ Не переключаем автоматически — у нас тёмная по умолчанию
+                    applyTheme(DEFAULT_THEME, false);
+                }
             };
             if (mq.addEventListener) mq.addEventListener('change', onSystemThemeChange);
             else if (mq.addListener) mq.addListener(onSystemThemeChange);
@@ -2063,7 +2082,8 @@
         var scheduleState = { currentEntry: null };
 
         document.addEventListener('DOMContentLoaded', function() {
-            var initialTheme = getCurrentTheme();
+            // ❗ По умолчанию — тёмная тема
+            var initialTheme = getCurrentTheme(); // вернёт 'dark', если не сохранено
             applyTheme(initialTheme, false);
 
             if (typeof initClock === 'function') initClock('clockContainer', 'clockSubRight');
@@ -2088,6 +2108,7 @@
                 if (!document.hidden) refreshAll();
             });
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
+            console.log('🌙 Тема по умолчанию: ' + initialTheme);
         });
     </script>
 </body>
