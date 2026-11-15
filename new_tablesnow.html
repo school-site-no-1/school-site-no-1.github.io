@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-version="v5.0.0">
+<html lang="ru" data-version="v5.0.1">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -15,22 +15,44 @@
     <!-- ❄️ CSS снежинок -->
     <link rel="stylesheet" href="snow.min.css">
 
-    <!-- ❄️ Тема ставится ДО отрисовки. По умолчанию — ТЁМНАЯ -->
+    <!-- ❄️ Тема ставится ДО отрисовки. По умолчанию — СВЕТЛАЯ. Снег/надпись — ВЫКЛ -->
     <script>
         (function () {
             try {
-                var saved = localStorage.getItem('schedule-theme');
-                var theme = saved || 'dark'; // ❗ По умолчанию тёмная
+                // 1. ТЕМА: по умолчанию СВЕТЛАЯ
+                var savedTheme = localStorage.getItem('schedule-theme');
+                var theme = savedTheme || 'light';   // ← 'light' = светлая
                 document.documentElement.setAttribute('data-theme', theme);
                 var meta = document.querySelector('meta[name="theme-color"]');
                 if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f172a' : '#1e3a5f');
+
+                // 2. СНЕГ: по умолчанию СКРЫТ
+                var hideSnow = localStorage.getItem('schedule-hide-snow');
+                var snowHidden = (hideSnow === null) ? true : (hideSnow === '1');
+
+                // 3. НАДПИСЬ: по умолчанию СКРЫТА
+                var hideGreeting = localStorage.getItem('schedule-hide-greeting');
+                var greetingHidden = (hideGreeting === null) ? true : (hideGreeting === '1');
+
+                if (snowHidden) {
+                    var st = document.createElement('style');
+                    st.id = 'hide-snow-style';
+                    st.textContent = '.snowflakes-box, .snowball-box { display: none !important; }';
+                    document.head.appendChild(st);
+                }
+                if (greetingHidden) {
+                    var st2 = document.createElement('style');
+                    st2.id = 'hide-greeting-style';
+                    st2.textContent = '.snow-greeting { display: none !important; }';
+                    document.head.appendChild(st2);
+                }
             } catch (e) { /* ignore */ }
         })();
     </script>
 
     <style>
         /* ============================
-           ПЕРЕМЕННЫЕ
+           ПЕРЕМЕННЫЕ (СВЕТЛАЯ ТЕМА)
            ============================ */
         :root {
             --primary: #1e3a5f;
@@ -48,6 +70,9 @@
             --text-soft: #718096;
         }
 
+        /* ============================
+           ТЁМНАЯ ТЕМА (только если явно выбрана)
+           ============================ */
         :root[data-theme="dark"] {
             --primary: #38bdf8;
             --primary-light: #7dd3fc;
@@ -87,7 +112,6 @@
             height: 100dvh;
         }
 
-        /* ❄️ Слой для снега и поздравления */
         #snowLayer {
             position: fixed;
             top: 0;
@@ -202,6 +226,8 @@
             font-family: inherit;
             flex-shrink: 0;
             min-width: max-content;
+            /* ❗ Пробелы между часами, днём и датой */
+            column-gap: 10px;
         }
 
         #clockContainer,
@@ -212,8 +238,9 @@
             flex-shrink: 0;
         }
         #clockSubRight {
-            gap: 4px;
-            margin-left: 4px;
+            /* ❗ Пробел между днём недели и датой */
+            gap: 8px;
+            margin-left: 0;
         }
 
         .clock-line .clock-time {
@@ -289,7 +316,7 @@
         .filter-btn.day-btn { font-size: 0.54rem; padding: 3px 8px; }
 
         @media (max-width: 900px) {
-            .clock-line { gap: 3px; }
+            .clock-line { column-gap: 8px; }
             .clock-line .clock-time { font-size: 12px; }
             .clock-line .clock-day  { font-size: 8px; }
             .clock-line .clock-date { font-size: 7px; }
@@ -310,17 +337,19 @@
             .header-center { grid-area: period; }
             .header-clock  { grid-area: clock; }
             .filter-bar    { grid-area: filter; justify-content: flex-start; }
-            .clock-line { gap: 3px; }
+            .clock-line { column-gap: 6px; }
             .clock-line .clock-time { font-size: 11px; }
             .clock-line .clock-day  { font-size: 7.5px; }
             .clock-line .clock-date { font-size: 6.5px; }
+            #clockSubRight { gap: 5px; }
         }
 
         @media (max-width: 480px) {
-            .clock-line { gap: 2px; }
+            .clock-line { column-gap: 4px; }
             .clock-line .clock-time { font-size: 10px; }
             .clock-line .clock-day  { font-size: 7px; }
             .clock-line .clock-date { font-size: 6px; }
+            #clockSubRight { gap: 4px; }
             .filter-btn { font-size: 0.46rem; padding: 2px 5px; }
             .filter-btn.day-btn { font-size: 0.46rem; padding: 2px 5px; }
         }
@@ -637,7 +666,7 @@
         .footer-status .board-sync.ok { color: var(--success); }
         .footer-status .board-sync.err { color: var(--danger); }
 
-        .btn-refresh, .btn-theme {
+        .btn-refresh {
             font-family: inherit;
             border: 1px solid var(--border);
             border-radius: 5px;
@@ -650,9 +679,8 @@
             line-height: 1.3;
             transition: background 0.12s, border-color 0.12s;
         }
-        .btn-refresh:hover, .btn-theme:hover { background: var(--accent-soft); border-color: var(--accent); }
+        .btn-refresh:hover { background: var(--accent-soft); border-color: var(--accent); }
         .btn-refresh.loading { opacity: 0.6; pointer-events: none; }
-        .btn-theme { min-width: 20px; text-align: center; }
 
         .loading-overlay {
             display: flex;
@@ -703,7 +731,7 @@
         .skip-link:focus { transform: translateY(0); outline: 3px solid var(--accent); outline-offset: 2px; }
 
         /* ============================
-           МАШИНА ВРЕМЕНИ
+           МАШИНА ВРЕМЕНИ / АДМИН-ПАНЕЛЬ
            ============================ */
         .tt-toggle {
             position: fixed;
@@ -813,7 +841,8 @@
             display: none;
             flex-direction: column;
             gap: 6px;
-            min-width: 200px;
+            min-width: 240px;
+            max-width: 300px;
             font-family: inherit;
         }
         .tt-panel.open { display: flex; }
@@ -838,16 +867,51 @@
             color: var(--text-soft);
         }
         .tt-panel .tt-title-actions button:hover { color: var(--danger); }
+
+        .tt-panel .tt-section {
+            border-top: 1px dashed var(--border);
+            padding-top: 5px;
+            margin-top: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .tt-panel .tt-section-title {
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-soft);
+            font-weight: 700;
+            margin-bottom: 1px;
+        }
         .tt-panel .tt-row {
             display: flex;
             align-items: center;
             gap: 4px;
             flex-wrap: wrap;
         }
+        .tt-panel .tt-row.tt-check {
+            flex-wrap: nowrap;
+        }
         .tt-panel label {
             font-size: 0.54rem;
             color: var(--text-soft);
             min-width: 30px;
+        }
+        .tt-panel label.tt-check-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 0;
+            cursor: pointer;
+            color: var(--text);
+            font-weight: 500;
+        }
+        .tt-panel label.tt-check-label input {
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            accent-color: var(--accent);
         }
         .tt-panel select,
         .tt-panel input[type="time"] {
@@ -859,6 +923,33 @@
             color: var(--text);
             min-height: 22px;
         }
+
+        /* ⏱ Ползунок времени */
+        .tt-panel .tt-slider-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tt-panel .tt-slider-row input[type="range"] {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 4px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+        .tt-panel .tt-slider-value {
+            font-size: 0.6rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--primary);
+            min-width: 34px;
+            text-align: center;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 4px;
+        }
+
         .tt-panel button {
             font-size: 0.56rem;
             padding: 3px 8px;
@@ -938,23 +1029,22 @@
             .period.past-period { opacity: 1 !important; filter: none !important; }
             .tiles-break-row { display: none !important; }
             .tt-toggle, .tt-pin, .tt-panel { display: none !important; }
-            .snowflakes-box, .snowball-box { display: none !important; }
+            .snowflakes-box, .snowball-box, .snow-greeting { display: none !important; }
         }
 
         /* ============================================================
            ❄️ СНЕГ И ПОЗДРАВЛЕНИЕ (внутри #snowLayer)
            ============================================================ */
         
-        /* Поздравление лежит ПОД сугробами */
         .snow-greeting {
             position: absolute;
-            bottom: 4px; /* Прижимаем ближе к низу, чтобы выглядывало из-за снега */
+            bottom: 4px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 15; /* ❗ Меньше, чем у сугробов (20) */
+            z-index: 15;
             pointer-events: none;
             font-family: 'Pacifico', 'Comic Sans MS', cursive, sans-serif;
-            font-size: clamp(16px, 3vw, 28px); /* Адаптивный размер */
+            font-size: clamp(16px, 3vw, 28px);
             font-weight: 700;
             color: #ffffff;
             text-align: center;
@@ -975,7 +1065,6 @@
             50% { transform: translateX(-50%) translateY(-4px); }
         }
 
-        /* В тёмной теме делаем надпись чуть более голубой */
         :root[data-theme="dark"] .snow-greeting {
             color: #e0f2fe;
             text-shadow: 
@@ -997,10 +1086,7 @@
             pointer-events: none !important;
         }
 
-        /* Снежинки летают поверх интерфейса */
         .snowflakes-box { z-index: 10 !important; }
-        
-        /* Сугробы поверх снежинок */
         .snowball-box { z-index: 20 !important; }
 
         .snowflakes-box .snowflake {
@@ -1009,7 +1095,6 @@
             pointer-events: none !important;
         }
 
-        /* Возвращаем сугробам белый цвет с небольшой тенью */
         .snowball-box .snow-layer {
             background-color: #f1f9fc !important;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05) !important;
@@ -1098,29 +1183,24 @@
             </div>
         </main>
 
-        <!-- ❄️ Футер: 3 строки, выравнивание по правому краю -->
         <footer class="footer no-print">
             <div class="footer-status" aria-label="Состояние расписания">
-                <!-- Строка 1: дата -->
                 <div class="footer-row">
                     <span class="schedule-updated" id="scheduleUpdated">📅 загрузка...</span>
                 </div>
-                <!-- Строка 2: статус "данные актуальны" -->
                 <div class="footer-row">
                     <span class="board-sync loading" id="boardSync" aria-live="off">Подключение…</span>
                 </div>
-                <!-- Строка 3: кнопки "Обновить" и тема -->
                 <div class="footer-row">
                     <button type="button" id="refreshBtn" class="btn-refresh" onclick="manualRefresh()">⟳ Обновить</button>
-                    <button type="button" id="themeToggleBtn" class="btn-theme" onclick="toggleTheme()" title="Переключить тему" aria-label="Переключить тему">🌙</button>
                 </div>
             </div>
         </footer>
         <audio id="breakMusic" src="peremena.mp3" preload="auto" loop aria-hidden="true"></audio>
     </div>
 
-    <!-- ⭐ Кнопка машины времени -->
-    <button type="button" class="tt-toggle no-print" id="ttToggle" title="Машина времени (нужен PIN)" aria-label="Машина времени">🔒</button>
+    <!-- ⭐ Кнопка админ-панели -->
+    <button type="button" class="tt-toggle no-print" id="ttToggle" title="Админ-панель (нужен PIN)" aria-label="Админ-панель">🔒</button>
 
     <!-- ⭐ PIN-панель -->
     <div class="tt-pin no-print" id="ttPin" role="dialog" aria-label="Введите PIN-код">
@@ -1134,42 +1214,72 @@
         <div class="tt-pin-hint">Доступ только для администратора</div>
     </div>
 
-    <!-- ⭐ Панель машины времени -->
-    <div class="tt-panel no-print" id="ttPanel" role="dialog" aria-label="Машина времени">
+    <!-- ⭐ Админ-панель -->
+    <div class="tt-panel no-print" id="ttPanel" role="dialog" aria-label="Админ-панель">
         <div class="tt-title">
-            <span>⏱ Машина времени</span>
+            <span>🛠️ Админ-панель</span>
             <div class="tt-title-actions">
                 <button type="button" id="ttLock" title="Заблокировать">🔒</button>
                 <button type="button" id="ttClose" title="Закрыть">✕</button>
             </div>
         </div>
-        <div class="tt-row">
-            <label for="ttDay">День</label>
-            <select id="ttDay">
-                <option value="">— (текущий)</option>
-                <option value="1">Понедельник</option>
-                <option value="2">Вторник</option>
-                <option value="3">Среда</option>
-                <option value="4">Четверг</option>
-                <option value="5">Пятница</option>
-                <option value="6">Суббота</option>
-                <option value="0">Воскресенье</option>
-            </select>
+
+        <!-- ❄️ Оформление -->
+        <div class="tt-section">
+            <div class="tt-section-title">Оформление</div>
+            <div class="tt-row tt-check">
+                <label class="tt-check-label">
+                    <input type="checkbox" id="cfgDarkTheme">
+                    <span>🌙 Тёмная тема</span>
+                </label>
+            </div>
+            <div class="tt-row tt-check">
+                <label class="tt-check-label">
+                    <input type="checkbox" id="cfgShowSnow">
+                    <span>❄️ Снег</span>
+                </label>
+            </div>
+            <div class="tt-row tt-check">
+                <label class="tt-check-label">
+                    <input type="checkbox" id="cfgShowGreeting">
+                    <span>🎉 Поздравление</span>
+                </label>
+            </div>
         </div>
-        <div class="tt-row">
-            <label for="ttTime">Время</label>
-            <input type="time" id="ttTime" step="60">
+
+        <!-- ⏱ Машина времени -->
+        <div class="tt-section">
+            <div class="tt-section-title">Машина времени</div>
+            <div class="tt-row">
+                <label for="ttDay">День</label>
+                <select id="ttDay">
+                    <option value="">— (текущий)</option>
+                    <option value="1">Понедельник</option>
+                    <option value="2">Вторник</option>
+                    <option value="3">Среда</option>
+                    <option value="4">Четверг</option>
+                    <option value="5">Пятница</option>
+                    <option value="6">Суббота</option>
+                    <option value="0">Воскресенье</option>
+                </select>
+            </div>
+            <!-- ⏱ Время ползунком -->
+            <div class="tt-row tt-slider-row">
+                <label for="ttTimeSlider">Время</label>
+                <input type="range" id="ttTimeSlider" min="0" max="1439" step="5" value="720" aria-label="Время (ползунок)">
+                <div class="tt-slider-value" id="ttSliderValue">12:00</div>
+            </div>
+            <div class="tt-row">
+                <button type="button" class="tt-apply" id="ttApply">Применить</button>
+                <button type="button" class="tt-reset" id="ttReset">Сброс</button>
+            </div>
+            <div class="tt-status" id="ttStatus">Не активно</div>
         </div>
-        <div class="tt-row">
-            <button type="button" class="tt-apply" id="ttApply">Применить</button>
-            <button type="button" class="tt-reset" id="ttReset">Сброс</button>
-        </div>
-        <div class="tt-status" id="ttStatus">Не активно</div>
     </div>
 
     <!-- ❄️ Слой для снега и поздравления -->
     <div id="snowLayer">
-        <div class="snow-greeting">❄️ С наступающим Новым 2027 годом! ❄️</div>
+        <div class="snow-greeting" id="snowGreeting">❄️ С наступающим Новым 2027 годом! ❄️</div>
     </div>
 
     <script src="oclock.js"></script>
@@ -1187,8 +1297,30 @@
 
     <script>
         // ================================================================
-        // ❄️ СНЕЖИНКИ (с созданием отдельного слоя)
+        // ❄️ НАСТРОЙКИ — ПО УМОЛЧАНИЮ СВЕТЛАЯ ТЕМА, ВСЁ ВЫКЛЮЧЕНО
         // ================================================================
+        var THEME_KEY = 'schedule-theme';
+        var SNOW_KEY = 'schedule-hide-snow';
+        var GREETING_KEY = 'schedule-hide-greeting';
+        var DEFAULT_THEME = 'light';   // ← Светлая тема по умолчанию
+
+        function getCurrentTheme() {
+            return document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
+        }
+        function isSnowHidden() {
+            try {
+                var v = localStorage.getItem(SNOW_KEY);
+                return v === null ? true : v === '1';   // по умолчанию скрыт
+            } catch (e) { return true; }
+        }
+        function isGreetingHidden() {
+            try {
+                var v = localStorage.getItem(GREETING_KEY);
+                return v === null ? true : v === '1';   // по умолчанию скрыта
+            } catch (e) { return true; }
+        }
+
+        // ❄️ Снег
         var __snowInstance = null;
         var snowLayer = null;
 
@@ -1206,7 +1338,6 @@
 
         function destroySnow() {
             var layer = getSnowLayer();
-            // ❄️ Удаляем только снежинки и сугробы, оставляя поздравление
             var sf = layer.querySelector('.snowflakes-box');
             var sb = layer.querySelector('.snowball-box');
             if (sf) sf.remove();
@@ -1236,8 +1367,7 @@
                     clearSnowBalls: 20000,
                     reset: -6
                 });
-                
-                // ❄️ Переносим снег в специальный слой
+
                 var layer = getSnowLayer();
                 var sf = document.querySelector('.snowflakes-box');
                 var sb = document.querySelector('.snowball-box');
@@ -1252,22 +1382,24 @@
 
         function restartSnowForTheme(theme) {
             if (typeof Snow === 'undefined') return;
+            if (isSnowHidden()) { destroySnow(); return; }
             initSnow(theme);
         }
 
-        // ================================================================
-        // ❄️ ТЕМА — по умолчанию ТЁМНАЯ
-        // ================================================================
-        var THEME_KEY = 'schedule-theme';
-        var DEFAULT_THEME = 'dark'; // ❗ Тёмная по умолчанию
-
-        function getSystemTheme() {
-            return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                ? 'dark' : 'light';
+        function setSnowVisible(visible) {
+            try {
+                localStorage.setItem(SNOW_KEY, visible ? '0' : '1');
+            } catch (e) {}
+            if (visible) initSnow(getCurrentTheme());
+            else destroySnow();
         }
 
-        function getCurrentTheme() {
-            return document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
+        function setGreetingVisible(visible) {
+            try {
+                localStorage.setItem(GREETING_KEY, visible ? '0' : '1');
+            } catch (e) {}
+            var el = document.getElementById('snowGreeting');
+            if (el) el.style.display = visible ? '' : 'none';
         }
 
         function applyTheme(theme, save) {
@@ -1277,43 +1409,18 @@
             }
             var meta = document.getElementById('metaThemeColor');
             if (meta) meta.setAttribute('content', theme === 'dark' ? '#0f172a' : '#1e3a5f');
-            var btn = document.getElementById('themeToggleBtn');
-            if (btn) {
-                btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-                btn.title = theme === 'dark' ? 'Светлая тема' : 'Тёмная тема';
-            }
             restartSnowForTheme(theme);
         }
 
-        function toggleTheme() {
-            var next = getCurrentTheme() === 'dark' ? 'light' : 'dark';
-            applyTheme(next, true);
-        }
-
-        // Слушаем системную тему — но НЕ применяем, если пользователь не выбирал явно
-        try {
-            var mq = window.matchMedia('(prefers-color-scheme: dark)');
-            var onSystemThemeChange = function () {
-                var saved = null;
-                try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-                if (!saved) {
-                    // ❗ Не переключаем автоматически — у нас тёмная по умолчанию
-                    applyTheme(DEFAULT_THEME, false);
-                }
-            };
-            if (mq.addEventListener) mq.addEventListener('change', onSystemThemeChange);
-            else if (mq.addListener) mq.addListener(onSystemThemeChange);
-        } catch (e) {}
-
         // ================================================================
-        // ⭐ PIN-КОД ДЛЯ МАШИНЫ ВРЕМЕНИ
+        // ⭐ PIN-КОД
         // ================================================================
         var TIME_TESTER_PIN = '2026';
 
         // ================================================================
         // КОНФИГУРАЦИЯ
         // ================================================================
-        var APP_VERSION = '5.0.0';
+        var APP_VERSION = '5.0.1';
         var LESSON_TIMES = [
             { num: 1, start: "08:30", end: "09:10" },
             { num: 2, start: "09:20", end: "10:00" },
@@ -1356,7 +1463,7 @@
             if (!e.data) return;
             if (!timeTesterUnlocked) {
                 if (e.data.type === 'set-time' || e.data.type === 'reset-time') {
-                    showTopNotification('🔒 Сначала разблокируйте машину времени', 'error');
+                    showTopNotification('🔒 Сначала разблокируйте админ-панель', 'error');
                 }
                 return;
             }
@@ -1967,7 +2074,21 @@
         }
 
         // ================================================================
-        // ⭐ UI МАШИНЫ ВРЕМЕНИ С PIN-КОДОМ
+        // ⏱ ФОРМАТИРОВАНИЕ ВРЕМЕНИ
+        // ================================================================
+        function minutesToHHMM(minutes) {
+            minutes = Math.max(0, Math.min(1439, minutes));
+            var h = Math.floor(minutes / 60);
+            var m = minutes % 60;
+            return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+        }
+        function hhmmToMinutes(hhmm) {
+            var parts = String(hhmm).split(':');
+            return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+        }
+
+        // ================================================================
+        // ⭐ UI АДМИН-ПАНЕЛИ С PIN-КОДОМ
         // ================================================================
         function initTimeTesterUI() {
             var toggle = document.getElementById('ttToggle');
@@ -1983,9 +2104,31 @@
             var applyBtn = document.getElementById('ttApply');
             var resetBtn = document.getElementById('ttReset');
             var daySel = document.getElementById('ttDay');
-            var timeInp = document.getElementById('ttTime');
+            var timeSlider = document.getElementById('ttTimeSlider');
+            var sliderValue = document.getElementById('ttSliderValue');
+
+            var cfgDarkTheme = document.getElementById('cfgDarkTheme');
+            var cfgShowSnow = document.getElementById('cfgShowSnow');
+            var cfgShowGreeting = document.getElementById('cfgShowGreeting');
 
             if (!toggle || !pinPanel || !panel) return;
+
+            function syncSettingsUI() {
+                cfgDarkTheme.checked = getCurrentTheme() === 'dark';
+                cfgShowSnow.checked = !isSnowHidden();
+                cfgShowGreeting.checked = !isGreetingHidden();
+            }
+
+            function syncSliderValue() {
+                sliderValue.textContent = minutesToHHMM(parseInt(timeSlider.value, 10) || 0);
+            }
+
+            function syncSliderFromCurrentTime() {
+                var now = simulatedDate ? new OriginalDate(simulatedDate.getTime()) : new OriginalDate();
+                var mins = now.getHours() * 60 + now.getMinutes();
+                timeSlider.value = mins;
+                syncSliderValue();
+            }
 
             function openPinPanel() {
                 pinPanel.classList.add('open');
@@ -2004,6 +2147,8 @@
                 pinPanel.classList.remove('open');
                 lockBtn.textContent = '🔒';
                 lockBtn.title = 'Заблокировать';
+                syncSettingsUI();
+                syncSliderFromCurrentTime();
             }
             function lockTimePanel() {
                 timeTesterUnlocked = false;
@@ -2011,8 +2156,8 @@
                 toggle.textContent = '🔒';
                 toggle.classList.add('no-print');
                 toggle.classList.remove('unlocked');
-                toggle.title = 'Машина времени (нужен PIN)';
-                showTopNotification('🔒 Машина времени заблокирована', 'success');
+                toggle.title = 'Админ-панель (нужен PIN)';
+                showTopNotification('🔒 Админ-панель заблокирована', 'success');
             }
 
             toggle.addEventListener('click', function() {
@@ -2039,9 +2184,9 @@
                     closePinPanel();
                     toggle.textContent = '⏱';
                     toggle.classList.add('unlocked');
-                    toggle.title = 'Машина времени (разблокировано)';
+                    toggle.title = 'Админ-панель (разблокировано)';
                     openTimePanel();
-                    showTopNotification('✅ Машина времени разблокирована', 'success');
+                    showTopNotification('✅ Админ-панель разблокирована', 'success');
                 } else {
                     pinError.textContent = 'Неверный PIN-код';
                     pinInput.value = '';
@@ -2059,21 +2204,32 @@
             closeBtn.addEventListener('click', function() { panel.classList.remove('open'); });
             lockBtn.addEventListener('click', function() { lockTimePanel(); });
 
+            cfgDarkTheme.addEventListener('change', function() {
+                applyTheme(cfgDarkTheme.checked ? 'dark' : 'light', true);
+            });
+            cfgShowSnow.addEventListener('change', function() {
+                setSnowVisible(cfgShowSnow.checked);
+            });
+            cfgShowGreeting.addEventListener('change', function() {
+                setGreetingVisible(cfgShowGreeting.checked);
+            });
+
+            timeSlider.addEventListener('input', syncSliderValue);
+
             applyBtn.addEventListener('click', function() {
                 var dayVal = daySel.value === '' ? null : parseInt(daySel.value, 10);
-                var timeVal = timeInp.value || null;
+                var mins = parseInt(timeSlider.value, 10) || 0;
+                var timeVal = minutesToHHMM(mins);
                 window.postMessage({ type: 'set-time', day: dayVal, time: timeVal }, '*');
-                showTopNotification('⏱ Время применено', 'warning');
+                showTopNotification('⏱ Время применено: ' + timeVal, 'warning');
             });
             resetBtn.addEventListener('click', function() {
                 window.postMessage({ type: 'reset-time' }, '*');
                 showTopNotification('⏱ Время сброшено', 'success');
+                syncSliderFromCurrentTime();
             });
 
-            var n = new OriginalDate();
-            if (timeInp) {
-                timeInp.value = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
-            }
+            syncSliderValue();
         }
 
         // ================================================================
@@ -2082,14 +2238,15 @@
         var scheduleState = { currentEntry: null };
 
         document.addEventListener('DOMContentLoaded', function() {
-            // ❗ По умолчанию — тёмная тема
-            var initialTheme = getCurrentTheme(); // вернёт 'dark', если не сохранено
+            var initialTheme = getCurrentTheme();
             applyTheme(initialTheme, false);
+
+            setGreetingVisible(!isGreetingHidden());
 
             if (typeof initClock === 'function') initClock('clockContainer', 'clockSubRight');
             initTimeTesterUI();
 
-            initSnow(initialTheme);
+            if (!isSnowHidden()) initSnow(initialTheme);
 
             window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
@@ -2108,7 +2265,8 @@
                 if (!document.hidden) refreshAll();
             });
             console.log('✅ Расписание v' + APP_VERSION + ' загружено!');
-            console.log('🌙 Тема по умолчанию: ' + initialTheme);
+            console.log('ℹ️ Тема по умолчанию: светлая');
+            console.log('ℹ️ Снег и надпись по умолчанию: выключены');
         });
     </script>
 </body>
