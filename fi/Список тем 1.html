@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Список тем</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1e3a5f;
+    --accent: #3182ce;
+    --border: #e2e8f0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --text-soft: #718096;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    color: var(--primary);
+  }
+
+  .btn-print {
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    background: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    min-height: 38px;
+  }
+  .btn-print:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  }
+  .btn-print:active { transform: translateY(0); }
+
+  .columns {
+    column-count: 3;
+    column-gap: 24px;
+  }
+
+  .lesson {
+    break-inside: avoid;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .lesson-title {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+
+  .lesson ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .lesson li {
+    position: relative;
+    padding: 3px 0 3px 16px;
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    line-height: 1.4;
+  }
+
+  .lesson li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 10px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  .lesson a {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    background: #ebf4ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .lesson a:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .status {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+  }
+
+  .status.error { color: #c53030; }
+
+  @media (max-width: 900px) {
+    .columns { column-count: 2; }
+  }
+
+  @media (max-width: 600px) {
+    .columns { column-count: 1; }
+    body { padding: 14px 10px; }
+    h1 { font-size: 1.15rem; }
+    .btn-print { width: 100%; justify-content: center; }
+  }
+
+  /* ======================= ПЕЧАТЬ ======================= */
+  @media print {
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    body {
+      background: #fff;
+      color: #000;
+      padding: 0;
+      font-size: 11pt;
+    }
+
+    .container { max-width: none; }
+
+    .topbar {
+      margin-bottom: 10mm;
+      display: block;
+    }
+
+    h1 {
+      font-size: 16pt;
+      color: #000;
+      margin: 0;
+    }
+
+    .btn-print { display: none !important; }
+
+    .columns {
+      column-count: 2;
+      column-gap: 8mm;
+    }
+
+    .lesson {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      background: #fff;
+      border: 1px solid #999;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 3mm 4mm;
+      margin-bottom: 5mm;
+    }
+
+    .lesson-title {
+      color: #000;
+      font-size: 11pt;
+      margin-bottom: 2mm;
+    }
+
+    .lesson li {
+      color: #222;
+      font-size: 9.5pt;
+      padding: 0.5mm 0 0.5mm 4mm;
+    }
+
+    .lesson li::before {
+      background: #666;
+      top: 2.2mm;
+    }
+
+    .lesson a {
+      background: none;
+      color: #000;
+      padding: 0;
+      font-size: 9pt;
+      text-decoration: underline;
+    }
+
+    a[href]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      color: #555;
+      word-break: break-all;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="topbar">
+    <h1>Список тем</h1>
+    <button class="btn-print" id="printBtn" type="button">🖨 Печать</button>
+  </div>
+
+  <div id="content">
+    <div class="status">Загрузка тем…</div>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzIWErL2uMPl6PPy-bf4NH3x4flonzaj4Zz9mnKyOjZIbzj6nOm1GuSn0MI0KFazqs8FQ/exec';
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function renderLessons(lessons) {
+    const content = document.getElementById('content');
+
+    if (!lessons || !lessons.length) {
+      content.innerHTML = '<div class="status">Нет тем для отображения.</div>';
+      return;
+    }
+
+    const columns = document.createElement('div');
+    columns.className = 'columns';
+
+    lessons.forEach(lesson => {
+      const card = document.createElement('div');
+      card.className = 'lesson';
+
+      const title = document.createElement('div');
+      title.className = 'lesson-title';
+      title.textContent = lesson.title || lesson.id || '';
+      card.appendChild(title);
+
+      const subtopics = Array.isArray(lesson.content) ? lesson.content : [];
+      if (subtopics.length) {
+        const ul = document.createElement('ul');
+        subtopics.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+        card.appendChild(ul);
+      }
+
+      if (lesson.link && String(lesson.link).trim() !== '') {
+        const a = document.createElement('a');
+        a.href = lesson.link.trim();
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = '🔗 Материалы к уроку';
+        card.appendChild(a);
+      }
+
+      columns.appendChild(card);
+    });
+
+    content.innerHTML = '';
+    content.appendChild(columns);
+  }
+
+  async function loadLessons() {
+    const content = document.getElementById('content');
+    try {
+      const resp = await fetch(API_URL + '?action=load', { cache: 'no-cache' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+      renderLessons(data.lessons || []);
+    } catch (err) {
+      console.warn('[load] ошибка:', err);
+      content.innerHTML = '<div class="status error">Не удалось загрузить темы. Проверьте подключение к Google Sheets.</div>';
+    }
+  }
+
+  document.getElementById('printBtn')?.addEventListener('click', () => {
+    window.print();
+  });
+
+  loadLessons();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Физическая симуляция: Стержень в гладком ящике</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            touch-action: manipulation;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        input[type=range] {
+            accent-color: #3b82f6;
+        }
+        #m-slider { accent-color: #10b981; }
+        #alpha-slider { accent-color: #f59e0b; }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen flex items-center justify-center p-2 sm:p-4 box-border overflow-hidden text-slate-800">
+
+    <div class="w-full max-w-7xl h-full flex flex-col lg:flex-row gap-3 sm:gap-6 bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Панель управления -->
+        <div class="w-full lg:w-96 bg-slate-50 p-4 sm:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 overflow-y-auto z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0 max-h-[45vh] lg:max-h-full">
+            <h1 class="text-base sm:text-xl font-bold mb-3 sm:mb-6 text-slate-900 border-b pb-2 sm:pb-4 border-slate-200">Параметры задачи</h1>
+            
+            <!-- Ползунки -->
+            <div class="space-y-4 sm:space-y-6 flex-grow">
+                
+                <!-- Длина стержня L -->
+                <div class="space-y-1 sm:space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="L-slider">Длина стержня (L): <span id="L-val" class="font-bold text-blue-600">3.0</span> м</label>
+                    </div>
+                    <input type="range" id="L-slider" min="1" max="6" step="0.5" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Угол альфа -->
+                <div class="space-y-1 sm:space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="alpha-slider">Угол (&alpha;): <span id="alpha-val" class="font-bold text-amber-600">60</span>&deg;</label>
+                    </div>
+                    <input type="range" id="alpha-slider" min="15" max="75" step="1" value="60" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Масса шара m -->
+                <div class="space-y-1 sm:space-y-2 pt-2 border-t border-slate-200">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="m-slider">Масса шара (m): <span id="m-val" class="font-bold text-emerald-600">5</span> кг</label>
+                    </div>
+                    <input type="range" id="m-slider" min="1" max="20" step="1" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Расстояние до подвеса от правого конца x_end -->
+                <div class="space-y-1 sm:space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="d-slider">Расстояние до подвеса: <span id="d-val" class="font-bold text-blue-600">2.0</span> м</label>
+                    </div>
+                    <input type="range" id="d-slider" min="0.5" max="5" step="0.25" value="2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+            </div>
+
+            <!-- Данные реального времени (Статика) -->
+            <div class="mt-4 sm:mt-6 bg-white rounded-xl p-3 sm:p-4 border border-slate-200 shadow-sm space-y-2 sm:space-y-3">
+                <h2 class="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-slate-400 mb-2 sm:mb-3 border-b border-slate-100 pb-1 sm:pb-2">Расчетные силы</h2>
+                
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <span class="text-slate-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        Сила реакции N:
+                    </span>
+                    <span class="font-mono font-bold text-rose-600"><span id="out-N">0.0</span> Н</span>
+                </div>
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <span class="text-slate-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        Сила тяжести шара (mg):
+                    </span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-mg">0.0</span> Н</span>
+                </div>
+                
+                <div class="border-t border-slate-100 my-1 pt-2">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="font-semibold text-slate-800">Условие равновесия:</span>
+                        <span class="font-bold text-emerald-600">&sum; M = 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Холст для отрисовки -->
+        <div class="flex-1 relative bg-white flex items-center justify-center p-2 sm:p-4 min-h-[300px]">
+            <canvas id="simCanvas"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const LSlider = document.getElementById('L-slider');
+        const alphaSlider = document.getElementById('alpha-slider');
+        const mSlider = document.getElementById('m-slider');
+        const dSlider = document.getElementById('d-slider');
+
+        const outN = document.getElementById('out-N');
+        const outMg = document.getElementById('out-mg');
+
+        const g = 10; // м/с²
+
+        function updateInputs() {
+            let L = parseFloat(LSlider.value);
+            let d = parseFloat(dSlider.value);
+            
+            if (d >= L) {
+                d = L - 0.2;
+                dSlider.value = d;
+            }
+            dSlider.max = L;
+
+            document.getElementById('L-val').innerText = L.toFixed(1);
+            document.getElementById('alpha-val').innerText = alphaSlider.value;
+            document.getElementById('m-val').innerText = mSlider.value;
+            document.getElementById('d-val').innerText = d.toFixed(2);
+
+            calculatePhysics();
+            draw();
+        }
+
+        [LSlider, alphaSlider, mSlider, dSlider].forEach(el => {
+            el.addEventListener('input', updateInputs);
+        });
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function calculatePhysics() {
+            const L = parseFloat(LSlider.value);
+            const alphaDeg = parseFloat(alphaSlider.value);
+            const alpha = alphaDeg * Math.PI / 180;
+            const m = parseFloat(mSlider.value);
+            const d = parseFloat(dSlider.value);
+
+            const mg = m * g;
+            
+            // Расчет силы нормальной реакции N со стороны правой стенки на нижний конец стержня
+            const N = mg * (L - d) * Math.sin(alpha) / (L * Math.cos(alpha));
+
+            outN.innerText = N.toFixed(1);
+            outMg.innerText = mg.toFixed(1);
+        }
+
+        function draw() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            
+            ctx.clearRect(0, 0, w, h);
+
+            const L = parseFloat(LSlider.value);
+            const alphaDeg = parseFloat(alphaSlider.value);
+            const alpha = alphaDeg * Math.PI / 180;
+            const m = parseFloat(mSlider.value);
+            const d = parseFloat(dSlider.value);
+            const mg = m * g;
+            const N = mg * (L - d) * Math.sin(alpha) / (L * Math.cos(alpha));
+
+            const scale = Math.min(w, h) / 5.5; 
+            
+            // Геометрия ящика: стержень упирается верхним концом в левую стенку, нижним — в правую стенку
+            const boxLeft = w / 2 - (L * scale * Math.sin(alpha)) / 2 - 40;
+            const boxBottom = h / 2 + 100;
+            const boxTop = boxBottom - L * scale * Math.cos(alpha) - 40;
+            const boxRight = boxLeft + L * scale * Math.sin(alpha) + 80;
+
+            // --- 1. Отрисовка ящика ---
+            // Дно
+            ctx.beginPath();
+            ctx.moveTo(boxLeft - 20, boxBottom);
+            ctx.lineTo(boxRight + 20, boxBottom);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Левая стенка (в нее упирается верхний конец)
+            ctx.beginPath();
+            ctx.moveTo(boxLeft, boxBottom + 10);
+            ctx.lineTo(boxLeft, boxTop - 40);
+            ctx.stroke();
+
+            // Правая стенка (в нее упирается нижний конец)
+            ctx.beginPath();
+            ctx.moveTo(boxRight, boxBottom + 10);
+            ctx.lineTo(boxRight, boxTop - 40);
+            ctx.stroke();
+
+            // Штриховка стенок
+            ctx.beginPath();
+            for(let y = boxTop - 30; y < boxBottom; y += 15) {
+                ctx.moveTo(boxLeft, y); ctx.lineTo(boxLeft - 12, y + 10);
+                ctx.moveTo(boxRight, y); ctx.lineTo(boxRight + 12, y + 10);
+            }
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // --- 2. Координаты концов стержня ---
+            // Верхний конец (у левой стенки)
+            const topX = boxLeft;
+            const topY = boxBottom - (L * scale * Math.cos(alpha));
+
+            // Нижний конец (у правой стенки на дне)
+            const bottomX = boxRight;
+            const bottomY = boxBottom;
+
+            // --- 3. Отрисовка стержня ---
+            ctx.beginPath();
+            ctx.moveTo(topX, topY);
+            ctx.lineTo(bottomX, bottomY);
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Фактическая длина стержня в масштабе (для проверки геометрии)
+            const currentRodPx = Math.hypot(bottomX - topX, bottomY - topY);
+
+            // --- 4. Подвес и шар ---
+            // Точка подвеса на стержне (на расстоянии d от нижнего конца)
+            const ratio = (L - d) / L;
+            const attachX = topX + (bottomX - topX) * ratio;
+            const attachY = topY + (bottomY - topY) * ratio;
+
+            const threadLen = 70;
+            const ballRadius = 16 + Math.sqrt(m) * 3;
+
+            // Нить подвеса
+            ctx.beginPath();
+            ctx.moveTo(attachX, attachY);
+            ctx.lineTo(attachX, attachY + threadLen);
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Шар
+            ctx.beginPath();
+            ctx.arc(attachX, attachY + threadLen, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#10b981';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#047857';
+            ctx.stroke();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('m', attachX, attachY + threadLen);
+
+            // Вектор mg (сила тяжести)
+            ctx.beginPath();
+            ctx.moveTo(attachX, attachY + threadLen + ballRadius);
+            ctx.lineTo(attachX, attachY + threadLen + ballRadius + 50);
+            ctx.strokeStyle = '#e11d48';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(attachX, attachY + threadLen + ballRadius + 50);
+            ctx.lineTo(attachX - 5, attachY + threadLen + ballRadius + 40);
+            ctx.lineTo(attachX + 5, attachY + threadLen + ballRadius + 40);
+            ctx.fillStyle = '#e11d48';
+            ctx.fill();
+
+            ctx.fillStyle = '#e11d48';
+            ctx.font = 'italic bold 16px Inter';
+            ctx.textAlign = 'left';
+            ctx.fillText('m·g', attachX + 8, attachY + threadLen + ballRadius + 30);
+
+            // --- 5. Вектор нормальной реакции N (от правой стенки влево на нижний конец) ---
+            const nLen = Math.min(N * 1.5, 90);
+            ctx.beginPath();
+            ctx.moveTo(bottomX, bottomY - 15);
+            ctx.lineTo(bottomX - nLen, bottomY - 15);
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 3.5;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(bottomX - nLen, bottomY - 15);
+            ctx.lineTo(bottomX - nLen + 10, bottomY - 20);
+            ctx.lineTo(bottomX - nLen + 10, bottomY - 10);
+            ctx.fillStyle = '#f43f5e';
+            ctx.fill();
+
+            ctx.fillStyle = '#f43f5e';
+            ctx.font = 'italic bold 18px Inter';
+            ctx.textAlign = 'right';
+            ctx.fillText('N', bottomX - nLen - 10, bottomY - 15);
+
+            // --- 6. Угол альфа вверху ---
+            ctx.beginPath();
+            ctx.arc(topX, topY, 40, Math.PI / 2, Math.PI / 2 + alpha);
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#d97706';
+            ctx.font = 'italic 16px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('α', topX + 50 * Math.sin(alpha / 2), topY + 50 * Math.cos(alpha / 2));
+        }
+
+        window.onload = () => {
+            updateInputs();
+            resizeCanvas();
+        };
+    </script>
+</body>
+</html>

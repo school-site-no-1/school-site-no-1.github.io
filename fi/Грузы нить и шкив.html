@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Физическая симуляция: Блоки, Нить и Трение</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        input[type=range] {
+            accent-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="min-h-screen w-screen flex items-center justify-center p-2 sm:p-4 lg:p-8 box-border overflow-x-hidden text-slate-800">
+
+    <div class="w-full max-w-7xl h-[92vh] flex flex-col lg:flex-row gap-4 lg:gap-6 bg-white rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Панель управления -->
+        <div class="w-full lg:w-96 bg-slate-50 p-4 sm:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 overflow-y-auto z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0 max-h-[40vh] lg:max-h-full">
+            <h1 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-slate-900 border-b pb-3 sm:pb-4 border-slate-200">Параметры системы</h1>
+            
+            <!-- Ползунки -->
+            <div class="space-y-4 sm:space-y-6 flex-grow">
+                <!-- Масса m1 -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="m1-slider">Масса m1 (на столе): <span id="m1-val" class="font-bold text-blue-600">1</span> кг</label>
+                    </div>
+                    <input type="range" id="m1-slider" min="0.1" max="10" step="0.1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Масса m2 -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="m2-slider">Масса m2 (висящий): <span id="m2-val" class="font-bold text-blue-600">0.25</span> кг</label>
+                    </div>
+                    <input type="range" id="m2-slider" min="0.05" max="5" step="0.05" value="0.25" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Сила F -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="f-slider">Внешняя сила F (влево): <span id="f-val" class="font-bold text-rose-500">1</span> Н</label>
+                    </div>
+                    <input type="range" id="f-slider" min="0" max="20" step="0.1" value="1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500">
+                </div>
+
+                <!-- Коэффициент трения -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="mu-slider">Коэф. трения (&mu;): <span id="mu-val" class="font-bold text-blue-600">0.1</span></label>
+                    </div>
+                    <input type="range" id="mu-slider" min="0" max="1" step="0.01" value="0.1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Данные реального времени -->
+            <div class="mt-8 bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
+                <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-400 mb-2">Текущие показатели</h2>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Ускорение (a):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-a">0.00</span> м/с²</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Скорость (v):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-v">0.00</span> м/с</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Натяжение (T):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-t">0.00</span> Н</span>
+                </div>
+            </div>
+
+            <!-- Кнопки управления -->
+            <div class="mt-6 flex gap-3">
+                <button id="btn-toggle" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-blue-200">
+                    Старт
+                </button>
+                <button id="btn-reset" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-3 px-4 rounded-xl transition-colors">
+                    Сброс
+                </button>
+            </div>
+        </div>
+
+        <!-- Холст для отрисовки -->
+        <div class="flex-1 relative bg-white flex items-center justify-center p-4 min-h-[350px] lg:min-h-0">
+            <!-- Canvas resolution is set in JS to maintain high DPI -->
+            <canvas id="simCanvas"></canvas>
+            
+            <!-- Оверлей с результатами (справа вверху) -->
+            <div id="results-overlay" class="absolute top-4 right-4 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg border border-slate-200 hidden z-10 w-64">
+                <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-2 border-b border-slate-100 pb-2">Результаты</h3>
+                <div class="space-y-1.5 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Время:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-t">0.00</span> с</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Путь:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-s">0.00</span> м</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Скорость:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-v">0.00</span> м/с</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Ускорение:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-a">0.00</span> м/с²</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Натяжение:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-t-force">0.00</span> Н</span>
+                    </div>
+                    
+                    <div class="border-t border-slate-100 my-2 pt-1"></div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Сила F:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-f">0.00</span> Н</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Коэф. трения:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-mu">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Масса m1:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-m1">0.00</span> кг</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Масса m2:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-m2">0.00</span> кг</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Элементы UI
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const m1Slider = document.getElementById('m1-slider');
+        const m2Slider = document.getElementById('m2-slider');
+        const fSlider = document.getElementById('f-slider');
+        const muSlider = document.getElementById('mu-slider');
+
+        const m1Val = document.getElementById('m1-val');
+        const m2Val = document.getElementById('m2-val');
+        const fVal = document.getElementById('f-val');
+        const muVal = document.getElementById('mu-val');
+
+        const outA = document.getElementById('out-a');
+        const outV = document.getElementById('out-v');
+        const outT = document.getElementById('out-t');
+
+        const btnToggle = document.getElementById('btn-toggle');
+        const btnReset = document.getElementById('btn-reset');
+        
+        const resultsOverlay = document.getElementById('results-overlay');
+
+        // Физические константы и состояние
+        const g = 10; // Ускорение свободного падения (10 м/с² для школьных задач)
+        const scale = 50; // Масштаб: 1 метр = 50 пикселей
+
+        let state = {
+            m1: parseFloat(m1Slider.value),
+            m2: parseFloat(m2Slider.value),
+            F: parseFloat(fSlider.value),
+            mu: parseFloat(muSlider.value),
+            
+            x: 0,       // Позиция (смещение в метрах)
+            v: 0,       // Скорость (м/с)
+            a: 0,       // Ускорение (м/с²)
+            T: 0,       // Сила натяжения (Н)
+            
+            t: 0,       // Время симуляции (с)
+            lastA: 0,   // Последнее значение ускорения в движении
+            lastV: 0,   // Последняя скорость
+            lastT: 0,   // Последнее натяжение
+            finished: false, // Флаг завершения движения
+            
+            isPlaying: false,
+            lastTime: 0
+        };
+
+        // Геометрия сцены (базовые координаты для отрисовки)
+        const scene = {
+            cx: 0, cy: 0, // Центр холста
+            tableWidth: 600,
+            tableHeight: 300,
+            pulleyRadius: 20,
+            block1Size: 0, // Зависит от массы
+            block2Size: 0  // Зависит от массы
+        };
+
+        // Инициализация Canvas
+        function resizeCanvas() {
+            // Поддержка Retina дисплеев
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            scene.cx = rect.width / 2;
+            scene.cy = rect.height / 2;
+            
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Обновление значений UI из ползунков
+        function updateInputs() {
+            state.m1 = parseFloat(m1Slider.value);
+            state.m2 = parseFloat(m2Slider.value);
+            state.F = parseFloat(fSlider.value);
+            state.mu = parseFloat(muSlider.value);
+
+            m1Val.innerText = state.m1;
+            m2Val.innerText = state.m2;
+            fVal.innerText = state.F;
+            muVal.innerText = state.mu;
+            
+            // Если симуляция на паузе и скорость нулевая, пересчитаем ускорение для отображения корректного вектора
+            if (!state.isPlaying && state.v === 0) {
+                calculatePhysics(0);
+            }
+            draw();
+        }
+
+        [m1Slider, m2Slider, fSlider, muSlider].forEach(el => {
+            el.addEventListener('input', updateInputs);
+        });
+
+        // Управление симуляцией
+        btnToggle.addEventListener('click', () => {
+            if (state.finished) return; // Не запускаем, если движение уже уперлось в границу
+            
+            state.isPlaying = !state.isPlaying;
+            if (state.isPlaying) {
+                btnToggle.innerText = 'Пауза';
+                btnToggle.classList.replace('bg-blue-600', 'bg-amber-500');
+                btnToggle.classList.replace('hover:bg-blue-700', 'hover:bg-amber-600');
+                btnToggle.classList.replace('shadow-blue-200', 'shadow-amber-200');
+                state.lastTime = performance.now();
+                requestAnimationFrame(loop);
+            } else {
+                btnToggle.innerText = 'Продолжить';
+                btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+                btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+                btnToggle.classList.replace('shadow-amber-200', 'shadow-blue-200');
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            state.isPlaying = false;
+            state.finished = false;
+            state.x = 0;
+            state.v = 0;
+            state.a = 0;
+            state.T = 0;
+            state.t = 0;
+            state.lastA = 0;
+            state.lastV = 0;
+            state.lastT = 0;
+            
+            resultsOverlay.classList.add('hidden');
+            resultsOverlay.classList.remove('block');
+            
+            btnToggle.innerText = 'Старт';
+            btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+            btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+            btnToggle.classList.replace('shadow-amber-200', 'shadow-blue-200');
+            
+            updateInputs(); // Пересчитывает статику
+            draw();
+        });
+
+        // Основной физический расчет
+        function calculatePhysics(dt) {
+            const m1 = state.m1;
+            const m2 = state.m2;
+            const F = state.F;
+            const mu = state.mu;
+
+            // Движущая сила без учета трения (положительное направление - вправо/вниз)
+            let drivingForce = m2 * g - F;
+            let maxFriction = mu * m1 * g;
+
+            if (Math.abs(state.v) < 0.01) {
+                state.v = 0; // Защита от дрожания при малых скоростях
+                // Состояние покоя
+                if (Math.abs(drivingForce) <= maxFriction) {
+                    state.a = 0;
+                    // Если система в покое, натяжение компенсирует m2*g
+                    state.T = m2 * g; 
+                } else {
+                    // Преодоление трения покоя
+                    let dir = Math.sign(drivingForce);
+                    state.a = (drivingForce - dir * maxFriction) / (m1 + m2);
+                    state.T = m2 * (g - state.a);
+                }
+            } else {
+                // Кинетическое трение (направлено против скорости)
+                let dir = Math.sign(state.v);
+                state.a = (drivingForce - dir * maxFriction) / (m1 + m2);
+                state.T = m2 * (g - state.a);
+            }
+
+            // Интегрирование Эйлера
+            if (dt > 0) {
+                state.t += dt; // Увеличиваем таймер
+                
+                // Запоминаем параметры до остановки (для окна результатов)
+                if (Math.abs(state.a) > 0) state.lastA = state.a;
+                state.lastV = state.v;
+                state.lastT = state.T;
+
+                state.v += state.a * dt;
+                state.x += state.v * dt;
+
+                // Ограничения движения (чтобы блоки не улетали бесконечно)
+                // Считаем, что длина стола позволяет двигаться на +- 3 метра
+                const maxDisplacement = 3.5; 
+                let hitBoundary = false;
+
+                if (state.x > maxDisplacement) {
+                    state.x = maxDisplacement;
+                    hitBoundary = true;
+                } else if (state.x < -maxDisplacement + 1.5) {
+                    state.x = -maxDisplacement + 1.5;
+                    hitBoundary = true;
+                }
+
+                // Обработка столкновения с границей
+                if (hitBoundary) {
+                    state.v = 0;
+                    state.a = 0;
+                    
+                    if (!state.finished) {
+                        state.finished = true;
+                        state.isPlaying = false;
+                        
+                        // Выводим показатели в оверлей
+                        document.getElementById('res-t').innerText = state.t.toFixed(2);
+                        document.getElementById('res-s').innerText = Math.abs(state.x).toFixed(2);
+                        document.getElementById('res-v').innerText = Math.abs(state.lastV).toFixed(2);
+                        document.getElementById('res-a').innerText = Math.abs(state.lastA).toFixed(2);
+                        document.getElementById('res-t-force').innerText = state.lastT.toFixed(2);
+                        
+                        document.getElementById('res-f').innerText = state.F.toFixed(2);
+                        document.getElementById('res-mu').innerText = state.mu.toFixed(2);
+                        document.getElementById('res-m1').innerText = state.m1.toFixed(2);
+                        document.getElementById('res-m2').innerText = state.m2.toFixed(2);
+                        
+                        resultsOverlay.classList.remove('hidden');
+                        resultsOverlay.classList.add('block');
+                        
+                        // Возвращаем кнопку в исходное состояние
+                        btnToggle.innerText = 'Старт';
+                        btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+                        btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+                        btnToggle.classList.replace('shadow-amber-200', 'shadow-blue-200');
+                    }
+                }
+            }
+
+            // Обновление текстовых значений
+            outA.innerText = state.a.toFixed(2);
+            outV.innerText = state.v.toFixed(2);
+            outT.innerText = state.T.toFixed(2);
+        }
+
+        // Цикл анимации
+        function loop(timestamp) {
+            if (!state.isPlaying) return;
+            
+            let dt = (timestamp - state.lastTime) / 1000; // в секундах
+            if (dt > 0.1) dt = 0.1; // Ограничение dt при лагах (max 100ms)
+            state.lastTime = timestamp;
+
+            calculatePhysics(dt);
+            draw();
+
+            requestAnimationFrame(loop);
+        }
+
+        // Вспомогательная функция для рисования стрелок (векторов)
+        function drawArrow(x, y, length, angle, color, label, offsetX = -5, offsetY = -10) {
+            if (Math.abs(length) < 0.1) return; // Не рисуем нулевые векторы
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(length, 0);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Наконечник
+            ctx.beginPath();
+            ctx.moveTo(length, 0);
+            ctx.lineTo(length - 10, -5);
+            ctx.lineTo(length - 10, 5);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            // Подпись вектора
+            ctx.rotate(-angle); // возвращаем вращение для текста
+            ctx.fillStyle = color;
+            ctx.font = "italic bold 18px Inter";
+            ctx.fillText(label, (length/2) * Math.cos(angle) + offsetX, (length/2) * Math.sin(angle) + offsetY);
+            
+            ctx.restore();
+        }
+
+        // Отрисовка всей сцены
+        function draw() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // Базовые координаты
+            const tableY = h / 2 + 50;
+            const pulleyX = w / 2 + 150;
+            const pulleyY = tableY - scene.pulleyRadius;
+            const tableEdgeX = pulleyX - 20; // Отодвигаем край стола левее центра шкива
+            
+            // Размеры блоков зависят от массы для наглядности
+            scene.block1Size = 40 + Math.sqrt(state.m1) * 10;
+            scene.block2Size = 30 + Math.sqrt(state.m2) * 10;
+
+            // Позиции с учетом смещения
+            // Если state.x > 0, m1 едет вправо, m2 едет вниз
+            const pixelDisplacement = state.x * scale; 
+            
+            const b1X = w / 2 - 100 + pixelDisplacement;
+            const b1Y = tableY - scene.block1Size;
+            
+            const b2X = pulleyX + scene.pulleyRadius;
+            const b2Y = tableY + 50 + pixelDisplacement;
+
+            // --- 1. Отрисовка стола ---
+            ctx.fillStyle = '#e2e8f0'; // slate-200
+            ctx.fillRect(0, tableY, tableEdgeX, h - tableY);
+            // Край стола
+            ctx.beginPath();
+            ctx.moveTo(0, tableY);
+            ctx.lineTo(tableEdgeX, tableY);
+            ctx.lineTo(tableEdgeX, h);
+            ctx.strokeStyle = '#94a3b8'; // slate-400
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // --- 2. Отрисовка нити ---
+            ctx.beginPath();
+            const stringY = pulleyY - scene.pulleyRadius;
+            const stringX = pulleyX + scene.pulleyRadius;
+            
+            // От блока 1 к верху шкива
+            ctx.moveTo(b1X + scene.block1Size, stringY);
+            ctx.lineTo(pulleyX, stringY);
+            
+            // Огибаем шкив (дуга)
+            ctx.arc(pulleyX, pulleyY, scene.pulleyRadius, -Math.PI/2, 0);
+            
+            // От правого края шкива к блоку 2
+            ctx.lineTo(stringX, b2Y);
+            
+            ctx.strokeStyle = '#475569'; // slate-600
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // --- 3. Отрисовка шкива ---
+            ctx.save();
+            ctx.translate(pulleyX, pulleyY);
+            // Угол поворота шкива: смещение / радиус
+            const angle = pixelDisplacement / scene.pulleyRadius;
+            ctx.rotate(angle);
+            
+            // Внешний круг
+            ctx.beginPath();
+            ctx.arc(0, 0, scene.pulleyRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#cbd5e1'; // slate-300
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#64748b'; // slate-500
+            ctx.stroke();
+            
+            // Спицы шкива для видимости вращения
+            ctx.beginPath();
+            ctx.moveTo(-scene.pulleyRadius, 0);
+            ctx.lineTo(scene.pulleyRadius, 0);
+            ctx.moveTo(0, -scene.pulleyRadius);
+            ctx.lineTo(0, scene.pulleyRadius);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Центральная ось
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#334155';
+            ctx.fill();
+            ctx.restore();
+
+            // Крепление шкива к столу
+            ctx.beginPath();
+            ctx.moveTo(pulleyX, pulleyY);
+            ctx.lineTo(tableEdgeX, tableY);
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // --- 4. Отрисовка блоков ---
+            // Блок 1
+            ctx.fillStyle = '#3b82f6'; // blue-500
+            ctx.shadowColor = 'rgba(0,0,0,0.2)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetY = 4;
+            ctx.fillRect(b1X, b1Y, scene.block1Size, scene.block1Size);
+            ctx.shadowColor = 'transparent'; // Сброс тени
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#1d4ed8'; // blue-700
+            ctx.strokeRect(b1X, b1Y, scene.block1Size, scene.block1Size);
+            // Текст m1
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('m1', b1X + scene.block1Size/2, b1Y + scene.block1Size/2);
+
+            // Блок 2
+            ctx.fillStyle = '#10b981'; // emerald-500
+            ctx.shadowColor = 'rgba(0,0,0,0.2)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetY = 4;
+            ctx.fillRect(b2X - scene.block2Size/2, b2Y, scene.block2Size, scene.block2Size);
+            ctx.shadowColor = 'transparent';
+            ctx.strokeStyle = '#047857'; // emerald-700
+            ctx.strokeRect(b2X - scene.block2Size/2, b2Y, scene.block2Size, scene.block2Size);
+            // Текст m2
+            ctx.fillStyle = 'white';
+            ctx.fillText('m2', b2X, b2Y + scene.block2Size/2);
+
+            // --- 5. Отрисовка векторов ---
+            // Внешняя сила F (действует на m1 влево)
+            if (state.F > 0) {
+                const fLength = Math.min(state.F * 1.5, 100); // Ограничение визуальной длины
+                drawArrow(b1X, b1Y + scene.block1Size/2, fLength, Math.PI, '#f43f5e', 'F', -5, -15); // rose-500
+            }
+
+            // Вектор ускорения a (рядом с висящим грузом m2)
+            if (Math.abs(state.a) > 0.1) {
+                const aLength = 50; 
+                // Если a > 0, движется вниз. Если a < 0, движется вверх.
+                const aAngle = state.a > 0 ? Math.PI/2 : -Math.PI/2; 
+                // Рисуем справа от блока m2, подальше (сдвиг +40px по X)
+                drawArrow(b2X + scene.block2Size/2 + 40, b2Y + scene.block2Size/4, aLength, aAngle, '#8b5cf6', 'a', 15, 0); // violet-500
+            }
+        }
+
+        // Инициализация при старте
+        window.onload = () => {
+            updateInputs(); // Инициализация значений
+            resizeCanvas(); // Подгонка холста
+        };
+    </script>
+</body>
+</html>

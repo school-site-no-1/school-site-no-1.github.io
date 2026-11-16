@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Физическая симуляция: Равновесие рычага</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            touch-action: manipulation;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        input[type=range] {
+            accent-color: #3b82f6;
+        }
+        #f-slider { accent-color: #ec4899; }
+        #m-slider { accent-color: #10b981; }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen flex items-center justify-center p-2 sm:p-4 box-border overflow-hidden text-slate-800">
+
+    <!-- Главный контейнер (на мобилках колонкой, на больших экранах строкой) -->
+    <div class="w-full max-w-7xl h-full flex flex-col lg:flex-row gap-3 sm:gap-6 bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Панель управления -->
+        <div class="w-full lg:w-96 bg-slate-50 p-4 sm:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 overflow-y-auto z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0 max-h-[45vh] lg:max-h-full">
+            <h1 class="text-base sm:text-xl font-bold mb-3 sm:mb-6 text-slate-900 border-b pb-2 sm:pb-4 border-slate-200">Параметры рычага</h1>
+            
+            <!-- Ползунки -->
+            <div class="space-y-4 sm:space-y-6 flex-grow">
+                
+                <!-- Длина L -->
+                <div class="space-y-1 sm:space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="L-slider">Длина рычага (L): <span id="L-val" class="font-bold text-blue-600">5</span> м</label>
+                    </div>
+                    <input type="range" id="L-slider" min="2" max="10" step="0.5" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Положение груза b -->
+                <div class="space-y-1 sm:space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="b-slider">Плечо груза (b): <span id="b-val" class="font-bold text-blue-600">2</span> м</label>
+                    </div>
+                    <input type="range" id="b-slider" min="0.5" max="5" step="0.5" value="2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Масса груза M -->
+                <div class="space-y-1 sm:space-y-2 pt-2 border-t border-slate-200">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="M-slider">Масса груза (M): <span id="M-val" class="font-bold text-emerald-600">10</span> кг</label>
+                    </div>
+                    <input type="range" id="M-slider" min="0" max="50" step="1" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Масса стержня m -->
+                <div class="space-y-1 sm:space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="m-slider">Масса стержня (m): <span id="m-val" class="font-bold text-slate-600">2</span> кг</label>
+                    </div>
+                    <input type="range" id="m-slider" min="0" max="20" step="1" value="2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-500">
+                </div>
+
+                <!-- Сила F -->
+                <div class="space-y-1 sm:space-y-2 pt-2 border-t border-slate-200">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs sm:text-sm font-medium text-slate-700" for="f-slider">Внешняя сила (F) вверх: <span id="f-val" class="font-bold text-pink-600">50</span> Н</label>
+                    </div>
+                    <input type="range" id="f-slider" min="0" max="500" step="5" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    <button id="btn-balance" class="w-full mt-2 bg-pink-100 hover:bg-pink-200 text-pink-700 text-xs font-semibold py-2 px-3 rounded-lg transition-colors border border-pink-200 active:scale-95">
+                        Подобрать F для равновесия
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Данные реального времени (Моменты сил) -->
+            <div class="mt-4 sm:mt-6 bg-white rounded-xl p-3 sm:p-4 border border-slate-200 shadow-sm space-y-2 sm:space-y-3">
+                <h2 class="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-slate-400 mb-2 sm:mb-3 border-b border-slate-100 pb-1 sm:pb-2">Моменты сил</h2>
+                
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <span class="text-slate-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        Момент груза ($M_M$):
+                    </span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-torque-M">0</span> Н·м</span>
+                </div>
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <span class="text-slate-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                        Момент стержня ($M_m$):
+                    </span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-torque-m">0</span> Н·м</span>
+                </div>
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <span class="text-slate-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-pink-500"></span>
+                        Момент силы F ($M_F$):
+                    </span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-torque-F">0</span> Н·м</span>
+                </div>
+                
+                <div class="border-t border-slate-100 my-1 pt-2">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="font-semibold text-slate-800">Состояние:</span>
+                        <span id="out-state" class="font-bold text-blue-600">Равновесие</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки управления анимацией -->
+            <div class="mt-3 sm:mt-4 flex gap-2 sm:gap-3">
+                <button id="btn-toggle" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 px-3 rounded-xl transition-colors shadow-lg shadow-blue-200 active:scale-95">
+                    Отпустить рычаг
+                </button>
+                <button id="btn-reset" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-semibold py-2.5 sm:py-3 px-3 rounded-xl transition-colors active:scale-95">
+                    В горизонт
+                </button>
+            </div>
+        </div>
+
+        <!-- Холст для отрисовки -->
+        <div class="flex-1 relative bg-white flex items-center justify-center p-2 sm:p-4 min-h-[300px]">
+            <canvas id="simCanvas"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const LSlider = document.getElementById('L-slider');
+        const bSlider = document.getElementById('b-slider');
+        const MSlider = document.getElementById('M-slider');
+        const mSlider = document.getElementById('m-slider');
+        const fSlider = document.getElementById('f-slider');
+
+        const outTorqueM = document.getElementById('out-torque-M');
+        const outTorquem = document.getElementById('out-torque-m');
+        const outTorqueF = document.getElementById('out-torque-F');
+        const outState = document.getElementById('out-state');
+
+        const btnToggle = document.getElementById('btn-toggle');
+        const btnReset = document.getElementById('btn-reset');
+        const btnBalance = document.getElementById('btn-balance');
+
+        const g = 10;
+
+        let state = {
+            L: parseFloat(LSlider.value),
+            b: parseFloat(bSlider.value),
+            M: parseFloat(MSlider.value),
+            m: parseFloat(mSlider.value),
+            F: parseFloat(fSlider.value),
+            theta: 0,
+            omega: 0,
+            alpha: 0,
+            isPlaying: false,
+            lastTime: 0
+        };
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function updateInputs() {
+            state.L = parseFloat(LSlider.value);
+            if (parseFloat(bSlider.value) > state.L) {
+                bSlider.value = state.L;
+            }
+            bSlider.max = state.L; 
+            
+            state.b = parseFloat(bSlider.value);
+            state.M = parseFloat(MSlider.value);
+            state.m = parseFloat(mSlider.value);
+            state.F = parseFloat(fSlider.value);
+
+            document.getElementById('L-val').innerText = state.L;
+            document.getElementById('b-val').innerText = state.b;
+            document.getElementById('M-val').innerText = state.M;
+            document.getElementById('m-val').innerText = state.m;
+            document.getElementById('f-val').innerText = state.F;
+
+            calculateTorques();
+            draw();
+        }
+
+        [LSlider, bSlider, MSlider, mSlider, fSlider].forEach(el => {
+            el.addEventListener('input', updateInputs);
+        });
+
+        btnBalance.addEventListener('click', () => {
+            const requiredF = (state.M * g * state.b + state.m * g * (state.L / 2)) / state.L;
+            fSlider.value = requiredF.toFixed(0);
+            if (requiredF > parseFloat(fSlider.max)) {
+                fSlider.max = Math.ceil(requiredF / 100) * 100;
+            }
+            updateInputs();
+            resetPosition();
+        });
+
+        function resetPosition() {
+            state.theta = 0;
+            state.omega = 0;
+            state.alpha = 0;
+            state.isPlaying = false;
+            btnToggle.innerText = 'Отпустить рычаг';
+            btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+            btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+            draw();
+        }
+
+        btnReset.addEventListener('click', resetPosition);
+
+        btnToggle.addEventListener('click', () => {
+            state.isPlaying = !state.isPlaying;
+            if (state.isPlaying) {
+                btnToggle.innerText = 'Пауза';
+                btnToggle.classList.replace('bg-blue-600', 'bg-amber-500');
+                btnToggle.classList.replace('hover:bg-blue-700', 'hover:bg-amber-600');
+                state.lastTime = performance.now();
+                requestAnimationFrame(loop);
+            } else {
+                btnToggle.innerText = 'Отпустить рычаг';
+                btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+                btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+            }
+        });
+
+        function calculateTorques() {
+            const tM = state.M * g * state.b;
+            const tm = state.m * g * (state.L / 2);
+            const tF = state.F * state.L;
+
+            outTorqueM.innerText = tM.toFixed(1);
+            outTorquem.innerText = tm.toFixed(1);
+            outTorqueF.innerText = tF.toFixed(1);
+
+            const netTorque = tF - tM - tm;
+            if (Math.abs(netTorque) < 0.5) {
+                outState.innerText = "В равновесии";
+                outState.className = "font-bold text-emerald-600 text-xs sm:text-sm";
+            } else if (netTorque > 0) {
+                outState.innerText = "Тянет вверх";
+                outState.className = "font-bold text-pink-600 text-xs sm:text-sm";
+            } else {
+                outState.innerText = "Тянет вниз";
+                outState.className = "font-bold text-rose-600 text-xs sm:text-sm";
+            }
+        }
+
+        function physicsStep(dt) {
+            const cosTheta = Math.cos(state.theta);
+            const torqueCW = (state.M * g * state.b + state.m * g * (state.L / 2)) * cosTheta;
+            const torqueCCW = state.F * state.L * cosTheta;
+            const netTorque = torqueCW - torqueCCW;
+            
+            let I = (state.m * state.L * state.L) / 3 + (state.M * state.b * state.b);
+            if (I < 0.1) I = 0.1;
+
+            state.alpha = netTorque / I;
+            state.omega += state.alpha * dt;
+            state.omega *= 0.95;
+            state.theta += state.omega * dt;
+
+            const maxAngle = Math.PI / 4;
+            if (state.theta > maxAngle) {
+                state.theta = maxAngle;
+                state.omega = -state.omega * 0.3;
+            } else if (state.theta < -maxAngle) {
+                state.theta = -maxAngle;
+                state.omega = -state.omega * 0.3; 
+            }
+        }
+
+        function loop(timestamp) {
+            if (!state.isPlaying) return;
+            let dt = (timestamp - state.lastTime) / 1000;
+            if (dt > 0.05) dt = 0.05;
+            state.lastTime = timestamp;
+
+            physicsStep(dt);
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        function drawDimensionArrow(ctx, x1, y1, x2, y2, label) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 + 6, y1 - 3);
+            ctx.lineTo(x1 + 6, y1 + 3);
+            ctx.fillStyle = '#475569';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - 6, y2 - 3);
+            ctx.lineTo(x2 - 6, y2 + 3);
+            ctx.fill();
+
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'italic bold 14px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, (x1 + x2) / 2, y1 - 6);
+        }
+
+        function draw() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // Адаптивный масштаб в зависимости от ширины экрана
+            const scale = w < 600 ? 35 : 50; 
+            const hx = w / 2 - (w < 600 ? 120 : 200);
+            const hy = h / 2 + 30;
+            
+            const wallX = hx;
+            const tableY = hy + 60;
+            
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, tableY, wallX, h - tableY);
+            ctx.fillRect(0, 0, wallX, tableY);
+            
+            ctx.beginPath();
+            ctx.moveTo(wallX, h);
+            ctx.lineTo(wallX, tableY);
+            ctx.lineTo(0, tableY);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            for(let i = 0; i < wallX; i += 12) {
+                ctx.moveTo(i, tableY);
+                ctx.lineTo(i - 8, tableY + 12);
+            }
+            for(let y = tableY; y < h; y += 12) {
+                ctx.moveTo(wallX, y);
+                ctx.lineTo(wallX - 12, y + 8);
+            }
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(hx, hy);
+            ctx.lineTo(hx - 15, tableY);
+            ctx.lineTo(hx + 15, tableY);
+            ctx.closePath();
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fill();
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(hx, hy);
+            ctx.rotate(state.theta);
+
+            const rodLengthPx = state.L * scale;
+            const bPosPx = state.b * scale;
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(0, -6, rodLengthPx, 12);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, -6, rodLengthPx, 12);
+            
+            if (state.m > 0) {
+                const midL = rodLengthPx / 2;
+                ctx.beginPath();
+                ctx.arc(midL, 0, 3, 0, Math.PI*2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                ctx.font = 'italic bold 14px Inter';
+                ctx.fillText('m', midL, 22);
+            }
+
+            const dimY = -50;
+            ctx.beginPath(); ctx.moveTo(0, -15); ctx.lineTo(0, dimY - 8); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(bPosPx, -15); ctx.lineTo(bPosPx, dimY + 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(rodLengthPx, -15); ctx.lineTo(rodLengthPx, dimY - 25); ctx.stroke();
+            
+            drawDimensionArrow(ctx, 0, dimY, bPosPx, dimY, 'b');
+            drawDimensionArrow(ctx, 0, dimY - 20, rodLengthPx, dimY - 20, 'L');
+
+            if (state.M > 0) {
+                ctx.save();
+                ctx.translate(bPosPx, 6);
+                ctx.rotate(-state.theta);
+                
+                const stringLength = 65;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, stringLength);
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                const boxSize = 26 + Math.min(Math.sqrt(state.M) * 5, 30);
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(-boxSize/2, stringLength, boxSize, boxSize);
+                ctx.strokeStyle = '#064e3b';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-boxSize/2, stringLength, boxSize, boxSize);
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'italic bold 16px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('M', 0, stringLength + boxSize/2);
+                ctx.restore();
+            }
+
+            if (state.F > 0) {
+                ctx.save();
+                ctx.translate(rodLengthPx, 0);
+                ctx.rotate(-state.theta);
+                
+                const fLength = 35 + state.F * 0.3;
+                ctx.beginPath();
+                ctx.moveTo(0, -6);
+                ctx.lineTo(0, -fLength);
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, -fLength);
+                ctx.lineTo(-6, -fLength + 10);
+                ctx.lineTo(6, -fLength + 10);
+                ctx.fillStyle = '#ec4899';
+                ctx.fill();
+                
+                ctx.fillStyle = '#ec4899';
+                ctx.font = 'italic bold 18px Inter';
+                ctx.textAlign = 'left';
+                ctx.fillText('F', 10, -fLength + 16);
+                ctx.restore();
+            }
+
+            ctx.restore();
+
+            ctx.beginPath();
+            ctx.arc(hx, hy, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fill();
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(hx, hy, 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#0f172a';
+            ctx.fill();
+        }
+
+        window.onload = () => {
+            updateInputs();
+            resizeCanvas();
+        };
+    </script>
+</body>
+</html>

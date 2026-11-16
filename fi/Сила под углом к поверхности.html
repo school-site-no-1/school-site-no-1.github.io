@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Физическая симуляция: Сила под углом</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        input[type=range] {
+            accent-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center p-2 sm:p-4 lg:p-8 box-border overflow-hidden text-slate-800">
+
+    <div class="w-full max-w-7xl h-full flex flex-col lg:flex-row gap-4 lg:gap-6 bg-white rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Панель управления -->
+        <div class="w-full lg:w-80 bg-slate-50 p-4 sm:p-6 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200 overflow-y-auto z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0 max-h-[45vh] lg:max-h-full">
+            <h1 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-slate-900 border-b pb-3 sm:pb-4 border-slate-200">Параметры системы</h1>
+            
+            <!-- Ползунки -->
+            <div class="space-y-6 flex-grow">
+                <!-- Масса m -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="m-slider">Масса (m): <span id="m-val" class="font-bold text-blue-600">2</span> кг</label>
+                    </div>
+                    <input type="range" id="m-slider" min="0.1" max="10" step="0.1" value="2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Сила F -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="f-slider">Сила тяги (F): <span id="f-val" class="font-bold text-rose-500">10</span> Н</label>
+                    </div>
+                    <input type="range" id="f-slider" min="0" max="50" step="0.5" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-500">
+                </div>
+
+                <!-- Угол альфа -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="alpha-slider">Угол (&alpha;): <span id="alpha-val" class="font-bold text-amber-600">30</span>&deg;</label>
+                    </div>
+                    <input type="range" id="alpha-slider" min="0" max="90" step="1" value="30" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                </div>
+
+                <!-- Коэффициент трения -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-medium text-slate-700" for="mu-slider">Коэф. трения (&mu;): <span id="mu-val" class="font-bold text-blue-600">0.2</span></label>
+                    </div>
+                    <input type="range" id="mu-slider" min="0" max="1" step="0.01" value="0.2" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Данные реального времени -->
+            <div class="mt-8 bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-3">
+                <h2 class="text-sm uppercase tracking-wider font-semibold text-slate-400 mb-2">Текущие показатели</h2>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Ускорение (a):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-a">0.00</span> м/с²</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Скорость (v):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-v">0.00</span> м/с</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600" title="Сила нормального давления">Реакция опоры (N):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-n">0.00</span> Н</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-600">Сила трения (Fтр):</span>
+                    <span class="font-mono font-semibold text-slate-900"><span id="out-fric">0.00</span> Н</span>
+                </div>
+            </div>
+
+            <!-- Сообщение об отрыве -->
+            <div id="liftoff-warning" class="mt-4 bg-rose-50 border border-rose-200 text-rose-600 text-xs p-3 rounded-lg hidden font-medium text-center">
+                Сила тяги превышает силу тяжести! Брусок оторвался от поверхности.
+            </div>
+
+            <!-- Кнопки управления -->
+            <div class="mt-6 flex gap-3">
+                <button id="btn-toggle" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-blue-200">
+                    Старт
+                </button>
+                <button id="btn-reset" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-3 px-4 rounded-xl transition-colors">
+                    Сброс
+                </button>
+            </div>
+        </div>
+
+        <!-- Холст для отрисовки -->
+        <div class="flex-1 relative bg-white flex items-center justify-center p-4">
+            <canvas id="simCanvas"></canvas>
+            
+            <!-- Оверлей с результатами -->
+            <div id="results-overlay" class="absolute top-4 right-4 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg border border-slate-200 hidden z-10 w-64">
+                <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-2 border-b border-slate-100 pb-2">Результаты</h3>
+                <div class="space-y-1.5 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Время:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-t">0.00</span> с</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Путь:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-s">0.00</span> м</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Скорость:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-v">0.00</span> м/с</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Ускорение:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-a">0.00</span> м/с²</span>
+                    </div>
+                    
+                    <div class="border-t border-slate-100 my-2 pt-1"></div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Сила F:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-f">0.00</span> Н</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Угол:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-alpha">0</span>&deg;</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Коэф. трения:</span>
+                        <span class="font-mono font-bold text-slate-900"><span id="res-mu">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const mSlider = document.getElementById('m-slider');
+        const fSlider = document.getElementById('f-slider');
+        const alphaSlider = document.getElementById('alpha-slider');
+        const muSlider = document.getElementById('mu-slider');
+
+        const mVal = document.getElementById('m-val');
+        const fVal = document.getElementById('f-val');
+        const alphaVal = document.getElementById('alpha-val');
+        const muVal = document.getElementById('mu-val');
+
+        const outA = document.getElementById('out-a');
+        const outV = document.getElementById('out-v');
+        const outN = document.getElementById('out-n');
+        const outFric = document.getElementById('out-fric');
+        const liftoffWarning = document.getElementById('liftoff-warning');
+
+        const btnToggle = document.getElementById('btn-toggle');
+        const btnReset = document.getElementById('btn-reset');
+        const resultsOverlay = document.getElementById('results-overlay');
+
+        const g = 10; // м/с²
+        const scale = 50; // 1 метр = 50 пикселей
+
+        let state = {
+            m: parseFloat(mSlider.value),
+            F: parseFloat(fSlider.value),
+            alpha: parseFloat(alphaSlider.value),
+            mu: parseFloat(muSlider.value),
+            
+            x: 0,
+            v: 0,
+            a: 0,
+            N: 0,
+            
+            t: 0,
+            lastA: 0,
+            lastV: 0,
+            currentFriction: 0,
+            isLiftedOff: false,
+            finished: false,
+            isPlaying: false,
+            lastTime: 0
+        };
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            draw();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function updateInputs() {
+            state.m = parseFloat(mSlider.value);
+            state.F = parseFloat(fSlider.value);
+            state.alpha = parseFloat(alphaSlider.value);
+            state.mu = parseFloat(muSlider.value);
+
+            mVal.innerText = state.m;
+            fVal.innerText = state.F;
+            alphaVal.innerText = state.alpha;
+            muVal.innerText = state.mu;
+            
+            if (!state.isPlaying && state.v === 0) {
+                calculatePhysics(0);
+            }
+            draw();
+        }
+
+        [mSlider, fSlider, alphaSlider, muSlider].forEach(el => {
+            el.addEventListener('input', updateInputs);
+        });
+
+        btnToggle.addEventListener('click', () => {
+            if (state.finished || state.isLiftedOff) return;
+            
+            state.isPlaying = !state.isPlaying;
+            if (state.isPlaying) {
+                btnToggle.innerText = 'Пауза';
+                btnToggle.classList.replace('bg-blue-600', 'bg-amber-500');
+                btnToggle.classList.replace('hover:bg-blue-700', 'hover:bg-amber-600');
+                btnToggle.classList.replace('shadow-blue-200', 'shadow-amber-200');
+                state.lastTime = performance.now();
+                requestAnimationFrame(loop);
+            } else {
+                btnToggle.innerText = 'Продолжить';
+                btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+                btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+                btnToggle.classList.replace('shadow-amber-200', 'shadow-blue-200');
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            state.isPlaying = false;
+            state.finished = false;
+            state.isLiftedOff = false;
+            state.x = 0;
+            state.v = 0;
+            state.a = 0;
+            state.N = 0;
+            state.t = 0;
+            state.lastA = 0;
+            state.lastV = 0;
+            state.currentFriction = 0;
+            
+            resultsOverlay.classList.add('hidden');
+            resultsOverlay.classList.remove('block');
+            liftoffWarning.classList.add('hidden');
+            
+            btnToggle.innerText = 'Старт';
+            btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+            btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+            btnToggle.classList.replace('shadow-amber-200', 'shadow-blue-200');
+            
+            updateInputs();
+            draw();
+        });
+
+        function calculatePhysics(dt) {
+            // Перевод угла в радианы
+            const rad = state.alpha * Math.PI / 180;
+            
+            // Проекции силы
+            const Fx = state.F * Math.cos(rad);
+            const Fy = state.F * Math.sin(rad);
+            
+            // Сила тяжести
+            const mg = state.m * g;
+            
+            // Реакция опоры (нормальная сила)
+            state.N = mg - Fy;
+            
+            if (state.N <= 0) {
+                // Брусок отрывается от поверхности
+                state.N = 0;
+                state.a = 0;
+                state.v = 0; // Останавливаем горизонтальное движение для простоты
+                state.currentFriction = 0;
+                if (!state.isLiftedOff) {
+                    state.isLiftedOff = true;
+                    state.isPlaying = false;
+                    liftoffWarning.classList.remove('hidden');
+                    btnToggle.innerText = 'Стоп (Отрыв)';
+                }
+            } else {
+                state.isLiftedOff = false;
+                liftoffWarning.classList.add('hidden');
+                
+                // Максимальная сила трения покоя / скольжения
+                const friction = state.mu * state.N;
+                
+                if (Fx > friction) {
+                    state.a = (Fx - friction) / state.m;
+                    state.currentFriction = friction;
+                } else {
+                    state.a = 0;
+                    if (state.v > 0) {
+                        // Если движется по инерции, но тяга меньше трения, замедляем
+                        state.a = -(friction - Fx) / state.m;
+                        state.currentFriction = friction;
+                        // Защита от обратного движения из-за трения
+                        if (state.v + state.a * dt < 0) {
+                            state.a = -state.v / dt; 
+                        }
+                    } else {
+                        state.currentFriction = Fx; // Трение покоя компенсирует приложенную силу
+                    }
+                }
+            }
+
+            if (dt > 0 && !state.isLiftedOff) {
+                state.t += dt;
+                
+                if (Math.abs(state.a) > 0) state.lastA = state.a;
+                state.lastV = state.v;
+
+                state.v += state.a * dt;
+                if (state.v < 0) state.v = 0; // Трение не может сдвинуть назад
+                state.x += state.v * dt;
+
+                const maxDisplacement = 6; 
+                
+                if (state.x > maxDisplacement) {
+                    state.x = maxDisplacement;
+                    state.v = 0;
+                    state.a = 0;
+                    
+                    if (!state.finished) {
+                        state.finished = true;
+                        state.isPlaying = false;
+                        
+                        document.getElementById('res-t').innerText = state.t.toFixed(2);
+                        document.getElementById('res-s').innerText = state.x.toFixed(2);
+                        document.getElementById('res-v').innerText = state.lastV.toFixed(2);
+                        document.getElementById('res-a').innerText = state.lastA.toFixed(2);
+                        document.getElementById('res-f').innerText = state.F.toFixed(2);
+                        document.getElementById('res-alpha').innerText = state.alpha;
+                        document.getElementById('res-mu').innerText = state.mu.toFixed(2);
+                        
+                        resultsOverlay.classList.remove('hidden');
+                        resultsOverlay.classList.add('block');
+                        
+                        btnToggle.innerText = 'Старт';
+                        btnToggle.classList.replace('bg-amber-500', 'bg-blue-600');
+                        btnToggle.classList.replace('hover:bg-amber-600', 'hover:bg-blue-700');
+                        btnToggle.classList.replace('shadow-amber-200', 'shadow-blue-200');
+                    }
+                }
+            }
+
+            outA.innerText = state.a.toFixed(2);
+            outV.innerText = state.v.toFixed(2);
+            outN.innerText = state.N.toFixed(2);
+            outFric.innerText = state.currentFriction.toFixed(2);
+        }
+
+        function loop(timestamp) {
+            if (!state.isPlaying) return;
+            
+            let dt = (timestamp - state.lastTime) / 1000;
+            if (dt > 0.1) dt = 0.1;
+            state.lastTime = timestamp;
+
+            calculatePhysics(dt);
+            draw();
+
+            requestAnimationFrame(loop);
+        }
+
+        function drawArrow(x, y, length, angle, color, label) {
+            if (Math.abs(length) < 0.1) return;
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(length, 0);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(length, 0);
+            ctx.lineTo(length - 12, -6);
+            ctx.lineTo(length - 12, 6);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            // Текст над вектором
+            ctx.rotate(-angle); // Сбрасываем поворот для правильного отображения текста
+            ctx.fillStyle = color;
+            ctx.font = "italic bold 20px Inter";
+            // Позиционируем текст примерно в середине вектора, немного выше
+            let textX = (length / 2 + 10) * Math.cos(angle);
+            let textY = (length / 2 + 10) * Math.sin(angle) - 15;
+            ctx.fillText(label, textX, textY);
+            
+            ctx.restore();
+        }
+
+        function draw() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const w = rect.width;
+            const h = rect.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            const groundY = h / 2 + 60;
+            const startX = w / 2 - 200;
+            
+            const blockSize = 50 + Math.sqrt(state.m) * 15;
+            const blockX = startX + (state.x * scale);
+            const blockY = groundY - blockSize;
+            const blockCenterX = blockX + blockSize / 2;
+            const blockCenterY = blockY + blockSize / 2;
+
+            // 1. Отрисовка поверхности (земли)
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(w, groundY);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Штриховка земли (как на рисунке)
+            ctx.beginPath();
+            for(let i = 0; i < w; i += 15) {
+                ctx.moveTo(i, groundY);
+                ctx.lineTo(i - 10, groundY + 15);
+            }
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 2. Брусок
+            ctx.fillStyle = state.isLiftedOff ? '#fecdd3' : '#e0e7ff'; // Цвет меняется при отрыве
+            ctx.fillRect(blockX, blockY, blockSize, blockSize);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(blockX, blockY, blockSize, blockSize);
+            
+            // Буква "m" над бруском
+            ctx.fillStyle = '#000000';
+            ctx.font = 'italic bold 24px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('m', blockCenterX, blockY - 15);
+
+            // Центральная точка приложения силы
+            ctx.beginPath();
+            ctx.arc(blockCenterX, blockCenterY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#000000';
+            ctx.fill();
+
+            // 3. Горизонтальная линия (пунктир) для угла
+            ctx.beginPath();
+            ctx.moveTo(blockCenterX, blockCenterY);
+            ctx.lineTo(blockCenterX + 120, blockCenterY);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]); // Пунктир
+            ctx.stroke();
+            ctx.setLineDash([]); // Возвращаем сплошную линию
+
+            // 4. Отрисовка вектора силы F
+            if (state.F > 0) {
+                const rad = -state.alpha * Math.PI / 180; // Отрицательный угол, т.к. Y идет вниз на canvas
+                // Длина стрелки визуально ограничена для красоты
+                const arrowLength = 70 + state.F * 1.5; 
+                
+                drawArrow(blockCenterX, blockCenterY, arrowLength, rad, '#000000', 'F');
+
+                // Отрисовка дуги угла α
+                if (state.alpha > 0) {
+                    ctx.beginPath();
+                    const arcRadius = 45;
+                    ctx.arc(blockCenterX, blockCenterY, arcRadius, 0, rad, true);
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // Символ α
+                    ctx.fillStyle = '#000000';
+                    ctx.font = 'italic 18px Inter';
+                    const textAngle = rad / 2;
+                    ctx.fillText('α', blockCenterX + (arcRadius + 15) * Math.cos(textAngle), blockCenterY + (arcRadius + 15) * Math.sin(textAngle) + 5);
+                }
+            }
+
+            // 5. Отрисовка вектора силы трения
+            if (state.currentFriction > 0 && !state.isLiftedOff) {
+                const fricLength = 40 + state.currentFriction * 1.5; 
+                // Рисуем от нижней грани по центру влево (угол Math.PI)
+                drawArrow(blockCenterX, blockY + blockSize, fricLength, Math.PI, '#ea580c', 'Fтр'); // Оранжевый цвет
+            }
+        }
+
+        window.onload = () => {
+            updateInputs();
+            resizeCanvas();
+        };
+    </script>
+</body>
+</html>
