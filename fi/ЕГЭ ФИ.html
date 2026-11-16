@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Темы и отметки</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1e3a5f;
+    --primary-light: #2c5282;
+    --accent: #3182ce;
+    --accent-soft: #ebf4ff;
+    --success: #2f855a;
+    --danger: #c53030;
+    --warning: #c05621;
+    --purple: #6b46c1;
+    --border: #e2e8f0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --text: #2d3748;
+    --text-soft: #718096;
+    --tap: 44px;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px 16px 24px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    min-height: 100%;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ===== Прогресс (без класса) ===== */
+  .progress-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  }
+  .progress-info { flex: 1; min-width: 220px; }
+  .progress-label {
+    font-size: 0.85rem; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .progress-count { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+  .progress-count .of { color: var(--text-soft); font-weight: 500; font-size: 1rem; }
+  .progress-bar {
+    flex: 2; min-width: 200px; height: 10px;
+    background: var(--border); border-radius: 999px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ===== Таблица ===== */
+  .table-wrap {
+    background: var(--card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--primary);
+    color: #fff;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+    position: sticky; top: 0; z-index: 2;
+  }
+  thead th:first-child { text-align: left; width: auto; }
+  thead th.mark-col { width: 96px; }
+
+  tbody tr.lesson-row {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.25s ease;
+  }
+  tbody tr.lesson-row:hover { filter: brightness(0.98); }
+
+  /* ===== Строка урока ===== */
+  td.lesson-title {
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: text;
+    -webkit-user-select: text;
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.94rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.15s;
+  }
+  td.lesson-title:hover { color: var(--accent); }
+  td.lesson-title .toggle-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.7);
+    border-radius: 6px;
+    color: var(--accent);
+    font-size: 0.7rem;
+    transition: transform 0.25s ease, background 0.15s, color 0.15s;
+  }
+  td.lesson-title.open .toggle-icon {
+    transform: rotate(90deg);
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ===== Строка подтемы ===== */
+  tr.subtopic-row {
+    background: #fafcfe;
+    border-bottom: 1px solid var(--border);
+  }
+  tr.subtopic-row:hover { background: #f1f6fb; }
+  td.subtopic-title {
+    padding: 10px 16px 10px 48px;
+    font-size: 0.88rem;
+    color: var(--text-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  td.subtopic-title::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  td.mark {
+    text-align: center;
+    width: 96px;
+    padding: 6px;
+    vertical-align: middle;
+  }
+  td.mark .mark-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  td.mark input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none;
+    width: 24px; height: 24px;
+    border: 2px solid #cbd5e0;
+    border-radius: 7px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.18s ease;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+  }
+  td.mark input[type="checkbox"]:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(49,130,206,0.12);
+  }
+  td.mark input[type="checkbox"]:checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+  td.mark input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 7px; top: 2px;
+    width: 5px; height: 11px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+  }
+
+  td.mark .date-input {
+    width: 100%;
+    max-width: 84px;
+    font-size: 0.65rem;
+    padding: 2px 2px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    color: var(--text-soft);
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: border-color 0.15s, opacity 0.15s;
+  }
+  td.mark .date-input:hover:not(:disabled) { border-color: var(--accent); }
+  td.mark .date-input:disabled { opacity: 0.35; cursor: not-allowed; background: #edf2f7; }
+  td.mark .date-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.18);
+  }
+
+  .io-message {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    min-height: 1.3em;
+    text-align: center;
+    font-weight: 500;
+  }
+  .io-message.ok { color: var(--success); }
+  .io-message.err { color: var(--danger); }
+
+  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
+  @media (max-width: 768px) {
+    body { padding: 14px 10px 30px; }
+
+    .progress-card { padding: 14px 14px; gap: 12px; margin-bottom: 14px; }
+    .progress-info { min-width: 0; flex: 1 1 100%; }
+    .progress-bar { flex: 1 1 100%; min-width: 0; }
+    .progress-count { font-size: 1.2rem; }
+
+    thead th { padding: 10px 6px; font-size: 0.68rem; }
+    thead th.mark-col { width: 70px; }
+    td.lesson-title {
+      padding: 12px 8px;
+      font-size: 0.85rem;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    td.lesson-title .toggle-icon {
+      width: 20px; height: 20px; font-size: 0.65rem;
+      margin-top: 1px;
+    }
+    td.subtopic-title {
+      padding: 8px 8px 8px 24px;
+      font-size: 0.82rem;
+    }
+    td.mark { width: 70px; padding: 6px 2px; }
+    td.mark .mark-inner { gap: 3px; }
+    td.mark input[type="checkbox"] { width: 22px; height: 22px; }
+    td.mark input[type="checkbox"]:checked::after { left: 6px; top: 2px; width: 5px; height: 10px; }
+    td.mark .date-input { font-size: 0.6rem; max-width: 60px; padding: 2px 1px; }
+  }
+
+  @media (max-width: 360px) {
+    td.mark { width: 56px; }
+    thead th.mark-col { width: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="progress-card">
+    <div class="progress-info">
+      <div class="progress-label">Отмечено пройдено</div>
+      <div class="progress-count" id="progressCount">0 <span class="of">из 0</span></div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Урок и подтемы</th>
+          <th class="mark-col">Отметка</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="2" style="text-align:center; padding:20px; color:var(--text-soft);">Загрузка уроков…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="io-message" id="ioMessage"></div>
+</div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzIWErL2uMPl6PPy-bf4NH3x4flonzaj4Zz9mnKyOjZIbzj6nOm1GuSn0MI0KFazqs8FQ/exec';
+  const CACHE_KEY   = 'lessons_cache_v3';
+  const PENDING_KEY = 'lessons_pending_v3';
+
+  // Полный список тем из задания (используется, если сервер не вернул данные)
+  const FALLBACK_LESSONS = [
+    { id: 'l1', title: '1. Кинематика', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Движение по окружности'], link: '' },
+    { id: 'l2', title: '2. Динамика', content: ['Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Давление'], link: '' },
+    { id: 'l3', title: '3. Импульс. Законы сохранения в механике', content: ['Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса'], link: '' },
+    { id: 'l4', title: '4. Статика. Гидростатика. Механические колебания и волны', content: ['Момент и плечо силы', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел', 'Механические колебания', 'Волны и звук'], link: '' },
+    { id: 'l5', title: '5. Механика (законные физических процессов и условий установления состояний)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса', 'Момент и плечо силы', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел', 'Механические колебания', 'Волны и звук'], link: '' },
+    { id: 'l6', title: '6. Механика (изменение физических величин в процессах и условиях установления состояний)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса', 'Момент и плечо силы', 'Условия равновесия, правило моментов', 'Сила Архимеда, условие плавания тел', 'Механические колебания', 'Волны и звук'], link: '' },
+    { id: 'l7', title: '7. Молекулярная физика', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар'], link: '' },
+    { id: 'l8', title: '8. Термодинамика', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы'], link: '' },
+    { id: 'l9', title: '9. МКТ и Термодинамика (задание физических процессов и условий установления состояний)', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы'], link: '' },
+    { id: 'l10', title: '10. МКТ и Термодинамика (изменение физических величин в процессах и условиях установления состояний)', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы', 'Уравнение теплового баланса'], link: '' },
+    { id: 'l11', title: '11. Электростатика. Законы постоянного тока', content: ['Электрический заряд', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Электрическая энергия и электрический заряд'], link: '' },
+    { id: 'l12', title: '12. Магнитное поле. Электромагнитная индукция', content: ['Взаимодействие постоянного магнита и тока', 'Правило правой руки/правило левой руки', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'ЭДС индукции, правило Ленца', 'Катушка и самоиндукция'], link: '' },
+    { id: 'l13', title: '13. Оптика. Электромагнитные колебания и волны', content: ['Электромагнитные колебания', 'Электромагнитные волны', 'Распространение света в средах', 'Отражение света', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики'], link: '' },
+    { id: 'l14', title: '14. Электростатика, магнетизм, оптика (задание физических процессов и условий установления состояний)', content: ['Электрический заряд', 'Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Взаимодействие постоянного магнита и тока', 'Правило правой руки/правило левой руки', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'ЭДС индукции, правило Ленца', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Электромагнитные волны', 'Прямолинейное света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
+    { id: 'l15', title: '15. Электростатика, магнетизм, оптика (изменение физических величин в процессах и условиях установления состояний)', content: ['Электрический заряд', 'Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Электромагнитные волны', 'Прямолинейное света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
+    { id: 'l16', title: '16. Квантовая физика', content: ['Электромагнитные частицы, модель атома', 'Ядерные реакции'], link: '' },
+    { id: 'l17', title: '17. Ядерная и квантовая физика (изменение физических величин в процессах, установление состояний)', content: ['Электромагнитные частицы, модель атома', 'Ядерные реакции', 'Фотоны, фотоэффект', 'Постулаты Бора и линейчатый спектр', 'Фотоэффект и опыты Столетова'], link: '' },
+    { id: 'l18', title: '18. Выбор верных утверждений. Физический смысл явлений, величин, законов и закономерностей', content: ['Прямолинейное равномерное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Неподвижный и подвижный блоки', 'Давление', 'Механические колебания', 'Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы', 'Электрический заряд', 'Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Цепи с конденсатором', 'Взаимодействие постоянного магнита и тока', 'Сила Лоренца и Ампера. Правила левой руки', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Электромагнитные волны', 'Распространение света в средах', 'Отражение света', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики', 'Электромагнитные частицы, модель атома', 'Ядерные реакции', 'Фотоны, фотоэффект', 'Постулаты Бора и линейчатый спектр', 'Фотоэффект и опыты Столетова'], link: '' },
+    { id: 'l19', title: '19. Определение показаний измерительных приборов', content: ['Закон Ома', 'Погрешности измерений'], link: '' },
+    { id: 'l20', title: '20. Элементы: опыты и устройства', content: ['Сила реакции опоры, сила трения, вес', 'Давление', 'Механические колебания', 'Изопроцессы', 'Конденсаторы', 'Закон Ома', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики', 'Электрометр'], link: '' },
+    { id: 'l21', title: '21. Качественные задачи', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Электрический заряд', 'Конденсаторы', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Правило Ленца', 'Закон Фарадея', 'Катушка и самоиндукция', 'Прямолинейное света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
+    { id: 'l22', title: '22. Механика (расчетная задача)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел', 'Механические колебания'], link: '' },
+    { id: 'l23', title: '23. МКТ и Термодинамика. Электростатика (расчетная задача)', content: ['Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'ЭДС индукции, правило Ленца', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
+    { id: 'l24', title: '24. МКТ. Термодинамика (расчетная задача высокого уровня сложности)', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы', 'Уравнение теплового баланса'], link: '' },
+    { id: 'l25', title: '25. Электростатика (расчетная задача высокого уровня сложности)', content: ['Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Правило Ленца', 'Закон Фарадея', 'Катушка и самоиндукция', 'Электромагнитные колебания'], link: '' },
+    { id: 'l26', title: '26. Механика (расчетная задача высокого уровня сложности)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Импульс и закон сохранения импульса', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел'], link: '' }
+  ];
+
+  const todayStr = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  };
+
+  function normalizeDate(val) {
+    if (!val) return '';
+    let s = String(val).trim();
+    if (/^\d{2}\.\d{2}\.\d{4}$/.test(s)) { const p = s.split('.'); return `${p[2]}-${p[1]}-${p[0]}`; }
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) { const p = s.split('/'); return `${p[2]}-${p[1]}-${p[0]}`; }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) { return s; }
+    return s;
+  }
+
+  const state = { lessons: [] };
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch (e) { return {}; } }
+  function writeCache(obj) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch (e) {} }
+
+  const ioMessage = document.getElementById('ioMessage');
+  let msgTimer = null;
+  function showMessage(text, type = 'ok') {
+    ioMessage.textContent = text;
+    ioMessage.className = 'io-message ' + type;
+    clearTimeout(msgTimer);
+    if (type === 'ok') {
+      msgTimer = setTimeout(() => { ioMessage.textContent = ''; ioMessage.className = 'io-message'; }, 4000);
+    }
+  }
+
+  function subtopicId(lessonId, index) { return lessonId + '_' + index; }
+
+  function renderLessons(lessons) {
+    state.lessons = lessons || [];
+    const tbody = document.getElementById('tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (state.lessons.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--text-soft);">Нет уроков.</td></tr>';
+      return;
+    }
+
+    state.lessons.forEach(lesson => {
+      const lessonId = lesson.id;
+      const subtopics = Array.isArray(lesson.content) ? lesson.content : [];
+
+      const tr = document.createElement('tr');
+      tr.className = 'lesson-row';
+      tr.dataset.content = 'c' + lessonId;
+      tr.dataset.lessonId = lessonId;
+
+      const tdTitle = document.createElement('td');
+      tdTitle.className = 'lesson-title';
+      tdTitle.innerHTML = '<span class="toggle-icon">▶</span>' + escapeHtml(lesson.title || lessonId);
+      tr.appendChild(tdTitle);
+
+      const tdMark = document.createElement('td');
+      tdMark.className = 'mark';
+      tr.appendChild(tdMark);
+
+      tbody.appendChild(tr);
+
+      const subtopicContainer = document.createElement('tbody');
+      subtopicContainer.className = 'subtopics-container';
+      subtopicContainer.id = 'c' + lessonId;
+      subtopicContainer.style.display = 'none';
+
+      subtopics.forEach((item, idx) => {
+        const subId = subtopicId(lessonId, idx);
+        const subTr = document.createElement('tr');
+        subTr.className = 'subtopic-row';
+        subTr.dataset.lessonId = lessonId;
+        subTr.dataset.subId = subId;
+
+        const subTdTitle = document.createElement('td');
+        subTdTitle.className = 'subtopic-title';
+        subTdTitle.textContent = item;
+        subTr.appendChild(subTdTitle);
+
+        const subTdMark = document.createElement('td');
+        subTdMark.className = 'mark';
+        const inner = document.createElement('div');
+        inner.className = 'mark-inner';
+
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.dataset.id = subId;
+        box.dataset.lessonId = lessonId;
+
+        const date = document.createElement('input');
+        date.type = 'date';
+        date.className = 'date-input';
+        date.dataset.dateId = subId;
+        date.disabled = true;
+
+        inner.appendChild(box);
+        inner.appendChild(date);
+        subTdMark.appendChild(inner);
+        subTr.appendChild(subTdMark);
+
+        subtopicContainer.appendChild(subTr);
+      });
+
+      if (lesson.link && String(lesson.link).trim() !== '') {
+        const linkTr = document.createElement('tr');
+        linkTr.className = 'subtopic-row';
+        const linkTd = document.createElement('td');
+        linkTd.colSpan = 2;
+        linkTd.style.padding = '8px 16px 12px 48px';
+        linkTd.innerHTML = `<a href="${escapeHtml(lesson.link.trim())}" target="_blank" rel="noopener noreferrer"
+          style="color:var(--accent); font-weight:600; font-size:0.85rem; text-decoration:none;
+          background:var(--accent-soft); padding:6px 12px; border-radius:6px; display:inline-block;">
+          🔗 Материалы к уроку</a>`;
+        linkTr.appendChild(linkTd);
+        subtopicContainer.appendChild(linkTr);
+      }
+
+      tr.after(subtopicContainer);
+    });
+  }
+
+  function bindAllLessonEvents() {
+    document.querySelectorAll('tr.lesson-row').forEach(row => {
+      if (row.dataset.bound === '1') return;
+      row.dataset.bound = '1';
+
+      const titleCell = row.querySelector('.lesson-title');
+      const contentId = row.dataset.content;
+      const contentBody = document.getElementById(contentId);
+      if (!titleCell || !contentBody) return;
+
+      titleCell.addEventListener('click', () => {
+        const sel = window.getSelection();
+        if (sel && sel.toString().trim().length > 0) return;
+        const isOpen = contentBody.style.display !== 'none';
+        contentBody.style.display = isOpen ? 'none' : '';
+        titleCell.classList.toggle('open', !isOpen);
+      });
+    });
+
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.dataset.bound === '1') return;
+      box.dataset.bound = '1';
+
+      const id = box.dataset.id;
+      const dateInput = document.querySelector(`input.date-input[data-date-id="${id}"]`);
+      if (!dateInput) return;
+
+      box.addEventListener('change', () => {
+        let dateVal;
+        if (box.checked) {
+          dateInput.disabled = false;
+          if (!dateInput.value) dateInput.value = todayStr();
+          dateVal = dateInput.value;
+        } else {
+          dateInput.disabled = true;
+          dateInput.value = '';
+          dateVal = '';
+        }
+        saveMark(id, dateVal);
+        updateUI();
+      });
+
+      dateInput.addEventListener('change', () => {
+        if (!dateInput.value) {
+          box.checked = false;
+          dateInput.disabled = true;
+          saveMark(id, '');
+        } else {
+          box.checked = true;
+          dateInput.disabled = false;
+          saveMark(id, dateInput.value);
+        }
+        updateUI();
+      });
+    });
+  }
+
+  function applyMarksToUI(marks) {
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      const id = box.dataset.id;
+      const dateInput = document.querySelector(`input.date-input[data-date-id="${id}"]`);
+      const rawDate = marks[id];
+
+      if (rawDate) {
+        box.checked = true;
+        if (dateInput) {
+          dateInput.value = normalizeDate(rawDate);
+          dateInput.disabled = false;
+        }
+      } else {
+        box.checked = false;
+        if (dateInput) {
+          dateInput.value = '';
+          dateInput.disabled = true;
+        }
+      }
+    });
+    updateUI();
+  }
+
+  function collectMarksFromUI() {
+    const out = {};
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach(box => {
+      if (box.checked) {
+        const id = box.dataset.id;
+        const dateInput = document.querySelector(`input.date-input[data-date-id="${id}"]`);
+        out[id] = (dateInput && dateInput.value) ? dateInput.value : todayStr();
+      }
+    });
+    return out;
+  }
+
+  async function loadFromServer(force = false) {
+    if (force) { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
+
+    const cached = readCache();
+    if (!force) {
+      if (cached.lessons && cached.lessons.length) {
+        renderLessons(cached.lessons);
+        if (cached.marks) applyMarksToUI(cached.marks);
+        bindAllLessonEvents();
+      } else {
+        // Если кэша нет — сразу показываем полный список из задания
+        renderLessons(FALLBACK_LESSONS);
+        if (cached.marks) applyMarksToUI(cached.marks);
+        bindAllLessonEvents();
+      }
+    }
+
+    try {
+      const resp = await fetch(API_URL + '?action=load', { cache: 'no-cache' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+
+      // Если сервер вернул пустой список — не затираем fallback
+      const lessons = (data.lessons && data.lessons.length) ? data.lessons : FALLBACK_LESSONS;
+
+      writeCache({ lessons, marks: data.marks || {} });
+      renderLessons(lessons);
+      applyMarksToUI(data.marks || {});
+      bindAllLessonEvents();
+      updateUI();
+
+      if (force) showMessage('✓ Данные успешно обновлены.', 'ok');
+    } catch (err) {
+      console.warn('[sync] не удалось загрузить:', err);
+      if (force) {
+        showMessage('⚠️ Ошибка обновления. Проверьте связь с Google Sheets.', 'err');
+      } else if (!cached.lessons || !cached.lessons.length) {
+        // Уже отрисовали fallback выше — просто предупредим
+        showMessage('Показан полный список тем. Сервер недоступен.', 'err');
+      }
+    }
+  }
+
+  async function pushOneMark(id, date) {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ id, date })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+    return data;
+  }
+
+  function saveMark(id, date) {
+    const marks = collectMarksFromUI();
+    writeCache({ lessons: state.lessons, marks });
+
+    pushOneMark(id, date)
+      .then(() => { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} })
+      .catch(err => {
+        console.warn('[sync] отложено:', err);
+        try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {}
+      });
+  }
+
+  function updateUI() {
+    const progressCount = document.getElementById('progressCount');
+    const progressFill  = document.getElementById('progressFill');
+
+    const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-id]'));
+    const TOTAL = boxes.length;
+    const done = boxes.filter(b => b.checked).length;
+    const pct = TOTAL > 0 ? Math.round(done / TOTAL * 100) : 0;
+
+    if (progressCount) progressCount.innerHTML = `${done} <span class="of">из ${TOTAL} · ${pct}%</span>`;
+    if (progressFill) progressFill.style.width = pct + '%';
+  }
+
+  // Автосохранение при уходе со страницы (на случай, если что-то не ушло)
+  window.addEventListener('online', () => {
+    try {
+      if (localStorage.getItem(PENDING_KEY) === '1') {
+        const marks = collectMarksFromUI();
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ marks })
+        }).then(() => {
+          try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+        }).catch(() => {});
+      }
+    } catch (e) {}
+  });
+
+  function sendHeightToParent() {
+    if (window.parent !== window) {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ type: 'resize-iframe', height: height }, '*');
+    }
+  }
+
+  window.addEventListener('load', sendHeightToParent);
+  window.addEventListener('resize', sendHeightToParent);
+  const observer = new MutationObserver(sendHeightToParent);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+  loadFromServer();
+</script>
+
+</body>
+</html>
