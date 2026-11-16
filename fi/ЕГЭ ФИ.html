@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Темы и отметки</title>
+<title>ЕГЭ ФИ</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -39,7 +39,6 @@
 
   .container { max-width: 1100px; margin: 0 auto; }
 
-  /* ===== Прогресс (без класса) ===== */
   .progress-card {
     background: var(--card);
     border-radius: 12px;
@@ -68,7 +67,6 @@
     width: 0%;
   }
 
-  /* ===== Таблица ===== */
   .table-wrap {
     background: var(--card);
     border-radius: 12px;
@@ -96,7 +94,6 @@
   }
   tbody tr.lesson-row:hover { filter: brightness(0.98); }
 
-  /* ===== Строка урока ===== */
   td.lesson-title {
     padding: 14px 16px;
     cursor: pointer;
@@ -130,27 +127,99 @@
     color: #fff;
   }
 
-  /* ===== Строка подтемы ===== */
   tr.subtopic-row {
     background: #fafcfe;
     border-bottom: 1px solid var(--border);
   }
   tr.subtopic-row:hover { background: #f1f6fb; }
+
   td.subtopic-title {
     padding: 10px 16px 10px 48px;
     font-size: 0.88rem;
     color: var(--text-soft);
+  }
+  .subtopic-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .subtopic-text {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 0 0 auto;
   }
-  td.subtopic-title::before {
+  .subtopic-text::before {
     content: '';
     width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--accent);
     opacity: 0.6;
     flex-shrink: 0;
+  }
+  .subtopic-comment {
+    flex: 1 1 160px;
+    min-width: 140px;
+    font-size: 0.78rem;
+    color: #4a5568;
+    font-style: italic;
+    background: #fff;
+    border: 1px dashed #cbd5e0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: text;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    line-height: 1.35;
+    min-height: 1.9em;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .subtopic-comment:empty::before {
+    content: 'комментарий…';
+    color: #a0aec0;
+    font-style: italic;
+  }
+  .subtopic-comment:hover { border-color: var(--accent); }
+  .subtopic-comment:focus {
+    border-style: solid;
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.18);
+    font-style: normal;
+    color: var(--text);
+  }
+  .subtopic-comment.saving {
+    background: #fffbea;
+    border-color: var(--warning);
+  }
+  .subtopic-comment.saved {
+    background: #e7f7ee;
+    border-color: var(--success);
+  }
+  .subtopic-comment.error {
+    background: #fdecec;
+    border-color: var(--danger);
+  }
+
+  /* Ссылка на материалы — своя у каждой подтемы */
+  .subtopic-link {
+    flex: 0 0 auto;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    background: var(--accent-soft);
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+    align-self: center;
+  }
+  .subtopic-link:hover {
+    background: var(--accent);
+    color: #fff;
   }
 
   td.mark {
@@ -227,7 +296,6 @@
   .io-message.ok { color: var(--success); }
   .io-message.err { color: var(--danger); }
 
-  /* ======================= МОБИЛЬНАЯ ВЕРСИЯ ======================= */
   @media (max-width: 768px) {
     body { padding: 14px 10px 30px; }
 
@@ -251,6 +319,15 @@
     td.subtopic-title {
       padding: 8px 8px 8px 24px;
       font-size: 0.82rem;
+    }
+    .subtopic-comment {
+      font-size: 0.74rem;
+      padding: 3px 6px;
+      min-width: 120px;
+    }
+    .subtopic-link {
+      font-size: 0.7rem;
+      padding: 3px 6px;
     }
     td.mark { width: 70px; padding: 6px 2px; }
     td.mark .mark-inner { gap: 3px; }
@@ -283,7 +360,7 @@
     <table>
       <thead>
         <tr>
-          <th>Урок и подтемы</th>
+          <th>ЕГЭ Физика</th>
           <th class="mark-col">Отметка</th>
         </tr>
       </thead>
@@ -297,39 +374,10 @@
 </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzIWErL2uMPl6PPy-bf4NH3x4flonzaj4Zz9mnKyOjZIbzj6nOm1GuSn0MI0KFazqs8FQ/exec';
-  const CACHE_KEY   = 'lessons_cache_v3';
-  const PENDING_KEY = 'lessons_pending_v3';
-
-  // Полный список тем из задания (используется, если сервер не вернул данные)
-  const FALLBACK_LESSONS = [
-    { id: 'l1', title: '1. Кинематика', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Движение по окружности'], link: '' },
-    { id: 'l2', title: '2. Динамика', content: ['Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Давление'], link: '' },
-    { id: 'l3', title: '3. Импульс. Законы сохранения в механике', content: ['Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса'], link: '' },
-    { id: 'l4', title: '4. Статика. Гидростатика. Механические колебания и волны', content: ['Момент и плечо силы', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел', 'Механические колебания', 'Волны и звук'], link: '' },
-    { id: 'l5', title: '5. Механика (законные физических процессов и условий установления состояний)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса', 'Момент и плечо силы', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел', 'Механические колебания', 'Волны и звук'], link: '' },
-    { id: 'l6', title: '6. Механика (изменение физических величин в процессах и условиях установления состояний)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса', 'Момент и плечо силы', 'Условия равновесия, правило моментов', 'Сила Архимеда, условие плавания тел', 'Механические колебания', 'Волны и звук'], link: '' },
-    { id: 'l7', title: '7. Молекулярная физика', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар'], link: '' },
-    { id: 'l8', title: '8. Термодинамика', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы'], link: '' },
-    { id: 'l9', title: '9. МКТ и Термодинамика (задание физических процессов и условий установления состояний)', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы'], link: '' },
-    { id: 'l10', title: '10. МКТ и Термодинамика (изменение физических величин в процессах и условиях установления состояний)', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы', 'Уравнение теплового баланса'], link: '' },
-    { id: 'l11', title: '11. Электростатика. Законы постоянного тока', content: ['Электрический заряд', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Электрическая энергия и электрический заряд'], link: '' },
-    { id: 'l12', title: '12. Магнитное поле. Электромагнитная индукция', content: ['Взаимодействие постоянного магнита и тока', 'Правило правой руки/правило левой руки', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'ЭДС индукции, правило Ленца', 'Катушка и самоиндукция'], link: '' },
-    { id: 'l13', title: '13. Оптика. Электромагнитные колебания и волны', content: ['Электромагнитные колебания', 'Электромагнитные волны', 'Распространение света в средах', 'Отражение света', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики'], link: '' },
-    { id: 'l14', title: '14. Электростатика, магнетизм, оптика (задание физических процессов и условий установления состояний)', content: ['Электрический заряд', 'Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Взаимодействие постоянного магнита и тока', 'Правило правой руки/правило левой руки', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'ЭДС индукции, правило Ленца', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Электромагнитные волны', 'Прямолинейное света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
-    { id: 'l15', title: '15. Электростатика, магнетизм, оптика (изменение физических величин в процессах и условиях установления состояний)', content: ['Электрический заряд', 'Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Электромагнитные волны', 'Прямолинейное света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
-    { id: 'l16', title: '16. Квантовая физика', content: ['Электромагнитные частицы, модель атома', 'Ядерные реакции'], link: '' },
-    { id: 'l17', title: '17. Ядерная и квантовая физика (изменение физических величин в процессах, установление состояний)', content: ['Электромагнитные частицы, модель атома', 'Ядерные реакции', 'Фотоны, фотоэффект', 'Постулаты Бора и линейчатый спектр', 'Фотоэффект и опыты Столетова'], link: '' },
-    { id: 'l18', title: '18. Выбор верных утверждений. Физический смысл явлений, величин, законов и закономерностей', content: ['Прямолинейное равномерное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Неподвижный и подвижный блоки', 'Давление', 'Механические колебания', 'Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы', 'Электрический заряд', 'Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Цепи с конденсатором', 'Взаимодействие постоянного магнита и тока', 'Сила Лоренца и Ампера. Правила левой руки', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Электромагнитные волны', 'Распространение света в средах', 'Отражение света', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики', 'Электромагнитные частицы, модель атома', 'Ядерные реакции', 'Фотоны, фотоэффект', 'Постулаты Бора и линейчатый спектр', 'Фотоэффект и опыты Столетова'], link: '' },
-    { id: 'l19', title: '19. Определение показаний измерительных приборов', content: ['Закон Ома', 'Погрешности измерений'], link: '' },
-    { id: 'l20', title: '20. Элементы: опыты и устройства', content: ['Сила реакции опоры, сила трения, вес', 'Давление', 'Механические колебания', 'Изопроцессы', 'Конденсаторы', 'Закон Ома', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики', 'Электрометр'], link: '' },
-    { id: 'l21', title: '21. Качественные задачи', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Электрический заряд', 'Конденсаторы', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Правило Ленца', 'Закон Фарадея', 'Катушка и самоиндукция', 'Прямолинейное света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
-    { id: 'l22', title: '22. Механика (расчетная задача)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила тяжести и закон всемирного тяготения', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Работа, мощность, КПД', 'Импульс и закон сохранения импульса', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел', 'Механические колебания'], link: '' },
-    { id: 'l23', title: '23. МКТ и Термодинамика. Электростатика (расчетная задача)', content: ['Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Магнитный поток', 'Правило Ленца', 'Закон Фарадея', 'ЭДС индукции, правило Ленца', 'Катушка и самоиндукция', 'Электромагнитные колебания', 'Преломление света. Закон Снеллиуса', 'Линзы и их характеристики', 'Интерференция, дифракция, дисперсия'], link: '' },
-    { id: 'l24', title: '24. МКТ. Термодинамика (расчетная задача высокого уровня сложности)', content: ['Основы МКТ, идеальный газ', 'Изопроцессы', 'Влажность, водяной пар', 'Внутренняя энергия, работа газа', 'Первый закон термодинамики', 'Тепловые двигатели, циклы и КПД', 'Агрегатные состояния вещества и фазовые переходы', 'Уравнение теплового баланса'], link: '' },
-    { id: 'l25', title: '25. Электростатика (расчетная задача высокого уровня сложности)', content: ['Закон Кулона', 'Напряженность, потенциал и работа электростатического поля', 'Конденсаторы', 'Закон Ома', 'Соединения проводников', 'Закон Джоуля-Ленца и мощность тока', 'Цепи с конденсатором', 'Сила Лоренца и Ампера. Правила левой руки', 'Правило Ленца', 'Закон Фарадея', 'Катушка и самоиндукция', 'Электромагнитные колебания'], link: '' },
-    { id: 'l26', title: '26. Механика (расчетная задача высокого уровня сложности)', content: ['Прямолинейное равномерное движение', 'Прямолинейное равноускоренное движение', 'Баллистическое движение', 'Движение по окружности', 'Законы Ньютона', 'Сила реакции опоры, сила трения, вес', 'Сила упругости и натяжения нити', 'Энергия и закон сохранения энергии', 'Импульс и закон сохранения импульса', 'Условия равновесия, правило моментов', 'Неподвижный и подвижный блоки', 'Давление', 'Сила Архимеда, условие плавания тел'], link: '' }
-  ];
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyf8XEqxfRB296bWywafgtp7LLvEoTWIUbklBfWdUzDf5b9mP2hhp8p8Ad4lgHICKROzA/exec';
+  const CACHE_KEY   = 'lessons_cache_v7';
+  const PENDING_KEY = 'lessons_pending_v7';
+  const COMMENT_PENDING_KEY = 'lessons_comments_pending_v7';
 
   const todayStr = () => {
     const d = new Date();
@@ -357,6 +405,15 @@
   function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch (e) { return {}; } }
   function writeCache(obj) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch (e) {} }
 
+  function readPendingComments() { try { return JSON.parse(localStorage.getItem(COMMENT_PENDING_KEY) || '{}'); } catch (e) { return {}; } }
+  function writePendingComments(obj) { try { localStorage.setItem(COMMENT_PENDING_KEY, JSON.stringify(obj)); } catch (e) {} }
+  function clearPendingComment(id) {
+    try {
+      const p = readPendingComments();
+      if (p[id] !== undefined) { delete p[id]; writePendingComments(p); }
+    } catch (e) {}
+  }
+
   const ioMessage = document.getElementById('ioMessage');
   let msgTimer = null;
   function showMessage(text, type = 'ok') {
@@ -370,8 +427,32 @@
 
   function subtopicId(lessonId, index) { return lessonId + '_' + index; }
 
+  // Приводит урок к виду { id, title, subtopics:[{text, comment, link}] }
+  function normalizeLesson(lesson) {
+    if (Array.isArray(lesson.subtopics)) {
+      return {
+        id: lesson.id,
+        title: lesson.title,
+        subtopics: lesson.subtopics.map(s => {
+          if (typeof s === 'string') return { text: s, comment: '', link: '' };
+          return {
+            text: String(s.text || ''),
+            comment: String(s.comment || ''),
+            link: String(s.link || '')
+          };
+        })
+      };
+    }
+    const content = Array.isArray(lesson.content) ? lesson.content : [];
+    return {
+      id: lesson.id,
+      title: lesson.title,
+      subtopics: content.map(t => ({ text: String(t), comment: '', link: '' }))
+    };
+  }
+
   function renderLessons(lessons) {
-    state.lessons = lessons || [];
+    state.lessons = (lessons || []).map(normalizeLesson);
     const tbody = document.getElementById('tbody');
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -383,7 +464,6 @@
 
     state.lessons.forEach(lesson => {
       const lessonId = lesson.id;
-      const subtopics = Array.isArray(lesson.content) ? lesson.content : [];
 
       const tr = document.createElement('tr');
       tr.className = 'lesson-row';
@@ -406,7 +486,7 @@
       subtopicContainer.id = 'c' + lessonId;
       subtopicContainer.style.display = 'none';
 
-      subtopics.forEach((item, idx) => {
+      lesson.subtopics.forEach((sub, idx) => {
         const subId = subtopicId(lessonId, idx);
         const subTr = document.createElement('tr');
         subTr.className = 'subtopic-row';
@@ -415,7 +495,38 @@
 
         const subTdTitle = document.createElement('td');
         subTdTitle.className = 'subtopic-title';
-        subTdTitle.textContent = item;
+
+        const line = document.createElement('div');
+        line.className = 'subtopic-line';
+
+        const textWrap = document.createElement('div');
+        textWrap.className = 'subtopic-text';
+        textWrap.textContent = sub.text;
+        line.appendChild(textWrap);
+
+        // Комментарий (редактируемый)
+        const commentEl = document.createElement('div');
+        commentEl.className = 'subtopic-comment';
+        commentEl.contentEditable = 'true';
+        commentEl.spellcheck = false;
+        commentEl.dataset.subId = subId;
+        commentEl.dataset.original = sub.comment || '';
+        commentEl.textContent = sub.comment || '';
+        commentEl.title = 'Кликните, чтобы изменить комментарий. Enter или клик вне поля — сохранить.';
+        line.appendChild(commentEl);
+
+        // Ссылка на материалы — своя для каждой подтемы
+        if (sub.link && String(sub.link).trim() !== '') {
+          const a = document.createElement('a');
+          a.className = 'subtopic-link';
+          a.href = sub.link.trim();
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = '🔗 Материалы';
+          line.appendChild(a);
+        }
+
+        subTdTitle.appendChild(line);
         subTr.appendChild(subTdTitle);
 
         const subTdMark = document.createElement('td');
@@ -441,20 +552,6 @@
 
         subtopicContainer.appendChild(subTr);
       });
-
-      if (lesson.link && String(lesson.link).trim() !== '') {
-        const linkTr = document.createElement('tr');
-        linkTr.className = 'subtopic-row';
-        const linkTd = document.createElement('td');
-        linkTd.colSpan = 2;
-        linkTd.style.padding = '8px 16px 12px 48px';
-        linkTd.innerHTML = `<a href="${escapeHtml(lesson.link.trim())}" target="_blank" rel="noopener noreferrer"
-          style="color:var(--accent); font-weight:600; font-size:0.85rem; text-decoration:none;
-          background:var(--accent-soft); padding:6px 12px; border-radius:6px; display:inline-block;">
-          🔗 Материалы к уроку</a>`;
-        linkTr.appendChild(linkTd);
-        subtopicContainer.appendChild(linkTr);
-      }
 
       tr.after(subtopicContainer);
     });
@@ -515,6 +612,42 @@
         updateUI();
       });
     });
+
+    document.querySelectorAll('.subtopic-comment').forEach(el => {
+      if (el.dataset.bound === '1') return;
+      el.dataset.bound = '1';
+
+      const commit = () => {
+        const id = el.dataset.subId;
+        const newVal = (el.textContent || '').trim();
+        const oldVal = (el.dataset.original || '').trim();
+        if (newVal === oldVal) {
+          el.classList.remove('saving', 'saved', 'error');
+          return;
+        }
+        el.dataset.original = newVal;
+        saveComment(id, newVal, el);
+      };
+
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          el.blur();
+        }
+        if (e.key === 'Escape') {
+          el.textContent = el.dataset.original || '';
+          el.blur();
+        }
+      });
+
+      el.addEventListener('blur', commit);
+
+      el.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+        document.execCommand('insertText', false, text);
+      });
+    });
   }
 
   function applyMarksToUI(marks) {
@@ -552,21 +685,14 @@
     return out;
   }
 
-  async function loadFromServer(force = false) {
-    if (force) { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
-
+  async function loadFromServer() {
     const cached = readCache();
-    if (!force) {
-      if (cached.lessons && cached.lessons.length) {
-        renderLessons(cached.lessons);
-        if (cached.marks) applyMarksToUI(cached.marks);
-        bindAllLessonEvents();
-      } else {
-        // Если кэша нет — сразу показываем полный список из задания
-        renderLessons(FALLBACK_LESSONS);
-        if (cached.marks) applyMarksToUI(cached.marks);
-        bindAllLessonEvents();
-      }
+
+    if (cached.lessons && cached.lessons.length) {
+      renderLessons(cached.lessons);
+      if (cached.marks) applyMarksToUI(cached.marks);
+      bindAllLessonEvents();
+      applyPendingComments();
     }
 
     try {
@@ -575,25 +701,41 @@
       const data = await resp.json();
       if (data.result !== 'ok') throw new Error(data.error || 'unknown');
 
-      // Если сервер вернул пустой список — не затираем fallback
-      const lessons = (data.lessons && data.lessons.length) ? data.lessons : FALLBACK_LESSONS;
+      const lessons = data.lessons || [];
+      const marks   = data.marks || {};
 
-      writeCache({ lessons, marks: data.marks || {} });
+      writeCache({ lessons, marks });
       renderLessons(lessons);
-      applyMarksToUI(data.marks || {});
+      applyMarksToUI(marks);
       bindAllLessonEvents();
+      applyPendingComments();
       updateUI();
 
-      if (force) showMessage('✓ Данные успешно обновлены.', 'ok');
+      if (!lessons.length) {
+        showMessage('Google Sheets вернул пустой список тем.', 'err');
+      }
     } catch (err) {
       console.warn('[sync] не удалось загрузить:', err);
-      if (force) {
-        showMessage('⚠️ Ошибка обновления. Проверьте связь с Google Sheets.', 'err');
-      } else if (!cached.lessons || !cached.lessons.length) {
-        // Уже отрисовали fallback выше — просто предупредим
-        showMessage('Показан полный список тем. Сервер недоступен.', 'err');
+
+      if (!cached.lessons || !cached.lessons.length) {
+        const tbody = document.getElementById('tbody');
+        if (tbody) {
+          tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--danger);">Не удалось загрузить темы из Google Sheets.</td></tr>';
+        }
+        showMessage('Ошибка загрузки данных с сервера.', 'err');
       }
     }
+  }
+
+  function applyPendingComments() {
+    const pending = readPendingComments();
+    Object.keys(pending).forEach(id => {
+      const el = document.querySelector(`.subtopic-comment[data-sub-id="${id}"]`);
+      if (!el) return;
+      el.textContent = pending[id];
+      el.dataset.original = pending[id];
+      el.classList.add('saving');
+    });
   }
 
   async function pushOneMark(id, date) {
@@ -608,6 +750,18 @@
     return data;
   }
 
+  async function pushOneComment(id, comment) {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ id, comment })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.result !== 'ok') throw new Error(data.error || 'unknown');
+    return data;
+  }
+
   function saveMark(id, date) {
     const marks = collectMarksFromUI();
     writeCache({ lessons: state.lessons, marks });
@@ -615,8 +769,37 @@
     pushOneMark(id, date)
       .then(() => { try { localStorage.removeItem(PENDING_KEY); } catch (e) {} })
       .catch(err => {
-        console.warn('[sync] отложено:', err);
+        console.warn('[sync] отметка отложена:', err);
         try { localStorage.setItem(PENDING_KEY, '1'); } catch (e) {}
+      });
+  }
+
+  function saveComment(id, comment, el) {
+    const pending = readPendingComments();
+    pending[id] = comment;
+    writePendingComments(pending);
+
+    if (el) {
+      el.classList.remove('saved', 'error');
+      el.classList.add('saving');
+    }
+
+    pushOneComment(id, comment)
+      .then(() => {
+        clearPendingComment(id);
+        if (el) {
+          el.classList.remove('saving', 'error');
+          el.classList.add('saved');
+          setTimeout(() => el.classList.remove('saved'), 1200);
+        }
+      })
+      .catch(err => {
+        console.warn('[sync] комментарий отложен:', err);
+        if (el) {
+          el.classList.remove('saving', 'saved');
+          el.classList.add('error');
+          setTimeout(() => el.classList.remove('error'), 2500);
+        }
       });
   }
 
@@ -633,9 +816,15 @@
     if (progressFill) progressFill.style.width = pct + '%';
   }
 
-  // Автосохранение при уходе со страницы (на случай, если что-то не ушло)
   window.addEventListener('online', () => {
     try {
+      const pendingComments = readPendingComments();
+      Object.keys(pendingComments).forEach(id => {
+        pushOneComment(id, pendingComments[id])
+          .then(() => clearPendingComment(id))
+          .catch(() => {});
+      });
+
       if (localStorage.getItem(PENDING_KEY) === '1') {
         const marks = collectMarksFromUI();
         fetch(API_URL, {
