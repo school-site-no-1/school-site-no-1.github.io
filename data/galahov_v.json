@@ -107,7 +107,32 @@
       "room": "Док"
     }
   ],
-  "ЧТ": [],
+  "ЧТ": [
+    {
+      "lesson": 3,
+      "class": "4В",
+      "subject": "Физ-ра",
+      "room": ""
+    },
+    {
+      "lesson": 5,
+      "class": "2В",
+      "subject": "Физ-ра",
+      "room": ""
+    },
+    {
+      "lesson": 6,
+      "class": "2Б",
+      "subject": "Физ-ра",
+      "room": ""
+    },
+    {
+      "lesson": 7,
+      "class": "8Б",
+      "subject": "Физ-ра",
+      "room": "206"
+    }
+  ],
   "ПТ": [
     {
       "lesson": 3,
@@ -117,11 +142,17 @@
     },
     {
       "lesson": 4,
+      "class": "4В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
+      "lesson": 7,
       "class": "8Б",
       "subject": "Физ-ра",
-      "room": "207"
+      "room": "с/з"
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-12 13:44:21"
+  "last_update": "2026-11-21 18:48:30"
 }

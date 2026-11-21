@@ -7,6 +7,12 @@
       "room": "212"
     },
     {
+      "lesson": 4,
+      "class": "11Б",
+      "subject": "Химия",
+      "room": "212"
+    },
+    {
       "lesson": 5,
       "class": "8Б",
       "subject": "Химия",
@@ -15,12 +21,6 @@
     {
       "lesson": 6,
       "class": "8В",
-      "subject": "Химия",
-      "room": "212"
-    },
-    {
-      "lesson": 7,
-      "class": "11Б",
       "subject": "Химия",
       "room": "212"
     },
@@ -133,8 +133,14 @@
       "class": "9Б",
       "subject": "Химия",
       "room": "212"
+    },
+    {
+      "lesson": 5,
+      "class": "9А",
+      "subject": "Химия",
+      "room": "212"
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-12 13:44:21"
+  "last_update": "2026-11-21 18:48:30"
 }

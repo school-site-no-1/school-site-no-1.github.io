@@ -124,19 +124,19 @@
       "lesson": 3,
       "class": "7Б",
       "subject": "Труд",
-      "room": "112/211"
+      "room": "112/204"
     },
     {
       "lesson": 4,
       "class": "7Б",
       "subject": "Труд",
-      "room": "112/211"
+      "room": "112/204"
     },
     {
       "lesson": 5,
       "class": "11А",
       "subject": "ОБЗР",
-      "room": "204"
+      "room": "212"
     },
     {
       "lesson": 6,
@@ -175,8 +175,26 @@
       "class": "7В",
       "subject": "Труд",
       "room": "112/204"
+    },
+    {
+      "lesson": 5,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 6,
+      "class": "7А",
+      "subject": "Труд",
+      "room": "112/204"
+    },
+    {
+      "lesson": 7,
+      "class": "9А",
+      "subject": "ОБЗР",
+      "room": "204"
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-12 13:44:21"
+  "last_update": "2026-11-21 18:48:30"
 }
