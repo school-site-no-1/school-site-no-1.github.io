@@ -1,16 +1,16 @@
 {
   "ПН": [
     {
+      "lesson": 1,
+      "class": "9В",
+      "subject": "Разговор о важном",
+      "room": "211"
+    },
+    {
       "lesson": 3,
       "class": "4А",
       "subject": "Физ-ра",
       "room": "с/з"
-    },
-    {
-      "lesson": 4,
-      "class": "9В",
-      "subject": "Разговор о важном",
-      "room": "308"
     },
     {
       "lesson": 5,
@@ -40,21 +40,21 @@
   "ВТ": [
     {
       "lesson": 1,
-      "class": "5А",
-      "subject": "Труд",
-      "room": "111"
+      "class": "10А",
+      "subject": "Физ-ра",
+      "room": "с/з"
     },
     {
       "lesson": 2,
       "class": "5А",
       "subject": "Труд",
-      "room": "111"
+      "room": "111/112"
     },
     {
       "lesson": 3,
-      "class": "10А",
-      "subject": "Физ-ра",
-      "room": "205"
+      "class": "5А",
+      "subject": "Труд",
+      "room": "111/112"
     },
     {
       "lesson": 4,
@@ -177,6 +177,12 @@
       "room": "с/з"
     },
     {
+      "lesson": 7,
+      "class": "8В",
+      "subject": "Физ-ра",
+      "room": "с/з"
+    },
+    {
       "lesson": 8,
       "class": "10Б",
       "subject": "Физ-ра",
@@ -184,5 +190,5 @@
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-27 08:03:10"
+  "last_update": "2026-11-28 12:06:44"
 }

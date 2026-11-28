@@ -92,13 +92,19 @@
       "lesson": 5,
       "class": "6Б",
       "subject": "Физ-ра",
-      "room": "205"
+      "room": "304"
     },
     {
       "lesson": 6,
       "class": "8В",
       "subject": "ОБЗР",
       "room": "201"
+    },
+    {
+      "lesson": 7,
+      "class": "8А",
+      "subject": "ОБЗР",
+      "room": "204"
     }
   ],
   "ЧТ": [
@@ -125,6 +131,12 @@
       "class": "7Б",
       "subject": "Труд",
       "room": "112/204"
+    },
+    {
+      "lesson": 5,
+      "class": "11А",
+      "subject": "ОБЗР",
+      "room": "212"
     },
     {
       "lesson": 6,
@@ -175,8 +187,14 @@
       "class": "7А",
       "subject": "Труд",
       "room": "112/204"
+    },
+    {
+      "lesson": 7,
+      "class": "9А",
+      "subject": "ОБЗР",
+      "room": "204"
     }
   ],
   "СБ": [],
-  "last_update": "2026-11-27 08:03:10"
+  "last_update": "2026-11-28 12:06:44"
 }
